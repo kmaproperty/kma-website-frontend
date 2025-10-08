@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@theme {
+
+  /* Custom Fonts */
+  --font-ibm-plex-sans : var(--font-ibm-plex-sans), ui-sans-serif, system-ui, sans-serif;
+
+  /* Custom Colors */
+  --color-blue: #010048;       
+  --color-text-black: #0D1520;      
+  --color-accent: #FFA726;        
+  --color-light-purple: #E7E6FF;       
+  --color-text-gray: #888888;    
+  --color-white: #FFFFFF;
+  --color-text-light-gray: #E9E9E9;  
+
+  /* Custom Breakpoints */
+
+  --breakpoint-2md: 54rem;
+}
