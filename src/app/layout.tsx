@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Sans } from "next/font/google";
 import "@/styles/globals.css";
+import QueryProvider from "@/providers/QueryProvider";
+import StoreProvider from "@/providers/StoreProvider";
+import ToasterProvider from "@/providers/ToastProvider";
+import { Suspense } from "react";
 
 const ibmPlexSans = IBM_Plex_Sans({
   subsets: ["latin"],
@@ -23,7 +27,14 @@ export default function RootLayout({
       <body
         className={`${ibmPlexSans.variable}`}
       >
-        {children}
+        <Suspense>
+        <StoreProvider>
+          <QueryProvider>
+          {children}
+          <ToasterProvider />
+          </QueryProvider>
+        </StoreProvider>
+        </Suspense>
       </body>
     </html>
   );
