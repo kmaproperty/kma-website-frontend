@@ -1,39 +1,61 @@
-'use client'
-import Radio from '@mui/material/Radio';
+"use client";
+import Radio from "@mui/material/Radio";
 
-export default function RadioSwitch({checked, label,value, labelStyle, onChagne}: {checked: boolean, label: string, value: string | number, labelStyle: string, onChagne: (value: string | number) => void}) {
+export default function RadioSwitch({
+  checked,
+  label,
+  value,
+  labelStyle,
+  onChagne,
+}: {
+  checked: boolean;
+  label: string;
+  value: string | number;
+  labelStyle: string;
+  onChagne: (value: string | number) => void;
+}) {
   return (
     <label
-          key={value}
-          className={`
+      key={value}
+      className={`
             min-w-[180px] flex flex-1 items-center py-1 px-2 rounded-full cursor-pointer transition-all border
-            ${checked ? 'bg-light-purple border-light-purple' : 'bg-transparent border-border rounded-full'}
+            ${
+              checked
+                ? "bg-light-purple border-light-purple"
+                : "bg-transparent border-border rounded-full"
+            }
           `}
-        >
-          <Radio
-            checked={checked}
-            onChange={() => onChagne(value)}
-            value={value}
-            name="userType"
-            className='p-0.5 sm:p-1'
-            sx={{
-              padding: {
-              xs: '2px',
-              sm: '4px 2px 4px 4px',   
-              md: '8px 4px 8px 8px',  
+    >
+      <Radio
+        checked={checked}
+        onChange={() => onChagne(value)}
+        value={value}
+        name="userType"
+        className="p-0.5 sm:p-1"
+        disableRipple
+        disableFocusRipple
+        disableTouchRipple
+        sx={{
+          padding: {
+            xs: "2px",
+            sm: "4px 2px 4px 4px",
+            md: "8px 4px 8px 8px",
+          },
+          color: "var(--color-text-black)",
+          "& .MuiSvgIcon-root": {
+            fontSize: 24,
+          },
+
+          "&.Mui-checked": {
+            color: "var(--color-text-black)",
+            '& [data-testid="RadioButtonCheckedIcon"]': {
+              transform: "scale(1.3)",
             },
-              color: 'var(--color-text-black)',
-              '& .MuiSvgIcon-root': {
-                fontSize: 24,
-              }, 
-              '&.Mui-checked': {
-                color: 'var(--color-text-black)',
-              },
-            }}
-          />
-          <span className={labelStyle}>
-            {label}
-          </span>
+          },
+    
+        }}
+      />
+      <span className={labelStyle}>{label}</span>
     </label>
   );
 }

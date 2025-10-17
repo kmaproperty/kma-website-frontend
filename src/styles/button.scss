@@ -28,3 +28,16 @@
 .animated-button:hover::before {
  top: -60%;
 }
+
+.animated-button:disabled,
+.animated-button[disabled] {
+  background-color: var(--color-blue-disable);
+  color: white;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.animated-button:disabled::before,
+.animated-button[disabled]::before {
+  display: none;
+}

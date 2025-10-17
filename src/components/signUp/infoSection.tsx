@@ -26,7 +26,7 @@ function Card({ src, title, subTitle }: { [key: string]: string }) {
       <p className="text-center text-text-black font-ibm-plex-sans font-semibold text-base 2xl:text-lg  leading-3 md:leading-4 mb-2">
         {title}
       </p>
-      <p className="text-center text-text-gray font-ibm-plex-sans font-normal text-sm 2xl:text-base leading-4 md:leading-4 ">
+      <p className="text-center text-text-gray font-ibm-plex-sans font-normal text-sm 2xl:text-base leading-5 md:leading-5 ">
         {subTitle}
       </p>
       </div>

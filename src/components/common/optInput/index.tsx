@@ -25,11 +25,13 @@ const StyledMuiOtpInput = styled(MuiOtpInput)(({ theme }) => ({
       width: '48px',
       height: '48px',
       fontSize: '18px',
+      borderRadius: '10px',
     },
     [theme.breakpoints.down('sm')]: {
       width: '38px',
       height: '38px',
       fontSize: '18px',
+      borderRadius: '8px',
     },
 
     '&:hover': {

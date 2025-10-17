@@ -1,115 +1,139 @@
-import React, { useState } from "react";
-import Select, {
-  StylesConfig,
-  SingleValue,
-  Props as SelectProps,
-} from "react-select";
+import React from "react";
 import AsyncSelect from "react-select/async";
+import {
+  StylesConfig,
+  Props as ReactSelectProps,
+  GroupBase,
+  MultiValue,
+  SingleValue,
+} from "react-select";
 
-// Define the option type
-type OptionType = {
+// OptionType restricted to string only
+export type OptionType = {
   value: string;
   label: string;
 };
 
-const options: OptionType[] = [
-  { value: "california", label: "California" },
-  { value: "texas", label: "Texas" },
-  { value: "new_york", label: "New York" },
-  { value: "florida", label: "Florida" },
-  { value: "surat", label: "surat" },
-];
+export interface DynamicAsyncSelectProps
+  extends Partial<
+    ReactSelectProps<OptionType, boolean, GroupBase<OptionType>>
+  > {
+  loadOptions: (inputValue: string) => Promise<string[]>; // Only string[]
+  isMulti?: boolean;
+  isError?: boolean;
+  placeholder?: string;
+  onChange?: (
+    value: OptionType | MultiValue<OptionType> | null
+  ) => void;
+  value?: OptionType | MultiValue<OptionType> | null;
+}
 
-// Custom styles for react-select to match Tailwind-style UI
-const customStyles: StylesConfig<OptionType> = {
-  control: (base, state) => ({
-    ...base,
-    borderRadius: 9999,
-    boxShadow: "none",
-    "&:hover": {
-      borderColor: "none",
-    },
-    minHeight: "47.81px",
-    paddingLeft: "1rem",
-    fontSize: "1rem",
-  }),
-  valueContainer: (base) => ({
-    ...base,
-    // height: "47.81px",
-    padding: "0 6px",
-  }),
-  input: (base) => ({
-    ...base,
-  }),
-  placeholder: (base) => ({
-    ...base,
-    color: "var(--color-text-gray)",
-  }),
-  indicatorSeparator: () => ({
-    display: "none",
-  }),
-  dropdownIndicator: (base) => ({
-    ...base,
-    paddingRight: "1rem",
-    color: "var(--color-text-gray)",
-  }),
-  menu: (base) => ({
-    ...base,
-    fontSize: "0.875rem",
-    borderRadius: 8,
-    zIndex: 50,
-  }),
-  option: (base, state) => ({
-    ...base,
-    backgroundColor: state.isSelected
-      ? "var(--color-light-purple)"
-      : state.isFocused
-      ? "var(--color-light-purple)"
-      : "white",
-    color: state.isSelected ? "var(--color-light-purple)" : "var(--color-blue)", // text-blue-700 or gray-900
-    cursor: "pointer",
-    ":active": {
-      ...base[":active"],
-      backgroundColor: !state.isDisabled
-        ? state.isSelected
+const DynamicAsyncSelect = ({
+  isMulti = false,
+  placeholder = "Start typing...",
+  loadOptions,
+  onChange,
+  styles,
+  value,
+  isError,
+  ...rest
+}: DynamicAsyncSelectProps) => {
+  const defaultStyles: StylesConfig<OptionType, boolean> = {
+    control: (base) => ({
+      ...base,
+      borderRadius: 9999,
+      boxShadow: "none",
+      borderColor: isError ? "#fb2c36" : "var(--color-border)",
+      "&:hover": {
+        borderColor: isError ? "#fb2c36" : "var(--color-border)",
+      },
+      minHeight: "47.81px",
+      paddingLeft: "1rem",
+      fontSize: "1rem",
+    }),
+    input: (base) => ({ ...base, paddingLeft: 0 }),
+    placeholder: (base) => ({
+      ...base,
+      color: "var(--color-text-gray)",
+    }),
+    indicatorSeparator: () => ({ display: "none" }),
+    dropdownIndicator: (base) => ({
+      ...base,
+      paddingRight: "1rem",
+      color: "var(--color-text-gray)",
+    }),
+    menu: (base) => ({
+      ...base,
+      fontSize: "0.875rem",
+      borderRadius: 8,
+      zIndex: 50,
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isSelected
+        ? "var(--color-light-purple)"
+        : state.isFocused
+        ? "var(--color-light-purple)"
+        : "white",
+      color: state.isSelected
+        ? "var(--color-light-purple)"
+        : "var(--color-blue)",
+      cursor: "pointer",
+      ":active": {
+        ...base[":active"],
+        backgroundColor: !state.isDisabled
           ? "var(--color-blue)"
-          : "var(--color-blue)"
-        : undefined,
-      color: "white",
-    },
-  }),
-};
-
-const StateSelect: React.FC = () => {
-  const [selectedOption, setSelectedOption] = useState<OptionType | null>(null);
-
-  const filterColors = (inputValue: string) => {
-    return options.filter((i) =>
-      i.label.toLowerCase().includes(inputValue.toLowerCase())
-    );
+          : undefined,
+        color: "white",
+      },
+    }),
+    multiValue: (base) => ({
+      ...base,
+      backgroundColor: "var(--color-light-purple)",
+      borderRadius: "5px",
+    }),
+    multiValueLabel: (base) => ({
+      ...base,
+      color: "var(--color-text-black)",
+      padding: "2px 6px",
+    }),
+    multiValueRemove: (base) => ({
+      ...base,
+      color: "var(--color-text-black)",
+      cursor: "pointer",
+      padding: "2px",
+      borderRadius: "9999px",
+      transition: "all 0.2s ease",
+      ":hover": {
+        backgroundColor: "var(--color-light-purple)",
+      },
+    }),
   };
 
-  const promiseOptions = (inputValue: string) =>
-    new Promise<OptionType[]>((resolve) => {
-      setTimeout(() => {
-        resolve(filterColors(inputValue));
-      }, 1000);
-    });
+  // Always normalize string[] into OptionType[]
+  const normalizedLoadOptions = async (
+    inputValue: string
+  ): Promise<OptionType[]> => {
+    const result = await loadOptions(inputValue);
+    return result.map((item) => ({
+      value: item,
+      label: item,
+    }));
+  };
 
   return (
     <div className="w-full">
-      <AsyncSelect
-        isMulti
-        options={options}
-        cacheOptions
-        // value={selectedOption}
-        // onChange={handleChange}
-        placeholder="State"
-        styles={customStyles}
-        loadOptions={promiseOptions}
-      />
+    <AsyncSelect<OptionType, boolean>
+      isMulti={isMulti}
+      placeholder={placeholder}
+      loadOptions={normalizedLoadOptions}
+      styles={styles || defaultStyles}
+      onChange={onChange}
+      value={value}
+      {...rest}
+    />
     </div>
   );
 };
 
-export default StateSelect;
+export default DynamicAsyncSelect;
