@@ -16,6 +16,7 @@ import {
 import { mobileNumberValidator } from "@/lib/commonValidator";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { createURLSearchParam } from "@/lib/helper";
+import { useMediaQuery, useTheme } from "@mui/material";
 
 interface OptionType {
   value: UserType;
@@ -60,6 +61,8 @@ export default function SignUp() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const pathname = usePathname()
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const mobileNumber = searchParams.get('mobile')
   const code = searchParams.get('code')
   const intent = searchParams.get('propertyIntent')
@@ -214,7 +217,7 @@ export default function SignUp() {
               We'll send you a verification code to get started.
             </p>
 
-            <MobileInput required={true} validationMessage={mobileInput.validationMessage} value={mobileInput.value} countryCode={mobileInput.code} onChange={handleMobileInputChange}/>
+            <MobileInput placeHolder={fullScreen ? 'Enter mobile number' : 'Enter your mobile number'} required={true} validationMessage={mobileInput.validationMessage} value={mobileInput.value} countryCode={mobileInput.code} onChange={handleMobileInputChange}/>
 
             <div className="flex justify-start flex-col md:flex-row gap-4 items-center mt-8">
               <button

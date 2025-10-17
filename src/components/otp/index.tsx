@@ -147,12 +147,12 @@ const verifyOtp = (val: string) => {
       aria-labelledby="responsive-dialog-title"
       slotProps={{
         paper: {
-          sx: { borderRadius: "1rem" },
+          sx: { borderRadius: fullScreen ? '' : "1rem", },
         },
       }}
     >
       <DialogContent>
-        <div className="flex flex-col w-[400px] p-2">
+        <div className="flex flex-col w-full sm:w-[400px] p-2">
           <div className="flex justify-end w-full">
             <Image
               onClick={() => router.push(pathname)}
