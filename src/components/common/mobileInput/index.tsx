@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import Select, { SingleValue, StylesConfig } from 'react-select';
 import { InputBase } from '@mui/material';
 import clsx from 'clsx';
@@ -37,7 +37,7 @@ const customSelectStyles: StylesConfig<OptionType, false> = {
     height: '100%',
     cursor: 'pointer',
     width: '100%',
-    minWidth: '80px',
+    minWidth: '65px',
   }),
   dropdownIndicator: (base) => ({
     ...base,
@@ -95,7 +95,6 @@ export default function MobileInput({
   countryCode = countryOptions[0]?.value ?? '',
   disabled = false,
 }: MobileInputProps) {
-
     const mobileNumber = useMemo(() => {
     return value
   }, [value])

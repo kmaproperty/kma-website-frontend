@@ -66,6 +66,7 @@ const OtpInput: React.FC<OtpInputProps> = (props) => {
   return (
     <StyledMuiOtpInput
       TextFieldsProps={{ size: 'small' }}
+      autoFocus={true}
       {...props}
     />
   );

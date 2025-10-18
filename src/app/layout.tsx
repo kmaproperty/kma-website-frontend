@@ -25,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${ibmPlexSans.variable}`}
+        className={`${ibmPlexSans.variable} antialiased`}
       >
         <Suspense>
         <StoreProvider>

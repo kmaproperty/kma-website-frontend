@@ -62,7 +62,7 @@ export default function CreateAccountOtp() {
     },
     onSuccess: (response: SendOtpResponse) => {
       console.log('Otp resend response', response)
-      toast.success(response.message)
+      toast.success(response.message + ' ' + response.otp)
     },
     onError: (error: any) => {
       console.log('otp error', error)
@@ -145,17 +145,17 @@ export default function CreateAccountOtp() {
       <div className="absolute rounded-full w-[90%] -top-[32px] rounded-[100px] bg-white h-[60px]"></div>
       <div className="pt-4 px-5">
         <div className="relative flex flex-wrap w-[90%] -top-[32px] text-sm gap-4 bg-white p-2 rounded-full">
-          <p className="text-text-black font-semibold text-xl 2xl:text-2xl">
+          <p className="text-text-black font-semibold text-base lg:text-lg 1xl:text-xl">
             Verify Your Mobile Number
           </p>
         </div>
         <div className="relative -top-[32px] p-2 flex flex-col gap-6 md:gap-10 w-full">
           <div>
-            <p className="text-sm lg:text-sm 2xl:text-lg text-text-gray">
+            <p className="text-sm 1xl:text-base text-text-gray">
               We've sent a 4-digit OTP to your mobile number{" "}
               <span className="text-blue">{code + '-' + mobileNumber}</span>
             </p>
-            <p className="text-sm lg:text-sm 2xl:text-lg text-text-gray">
+            <p className="text-sm 1xl:text-base text-text-gray">
               Not your number?{" "}
               <span onClick={handleChangeNumber} className="text-blue italic underline cursor-pointer">Change</span>
             </p>
@@ -174,12 +174,12 @@ export default function CreateAccountOtp() {
             {otpError && <p className="text-red-500 text-xs pt-2">{otpError}</p>}
           </div>
           <div className="flex flex-col justify-center gap-4 items-start">
-              <button disabled={isPending} onClick={() => verifyOtp(otp)} className={`animated-button px-12 py-3 border border-blue text-center cursor-pointer`}>
+              <button disabled={isPending} onClick={() => verifyOtp(otp)} className={`animated-button px-12 py-3 border border-blue text-center text-sm 1xl:text-base cursor-pointer`}>
                 <span className="gap-3 relative">
                   <p className="text-nowrap">Verify OTP</p>
                 </span>
               </button>
-              <p className="text-sm lg:text-sm 2xl:text-lg text-text-gray">
+              <p className="text-sm lg:text-base 2xl:text-lg text-text-gray">
                 Didn't get the code?
                 <span onClick={handleOtpResend} className={`text-sm lg:text-sm 2xl:text-lg cursor-pointer ml-1 ${otpTimer > 0 ? 'text-text-gray' : 'text-text-black'}`}>
                 Resend OTP <span className="text-text-black ">{otpTimer > 0 ? 'in 0:' + `${otpTimer < 10 ? '0' + otpTimer : otpTimer}` : ''}</span>

@@ -18,7 +18,7 @@ export default function RadioSwitch({
     <label
       key={value}
       className={`
-            min-w-[180px] flex flex-1 items-center py-1 px-2 rounded-full cursor-pointer transition-all border
+            min-w-[180px] flex flex-1 items-center py-[5px] px-2 rounded-full cursor-pointer transition-all border
             ${
               checked
                 ? "bg-light-purple border-light-purple"
@@ -31,15 +31,15 @@ export default function RadioSwitch({
         onChange={() => onChagne(value)}
         value={value}
         name="userType"
-        className="p-0.5 sm:p-1"
+        // className="p-0.5 sm:p-1"
         disableRipple
         disableFocusRipple
         disableTouchRipple
         sx={{
           padding: {
             xs: "2px",
-            sm: "4px 2px 4px 4px",
-            md: "8px 4px 8px 8px",
+            sm: "3px 2px 3px 3px",
+            md: "4px 4px 4px 4px",
           },
           color: "var(--color-text-black)",
           "& .MuiSvgIcon-root": {

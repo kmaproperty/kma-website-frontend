@@ -25,6 +25,8 @@ export default function SignIn() {
   const pathname = usePathname();
   const router = useRouter()
   const isLogin = searchParams.get('isLogin')
+  const mobileNumber = searchParams.get('mobileNumber')
+  const code = searchParams.get('code')
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -88,6 +90,12 @@ export default function SignIn() {
     return isLogin == 'true' ? true : false
   }, [isLogin])
 
+  React.useEffect(() => {
+    if(code && mobileNumber){
+      setMobileInput({validationMessage: '', value: mobileNumber, code: code})
+    }
+  },[mobileNumber, code])
+
   return (
     <React.Fragment>
       <Dialog
@@ -98,7 +106,7 @@ export default function SignIn() {
         slotProps={{
           paper: {
             sx: {
-              borderRadius: "1rem",
+              borderRadius: fullScreen ? '' : "1rem",
             },
           },
         }}
@@ -117,7 +125,7 @@ export default function SignIn() {
                 className="cursor-pointer"
               />
             </div>
-            <div className="flex flex-col items-center gap-4 xl:gap-6 w-[400px] p-1">
+            <div className="flex flex-col items-center gap-4 xl:gap-6 w-full md:w-[400px] p-1">
               <Image
                 alt="Login-icon"
                 src="/assets/login-logo.svg"
@@ -126,10 +134,10 @@ export default function SignIn() {
                 style={{ width: "287px", height: "150px" }}
               />
               <div className="content-start w-full">
-                <p className="text-text-black font-semibold text-xl 2xl:text-2xl pb-1">
+                <p className="text-text-black font-semibold text-2xl pb-1">
                   Welcome Back 👋
                 </p>
-                <p className="text-sm lg:text-sm 2xl:text-lg text-text-gray">
+                <p className="text-base text-text-gray">
                   Log in to explore exclusive properties and connect with
                   trusted owners & partners.
                 </p>

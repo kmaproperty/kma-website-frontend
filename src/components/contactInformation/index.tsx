@@ -145,7 +145,7 @@ export default function ContactInformation() {
         slotProps={{
           paper: {
             sx: {
-              borderRadius: "1rem",
+              borderRadius: fullScreen ? '' : "1rem", 
               overflow: 'hidden'
             },
           },
