@@ -6,7 +6,7 @@ export default function ContentLayout({cardContent, infoContent}: { cardContent:
                 <div style={{flex: '2.5 1 '}}>
                     {infoContent}
                 </div>
-                <div  style={{flex: '2 1 '}} className="mt-5 md:mt-0"> 
+                <div  style={{flex: '1.8 1 '}} className="mt-5 md:mt-0"> 
                     {cardContent}
                 </div>
         </div>

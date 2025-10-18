@@ -18,7 +18,7 @@ import { CitiesResponse, getCityApiHandler } from "@/services/masterService";
 import { MultiValue } from "react-select";
 import { PropertyType } from "@/types/user";
 import { useDispatch, useSelector } from "react-redux";
-import { setFormField } from "@/store/createAccountSlice";
+import { resetForm, setFormField } from "@/store/createAccountSlice";
 import { RootState } from "@/store/store";
 import { createURLSearchParam } from "@/lib/helper";
 import { toast } from "react-toastify";
@@ -123,6 +123,7 @@ export default function CreateAccount({ step }: { step: number }) {
     onSuccess: (response: CreateOwnerResponse) => {
       console.log("create owner response", response);
       localStorage.setItem("user", JSON.stringify(response.user));
+      dispatch(resetForm())
       toast.success(response.message)
       router.push('/')
     },
@@ -150,6 +151,9 @@ export default function CreateAccount({ step }: { step: number }) {
     onSuccess: (response: CreateOwnerResponse) => {
       console.log("create owner response", response);
       localStorage.setItem("user", JSON.stringify(response.user));
+      dispatch(resetForm())
+      toast.success(response.message)
+      router.push('/')
     },
     onError: (error: any) => {
       console.log("owner create error", error);
@@ -232,18 +236,18 @@ export default function CreateAccount({ step }: { step: number }) {
       <div className="absolute rounded-full w-[90%] -top-[32px] rounded-[100px] bg-white h-[60px]"></div>
       <div className="pt-4 px-5">
         <div className="relative flex flex-wrap w-[90%] -top-[35px] text-sm gap-4 bg-white px-2 rounded-full">
-          <p className="text-text-black font-semibold text-xl 2xl:text-2xl">
+          <p className="text-text-black font-semibold text-base lg:text-lg 1xl:text-xl">
             Create Your Account
           </p>
         </div>
         <div className="relative -top-[35px] px-2 flex flex-col gap-6  md:gap-8 w-full">
-          <p className="text-sm lg:text-sm 2xl:text-lg text-text-gray">
+          <p className="text-sm 1xl:text-base  text-text-gray">
             Create your free account and get started
           </p>
           <div className="flex flex-col gap-3">
             {step == 1 && (
               <>
-                <p className="required-label text-sm lg:text-base 2xl:text-lg text-text-black font-medium">
+                <p className="required-label text-sm 1xl:text-base text-text-black">
                   Full Name
                 </p>
                 <div>
@@ -263,7 +267,7 @@ export default function CreateAccount({ step }: { step: number }) {
                     </p>
                   )}
                 </div>
-                <p className="required-label text-sm lg:text-base 2xl:text-lg text-text-black font-medium">
+                <p className="required-label text-sm 1xl:text-base text-text-black">
                   Email Address
                 </p>
                 <div>
@@ -285,7 +289,7 @@ export default function CreateAccount({ step }: { step: number }) {
                 </div>
                 {userData?.role == USER_TYPE.OWNER && step == 1 && (
                   <>
-                    <p className="required-label text-sm lg:text-base 2xl:text-lg text-text-black font-medium">
+                    <p className="required-label text-sm 1xl:text-base text-text-black">
                       City
                     </p>
                     <div>
@@ -315,7 +319,7 @@ export default function CreateAccount({ step }: { step: number }) {
               <>
                 {step == 1 && (
                   <>
-                    <p className="required-label text-sm lg:text-base 2xl:text-lg text-text-black font-medium">
+                    <p className="required-label text-sm 1xl:text-base text-text-black">
                       Channel Partner Code
                     </p>
                     <div>
@@ -341,7 +345,7 @@ export default function CreateAccount({ step }: { step: number }) {
                 )}
                 {step == 2 && (
                   <>
-                    <p className="required-label text-sm lg:text-base 2xl:text-lg text-text-black font-medium">
+                    <p className="required-label text-sm 1xl:text-base text-text-black">
                       City
                     </p>
                     <div>
@@ -362,7 +366,7 @@ export default function CreateAccount({ step }: { step: number }) {
                         </p>
                       )}
                     </div>
-                    <p className="required-label text-sm lg:text-base 2xl:text-lg text-text-black font-medium">
+                    <p className="required-label text-sm 1xl:text-base text-text-black">
                       In Bussiness Since
                     </p>
                     <div>
@@ -385,7 +389,7 @@ export default function CreateAccount({ step }: { step: number }) {
                         </p>
                       )}
                     </div>
-                    <p className="required-label text-sm lg:text-base 2xl:text-lg text-text-black font-medium">
+                    <p className="required-label text-sm 1xl:text-base text-text-black">
                       Firm Name
                     </p>
                     <div>
@@ -407,7 +411,7 @@ export default function CreateAccount({ step }: { step: number }) {
                         </p>
                       )}
                     </div>
-                    <p className="text-sm lg:text-base 2xl:text-lg text-text-black font-medium">
+                    <p className="text-sm text-sm 1xl:text-base text-text-black">
                       About Your Self
                     </p>
                     <InputBase
@@ -427,9 +431,9 @@ export default function CreateAccount({ step }: { step: number }) {
                   </>
                 )}
                 {userData?.role == USER_TYPE.CHANNEL_PARTNER && step == 1 && (
-                  <p className="text-sm lg:text-sm 2xl:text-lg text-text-gray">
+                  <p className="text-sm 1xl:text-base text-text-gray">
                     Channel partner code{" "}
-                    <span className="text-sm lg:text-sm 2xl:text-lg font-semibold underline text-text-black cursor-pointer">
+                    <span className="text-sm 1xl:text-base font-semibold underline text-text-black cursor-pointer">
                       Click Here
                     </span>{" "}
                     to get help from our support team.
@@ -443,7 +447,7 @@ export default function CreateAccount({ step }: { step: number }) {
             <button
               disabled={ownerLoader || channelPartnerLoader}
               onClick={handleSubmit}
-              className="w-full md:w-auto animated-button px-12 py-3 border border-blue text-center cursor-pointer"
+              className="w-full md:w-auto text-sm 1xl:text-base animated-button px-12 py-3 border border-blue text-center cursor-pointer"
             >
               <span className="gap-3 relative">
                 <p className="text-nowrap">
@@ -455,7 +459,7 @@ export default function CreateAccount({ step }: { step: number }) {
                 </p>
               </span>
             </button>
-            <p className="text-sm lg:text-sm 2xl:text-lg text-text-gray">
+            <p className="flex-1 text-sm lg:text-sm 2xl:text-lg text-text-gray">
               Already have an account?{" "}
               <span onClick={handleRedirectToLogin} className="text-sm lg:text-sm 2xl:text-lg font-semibold underline text-text-black cursor-pointer">
                 Login Here

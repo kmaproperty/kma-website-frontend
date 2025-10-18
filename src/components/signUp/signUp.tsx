@@ -17,6 +17,7 @@ import { mobileNumberValidator } from "@/lib/commonValidator";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { createURLSearchParam } from "@/lib/helper";
 import { useMediaQuery, useTheme } from "@mui/material";
+import { toast } from "react-toastify";
 
 interface OptionType {
   value: UserType;
@@ -105,6 +106,7 @@ export default function SignUp() {
         ownerType: selectedPartnerType,
         ...(selectedPartnerType == USER_TYPE.OWNER ? {propertyIntent: propertyIntent,} : '')
       })
+      toast.success(response.otp, {autoClose: false})
       router.push(`/verify-otp${params}`)
     },
     onError: (error: any) => {
@@ -148,7 +150,7 @@ export default function SignUp() {
         Who are you?
       </div>
       <div
-        className="bg-white relative w-full md:min-w-96 h-auto rounded-b-xl rounded-tr-xl"
+        className="bg-white relative w-full md:min-w-96 md:min-h-[450px] h-auto rounded-b-xl rounded-tr-xl"
         style={{ boxShadow: "0px 4px 20px 0px #0000000D", flexGrow: 11 }}
       >
         <div className="absolute rounded-full w-[90%] -top-[32px] rounded-[100px] bg-white h-[60px]" />
@@ -160,7 +162,7 @@ export default function SignUp() {
                 label={item.label}
                 value={item.value}
                 checked={selectedPartnerType === item.value}
-                labelStyle="text-black text-xs md:text-sm font-medium font-ibm-plex-sans"
+                labelStyle="text-black text-xs 1xl:text-sm font-medium font-ibm-plex-sans"
                 onChagne={() => handlePartnerChange(item.value)}
               />
             ))}
@@ -169,16 +171,16 @@ export default function SignUp() {
           <div className="relative -top-[32px] px-4 pt-4 sm:px-8 flex flex-col w-full">
             {selectedPartnerType == USER_TYPE.OWNER ? (
               <>
-                <p className="text-base lg:text-lg 2xl:text-2xl font-semibold text-text-black mb-1">
+                <p className="text-base lg:text-lg 1xl:text-xl font-semibold text-text-black mb-1">
                   Sell or Rent Your Property –{" "}
                   <span className="text-accent">Absolutely FREE!</span>
                 </p>
-                <p className="text-sm lg:text-sm 2xl:text-lg text-text-gray">
+                <p className="text-sm 1xl:text-base text-text-gray">
                   No Agent Needed. List your home directly and connect with
                   genuine buyers or tenants in minutes.
                 </p>
 
-                <p className="text-sm lg:text-sm 2xl:text-lg font-semibold text-text-black mt-6">
+                <p className="text-sm lg:text-base 2xl:text-lg font-semibold text-text-black mt-6">
                   What do you want to do?
                 </p>
                 <div className="flex flex-wrap w-full text-sm gap-4 bg-white pt-2 rounded-full">
@@ -197,20 +199,20 @@ export default function SignUp() {
               </>
             ) : (
               <>
-                <p className="text-base lg:text-lg 2xl:text-2xl font-semibold text-text-black mb-1">
+                <p className="text-base lg:text-lg 1xl:text-xl font-semibold text-text-black mb-1">
                   Grow Your Real Estate Business –{" "}
                   <span className="text-accent">
                     List Properties Online FREE!
                   </span>
                 </p>
-                <p className="text-sm lg:text-sm 2xl:text-lg text-text-gray">
+                <p className="text-sm 1xl:text-base text-text-gray">
                   Reach More Clients. Post multiple listings and get direct
                   inquiries from potential buyers & tenants.
                 </p>
               </>
             )}
 
-            <p className="text-sm lg:text-sm 2xl:text-lg font-semibold text-text-black mt-6">
+            <p className="text-sm lg:text-base 2xl:text-lg font-semibold text-text-black mt-6">
               Mobile Number
             </p>
             <p className="text-sm lg:text-sm 2xl:text-lg text-text-gray mb-2">
@@ -223,7 +225,7 @@ export default function SignUp() {
               <button
                 disabled={isPending}
                 onClick={handleContinue}
-                className="w-full md:w-[150px] animated-button px-12 py-3 border border-blue text-center cursor-pointer"
+                className="w-full md:w-[150px] text-sm 1xl:text-base animated-button px-12 py-3 border border-blue text-center cursor-pointer"
               >
                 <span className="gap-3 relative flex justify-center">
                   {!isPending ? (
@@ -233,7 +235,7 @@ export default function SignUp() {
                   )}
                 </span>
               </button>
-              <p className="text-sm lg:text-sm 2xl:text-lg text-text-gray">
+              <p className="text-sm 1xl:text-base text-text-gray">
                 Already have an account?{" "}
                 <span onClick={handleRedirectToLogin} className="text-sm lg:text-sm 2xl:text-lg font-semibold underline text-text-black cursor-pointer">
                   Login Here
