@@ -66,10 +66,9 @@ export default function CreateAccount({ step }: { step: number }) {
       [field]: "",
     }));
   }, []);
-
   const validateStep = useCallback(() => {
     const errors: FormErrors = {};
-
+    
     if (step === 1) {
       if (!formData.fullName.trim()) errors.fullName = "Full name is required";
       if (!formData.email.trim()) {
@@ -77,6 +76,7 @@ export default function CreateAccount({ step }: { step: number }) {
       } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
         errors.email = "Invalid email format";
       }
+      
       if (userData?.role == USER_TYPE.OWNER) {
         if (
           (Array.isArray(formData.city) && formData.city.length == 0) ||
@@ -105,7 +105,7 @@ export default function CreateAccount({ step }: { step: number }) {
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
-  }, [formData, step]);
+  }, [formData, step, userData,formErrors]);
 
   const handleNextStep = () => {
     if (validateStep()) {
