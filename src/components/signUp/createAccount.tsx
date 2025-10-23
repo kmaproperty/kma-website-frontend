@@ -125,7 +125,7 @@ export default function CreateAccount({ step }: { step: number }) {
       localStorage.setItem("user", JSON.stringify(response.user));
       dispatch(resetForm())
       toast.success(response.message)
-      router.push('/')
+      router.replace('/')
     },
     onError: (error: any) => {
       console.log("owner create error", error);

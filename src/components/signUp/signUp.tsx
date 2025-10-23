@@ -106,7 +106,7 @@ export default function SignUp() {
         ownerType: selectedPartnerType,
         ...(selectedPartnerType == USER_TYPE.OWNER ? {propertyIntent: propertyIntent,} : '')
       })
-      toast.success(response.otp, {autoClose: false})
+      toast.success(response.otp)
       router.push(`/verify-otp${params}`)
     },
     onError: (error: any) => {
@@ -132,8 +132,8 @@ export default function SignUp() {
   }
 
   useEffect(() => {
-    if(mobileNumber && code){
-      setMobileInput({...mobileInput, value: mobileNumber ?? '', code: code ?? ''})
+    if(mobileNumber){
+      setMobileInput({...mobileInput, value: mobileNumber ?? '', code: ''})
     }
     if(owner){
       setSelectedPartnerType(owner as UserType)

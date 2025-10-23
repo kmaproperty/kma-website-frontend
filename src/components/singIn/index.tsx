@@ -53,7 +53,8 @@ export default function SignIn() {
           // ownerType: selectedPartnerType,
           // ...(selectedPartnerType == USER_TYPE.OWNER ? {propertyIntent: propertyIntent,} : '')
         })
-        router.push(`${pathname}${params}`);
+        toast.success(response.otp)
+        router.replace(`${pathname}${params}`);
       },
       onError: (error: any) => {
         console.log('error', error)
@@ -83,7 +84,14 @@ export default function SignIn() {
   };
 
   const createAccountRedirect = () => {
-    router.push(`/signup`);
+    if(mobileInput.value){
+      const params = createURLSearchParam({
+        mobile: mobileInput.value
+      })
+      router.replace(`/signup${params}`, {});
+      return
+    }
+      router.replace(`/signup`, {});
   }
 
   const openPopup = React.useMemo(() => {

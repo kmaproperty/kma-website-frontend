@@ -46,7 +46,7 @@ export default function CreateAccountOtp() {
       const params = createURLSearchParam({
         ...(ownerType == USER_TYPE.OWNER ? {propertyIntent: propertyIntent,} : '')
       })
-      router.push(`/create-account${params}`)
+      router.replace(`/create-account${params}`)
     },
     onError: (error: any) => {
       console.log('otp error', error)
