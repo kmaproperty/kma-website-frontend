@@ -58,6 +58,7 @@ export default function Otp() {
       resendOtpApiHandler(payload),
     onSuccess: (res) => {
       console.log("Resent OTP:", res);
+      toast.success(res.otp)
     },
     onError: (err: any) => {
       console.error("Resend OTP Error:", err);
@@ -83,7 +84,7 @@ export default function Otp() {
       localStorage.setItem("accessToken", res.accessToken);
       localStorage.setItem("refreshToken", res.refreshToken);
       localStorage.setItem("user", JSON.stringify(res.user));
-      router.push("/");
+      router.replace("/");
       toast.success(res.message)
     },
     onError: (err: any) => {
@@ -122,8 +123,10 @@ const verifyOtp = (val: string) => {
     router.push(`${pathname}${params}`);
   };
 
-  // Timer Effect
   React.useEffect(() => {
+    if(!openPopup){
+      return
+    }
     if (otpTimer > 0) {
       const interval = setInterval(() => {
         setOtpTimer((prev) => prev - 1);
@@ -133,7 +136,7 @@ const verifyOtp = (val: string) => {
     }
 
     setIsEnableOtpResend(true);
-  }, [otpTimer]);
+  }, [otpTimer, openPopup]);
 
   const formattedTimer = otpTimer > 0
     ? `in 0:${otpTimer < 10 ? "0" + otpTimer : otpTimer}`
@@ -201,7 +204,7 @@ const verifyOtp = (val: string) => {
                 otpTimer > 0 ? "text-text-gray" : "text-blue"
               }`}
             >
-              Resend OTP <span className="text-text-black">{formattedTimer}</span>
+              Resend OTP <span className="text-text-black cursor-text">{formattedTimer}</span>
             </span>{" "}
             or{" "}
             <span

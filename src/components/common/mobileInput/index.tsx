@@ -120,8 +120,6 @@ export default function MobileInput({
     }
   };
 
-
-
   return (
     <div className="w-full">
       <div
@@ -132,7 +130,7 @@ export default function MobileInput({
         )}
       >
         <div className="px-2 flex items-center">
-          <Select
+          {/* <Select
             instanceId="country-select"
             options={countryOptions}
             value={selectedCountryCode}
@@ -141,7 +139,8 @@ export default function MobileInput({
             onChange={handleCountryChange}
             components={{ IndicatorSeparator: () => null }}
             isDisabled={disabled}
-          />
+          /> */}
+          <p className='w-[50px] pl-2 text-text-black'>+ 91</p>
         </div>
 
         <InputBase
