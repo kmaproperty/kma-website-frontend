@@ -65,3 +65,11 @@ body {
   box-shadow: 0 0 0 2px white; 
   font-family: var(--font-ibm-plex-sans);
 }
+
+
+.ql-toolbar.ql-snow {
+  border-radius: 10px 10px 0 0;
+}
+.ql-container.ql-snow {
+  border-radius: 0 0 10px 10px;
+}

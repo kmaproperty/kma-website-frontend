@@ -4,11 +4,19 @@ const nextConfig: NextConfig = {
   /* config options here */
   transpilePackages: ['mui-one-time-password-input'],
   eslint: {
-    ignoreDuringBuilds: true, // <-- skips ESLint on `next build`
+    ignoreDuringBuilds: true,
   },
   typescript: {
-    ignoreBuildErrors: true, // <-- skips TS errors on `next build`
+    ignoreBuildErrors: true,
   },
+   turbopack: {
+      rules: {
+        '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.tsx',
+      },
+      },
+    },
 };
 
 export default nextConfig;

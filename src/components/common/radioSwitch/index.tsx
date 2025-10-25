@@ -22,7 +22,7 @@ export default function RadioSwitch({
             ${
               checked
                 ? "bg-light-purple border-light-purple"
-                : "bg-transparent border-border rounded-full"
+                : "bg-transparent border-border"
             }
           `}
     >

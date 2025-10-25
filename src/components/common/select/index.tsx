@@ -1,11 +1,10 @@
 import React from "react";
-import AsyncSelect from "react-select/async";
+import Select from "react-select";
 import {
   StylesConfig,
   Props as ReactSelectProps,
   GroupBase,
   MultiValue,
-  SingleValue,
 } from "react-select";
 
 // OptionType restricted to string only
@@ -18,7 +17,6 @@ export interface DynamicAsyncSelectProps
   extends Partial<
     ReactSelectProps<OptionType, boolean, GroupBase<OptionType>>
   > {
-  loadOptions: (inputValue: string) => Promise<string[]>; // Only string[]
   isMulti?: boolean;
   isError?: boolean;
   placeholder?: React.ReactNode | string;
@@ -29,10 +27,9 @@ export interface DynamicAsyncSelectProps
   minHeight?: string | number
 }
 
-const DynamicAsyncSelect = ({
+const DynamicSelect = ({
   isMulti = false,
   placeholder = "Start typing...",
-  loadOptions,
   onChange,
   styles,
   value,
@@ -50,8 +47,8 @@ const DynamicAsyncSelect = ({
         borderColor: isError ? "#fb2c36" : "var(--color-border)",
       },
       minHeight: typeof minHeight === "number" ? `${minHeight}px` : minHeight,
-      paddingLeft: "1rem",
-      fontSize: "1rem",
+      paddingLeft: "0.5rem",
+      fontSize: "0.75rem",
     }),
     input: (base) => ({ ...base, paddingLeft: 0 }),
     placeholder: (base) => ({
@@ -59,10 +56,11 @@ const DynamicAsyncSelect = ({
       color: "var(--color-text-gray)",
     }),
     indicatorSeparator: () => ({ display: "none" }),
-    dropdownIndicator: (base) => ({
+    indicatorsContainer: (base) => ({
       ...base,
-      paddingRight: "1rem",
       color: "var(--color-text-gray)",
+      height: '30px',
+      alignContent: 'center'
     }),
     menu: (base) => ({
       ...base,
@@ -73,13 +71,11 @@ const DynamicAsyncSelect = ({
     option: (base, state) => ({
       ...base,
       backgroundColor: state.isSelected
-        ? "var(--color-light-purple)"
+        ? "var(--color-blue)"
         : state.isFocused
         ? "var(--color-light-purple)"
         : "white",
-      color: state.isSelected
-        ? "var(--color-light-purple)"
-        : "var(--color-blue)",
+      color: state.isSelected ? "var(--color-white)" : "var(--color-blue)",
       cursor: "pointer",
       ":active": {
         ...base[":active"],
@@ -89,46 +85,14 @@ const DynamicAsyncSelect = ({
         color: "white",
       },
     }),
-    multiValue: (base) => ({
-      ...base,
-      backgroundColor: "var(--color-light-purple)",
-      borderRadius: "5px",
-    }),
-    multiValueLabel: (base) => ({
-      ...base,
-      color: "var(--color-text-black)",
-      padding: "2px 6px",
-    }),
-    multiValueRemove: (base) => ({
-      ...base,
-      color: "var(--color-text-black)",
-      cursor: "pointer",
-      padding: "2px",
-      borderRadius: "9999px",
-      transition: "all 0.2s ease",
-      ":hover": {
-        backgroundColor: "var(--color-light-purple)",
-      },
-    }),
-  };
-
-  // Always normalize string[] into OptionType[]
-  const normalizedLoadOptions = async (
-    inputValue: string
-  ): Promise<OptionType[]> => {
-    const result = await loadOptions(inputValue);
-    return result.map((item) => ({
-      value: item,
-      label: item,
-    }));
   };
 
   return (
     <div className="w-full">
-    <AsyncSelect<OptionType, boolean>
+    <Select<OptionType, boolean>
       isMulti={isMulti}
       placeholder={placeholder}
-      loadOptions={normalizedLoadOptions}
+      options={[{label: 'Living Room', value: 'Living Room'}, {label: 'Servent Room', value: 'Servent Room'},{label: 'Pooja Room', value: 'Pooja Room'},{label: 'Bedroom', value: 'Bedroom'}]}
       styles={styles || defaultStyles}
       onChange={onChange}
       value={value}
@@ -138,4 +102,4 @@ const DynamicAsyncSelect = ({
   );
 };
 
-export default DynamicAsyncSelect;
+export default DynamicSelect;
