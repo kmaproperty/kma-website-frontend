@@ -107,6 +107,7 @@ export default function MobileInput({
     const input = e.target.value;
     const isOnlyDigits = /^\d*$/.test(input);
     if (!isOnlyDigits) return;
+    if (input.length > 10) return;
     if (onChange) {
       onChange(input, countryCode);
     }
