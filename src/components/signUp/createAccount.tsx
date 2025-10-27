@@ -206,6 +206,14 @@ export default function CreateAccount({ step }: { step: number }) {
       router.push(`${pathname}${params}`);
     }
 
+    
+  const handleRedirectCode = () => {
+    const params = createURLSearchParam({
+        isContactInformation: true
+      })
+      router.push(`${pathname}${params}`);
+  }
+
   useEffect(() => {
     let user = localStorage.getItem("user");
     const userData: User = user ? JSON.parse(user) : null;
@@ -433,7 +441,7 @@ export default function CreateAccount({ step }: { step: number }) {
                 {userData?.role == USER_TYPE.CHANNEL_PARTNER && step == 1 && (
                   <p className="text-sm 1xl:text-base text-text-gray">
                     Channel partner code{" "}
-                    <span className="text-sm 1xl:text-base font-semibold underline text-text-black cursor-pointer">
+                    <span onClick={handleRedirectCode} className="text-sm 1xl:text-base font-semibold underline text-text-black cursor-pointer">
                       Click Here
                     </span>{" "}
                     to get help from our support team.
