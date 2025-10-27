@@ -3,7 +3,7 @@ import { InputBase } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
 import { OptionType } from "../common/asyncSelect";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { PROPERTY_TYPE, USER_TYPE } from "@/lib/enums";
+import { LIST_TYPE, USER_TYPE } from "@/lib/enums";
 import {
   createChannelPartnerApiHandler,
   CreateChannelPartnerPayload,
@@ -16,7 +16,7 @@ import AsyncSelectDropdown from "../common/asyncSelect";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { CitiesResponse, getCityApiHandler } from "@/services/masterService";
 import { MultiValue } from "react-select";
-import { PropertyType } from "@/types/user";
+import { ListType } from "@/types/user";
 import { useDispatch, useSelector } from "react-redux";
 import { resetForm, setFormField } from "@/store/createAccountSlice";
 import { RootState } from "@/store/store";
@@ -166,7 +166,7 @@ export default function CreateAccount({ step }: { step: number }) {
         const payload = {
           name: formData.fullName,
           email: formData.email,
-          intent: (propertyIntent ?? PROPERTY_TYPE.SELL) as PropertyType,
+          intent: (propertyIntent ?? LIST_TYPE.SELL) as ListType,
           phone: userData.phone,
         };
         handleOwnerCreate(payload);
@@ -185,7 +185,7 @@ export default function CreateAccount({ step }: { step: number }) {
             ? formData.city.map((item) => item.value).join("")
             : "",
           aboutYourSelf: formData.about,
-          intent: (propertyIntent ?? PROPERTY_TYPE.SELL) as PropertyType,
+          intent: (propertyIntent ?? LIST_TYPE.SELL) as ListType,
           phone: userData?.phone ?? "",
         };
         handleChannelPartnerCreate(payload);

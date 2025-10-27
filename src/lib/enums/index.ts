@@ -1,12 +1,214 @@
+import ApartmentIcon from "@/assets/apartment-transparent.svg";
+import IndependentHouse from "@/assets/independent-house-transparent.svg";
+import Duplex from "@/assets/duplex-transparent.svg";
+import IndependentFloor from "@/assets/independent-floor-transparent.svg";
+import Villa from "@/assets/villa-transparent.svg";
+import Penthouse from "@/assets/penthouse-transparent.svg";
+import Studio from "@/assets/studio-transparent.svg";
+import FarmHouse from "@/assets/farm-house-transparent.svg";
+
 export const USER_TYPE = {
   OWNER: "OWNER",
   CHANNEL_PARTNER: "CHANNEL_PARTNER",
   ADMIN: "ADMIN",
 } as const
 
-export const PROPERTY_TYPE = {
+export const LIST_TYPE = {
     SELL: 'SELL',
     RENT: 'RENT'
 } as const
+
+export const PROPERTY_CATEGORY = {
+    COMMERCIAL: 'COMMERCIAL',
+    RESIDENTIAL: 'RESIDENTIAL'
+} as const
+
+export const POSSESION_STATUS = {
+  READY_TO_MOVE: 'READY TO MOVE',
+  UNDER_CONSTRUCTION: 'UNDER CONSTRUCTION'
+} as const
+
+export const RESIDENTIAL_PROPERTY_TYPE = [
+  {
+    label: 'Apartment/Flat',
+    value: '',
+    icon: ApartmentIcon
+  },
+  {
+    label: 'Independent House',
+    value: '',
+    icon: IndependentHouse
+  },
+  {
+    label: 'Duplex',
+    value: '',
+    icon: Duplex
+  },
+  {
+    label: 'Independent Floor',
+    value: '',
+    icon: IndependentFloor
+  },
+  {
+    label: 'Villa',
+    value: '',
+    icon: Villa
+  },
+  {
+    label: 'Penthouse',
+    value: '',
+    icon: Penthouse
+  },
+  {
+    label: 'Studio',
+    value: '',
+    icon: Studio
+  },
+  {
+    label: 'Farm House',
+    value: '',
+    icon: FarmHouse
+  },
+] as const
+
+export const COMMERCIAL_PROPERTY_TYPE = [
+  {
+    label: 'Office',
+    value: '',
+    icon: ApartmentIcon
+  },
+  {
+    label: 'Retail Shop',
+    value: '',
+    icon: IndependentHouse
+  },
+  {
+    label: 'Showroom',
+    value: '',
+    icon: Duplex
+  },
+  {
+    label: 'Warehouse',
+    value: '',
+    icon: IndependentFloor
+  },
+  {
+    label: 'Plot',
+    value: '',
+    icon: Villa
+  },
+  {
+    label: 'Others',
+    value: '',
+    icon: Penthouse
+  }
+] as const
+
+export const ZONE_TYPE = [
+  {
+    label: 'Industrial',
+    value: 'Industrial'
+  },
+  {
+    label: 'Commercial',
+    value: 'Commercial'
+  },
+  {
+    label: 'Open Spaces',
+    value: 'Open Spaces'
+  },
+  {
+    label: 'Residential',
+    value: 'Residential'
+  },
+  {
+    label: 'Special economic zone',
+    value: 'Special economic zone'
+  },
+  {
+    label: 'Agricultural zone',
+    value: 'Agricultural zone'
+  },
+  {
+    label: 'Others',
+    value: 'Others'
+  },
+] as const
+
+export const PROPERTY_CONDITION = [
+  {
+    label: 'Ready to use',
+    value: 'Ready to use',
+  },
+  {
+    label: 'Bare shell',
+    value: 'Bare shell',
+  },
+] as const
+
+export const OWNERSHIP = [
+  {
+    label: 'Freehold',
+    value: 'Freehold',
+  },
+  {
+    label: 'Leasehold',
+    value: 'Leasehold',
+  },
+  {
+    label: 'Cooperative society',
+    value: 'Cooperative society',
+  },
+  {
+    label: 'Power of Attorney',
+    value: 'Power of Attorney',
+  },
+] as const
+
+export const CONSTRUCTION_STATUS = [
+  {
+    label: 'No walls',
+    value: 'No walls',
+  },
+  {
+    label: 'Brick walls',
+    value: 'Brick walls',
+  },
+  {
+    label: 'Cemented walls',
+    value: 'Cemented walls',
+  },
+  {
+    label: 'Plastered walls',
+    value: 'Plastered walls',
+  },
+] as const
+
+export const FLOORING_STATUS = [
+  {
+    label: 'Marble',
+    value: 'Marble',
+  },
+  {
+    label: 'Concrete',
+    value: 'Concrete',
+  },
+  {
+    label: 'Granite',
+    value: 'Granite',
+  },
+  {
+    label: 'Ceramic',
+    value: 'Ceramic',
+  },
+  {
+    label: 'Cement',
+    value: 'Cement',
+  },
+  {
+    label: 'Others',
+    value: 'Others',
+  }
+] as const
 
 export const OTP_RESEND_TIME = 30

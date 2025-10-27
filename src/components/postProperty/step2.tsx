@@ -128,7 +128,7 @@ export default function Step2() {
             onChagne={() => {}}
             value={1}
             isIcon={false}
-            containerStyle="flex flex-1 justify-center gap-2 min-w-[150px]"
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[150px]"
           />
           <ChipTag
             checked={true}
@@ -136,7 +136,7 @@ export default function Step2() {
             onChagne={() => {}}
             value={1}
             isIcon={false}
-            containerStyle="flex flex-1 justify-center gap-2 min-w-[150px]"
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[150px]"
           />
           <ChipTag
             checked={false}
@@ -144,7 +144,7 @@ export default function Step2() {
             onChagne={() => {}}
             value={1}
             isIcon={false}
-            containerStyle="flex flex-1 justify-center gap-2 min-w-[150px]"
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[150px]"
           />
         </div>
       </div>
@@ -158,7 +158,7 @@ export default function Step2() {
             onChagne={() => {}}
             value={1}
             isIcon={false}
-            containerStyle="flex flex-1 justify-center gap-2 min-w-[150px]"
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[150px]"
           />
           <ChipTag
             checked={true}
@@ -166,7 +166,7 @@ export default function Step2() {
             onChagne={() => {}}
             value={1}
             isIcon={false}
-            containerStyle="flex flex-1 justify-center gap-2 min-w-[150px]"
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[150px]"
           />
           <ChipTag
             checked={false}
@@ -174,7 +174,7 @@ export default function Step2() {
             onChagne={() => {}}
             value={1}
             isIcon={false}
-            containerStyle="flex flex-1 justify-center gap-2 min-w-[150px]"
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[150px]"
           />
         </div>
       </div>
@@ -187,7 +187,7 @@ export default function Step2() {
             onChagne={() => {}}
             value={1}
             isIcon={false}
-            containerStyle="flex flex-1 justify-center gap-2 min-w-[150px]"
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[150px]"
           />
           <ChipTag
             checked={true}
@@ -195,7 +195,7 @@ export default function Step2() {
             onChagne={() => {}}
             value={1}
             isIcon={false}
-            containerStyle="flex flex-1 justify-center gap-2 min-w-[150px]"
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[150px]"
           />
         </div>
       </div>
@@ -233,7 +233,7 @@ export default function Step2() {
             onChagne={() => {}}
             value={1}
             isIcon={false}
-            containerStyle="flex flex-1 justify-center gap-2 min-w-[150px]"
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[150px]"
           />
           <ChipTag
             checked={true}
@@ -241,7 +241,7 @@ export default function Step2() {
             onChagne={() => {}}
             value={1}
             isIcon={false}
-            containerStyle="flex flex-1 justify-center gap-2 min-w-[150px]"
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[150px]"
           />
         </div>
         <DynamicInput placeHolder="Maintenance Charges"/>
@@ -256,7 +256,7 @@ export default function Step2() {
             onChagne={() => {}}
             value={1}
             isIcon={false}
-            containerStyle="flex flex-1 justify-center gap-2 min-w-[100px] 2md:min-w-[150px]"
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[100px] 2md:min-w-[150px]"
           />
           <ChipTag
             checked={true}
@@ -264,7 +264,7 @@ export default function Step2() {
             onChagne={() => {}}
             value={1}
             isIcon={false}
-            containerStyle="flex flex-1 justify-center gap-2 min-w-[100px] 2md:min-w-[150px]"
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[100px] 2md:min-w-[150px]"
           />
           <ChipTag
             checked={true}
@@ -272,7 +272,7 @@ export default function Step2() {
             onChagne={() => {}}
             value={1}
             isIcon={false}
-            containerStyle="flex flex-1 justify-center gap-2 min-w-[100px] 2md:min-w-[150px]"
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[100px] 2md:min-w-[150px]"
           />
           <ChipTag
             checked={true}
@@ -296,7 +296,7 @@ export default function Step2() {
             onChagne={() => {}}
             value={1}
             isIcon={false}
-            containerStyle="flex flex-1 justify-center gap-2 min-w-[100px] 2md:min-w-[150px]"
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[100px] 2md:min-w-[150px]"
           />
           <ChipTag
             checked={true}
@@ -304,7 +304,7 @@ export default function Step2() {
             onChagne={() => {}}
             value={1}
             isIcon={false}
-            containerStyle="flex flex-1 justify-center gap-2 min-w-[100px] 2md:min-w-[150px]"
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[100px] 2md:min-w-[150px]"
           />
           <ChipTag
             checked={true}
@@ -312,7 +312,7 @@ export default function Step2() {
             onChagne={() => {}}
             value={1}
             isIcon={false}
-            containerStyle="flex flex-1 justify-center gap-2 min-w-[100px] 2md:min-w-[150px]"
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[100px] 2md:min-w-[150px]"
           />
           <ChipTag
             checked={true}
@@ -320,7 +320,7 @@ export default function Step2() {
             onChagne={() => {}}
             value={1}
             isIcon={false}
-            containerStyle="flex flex-1 justify-center gap-2 min-w-[100px] 2md:min-w-[150px]"
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[100px] 2md:min-w-[150px]"
           />
         </div>
         <InputBase
@@ -347,7 +347,7 @@ export default function Step2() {
             onChagne={() => {}}
             value={1}
             isIcon={false}
-            containerStyle="flex flex-1 justify-center gap-2 min-w-[100px] 2md:min-w-[150px]"
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[100px] 2md:min-w-[150px]"
           />
           <ChipTag
             checked={true}
@@ -355,7 +355,7 @@ export default function Step2() {
             onChagne={() => {}}
             value={1}
             isIcon={false}
-            containerStyle="flex flex-1 justify-center gap-2 min-w-[100px] 2md:min-w-[150px]"
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[100px] 2md:min-w-[150px]"
           />
         </div>  
         

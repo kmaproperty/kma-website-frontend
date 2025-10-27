@@ -1,11 +1,11 @@
-import Image from "next/image";
 import ChipTag from "../common/chipTag";
 import FieldLabel from "./fieldLabel";
 import AmenitiesCard from "../common/amenities";
 import Amenities from "./amenities";
 import CustomCheckbox from "../common/checkbox";
-import QuillEditor from "../common/editor";
+const QuillEditor = dynamic(() => import("../common/editor"), { ssr: false });
 import { useState } from "react";
+import dynamic from "next/dynamic";
 
 export default function Step3() {
     const [popupOpen, setPopupOpen] = useState(false)
@@ -68,7 +68,7 @@ export default function Step3() {
             onChagne={() => {}}
             value={1}
             isIcon={false}
-            containerStyle="flex flex-1 justify-center gap-2 min-w-[150px]"
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[150px]"
           />
           <ChipTag
             checked={true}
@@ -76,7 +76,7 @@ export default function Step3() {
             onChagne={() => {}}
             value={1}
             isIcon={false}
-            containerStyle="flex flex-1 justify-center gap-2 min-w-[150px]"
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[150px]"
           />
           <ChipTag
             checked={false}
@@ -84,7 +84,7 @@ export default function Step3() {
             onChagne={() => {}}
             value={1}
             isIcon={false}
-            containerStyle="flex flex-1 justify-center gap-2 min-w-[150px]"
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[150px]"
           />
           <ChipTag
             checked={false}
@@ -92,7 +92,7 @@ export default function Step3() {
             onChagne={() => {}}
             value={1}
             isIcon={false}
-            containerStyle="flex flex-1 justify-center gap-2 min-w-[150px]"
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[150px]"
           />
         </div>
       </div>
@@ -137,7 +137,7 @@ export default function Step3() {
             onChagne={() => {}}
             value={1}
             isIcon={false}
-            containerStyle="flex flex-1 justify-center gap-2 min-w-[150px]"
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[150px]"
           />
           <ChipTag
             checked={true}
@@ -145,7 +145,7 @@ export default function Step3() {
             onChagne={() => {}}
             value={1}
             isIcon={false}
-            containerStyle="flex flex-1 justify-center gap-2 min-w-[150px]"
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[150px]"
           />
         </div>
       </div>
