@@ -5,8 +5,8 @@ import RadioSwitch from "../common/radioSwitch";
 
 import { useEffect, useState } from "react";
 import Spinner from "../common/spinner";
-import { PropertyType, UserType } from "@/types/user";
-import { PROPERTY_TYPE, USER_TYPE } from "@/lib/enums";
+import { ListType, UserType } from "@/types/user";
+import { LIST_TYPE, USER_TYPE } from "@/lib/enums";
 import { useMutation } from "@tanstack/react-query";
 import {
   OtpPayload,
@@ -25,7 +25,7 @@ interface OptionType {
 }
 
 interface PropertyoptionType {
-  value: PropertyType;
+  value: ListType;
   label: string;
 }
 
@@ -49,11 +49,11 @@ const partnerType: OptionType[] = [
 
 const propertyType: PropertyoptionType[] = [
   {
-    value: PROPERTY_TYPE.SELL,
+    value: LIST_TYPE.SELL,
     label: "I want to Sell",
   },
   {
-    value: PROPERTY_TYPE.RENT,
+    value: LIST_TYPE.RENT,
     label: "I want to Rent",
   },
 ];
@@ -73,16 +73,16 @@ export default function SignUp() {
     USER_TYPE.OWNER
   );
   const [propertyIntent, setPropertyIntent] =
-    useState<PropertyType>(PROPERTY_TYPE.SELL);
+    useState<ListType>(LIST_TYPE.SELL);
 
   const [mobileInput, setMobileInput] = useState<MobileInput>({value: '', validationMessage: '', code: '+91'})
 
   const handlePartnerChange = (value: UserType) => {
     setSelectedPartnerType(value);
-    setPropertyIntent(PROPERTY_TYPE.SELL);
+    setPropertyIntent(LIST_TYPE.SELL);
   };
 
-  const handlePropertyChange = (value: PropertyType) => {
+  const handlePropertyChange = (value: ListType) => {
     setPropertyIntent(value);
   };
 
@@ -139,7 +139,7 @@ export default function SignUp() {
       setSelectedPartnerType(owner as UserType)
     }
     if(owner == USER_TYPE.OWNER){
-      setPropertyIntent(intent as PropertyType)
+      setPropertyIntent(intent as ListType)
     }
     localStorage.clear()
   }, [mobileNumber, code, owner, intent]) 

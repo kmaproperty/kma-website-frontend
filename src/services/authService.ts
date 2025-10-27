@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { axiosInstance } from "./axiosService";
-import { PropertyType, UserType } from "@/types/user";
+import { ListType, UserType } from "@/types/user";
 
 export interface OtpPayload {
     phone: string;
@@ -83,7 +83,7 @@ export interface CreateOwnerPayload {
     name: string;
     email: string;
     phone: string;
-    intent: PropertyType
+    intent: ListType
 }
 
 export interface CreateOwnerResponse {
@@ -115,7 +115,7 @@ export interface CreateChannelPartnerPayload {
     businessSince: string;
     cities: string;
     aboutYourSelf: string;
-    intent: PropertyType
+    intent: ListType
 }
 
 export const createChannelPartnerApiHandler = async (payload: CreateChannelPartnerPayload) : Promise<CreateOwnerResponse> => {
