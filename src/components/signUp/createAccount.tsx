@@ -157,6 +157,13 @@ export default function CreateAccount({ step }: { step: number }) {
     },
     onError: (error: any) => {
       console.log("owner create error", error);
+      if(Array.isArray(error.message)){
+        error.message.map((item: string) => {
+          toast.error(item)
+        })
+      }else{
+        toast.error(error.message)
+      }
     },
   });
 
@@ -205,6 +212,14 @@ export default function CreateAccount({ step }: { step: number }) {
       })
       router.push(`${pathname}${params}`);
     }
+
+    
+  const handleRedirectCode = () => {
+    const params = createURLSearchParam({
+        isContactInformation: true
+      })
+      router.push(`${pathname}${params}`);
+  }
 
   useEffect(() => {
     let user = localStorage.getItem("user");
@@ -433,7 +448,7 @@ export default function CreateAccount({ step }: { step: number }) {
                 {userData?.role == USER_TYPE.CHANNEL_PARTNER && step == 1 && (
                   <p className="text-sm 1xl:text-base text-text-gray">
                     Channel partner code{" "}
-                    <span className="text-sm 1xl:text-base font-semibold underline text-text-black cursor-pointer">
+                    <span onClick={handleRedirectCode} className="text-sm 1xl:text-base font-semibold underline text-text-black cursor-pointer">
                       Click Here
                     </span>{" "}
                     to get help from our support team.

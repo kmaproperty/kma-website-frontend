@@ -75,10 +75,25 @@ export default function ContactInformation() {
         setErrors({...errors, phone: msg})
       }
 
+    const resetForm = () => {
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: {code: '+91', value: ''},
+        about: "",
+      })
+    }
    const handleClose: DialogProps["onClose"] = (event, reason) => {
       if (reason === "backdropClick" || reason === "escapeKeyDown") return;
+       resetForm()
        router.push(`${pathname}`);
     };
+
+  const handleDirectClose = () => {
+       resetForm()
+       router.push(`${pathname}`);
+  }
 
   const openPopup = React.useMemo(() => {
       return isContactInformation == 'true' ? true : false
@@ -93,13 +108,13 @@ export default function ContactInformation() {
       },
       onSuccess: (response: ContactDetailsResponse) => {
         console.log('response', response)
-        debugger
         toast.success(response.message)
+        resetForm()
         router.push(`${pathname}`);
       },
       onError: (error: any) => {
         if(Array.isArray(error.message)){
-          error.messge.map((item: string) => {
+          error.message.map((item: string) => {
             toast.success(item)
           })
         }else{
@@ -115,7 +130,7 @@ export default function ContactInformation() {
           lastName: formData.lastName,
           phoneNumber: formData.phone.value,
           message: formData.about, 
-          email: formData.email,
+         ...(formData.email ? { email: formData.email} : {})
         }
         submitContactDetails(payload)
     }
@@ -153,7 +168,7 @@ export default function ContactInformation() {
       >
         <DialogContent sx={{ padding: "0px" }}>
           
-          <div className="grid md:grid-cols-[40%_60%] grid-cols-1 h-full w-full p-2.5">
+          <div className="grid md:grid-cols-[35%_65%] grid-cols-1 h-full w-full p-2.5">
             {/* Left Side: Contact Info */}
             <div className="bg-blue text-white p-8 relative rounded-xl z-10">
               <h2 className="text-xl 2xl:text-2xl font-semibold mb-2">
@@ -164,7 +179,6 @@ export default function ContactInformation() {
               </p>
 
               <div className="space-y-6 z-10 relative">
-                {/* Content stays in z-10 */}
                 <div className="flex items-center gap-4">
                   <div className="rounded-full border border-white p-2">
                     <Image
@@ -174,7 +188,7 @@ export default function ContactInformation() {
                       height={20}
                     />
                   </div>
-                  <p className="text-base">+00 (123) 456 789 012</p>
+                  <p className="text-sm">+00 (123) 456 789 012</p>
                 </div>
 
                 <div className="flex items-center gap-4">
@@ -186,7 +200,7 @@ export default function ContactInformation() {
                       height={20}
                     />
                   </div>
-                  <p className="text-base">infomail123@domain.com</p>
+                  <p className="text-sm">infomail123@domain.com</p>
                 </div>
 
                 <div className="flex items-center gap-4">
@@ -198,15 +212,15 @@ export default function ContactInformation() {
                       height={29}
                     />
                   </div>
-                  <p className="text-base">
+                  <p className="text-sm">
                     West 2nd lane, Inner circular road, New York City
                   </p>
                 </div>
               </div>
-              <div className="absolute top-4 right-3 flex w-full md:hidden justify-end ">
+              <div onClick={handleDirectClose} className="absolute top-4 right-3 flex w-full md:hidden justify-end ">
                 <Image src='/assets/close-icon-white.svg' alt='close' width={24} height={24} className="cursor-pointer"/>
               </div>
-              {/* Background Circles (z-0) */}
+              
               <div className="absolute bottom-[8%] right-[13%] w-28 h-28 z-1">
                 <Image
                   alt="round-ring"
@@ -229,7 +243,7 @@ export default function ContactInformation() {
 
             {/* Right Side: Form */}
             <div className="bg-white pl-4 pr-2">
-              <div className="hidden w-full md:flex justify-end">
+              <div onClick={handleDirectClose} className="hidden w-full md:flex justify-end">
               <Image src='/assets/close-icon.svg' alt='close' width={24} height={24} className="cursor-pointer"/>
               </div>
               <div className="space-y-4">
@@ -240,7 +254,7 @@ export default function ContactInformation() {
                     </p>
                     <div>
                     <InputBase
-                      placeholder="Enter your name"
+                      placeholder="Enter first name"
                       fullWidth
                       className={dynamicClass(errors.firstName)}
                       // className="box-border h-[47.81px] px-4 py-2 text-text-gray text-sm rounded-full border border-border focus:outline-none focus:border-blue"
@@ -263,7 +277,7 @@ export default function ContactInformation() {
                     </p>
                     <div>
                     <InputBase
-                      placeholder="Enter your name"
+                      placeholder="Enter last name"
                       fullWidth
                       className={dynamicClass(errors.lastName)}
                       // className="box-border h-[47.81px] px-4 py-2 text-text-gray text-sm rounded-full border border-border focus:outline-none focus:border-blue"
@@ -310,7 +324,7 @@ export default function ContactInformation() {
                     <p className="required-label text-sm lg:text-base 2xl:text-lg text-text-black pb-2">
                       Phone Number
                     </p>
-                    <MobileInput required={true} validationMessage={errors.phone} value={formData.phone.value} countryCode={formData.phone.code} onChange={handleMobileInputChange}/>
+                    <MobileInput placeHolder="Enter mobile number" required={true} validationMessage={errors.phone} value={formData.phone.value} countryCode={formData.phone.code} onChange={handleMobileInputChange}/>
                   </div>
                 </div>
 
