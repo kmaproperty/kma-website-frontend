@@ -157,6 +157,13 @@ export default function CreateAccount({ step }: { step: number }) {
     },
     onError: (error: any) => {
       console.log("owner create error", error);
+      if(Array.isArray(error.message)){
+        error.message.map((item: string) => {
+          toast.error(item)
+        })
+      }else{
+        toast.error(error.message)
+      }
     },
   });
 
