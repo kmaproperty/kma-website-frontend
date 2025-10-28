@@ -10,7 +10,7 @@ import { PROPERTY_TYPE, USER_TYPE } from "@/lib/enums";
 import { useMutation } from "@tanstack/react-query";
 import {
   OtpPayload,
-  sendOtpApiHandler,
+  sendSignUpOtpApiHandler,
   SendOtpResponse,
 } from "@/services/authService";
 import { mobileNumberValidator } from "@/lib/commonValidator";
@@ -79,6 +79,7 @@ export default function SignUp() {
 
   const handlePartnerChange = (value: UserType) => {
     setSelectedPartnerType(value);
+    setMobileInput({...mobileInput, value: ''})
     setPropertyIntent(PROPERTY_TYPE.SELL);
   };
 
@@ -96,7 +97,7 @@ export default function SignUp() {
     isPending,
   } = useMutation({
     mutationFn: async (payload: OtpPayload): Promise<SendOtpResponse> => {
-      return await sendOtpApiHandler(payload);
+      return await sendSignUpOtpApiHandler(payload);
     },
     onSuccess: (response: SendOtpResponse) => {
       console.log('response', response)
