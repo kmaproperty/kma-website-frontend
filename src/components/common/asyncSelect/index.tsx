@@ -132,6 +132,10 @@ const DynamicAsyncSelect = ({
       styles={styles || defaultStyles}
       onChange={onChange}
       value={value}
+      components={{
+        DropdownIndicator: () => null,
+        IndicatorSeparator: () => null,
+      }}
       {...rest}
     />
     </div>
