@@ -13,12 +13,27 @@ export interface SendOtpResponse {
 }
 
 
-export const sendOtpApiHandler = async (
+export const sendSignUpOtpApiHandler = async (
   payload: OtpPayload
 ): Promise<SendOtpResponse> => {
   try {
     const response = await axiosInstance.post<SendOtpResponse>(
-      "/users/send-otp",
+      "users/signup/send-otp",
+      payload
+    );
+
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data ?? error;
+  }
+};
+
+export const sendSignInOtpApiHandler = async (
+  payload: OtpPayload
+): Promise<SendOtpResponse> => {
+  try {
+    const response = await axiosInstance.post<SendOtpResponse>(
+      "users/login/send-otp",
       payload
     );
 

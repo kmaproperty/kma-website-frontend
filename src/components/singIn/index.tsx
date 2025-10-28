@@ -10,7 +10,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { mobileNumberValidator } from "@/lib/commonValidator";
 import { useMutation } from "@tanstack/react-query";
-import { OtpPayload, sendOtpApiHandler, SendOtpResponse } from "@/services/authService";
+import { OtpPayload, sendSignInOtpApiHandler, SendOtpResponse } from "@/services/authService";
 import { createURLSearchParam } from "@/lib/helper";
 import { toast } from "react-toastify";
 
@@ -42,7 +42,7 @@ export default function SignIn() {
       isPending,
     } = useMutation({
       mutationFn: async (payload: OtpPayload): Promise<SendOtpResponse> => {
-        return await sendOtpApiHandler(payload);
+        return await sendSignInOtpApiHandler(payload);
       },
       onSuccess: (response: SendOtpResponse) => {
         console.log('response', response)
