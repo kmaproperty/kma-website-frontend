@@ -69,7 +69,7 @@ export default function Step1() {
       </p>
 
       <div>
-        <FieldLabel label="Property Listing For *" />
+        <FieldLabel label="Property Listing For"  required={true}/>
         <div className="flex flex-wrap gap-3 pt-2">
           <ChipTag
             checked={true}
@@ -93,7 +93,7 @@ export default function Step1() {
       </div>
 
       <div>
-        <FieldLabel label="Property Category *" />
+        <FieldLabel label="Property Category" required={true}/>
         <div className="flex flex-wrap gap-3 pt-2">
           <ChipTag
             checked={false}
@@ -117,7 +117,7 @@ export default function Step1() {
       </div>
 
       <div>
-        <FieldLabel label="City *" customClass="pb-2" />
+        <FieldLabel label="City" customClass="pb-2" required={true}/>
         <DynamicAsyncSelect
           isMulti={false}
           isError={false}
@@ -133,6 +133,7 @@ export default function Step1() {
         <FieldLabel
           label="Building / Apartment / Society Name:"
           customClass="pb-2"
+          required={true}
         />
         <DynamicAsyncSelect
           isMulti={false}
@@ -146,7 +147,7 @@ export default function Step1() {
       </div>
 
       <div>
-        <FieldLabel label="Locality / Sector *" customClass="pb-2" />
+        <FieldLabel label="Locality / Sector" customClass="pb-2" required={true}/>
         <DynamicAsyncSelect
           isMulti={false}
           isError={false}
@@ -159,7 +160,7 @@ export default function Step1() {
       </div>
 
       <div>
-        <FieldLabel label="Property Type" customClass="pb-2" />
+        <FieldLabel label="Property Type" customClass="pb-2" required={true}/>
         <div className="flex flex-wrap gap-3">
           {propertyType.map((item, index) => {
             return (
@@ -179,7 +180,7 @@ export default function Step1() {
       </div>
 
       <div>
-        <FieldLabel label="Rooms / BHK *" />
+        <FieldLabel label="Rooms / BHK" required={true}/>
         <div className="flex flex-wrap gap-3 pt-2">
           <ChipTag
             checked={true}
@@ -250,17 +251,17 @@ export default function Step1() {
       </div>
 
       <div>
-        <FieldLabel label="Built Up Area *" customClass="pb-2"/>
+        <FieldLabel label="Built Up Area" customClass="pb-2" required={true}/>
         <DynamicInput placeHolder='600 Sq. Ft.'/>
       </div>
 
       <div>
-        <FieldLabel label="Carpet Area" customClass="pb-2"/>
+        <FieldLabel label="Carpet Area" customClass="pb-2" required={true}/>
         <DynamicInput placeHolder='600 Sq. Ft.'/>
       </div>
 
       <div>
-          <FieldLabel label="Carpet Area" customClass="pb-2"/>
+          <FieldLabel label="Carpet Area" customClass="pb-2" required={true}/>
           <InputBase
             placeholder="14"
             fullWidth
@@ -272,7 +273,7 @@ export default function Step1() {
       </div> 
 
       <div>
-        <FieldLabel label="OwnerShip *" />
+        <FieldLabel label="OwnerShip" required={true}/>
         <div className="flex flex-wrap gap-3 pt-2">
           <ChipTag
             checked={true}
@@ -310,7 +311,7 @@ export default function Step1() {
       </div>
 
       <div>
-        <FieldLabel label="Bathrooms *" />
+        <FieldLabel label="Bathrooms" required={true}/>
         <div className="flex flex-wrap gap-3 pt-2">
           <ChipTag
             checked={true}
@@ -364,7 +365,61 @@ export default function Step1() {
       </div>
 
       <div>
-        <FieldLabel label="Balconies *" />
+        <FieldLabel label="Bedroom" required={true}/>
+        <div className="flex flex-wrap gap-3 pt-2">
+          <ChipTag
+            checked={true}
+            label="1"
+            onChagne={() => {}}
+            value={1}
+            isIcon={false}
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[80px]"
+          />
+          <ChipTag
+            checked={false}
+            label="2"
+            onChagne={() => {}}
+            value={1}
+            isIcon={false}
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[80px]"
+          />
+          <ChipTag
+            checked={false}
+            label="3"
+            onChagne={() => {}}
+            value={1}
+            isIcon={false}
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[80px]"
+          />
+          <ChipTag
+            checked={false}
+            label="4"
+            onChagne={() => {}}
+            value={1}
+           isIcon={false}
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[80px]"
+          />
+           <ChipTag
+            checked={false}
+            label="5"
+            onChagne={() => {}}
+            value={1}
+           isIcon={false}
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[80px]"
+          />
+           <ChipTag
+            checked={false}
+            label="6"
+            onChagne={() => {}}
+            value={1}
+           isIcon={false}
+            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[80px]"
+          />
+        </div>
+      </div>
+
+      <div>
+        <FieldLabel label="Balconies" required={true}/>
         <div className="flex flex-wrap gap-3 pt-2">
           <ChipTag
             checked={true}
