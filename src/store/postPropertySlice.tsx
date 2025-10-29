@@ -540,6 +540,43 @@ const commercial_rent_other = {
 }
 
 
+const residential_rent_apartment = {
+  //Step 1 
+  room: null,  //based on
+  otherRoom: null,
+  builtUpArea: null,
+  carpetArea: null,
+  ageOfProperty: null,
+  bathrooms: null,
+  bedrooms: null,
+  balconies: null,
+  facing: null,
+
+  //Step 2
+
+  //Floor details
+  totalFloor: null,
+  floorNumber: null,
+  flatNumber: null,
+  towerNumber: null,
+  propertyArea: null,
+
+  //Rent details
+  rentSuitableFor: null, // if bechelor then need to show one extra field
+  bechelorPreference: null,
+  rentAvailableFrom: null, //two option Immediatly and later
+  possesionDate: null, // visible only for later rent available
+  rent: null,
+  maintenceCharge: null, //two option include in rent and seprate
+  maintenceChargeValue: null, //visible only for seprate
+  securityDeposite: null, // options and custom
+  securityDepositeValue: null, //visible only for custom
+  lockInPeriod: null,
+  lockInPeriodValue: null, //visible only for custom
+  brokerageCharge: null,
+  brokerageChargeValue: null, //visible only for custom
+}
+
 const createAccountSlice = createSlice({
   name: 'form',
   initialState,
