@@ -65,7 +65,7 @@ export interface OtpInputProps extends MuiOtpInputProps {
 const OtpInput: React.FC<OtpInputProps> = (props) => {
   return (
     <StyledMuiOtpInput
-      TextFieldsProps={{ size: 'small' }}
+      TextFieldsProps={{ size: 'small', type: "tel", inputMode: "numeric" }}
       autoFocus={true}
       {...props}
     />
