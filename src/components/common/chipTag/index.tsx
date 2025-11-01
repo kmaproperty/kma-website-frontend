@@ -24,12 +24,12 @@ export default function ChipTag({
   onChagne: (value: string | number) => void;
 }) {
   return (
-    <div
+    <button
       key={value}
       className={`h-[40px] flex items-center py-[10px] px-5 cursor-pointer border border-border rounded-full
             ${checked ? "bg-light-purple" : "bg-transparent"}
            ${containerStyle}`}
-      onChange={() => onChagne("")}
+      onClick={() => onChagne("")}
     >
       {isIcon && (
         <Image
@@ -47,6 +47,6 @@ export default function ChipTag({
       >
         {label}
       </span>
-    </div>
+    </button>
   );
 }

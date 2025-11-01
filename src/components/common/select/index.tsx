@@ -7,10 +7,10 @@ import {
   MultiValue,
 } from "react-select";
 
-// OptionType restricted to string only
 export type OptionType = {
   value: string;
   label: string;
+  [key: string]: any
 };
 
 export interface DynamicAsyncSelectProps
@@ -35,6 +35,7 @@ const DynamicSelect = ({
   value,
   isError,
   minHeight = '47.81px',
+  options = [],
   ...rest
 }: DynamicAsyncSelectProps) => {
   const defaultStyles: StylesConfig<OptionType, boolean> = {
@@ -48,7 +49,7 @@ const DynamicSelect = ({
       },
       minHeight: typeof minHeight === "number" ? `${minHeight}px` : minHeight,
       paddingLeft: "0.5rem",
-      fontSize: "0.75rem",
+      fontSize: minHeight == '47.81px' ? '1rem' : "0.75rem",
     }),
     input: (base) => ({ ...base, paddingLeft: 0 }),
     placeholder: (base) => ({
@@ -56,11 +57,12 @@ const DynamicSelect = ({
       color: "var(--color-text-gray)",
     }),
     indicatorSeparator: () => ({ display: "none" }),
-    indicatorsContainer: (base) => ({
+    dropdownIndicator: (base) => ({
       ...base,
+      paddingRight: "0.5rem",
       color: "var(--color-text-gray)",
       height: '30px',
-      alignContent: 'center'
+      alignItems: 'center'
     }),
     menu: (base) => ({
       ...base,
@@ -92,7 +94,7 @@ const DynamicSelect = ({
     <Select<OptionType, boolean>
       isMulti={isMulti}
       placeholder={placeholder}
-      options={[{label: 'Living Room', value: 'Living Room'}, {label: 'Servent Room', value: 'Servent Room'},{label: 'Pooja Room', value: 'Pooja Room'},{label: 'Bedroom', value: 'Bedroom'}]}
+      options={options}
       styles={styles || defaultStyles}
       onChange={onChange}
       value={value}

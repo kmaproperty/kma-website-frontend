@@ -211,4 +211,47 @@ export const FLOORING_STATUS = [
   }
 ] as const
 
+export const FIELD_TYPE = {
+  OPTION_LIST: 'option_list',
+  ASYNC_SEARCH: 'async_search',
+}
+
+export const FACING_LIST = [
+  'North', 'East', 'West', 'South', 'North - East', 'North - West', 'South - East'
+]
+
+export const OWNERSHIP_LIST = [
+  'Freehold', 'Leasehold', 'Co-operative society', 'Power of Attorney'
+]
+
+export const FIELD_NAME = {
+  PROPERTY_TYPE: 'Property_type',
+  BHK: 'Room_BHK',
+  OTHERBHK: 'Other_BHK',
+  BUILT_UP_AREA: 'BuiltUp Area',
+  CARPET_AREA: 'Carpet Area',
+  AGE_OF_PROPERTY: 'Age of Property',
+  BATHTROOMS: 'Bathrooms',
+  BEDROOMS: 'Bedrooms',
+  BALCONIES: 'Balconies',
+  TRANSACTION_TYPE: 'Transaction_Type',
+  PROPERTY_CONSTRUCTION_STATUS : 'Property_Construction_status',
+  POSSESION_DATE: 'Possetion_date'
+}
+
+export const AREA_UNIT_LIST = [
+  { value: 'Sq. Ft.', label: 'Sq. Ft.' },
+  { value: 'Sq. Yd.', label: 'Sq. Yd.' },
+  { value: 'Sq. Mt.', label: 'Sq. Mt.' },
+  { value: 'Acre', label: 'Acre' },
+]
+
+export const TRANSACTION_TYPE_LIST = [
+  'New Booking', 'Resale'
+]
+
+export const PROPERTY_CONSTRUCTION_STATUS =[
+  'Ready to Move', 'Under Construction'
+]
+
 export const OTP_RESEND_TIME = 30

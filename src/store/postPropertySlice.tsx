@@ -39,7 +39,7 @@ const commercial_sell_office = {
   locationHub: null,  //dynamic list ( it park, business park, other)
   otherLocationHub: null,
   zoneType: null,  //static list  ( industrial, commercial, residential, special economice zone, open spaces, agricultural zone, other)
-
+  
   propertyCondition: null, //static list
 
   builtUpArea: null, //both
@@ -575,6 +575,10 @@ const residential_rent_apartment = {
   lockInPeriodValue: null, //visible only for custom
   brokerageCharge: null,
   brokerageChargeValue: null, //visible only for custom
+}
+
+const residential_sell_apartment = {
+
 }
 
 const createAccountSlice = createSlice({

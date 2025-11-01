@@ -47,7 +47,7 @@ export default function PhotoViewer({type} : {type: string}){
                 </div>
                 <div className="flex justify-end">
                 <div className="w-[150px]">
-                    <DynamicSelect minHeight={'30px'}/>
+                    <DynamicSelect minHeight={'30px'} options={[{label: 'Living Room', value: 'Living Room'}, {label: 'Servent Room', value: 'Servent Room'},{label: 'Pooja Room', value: 'Pooja Room'},{label: 'Bedroom', value: 'Bedroom'}]}/>
                 </div>
 
                 </div>

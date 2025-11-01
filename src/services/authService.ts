@@ -137,7 +137,7 @@ export const handleRefreshToken = async (): Promise<string | null> => {
 
   try {
     const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh-token`,
+      `${process.env.NEXT_PUBLIC_API_URL}/users/refresh-token`,
       { refreshToken },
       {
         headers: {
