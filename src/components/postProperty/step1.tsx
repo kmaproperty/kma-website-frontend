@@ -422,6 +422,23 @@ export default function Step1({setActiveStep, activeStep}: {activeStep: number, 
                   label={item.name}
                   onChagne={() => {
                     setBasicStaticDetails((pre) => ({...pre, propertyListFor: item}))
+                    setDynamicFieldDetails({
+                      bhk: null,
+                      otherBhk: null,
+                      isStaticBhkDetails: false,
+                      staticBhKDetails: null,
+                      builtUpArea: null,
+                      carpetArea: null,
+                      transactionType: null,
+                      propertyConstructionStatus: null,
+                      propertyAge: null,
+                      possesionDate: null,
+                      bathRooms: null,
+                      bedRooms: null,
+                      balconies: null,
+                      ownership: null,
+                      facing: null,
+                    })
                     setErrors((pre) => ({...pre, propertyListFor: ''}))
                   }}
                   value={item.id}
@@ -447,6 +464,23 @@ export default function Step1({setActiveStep, activeStep}: {activeStep: number, 
                   label={item.name}
                   onChagne={() => {
                     setBasicStaticDetails((pre) => ({...pre, propertyCategory: item}))
+                    setDynamicFieldDetails({
+                      bhk: null,
+                      otherBhk: null,
+                      isStaticBhkDetails: false,
+                      staticBhKDetails: null,
+                      builtUpArea: null,
+                      carpetArea: null,
+                      transactionType: null,
+                      propertyConstructionStatus: null,
+                      propertyAge: null,
+                      possesionDate: null,
+                      bathRooms: null,
+                      bedRooms: null,
+                      balconies: null,
+                      ownership: null,
+                      facing: null,
+                    })
                     setErrors((pre) => ({...pre, propertyCategory: ''}))
                   }}
                   value={item.id}
@@ -605,7 +639,7 @@ export default function Step1({setActiveStep, activeStep}: {activeStep: number, 
           {errors?.otherBhk && <p className="pt-1 text-red-500 text-xs">{errors.otherBhk}</p>}
       </div>}
 
-      {Array.isArray(dynamicFieldDetails.bhk?.builtUpAreas) && dynamicFieldDetails.bhk?.builtUpAreas.length > 0 && <div>
+      {Array.isArray(dynamicBhkList) && dynamicBhkList.length > 0 && Array.isArray(dynamicFieldDetails.bhk?.builtUpAreas) && dynamicFieldDetails.bhk?.builtUpAreas.length > 0 && <div>
         <div className="flex flex-wrap gap-3 pt-2 items-stretch">
           {
             dynamicFieldDetails.bhk?.builtUpAreas.map((item) => {
