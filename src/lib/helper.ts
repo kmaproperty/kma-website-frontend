@@ -29,3 +29,74 @@ export function createURLSearchParam(
   const query = params.toString();
   return query ? `?${query}` : "";
 }
+export interface BhkOption {
+  id: number;
+  name: string;
+  isPlusItem?: boolean;
+  value: string | number;
+  builtUpAreas: [];
+  bhk: number;
+  isCustom?: boolean
+}
+
+export function generateBHKList(showMore = false): BhkOption[] {
+  const bhkList: BhkOption[] = [];
+
+  // Add 1RK first
+  bhkList.push({
+    id: 0,
+    name: "1 RK",
+    value: 1,
+    bhk: 1,
+    builtUpAreas: [],
+    isCustom: true
+  });
+
+  // Add 1BHK to 5BHK with 0.5 increments
+  for (let i = 1; i <= 5; i += 0.5) {
+    if (i === 5.5) break;
+
+    bhkList.push({
+      id: bhkList.length + 1,
+      name: `${i % 1 === 0 ? i : i.toFixed(1)} BHK`,
+      value: i % 1 === 0 ? i : i.toFixed(1),
+      builtUpAreas: [],
+      bhk: Math.ceil(Number(i.toFixed(1))),
+      isCustom: true
+    });
+  }
+  if(!showMore){
+    bhkList.push({
+      id: bhkList.length + 1,
+      name: "5+ BHK",
+      isPlusItem: true,
+      value: 5,
+      bhk: 5,
+      builtUpAreas: []
+    });
+  }
+ 
+
+  if (showMore) {
+    for (let i = 6; i <= 12; i++) {
+      bhkList.push({
+        id: bhkList.length + 1,
+        name: `${i} BHK`,
+        value: Number(i),
+        builtUpAreas: [],
+        bhk: Number(i),
+        isCustom: true
+      });
+    }
+  }
+
+  return bhkList;
+}
+
+
+export function generateBHKAmeneties(value: string): string[] {
+  const num = parseInt(value, 10)
+  if (isNaN(num) || num < 1) return []
+
+  return Array.from({ length: num + 1 }, (_, i) => (i + 1).toString())
+}

@@ -84,7 +84,7 @@ export default function Otp() {
       localStorage.setItem("accessToken", res.accessToken);
       localStorage.setItem("refreshToken", res.refreshToken);
       localStorage.setItem("user", JSON.stringify(res.user));
-      router.replace("/");
+      router.replace("/post-property");
       toast.success(res.message)
     },
     onError: (err: any) => {

@@ -125,7 +125,7 @@ export default function CreateAccount({ step }: { step: number }) {
       localStorage.setItem("user", JSON.stringify(response.user));
       dispatch(resetForm())
       toast.success(response.message)
-      router.replace('/')
+      router.replace('/post-property')
     },
     onError: (error: any) => {
       console.log("owner create error", error);
@@ -153,7 +153,7 @@ export default function CreateAccount({ step }: { step: number }) {
       localStorage.setItem("user", JSON.stringify(response.user));
       dispatch(resetForm())
       toast.success(response.message)
-      router.push('/')
+      router.push('/post-property')
     },
     onError: (error: any) => {
       console.log("owner create error", error);
@@ -201,9 +201,9 @@ export default function CreateAccount({ step }: { step: number }) {
   };
 
   const loadCities = async (input: string) => {
-    return data
-      ? data.filter((opt) => opt.toLowerCase().includes(input.toLowerCase()))
-      : [];
+    let filteredData = data ? data.filter((opt) => opt.toLowerCase().includes(input.toLowerCase())) : []
+    let updatedOptions = filteredData.map(item => ({label: item, value: item}))
+    return updatedOptions
   };
 
   const handleRedirectToLogin = () => {

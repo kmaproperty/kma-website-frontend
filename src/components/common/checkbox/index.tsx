@@ -8,7 +8,7 @@ export default function CustomCheckbox({checked, label, value} : {checked: boole
           type="checkbox"
           checked={checked}
           value={value}
-          className="w-6 h-6 border border-gray-400 rounded-md cursor-pointer accent-text-black checked:border-text-black transition-all duration-200"
+          className="w-5 h-5 border border-gray-400 rounded-md cursor-pointer accent-text-black checked:border-text-black transition-all duration-200"
         />
         <span className="text-text-black text-sm">{label}</span>
       </label>

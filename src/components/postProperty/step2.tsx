@@ -179,7 +179,7 @@ export default function Step2() {
         </div>
       </div>
       <div>
-        <FieldLabel label="Rent Available From *" />
+        <FieldLabel label="Rent Available From" required={true}/>
         <div className="flex flex-wrap gap-3 pt-2">
           <ChipTag
             checked={false}
@@ -225,7 +225,7 @@ export default function Step2() {
       </div>
 
       <div>
-        <FieldLabel label="Maintenance Charges *"/>
+        <FieldLabel label="Maintenance Charges" required={true}/>
         <div className="flex flex-wrap gap-3 py-2">
           <ChipTag
             checked={false}
@@ -248,7 +248,7 @@ export default function Step2() {
       </div>
 
       <div>
-        <FieldLabel label="Security Deposit *"/>
+        <FieldLabel label="Security Deposit" required={true}/>
         <div className="flex flex-wrap gap-3 py-2">
           <ChipTag
             checked={false}
@@ -288,7 +288,7 @@ export default function Step2() {
       </div>
 
        <div>
-        <FieldLabel label="Lock-in Period*"/>
+        <FieldLabel label="Lock-in Period" required={true}/>
         <div className="flex flex-wrap gap-3 py-2">
           <ChipTag
             checked={false}
@@ -339,7 +339,7 @@ export default function Step2() {
       </div>
 
       <div>
-        <FieldLabel label="Do you charge brokerage?*"/>
+        <FieldLabel label="Do you charge brokerage?" required={true}/>
         <div className="flex flex-wrap gap-3 py-2">
           <ChipTag
             checked={false}

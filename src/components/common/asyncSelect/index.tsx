@@ -5,20 +5,19 @@ import {
   Props as ReactSelectProps,
   GroupBase,
   MultiValue,
-  SingleValue,
 } from "react-select";
 
-// OptionType restricted to string only
 export type OptionType = {
   value: string;
   label: string;
+  [key: string]: any
 };
 
 export interface DynamicAsyncSelectProps
   extends Partial<
     ReactSelectProps<OptionType, boolean, GroupBase<OptionType>>
   > {
-  loadOptions: (inputValue: string) => Promise<string[]>; // Only string[]
+  loadOptions: (inputValue: string) => Promise<OptionType[]>; // Only string[]
   isMulti?: boolean;
   isError?: boolean;
   placeholder?: React.ReactNode | string;
@@ -26,7 +25,9 @@ export interface DynamicAsyncSelectProps
     value: OptionType | MultiValue<OptionType> | null
   ) => void;
   value?: OptionType | MultiValue<OptionType> | null;
-  minHeight?: string | number
+  minHeight?: string | number;
+  enableAddManually?: boolean;
+  menualAddItem?: {value: string, label: string}
 }
 
 const DynamicAsyncSelect = ({
@@ -38,6 +39,8 @@ const DynamicAsyncSelect = ({
   value,
   isError,
   minHeight = '47.81px',
+  enableAddManually = false,
+  menualAddItem,
   ...rest
 }: DynamicAsyncSelectProps) => {
   const defaultStyles: StylesConfig<OptionType, boolean> = {
@@ -59,6 +62,11 @@ const DynamicAsyncSelect = ({
       color: "var(--color-text-gray)",
     }),
     indicatorSeparator: () => ({ display: "none" }),
+    clearIndicator: () => ({
+      color: 'var(--color-text-gray)',
+      padding: '10px',
+      cursor: 'pointer'
+    }),
     dropdownIndicator: (base) => ({
       ...base,
       paddingRight: "1rem",
@@ -73,13 +81,11 @@ const DynamicAsyncSelect = ({
     option: (base, state) => ({
       ...base,
       backgroundColor: state.isSelected
-        ? "var(--color-light-purple)"
+        ? "var(--color-blue)"
         : state.isFocused
         ? "var(--color-light-purple)"
         : "white",
-      color: state.isSelected
-        ? "var(--color-light-purple)"
-        : "var(--color-blue)",
+      color: state.isSelected ? "var(--color-white)" : "var(--color-blue)",
       cursor: "pointer",
       ":active": {
         ...base[":active"],
@@ -112,15 +118,11 @@ const DynamicAsyncSelect = ({
     }),
   };
 
-  // Always normalize string[] into OptionType[]
   const normalizedLoadOptions = async (
     inputValue: string
   ): Promise<OptionType[]> => {
     const result = await loadOptions(inputValue);
-    return result.map((item) => ({
-      value: item,
-      label: item,
-    }));
+    return Array.isArray(result) && enableAddManually ? [...result, menualAddItem] : result 
   };
 
   return (
@@ -132,6 +134,12 @@ const DynamicAsyncSelect = ({
       styles={styles || defaultStyles}
       onChange={onChange}
       value={value}
+      components={{
+        DropdownIndicator: () => null,
+        IndicatorSeparator: () => null,
+      }}
+      cacheOptions={true}
+      isClearable={true}
       {...rest}
     />
     </div>

@@ -8,13 +8,17 @@ import Step4 from "./step4";
 
 export default function PostPropertyForm() {
   const [activeStep, setActiveStep] = useState(1);
+  
+  const handleNext = () => {
+
+  }
   return (
     <div>
-      {activeStep == 1 && <Step1 />}
+      {activeStep == 1 && <Step1 activeStep={activeStep} setActiveStep={setActiveStep}/>}
       {activeStep == 2 && <Step2 />}
       {activeStep == 3 && <Step3 />}
       {activeStep == 4 && <Step4 />}
-      <div className="flex justify-end w-full">
+      {activeStep != 1 && <div className="flex justify-end w-full">
         <div className="flex flex-wrap justify-start flex-row gap-2 items-center mt-8">
           <button onClick={() => {
             if(activeStep != 1){
@@ -35,7 +39,7 @@ export default function PostPropertyForm() {
             </span>
           </button>
         </div>
-      </div>
+      </div>}
     </div>
   );
 }
