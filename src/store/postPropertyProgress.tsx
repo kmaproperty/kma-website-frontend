@@ -38,7 +38,7 @@ const postPropertyProgressSlice = createSlice({
       action: PayloadAction<{ step: number; progress: number }>
     ) => {
       const { step, progress } = action.payload;
-
+      
       switch (step) {
         case 1:
           state.step_1_Progress = progress;
@@ -66,7 +66,7 @@ const postPropertyProgressSlice = createSlice({
 
       state.totalProgress =
         allSteps.length > 0
-          ? Math.round(allSteps.reduce((a, b) => a + b, 0) / allSteps.length)
+          ? Math.round(allSteps.reduce((a, b) => a + b, 0))
           : 0;
     },
 
