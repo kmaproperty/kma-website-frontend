@@ -1,8 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { RootState } from './store';
 
-interface FormData {
-
-}
 
 interface Commercial_common_field {
   listType: string | null, //static list
@@ -14,7 +12,7 @@ interface Commercial_common_field {
 }
 
 const initialState = {
-  
+  activeStep: 1
 
 };
 
@@ -581,21 +579,14 @@ const residential_sell_apartment = {
 
 }
 
-const createAccountSlice = createSlice({
-  name: 'form',
+const postPropertyFormSlice = createSlice({
+  name: 'postPropertyForm',
   initialState,
   reducers: {
-    setFormField<K extends keyof FormData>(state: any, action: PayloadAction<{ key: K; value: FormData[K] }>) {
-      state[action.payload.key] = action.payload.value;
-    },
-    setFormData(state, action: PayloadAction<FormData>) {
-      return action.payload;
-    },
-    resetForm() {
-      return initialState;
-    },
+    
   },
 });
 
-export const { setFormField, setFormData, resetForm } = createAccountSlice.actions;
-export default createAccountSlice.reducer;
+export const { } = postPropertyFormSlice.actions;
+export default postPropertyFormSlice.reducer;
+

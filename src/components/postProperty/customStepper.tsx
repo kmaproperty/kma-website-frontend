@@ -1,4 +1,5 @@
 "use client";
+import { getActiveStep, getStepList, step } from "@/store/postPropertyProgress";
 import {
   Accordion,
   AccordionDetails,
@@ -7,33 +8,8 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import Image from "next/image";
+import { useSelector } from "react-redux";
 
-const steps = [
-  {
-    number: 1,
-    title: "Basic Details",
-    desc: "Tell us what type of property you're listing.",
-    status: "In Progress",
-  },
-  {
-    number: 2,
-    title: "Property Details",
-    desc: "Share extra info to help buyers understand better.",
-    status: "Pending",
-  },
-  {
-    number: 3,
-    title: "Amenities & Description",
-    desc: "Set your expected price and payment preferences.",
-    status: "Pending",
-  },
-  {
-    number: 4,
-    title: "Photo & Video",
-    desc: "Upload clear photos and videos to attract more interest.",
-    status: "Pending",
-  },
-];
 
 const StepContainer = styled(Box)(({ theme }) => ({
   position: "relative",
@@ -45,7 +21,7 @@ const StepItem = styled(Box)(({ theme }) => ({
   alignItems: "flex-start",
   gap: "1rem",
   position: "relative",
-  height: "-webkit-fill-available",
+  // height: "100%",
 }));
 
 const Circle = styled("div")<{ active?: boolean }>(({ active }) => ({
@@ -104,17 +80,18 @@ const CleanAccordion = styled(Accordion)(() => ({
   },
 }));
 
-function Stepper() {
+function Stepper({activeStep, stepList}: {activeStep: number, stepList: step[]}) {
   return (
     <StepContainer className="flex-col">
-      {steps.map((step, index) => {
-        const active = index === 0 || index === 1;
-        const isLast = index === steps.length - 1;
+      {stepList.map((step, index) => {
+        const active = activeStep > index;
+        const isCurrent = activeStep == index + 1;
+        const isLast = index === stepList.length - 1;
         return (
-          <StepItem key={index} className="flex-row">
+          <StepItem key={index} className="flex-row h-[120px] sm:h-[90px] 2md:h-auto">
             <div
               className="relative flex flex-col items-center "
-              style={{ height: "inherit" }}
+              style={{ height: "100%" }}
             >
               <div className="bg-[#0100481A] p-[3px] lg:p-[4px] rounded-full">
                 <Circle
@@ -134,18 +111,18 @@ function Stepper() {
             </div>
 
             <div className="pt-2 gap-1 flex justify-start flex-col pb-[20px]">
-              <p className="font-medium text-blue text-sm lg:text-base">
+              <p className="font-medium text-blue text-base">
                 {step.title}
               </p>
-              <p className="text-gray-500 text-xs lg:text-sm mb-1">
+              <p className="text-gray-500 text-sm mb-1">
                 {step.desc}
               </p>
               <p
                 className={`text-xs lg:text-sm font-medium underline ${
-                  active ? "text-[#FF901D]" : "text-[#8090FF]"
+                  isCurrent ? 'text-[#FF901D]' : activeStep <= index ? 'text-[#8090FF]' : 'text-[#4cac0b]'
                 }`}
               >
-                {step.status}
+                {isCurrent ? 'In Progress' : activeStep <= index ? 'Pending' : 'Completed'}
               </p>
             </div>
           </StepItem>
@@ -156,6 +133,9 @@ function Stepper() {
 }
 
 export default function StepperCustom() {
+  const activeStep = useSelector(getActiveStep);
+  const stepList = useSelector(getStepList)
+
   return (
     <div className="bg-[#F4F4F4] rounded-[10px] px-[0.75rem] py-[1rem] h-fit">
       <div className="2md:hidden">
@@ -171,17 +151,17 @@ export default function StepperCustom() {
             }
           >
             <p className="text-sm text-text-black">
-              Step 1 of 4:{" "}
-              <span className="text-text-black font-medium">Basic Details</span>
+              Step {activeStep} of 4:{" "}
+              <span className="text-text-black font-medium">{}</span>
             </p>
           </AccordionSummary>
           <AccordionDetails>
-            <Stepper />
+            <Stepper activeStep={activeStep} stepList={stepList}/>
           </AccordionDetails>
         </CleanAccordion>
       </div>
       <div className="hidden 2md:flex">
-        <Stepper />
+        <Stepper activeStep={activeStep} stepList={stepList}/>
       </div>
     </div>
   );

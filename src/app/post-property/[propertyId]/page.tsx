@@ -6,7 +6,7 @@ import { PROPERTY_FORM_MODE } from "@/lib/enums";
 export default function PostProperty() {
   return (
     <MainLayout>
-      <ContentLayout mode={PROPERTY_FORM_MODE.CREATE}/>
+      <ContentLayout mode={PROPERTY_FORM_MODE.EDIT}/>
     </MainLayout>
   );
 }

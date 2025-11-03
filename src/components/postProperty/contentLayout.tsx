@@ -1,13 +1,10 @@
-"use client";
 import StepperCustom from "./customStepper";
 import PostPropertyForm from "./form";
 import Progress from "./porgress";
 
-export default function ContentLayout() {
-  
+export default function ContentLayout({mode}: {mode: string}) {
   return (
     <>
-      
       <div
         className="bg-white relative w-full md:min-w-96 md:min-h-[450px] h-auto rounded-b-xl rounded-tr-xl"
         style={{ boxShadow: "0px 4px 20px 0px #0000000D", flexGrow: 11 }}
