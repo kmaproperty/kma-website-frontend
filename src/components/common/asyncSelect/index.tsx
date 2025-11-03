@@ -138,7 +138,6 @@ const DynamicAsyncSelect = ({
         DropdownIndicator: () => null,
         IndicatorSeparator: () => null,
       }}
-      cacheOptions={true}
       isClearable={true}
       {...rest}
     />

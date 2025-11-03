@@ -12,10 +12,10 @@ export const useCitySearch = () => {
         clearTimeout(debounceRef.current);
       }
 
-      if (inputValue.length < 3) {
-        resolve([]);
-        return;
-      }
+      // if (inputValue.length < 3) {
+      //   resolve([]);
+      //   return;
+      // }
 
       debounceRef.current = setTimeout(async () => {
         try {

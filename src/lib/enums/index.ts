@@ -23,6 +23,46 @@ export const PROPERTY_CATEGORY = {
     RESIDENTIAL: 'RESIDENTIAL'
 } as const
 
+export const PROPERTY_FORM_MODE = {
+  EDIT: 'Edit',
+  VIEW: 'View',
+  CREATE: 'Create'
+}
+
+export const POST_PROPERTY_STEPS = [
+  {
+    number: 1,
+    title: "Basic Details",
+    desc: "Tell us what type of property you're listing.",
+    status: "In Progress",
+  },
+  {
+    number: 2,
+    title: "Property Details",
+    desc: "Share extra info to help buyers understand better.",
+    status: "Pending",
+  },
+  {
+    number: 3,
+    title: "Amenities & Description",
+    desc: "Set your expected price and payment preferences.",
+    status: "Pending",
+  },
+  {
+    number: 4,
+    title: "Photo & Video",
+    desc: "Upload clear photos and videos to attract more interest.",
+    status: "Pending",
+  },
+];
+
+export const STEP_PROGRESS_PERCENTAGE = {
+  1: 40,
+  2: 30,
+  3: 15,
+  4: 15
+}
+
 export const POSSESION_STATUS = {
   READY_TO_MOVE: 'READY TO MOVE',
   UNDER_CONSTRUCTION: 'UNDER CONSTRUCTION'
@@ -225,6 +265,12 @@ export const OWNERSHIP_LIST = [
 ]
 
 export const FIELD_NAME = {
+  LISTING_FOR: 'Property_listing_for',
+  PROPERTY_CATEGORY: 'Property_category',
+  PORPERTY_TYPE: 'Property_type',
+  CITY: 'city',
+  SOCIETY: 'Building_Society',
+  LOCALITY: 'Locality',
   PROPERTY_TYPE: 'Property_type',
   BHK: 'Room_BHK',
   OTHERBHK: 'Other_BHK',
@@ -236,7 +282,13 @@ export const FIELD_NAME = {
   BALCONIES: 'Balconies',
   TRANSACTION_TYPE: 'Transaction_Type',
   PROPERTY_CONSTRUCTION_STATUS : 'Property_Construction_status',
-  POSSESION_DATE: 'Possetion_date'
+  PROPERTY_POSSESSTION_STATUS: 'Property_possesion_status',
+  POSSESION_DATE: 'Possetion_date',
+  OWNERSHIP: 'Ownership',
+  FACING: 'Facing',
+  PLOT_AREA: 'Plot_area',
+  LENGTH_WIDTH: 'Length_width',
+  WIDTH_FACING_ROAD: 'Width_facing_road'
 }
 
 export const AREA_UNIT_LIST = [
@@ -247,11 +299,36 @@ export const AREA_UNIT_LIST = [
 ]
 
 export const TRANSACTION_TYPE_LIST = [
-  'New Booking', 'Resale'
+  {
+    name: 'New Booking',
+    value: 'new_booking'
+  },
+  {
+    name: 'Resale',
+    value: 'resale'
+  },
 ]
 
 export const PROPERTY_CONSTRUCTION_STATUS =[
-  'Ready to Move', 'Under Construction'
+  {
+    name: 'Ready to Move',
+    value: 'ready_to_move'
+  },
+  {
+    name: 'Under Construction',
+    value: 'under_construction'
+  },
+]
+
+export const PROPERTY_POSSESSION_STATUS =[
+  'Immediate', 'In Future'
+]
+export const RENT_SUITABLE_FOR = [
+  'Family', 'Bachelors', 'Comapny'
+]
+
+export const BACHELOR_PREFERENCE = [
+    'Open for both', 'Men Only', 'WoMen Only'
 ]
 
 export const OTP_RESEND_TIME = 30

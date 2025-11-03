@@ -12,7 +12,7 @@ export const useBuildingSearch = () => {
         clearTimeout(debounceRef.current);
       }
 
-      if (query.length < 3 && (cityId || cityName)) {
+      if (!cityId && !cityName) {//query.length < 3 &&
         resolve([]);
         return;
       }

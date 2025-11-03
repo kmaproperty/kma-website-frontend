@@ -1,10 +1,23 @@
 import { InputBase } from "@mui/material";
-import DynamicAsyncSelect from "../common/asyncSelect";
 import FieldLabel from "./fieldLabel";
 import ChipTag from "../common/chipTag";
 import DynamicInput from "../common/dynamicInputLeft";
+import { useState } from "react";
+import { BACHELOR_PREFERENCE, RENT_SUITABLE_FOR } from "@/lib/enums";
 
 export default function Step2() {
+
+  const [dynamicFieldDetails, setDynamicFieldDetails] = useState<any>({
+    floorNumber: null,
+    totalFloor: null,
+    towerNumber: null,
+    flatNumber: null,
+    propertyArea: null,
+    rentSuitableFor: [],
+    rentPreference: null
+  })
+  const [errors, setErrors] = useState<any>({})
+
   return (
     <div className="flex flex-col gap-4">
       <p className="text-text-black font-semibold text-lg 2md:text-xl pb-2">
@@ -26,30 +39,22 @@ export default function Step2() {
 
       <div className="grid grid-cols-1 2md:grid-cols-2 gap-3">
         <div>
-          <FieldLabel label="Total Floor Count" customClass="pb-2" />
-          <InputBase
-            placeholder="Enter total floor count"
-            fullWidth
-            value={""}
-            onChange={(e) => {}}
-            className={
-              "box-border px-4 py-2 text-sm rounded-full border focus:outline-none border-border text-text-gray h-[40px]"
-            }
-            inputProps={{
-              className: "placeholder-gray",
-            }}
-          />
-        </div>
-        <div>
           <FieldLabel
             label="Property on Floor / Floor Number"
             customClass="pb-2"
+            required={true}
           />
           <InputBase
             placeholder="Select property on Floor"
             fullWidth
-            value={""}
-            onChange={(e) => {}}
+            value={dynamicFieldDetails.floorNumber}
+            onChange={(e) => {
+              const input = e.target.value;
+              const isOnlyDigits = /^\d*$/.test(input);
+              if (!isOnlyDigits) return;
+              setDynamicFieldDetails((pre) => ({...pre, floorNumber: input}))
+              setErrors((pre) => ({...pre, floorNumber: ''}))
+            }}
             className={
               "box-border px-4 py-2 text-sm rounded-full border focus:outline-none border-border text-text-gray h-[40px]"
             }
@@ -57,16 +62,46 @@ export default function Step2() {
               className: "placeholder-gray",
             }}
           />
+          {errors?.floorNumber && <p className="pt-1 text-red-500 text-xs">{errors.floorNumber}</p>}
+        </div>
+
+        <div>
+          <FieldLabel label="Total Floor Count" customClass="pb-2" required={true} />
+          <InputBase
+            placeholder="Enter total floor count"
+            fullWidth
+            value={dynamicFieldDetails.totalFloor}
+            onChange={(e) => {
+              const input = e.target.value;
+              const isOnlyDigits = /^\d*$/.test(input);
+              if (!isOnlyDigits) return;
+              setDynamicFieldDetails((pre) => ({...pre, totalFloor: input}))
+              setErrors((pre) => ({...pre, totalFloor: ''}))
+            }}
+            className={
+              "box-border px-4 py-2 text-sm rounded-full border focus:outline-none border-border text-text-gray h-[40px]"
+            }
+            inputProps={{
+              className: "placeholder-gray",
+            }}
+          />
+          {errors?.totalFloor && <p className="pt-1 text-red-500 text-xs">{errors.totalFloor}</p>}
         </div>
       </div>
 
       <div>
-        <FieldLabel label="Tower / Block No (Optional)" customClass="pb-2" />
+        <FieldLabel label="Tower / Block No" customClass="pb-2" />
         <InputBase
           placeholder="Enter tower / block no."
           fullWidth
-          value={""}
-          onChange={(e) => {}}
+          value={dynamicFieldDetails.towerNumber}
+          onChange={(e) => {
+            const input = e.target.value;
+            const isOnlyDigits = /^\d*$/.test(input);
+            if (!isOnlyDigits) return;
+            setDynamicFieldDetails((pre) => ({...pre, towerNumber: input}))
+            setErrors((pre) => ({...pre, towerNumber: ''}))
+          }}
           className={
             "box-border px-4 py-2 text-sm rounded-full border focus:outline-none border-border text-text-gray h-[40px]"
           }
@@ -81,8 +116,14 @@ export default function Step2() {
         <InputBase
           placeholder="Enter flat number"
           fullWidth
-          value={""}
-          onChange={(e) => {}}
+          value={dynamicFieldDetails.flatNumber}
+          onChange={(e) => {
+            const input = e.target.value;
+            const isOnlyDigits = /^\d*$/.test(input);
+            if (!isOnlyDigits) return;
+            setDynamicFieldDetails((pre) => ({...pre, flatNumber: input}))
+            setErrors((pre) => ({...pre, flatNumber: ''}))
+          }}
           className={
             "box-border px-4 py-2 text-sm rounded-full border focus:outline-none border-border text-text-gray h-[40px]"
           }
@@ -97,8 +138,14 @@ export default function Step2() {
         <InputBase
           placeholder="Acres "
           fullWidth
-          value={""}
-          onChange={(e) => {}}
+          value={dynamicFieldDetails.propertyArea}
+          onChange={(e) => {
+            const input = e.target.value;
+            const isOnlyDigits = /^\d*$/.test(input);
+            if (!isOnlyDigits) return;
+            setDynamicFieldDetails((pre) => ({...pre, propertyArea: input}))
+            setErrors((pre) => ({...pre, propertyArea: ''}))
+          }}
           className={
             "box-border px-4 py-2 text-sm rounded-full border focus:outline-none border-border text-text-gray h-[40px]"
           }
@@ -122,60 +169,48 @@ export default function Step2() {
       <div>
         <FieldLabel label="Rent Suitable For/ Preferred Tenant Type" />
         <div className="flex flex-wrap gap-3 pt-2">
-          <ChipTag
-            checked={false}
-            label="Family"
-            onChagne={() => {}}
-            value={1}
-            isIcon={false}
-            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[150px]"
-          />
-          <ChipTag
-            checked={true}
-            label="Bachelors"
-            onChagne={() => {}}
-            value={1}
-            isIcon={false}
-            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[150px]"
-          />
-          <ChipTag
-            checked={false}
-            label="Company"
-            onChagne={() => {}}
-            value={1}
-            isIcon={false}
-            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[150px]"
-          />
+          {
+            RENT_SUITABLE_FOR.map(item => {
+              return(
+                <ChipTag
+                  checked={item == dynamicFieldDetails.rentSuitableFor}
+                  label="Family"
+                  onChagne={() => {
+                    if(dynamicFieldDetails.rentSuitableFor.includes(item)){
+                      let newData = dynamicFieldDetails.rentSuitableFor.filter(preItem => preItem != item)
+                      setDynamicFieldDetails((pre) => ({...pre, rentSuitableFor: newData}))
+                    }else{
+                      setDynamicFieldDetails((pre) => ({...pre, rentSuitableFor: [...dynamicFieldDetails.rentSuitableFor, item]}))
+                    }
+                    setErrors((pre) => ({...pre, rentSuitableFor: ''}))
+                  }}
+                  value={1}
+                  isIcon={false}
+                  containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[150px]"
+                />
+              )
+            })
+          }
         </div>
       </div>
 
       <div>
         <FieldLabel label="Select your preference for bachelors" />
         <div className="flex flex-wrap gap-3 pt-2">
-          <ChipTag
-            checked={false}
-            label="Open for both"
-            onChagne={() => {}}
-            value={1}
-            isIcon={false}
-            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[150px]"
-          />
-          <ChipTag
-            checked={true}
-            label="Men Only"
-            onChagne={() => {}}
-            value={1}
-            isIcon={false}
-            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[150px]"
-          />
-          <ChipTag
-            checked={false}
-            label="Women Only"
-            onChagne={() => {}}
-            value={1}
-            isIcon={false}
-            containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[150px]"
-          />
+          {
+            BACHELOR_PREFERENCE.map((item) => {
+              return(
+                <ChipTag
+                  checked={false}
+                  label="Open for both"
+                  onChagne={() => {}}
+                  value={1}
+                  isIcon={false}
+                  containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[150px]"
+                />
+              )
+            })
+          }
         </div>
       </div>
       <div>
