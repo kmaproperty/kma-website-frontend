@@ -121,3 +121,122 @@ export const step1PostPropertyDetailsApiHandler = async (propertyId: string) : P
         throw error.response?.data ?? error;
     }
 }
+
+export interface Step2PostPropertyPayload {
+  propertyId?: string | null;
+  floorNumber?: number | null;
+  totalFloors?: number | null;
+  flatNumber?: string | null;
+  towerBlock?: string | null;
+  propertyAreaAcre?: number | null;
+  tenantType?: string | null;
+  companyOccupancy?: string | null;
+  rentAvailability?: string | null;
+  availableFromDate?: string | null;
+  monthlyRent?: number | null;
+  maintenanceType?: string | null;
+  maintenanceChargeAmount?: number | null;
+  securityDepositType?: string | null;
+  securityDepositAmount?: number | null;
+  lockInType?: string | null;
+  lockInMonths?: number | null;
+  brokerageType?: string | null;
+  brokerageAmount?: number | null;
+  isBrokerageNegotiable?: boolean | null;
+  price?: number | null;
+  plotArea?: number | null;
+  plotAreaUnit?: string | null;
+  plotNumber?: string | null;
+  houseNumber?: string | null;
+  villaNumber?: string | null;
+  transactionType?: string | null;
+  possessionStatus?: string | null;
+  possessionDate?: string | null;
+  plotPrice?: number | null;
+  brokerage?: string | null;
+  loanAvailable?: string | null;
+  facing?: string | null;
+  boundaryWall?: string | null;
+  noOfOpenSides?: number | null;
+  floorsAllowedForConstruction?: number | null;
+  constructionDone?: string | null;
+  constructionType?: string | null;
+  cornerProperty?: string | null;
+  propertyDescription?: string | null;
+}
+
+export interface Step2PostPropertyResponse {
+  id: string,
+  status: string,
+  completionStep: string,
+}
+
+export const step2PostPropertyCreateApiHandler = async (paylaod: Step2PostPropertyPayload) : Promise<Step2PostPropertyResponse> => {
+    try{
+        const response = await axiosInstance.post<Step2PostPropertyResponse>(
+      "property/step-2", paylaod);
+
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}
+
+export interface Step2DetailsResponse {
+  propertyId: string | null;
+  floorNumber: number | null;
+  totalFloors: number | null;
+  flatNumber: string | null;
+  towerBlock: string | null;
+  propertyAreaAcre: number | null;
+  tenantType: string | null;
+  companyOccupancy: string | null;
+  rentAvailability: string | null;
+  availableFromDate: string | null;
+  monthlyRent: number | null;
+  maintenanceType: string | null;
+  maintenanceChargeAmount: number | null;
+  securityDepositType: string | null;
+  securityDepositAmount: number | null;
+  lockInType: string | null;
+  lockInMonths: number | null;
+  brokerageType: string | null;
+  brokerageAmount: number | null;
+  isBrokerageNegotiable: boolean | null;
+  price: number | null;
+  plotArea: number | null;
+  plotAreaUnit: string | null;
+  plotNumber: string | null;
+  houseNumber: string | null;
+  villaNumber: string | null;
+  transactionType: string | null;
+  possessionStatus: string | null;
+  possessionDate: string | null;
+  plotPrice: number | null;
+  brokerage: string | null;
+  loanAvailable: string | null;
+  facing: string | null;
+  boundaryWall: string | null;
+  noOfOpenSides: number | null;
+  floorsAllowedForConstruction: number | null;
+  constructionDone: string | null;
+  constructionType: string | null;
+  cornerProperty: string | null;
+  propertyDescription: string | null;
+  status: string | null;
+  completionStep: number | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+
+export const step2PostPropertyDetailsApiHandler = async (propertyId: string) : Promise<Step2DetailsResponse> => {
+    try{
+        const response = await axiosInstance.get<Step2DetailsResponse>(
+      `property/step-2/${propertyId}`,);
+
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}

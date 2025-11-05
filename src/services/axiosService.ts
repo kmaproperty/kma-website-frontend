@@ -48,6 +48,8 @@ axiosInstance.interceptors.response.use(
           localStorage.setItem("accessToken", newAccessToken);
           originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
           return axiosInstance(originalRequest);
+        }else{
+          window.location.href = '/signup?isLogin=true'
         }
       } catch (refreshError) {
         console.error("Token refresh failed", refreshError);

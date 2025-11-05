@@ -20,7 +20,7 @@ const dispatch = useDispatch()
       {activeStep == 3 && <Step3 />}
       {activeStep == 4 && <Step4 />}
 
-      {activeStep != 1 && <div className="flex justify-end w-full">
+      {activeStep != 1 && activeStep != 2 && <div className="flex justify-end w-full">
         <div className="flex flex-wrap justify-start flex-row gap-2 items-center mt-8">
           <button onClick={() => {
             if(activeStep != 1){
