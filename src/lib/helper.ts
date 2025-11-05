@@ -1,3 +1,5 @@
+import { OptionType } from "@/components/common/select";
+
 type ParamValue = string | number | boolean;
 type ParamObject = Record<string, ParamValue | undefined | null>;
 
@@ -100,3 +102,31 @@ export function generateBHKAmeneties(value: string): string[] {
 
   return Array.from({ length: num + 1 }, (_, i) => (i + 1).toString())
 }
+
+export const generateFloors = (count: number): OptionType[] => {
+  const baseFloors = [
+    {
+      label: '-2',
+      value: '-2',
+    },
+    {
+      label: '-1',
+      value: '-1',
+    },
+    {
+      label: 'Ground',
+      value: 'Ground',
+    }
+  ]
+
+  if(!count) return baseFloors
+  let upperFloors: any = Array.from({ length: count }, (_, i) => (i + 1).toString());
+  upperFloors = upperFloors.map(item => ({label: item, value: item}))
+  return [...baseFloors, ...upperFloors]
+};
+
+export const generateLockInPeriod = (count: number): OptionType[] => {
+  let upperFloors: any = Array.from({ length: count }, (_, i) => (i + 1).toString());
+  upperFloors = upperFloors.map(item => ({label: item, value: item}))
+  return upperFloors
+};

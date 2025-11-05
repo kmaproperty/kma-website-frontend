@@ -49,7 +49,6 @@ export default function Step1() {
   const router = useRouter()
   const params = useParams()
   const searchParams = useSearchParams();
-  const step = searchParams.get("step");
 
   const activeStep = useSelector(getActiveStep);
   const dispatch = useDispatch()
@@ -627,7 +626,7 @@ export default function Step1() {
     onSuccess: (response: Step1PostPropertyResponse) => {
       console.log("create owner response", response);
       let propertyId = response.id
-      dispatch(setActiveStep({step: Number(2)}))
+      dispatch(setActiveStep({step: activeStep + 1}))
       router.push(`/post-property/${propertyId}`)
     },
     onError: (error: any) => {
@@ -652,7 +651,8 @@ export default function Step1() {
       return resposne
     },
     enabled: params?.propertyId ? true : false,
-    staleTime: 1000 * 60 * 20,
+    staleTime: 0,
+    refetchOnMount: true
   });
 
   useEffect(() => {
@@ -1061,10 +1061,10 @@ export default function Step1() {
             PROPERTY_POSSESSION_STATUS.map(item => {
               return(
                 <ChipTag
-                  checked={item == dynamicFieldDetails.propertyPossessionStatus}
-                  label={item}
+                  checked={item.value == dynamicFieldDetails.propertyPossessionStatus}
+                  label={item.name}
                   onChagne={() => {
-                    setDynamicFieldDetails((pre) => ({...pre, propertyPossessionStatus: item}))
+                    setDynamicFieldDetails((pre) => ({...pre, propertyPossessionStatus: item.value}))
                     setErrors((pre) => ({...pre, propertyPossessionStatus: ''}))
                   }}
                   value={dynamicFieldDetails.propertyPossessionStatus}
@@ -1177,7 +1177,7 @@ export default function Step1() {
           {errors?.bedRooms && <p className="pt-1 text-red-500 text-xs">{errors.bedRooms}</p>}
       </div>}
 
-      {renderShowField(FIELD_NAME.BALCONIES) && <div data-field={FIELD_NAME.BALCONIES} data-has-value={!!dynamicFieldDetails.balconies}>
+      {renderShowField(FIELD_NAME.BALCONIES) && <div data-field={FIELD_NAME.BALCONIES} data-has-value={!!dynamicFieldDetails.balconies || dynamicFieldDetails.balconies === 0}>
         <FieldLabel label="Balconies" required={true}/>
         <div className="flex flex-wrap gap-3 pt-2">
           <ChipTag
@@ -1391,7 +1391,6 @@ export default function Step1() {
               }
               let payload = generatePayload()
               handleStep1Submit(payload)
-              dispatch(setActiveStep({step: activeStep + 1}))
             }
           }} className="w-full md:w-[130px] text-sm 1xl:text-base animated-button px-12 py-3 border border-blue text-center cursor-pointer">
             <span className="gap-3 relative flex justify-center">

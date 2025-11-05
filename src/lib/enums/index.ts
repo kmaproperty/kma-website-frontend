@@ -288,7 +288,44 @@ export const FIELD_NAME = {
   FACING: 'Facing',
   PLOT_AREA: 'Plot_area',
   LENGTH_WIDTH: 'Length_width',
-  WIDTH_FACING_ROAD: 'Width_facing_road'
+  WIDTH_FACING_ROAD: 'Width_facing_road',
+
+  //Step 2
+  TOTAL_FLOOR: 'Total_floor',
+  FLOOR_NUMBER: 'Floor_number',
+  BLOCK_NO: 'Block_no',
+  FLAT_NUMBER: 'Flat_number',
+  VILLA_NUMBER: 'Villa_number',
+  HOUSE_NUMBER: 'House_number',
+  DUPLEX_NUMBER: 'Duplex_number',
+  PROPERTY_AREA: 'Property_area',
+
+  RENT_SUITABLE: 'Rent_suitable_for',
+  BECHLOR_PREFERENCE: 'Bachlor_preference',
+  RENT_AVAILABEL_FROM: 'Rent_availabel_from',
+  RENT_AVAILABEL_DATE: 'Rent_availabel_date',
+  RENT: 'Rent',
+  PRICE_COST: 'Price_cost',
+  MAINTENANCE_CHARGE: 'Maintenance_charge',
+  MAINTENANCE_CHARGE_VALUE: 'Maintenance_charge_value',
+  SECURITY_DEPOSITE: 'Security_deposite',
+  CUSTOM_SECURITY_DEPOSITE: 'Custom_security_deposite',
+  LOCK_IN_PERIOD: 'Lock_in_period',
+  CUSTOM_LOCK_IN_PERIOD: 'Custom_lock_in_period',
+  BROKERAGE_CHARGE: 'Brokerage_charge',
+  BROKERAGE_CHARGE_VALUE: 'Brokerage_charge_value',
+  NEGOTIABLE_BROKERAGE: 'Brokerage_negotiable',
+
+  PLOT_NUMBER: 'Plot_number',
+  IS_BOUNDARY: 'Is_boundary',
+  OPEN_SIDE: 'Open_side',
+  FLOOR_CONSTRUCTION: 'Floor_construction',
+  CONSTRUCTION_DONE: 'Construction_done',
+  TYPE_OF_CONSTRUCTION: 'Type_of_construction',
+  CORNER_PROPERTY: 'Corner_property',
+  PROPERTY_DESCRRIPTION: 'Property_description',
+  PLOT_PRICE: 'Plot_price',
+  LOAN_AVAILABLE: 'Loan_available'
 }
 
 export const AREA_UNIT_LIST = [
@@ -309,6 +346,36 @@ export const TRANSACTION_TYPE_LIST = [
   },
 ]
 
+export const CONSTRUCTION_TYPE = [
+  {
+    name: 'Shed',
+    value: 'shed'
+  },
+  {
+    name: 'Rooms',
+    value: 'rooms'
+  },
+  {
+    name: 'Washroom',
+    value: 'washroom'
+  },
+  {
+    name: 'Other',
+    value: 'other'
+  },
+]
+
+export const TRUTY_LIST = [
+  {
+    name: 'Yes',
+    value: 'yes'
+  },
+  {
+    name: 'No',
+    value: 'no'
+  },
+]
+
 export const PROPERTY_CONSTRUCTION_STATUS =[
   {
     name: 'Ready to Move',
@@ -320,15 +387,152 @@ export const PROPERTY_CONSTRUCTION_STATUS =[
   },
 ]
 
-export const PROPERTY_POSSESSION_STATUS =[
-  'Immediate', 'In Future'
+export const PROPERTY_POSSESSION_STATUS = [
+  {
+    name: 'Immediate',
+    value: 'immediate'
+  },
+  {
+    name: 'In Future',
+    value: 'future'
+  },
 ]
+
 export const RENT_SUITABLE_FOR = [
-  'Family', 'Bachelors', 'Comapny'
+  {
+    name: 'Family',
+    value: 'family'
+  },
+  {
+    name: 'Bachelors',
+    value: 'bachelors'
+  },
+  {
+    name: 'Comapny',
+    value: 'company'
+  },
 ]
 
 export const BACHELOR_PREFERENCE = [
-    'Open for both', 'Men Only', 'WoMen Only'
+    {
+    name: 'Open for both',
+    value: 'open_for_both'
+  },
+   {
+    name: 'Men Only',
+    value: 'men_only'
+  },
+   {
+    name: 'Women Only',
+    value: 'women_only'
+  },
 ]
+
+export const RENT_AVAILABEL_FROM = [
+    {
+    name: 'Immediately',
+    value: 'immediately'
+  },
+   {
+    name: 'Later',
+    value: 'later'
+  }
+]
+
+export const MAINTENANCE_CHARGES = [
+    {
+    name: 'Include in rent',
+    value: 'include_in_rent'
+  },
+   {
+    name: 'Separate',
+    value: 'separate'
+  }
+]
+
+
+export const SECURITY_CHARGES = [
+    {
+    name: 'None',
+    value: 'none'
+  },
+   {
+    name: '1 Month',
+    value: '1_month'
+  },
+  {
+    name: '2 Month',
+    value: '2_month'
+  },
+  {
+    name: '6 Month',
+    value: '6_month'
+  },
+  {
+    name: 'Custom',
+    value: 'custom'
+  },
+]
+
+export const LOCK_IN_PERIOD = [
+    {
+    name: 'None',
+    value: 'none'
+  },
+   {
+    name: '1 Month',
+    value: '1_month'
+  },
+  {
+    name: '2 Month',
+    value: '2_month'
+  },
+  {
+    name: '6 Month',
+    value: '6_month'
+  },
+  {
+    name: 'Custom',
+    value: 'custom'
+  },
+]
+
+export const BROKRAGE_CHARGE = [
+    {
+    name: 'None',
+    value: 'none'
+  },
+   {
+    name: '15 Days',
+    value: '15_days'
+  },
+  {
+    name: '30 Days',
+    value: '30_days'
+  },
+  {
+    name: 'Custom',
+    value: 'custom'
+  },
+]
+
+export const CUSTOM_SECTION_NAME = {
+  'FLOOR': {
+    name: 'Floor Details',
+    subName: 'Total no of floors and your floor details'
+  },
+  'RENT': {
+    name: 'Rent Details',
+    subName: 'Rent Details'
+  },
+  'PRICE': {
+    name: 'Price Details',
+    subName: 'Price Details'
+  },
+  'PLOT': {
+    name: 'Plot Details',
+    subName: 'Plot Details'
+  }
+}
 
 export const OTP_RESEND_TIME = 30
