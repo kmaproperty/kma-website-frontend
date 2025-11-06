@@ -240,3 +240,66 @@ export const step2PostPropertyDetailsApiHandler = async (propertyId: string) : P
         throw error.response?.data ?? error;
     }
 }
+
+export interface Step3PostPropertyPayload {
+  propertyId: string | null;
+  additionalRooms: string[] | null;
+  reservedParkingCovered: number | null;
+  reservedParkingOpen: number | null;
+  powerBackup: string | null;
+  furnishType: string | null;
+  furnishingsCounts?: {
+    item: string | null;
+    count: number | null;
+  }[] | null;
+  amenities?: string[] | null;
+  propertyDescription?: string | null;
+  waterSource?: string | null;
+  isLiftAvailable?: boolean | null;
+}
+
+export interface Step3PostPropertyResponse {
+  message: string;
+}
+
+export const step3PostPropertyCreateApiHandler = async (paylaod: Step2PostPropertyPayload) : Promise<Step3PostPropertyResponse> => {
+    try{
+        const response = await axiosInstance.post<Step3PostPropertyResponse>(
+      "property/step-3", paylaod);
+
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}
+
+export interface Step3DetailsResponse {
+  propertyId: string | null;
+  additionalRooms: string[] | null;
+  reservedParkingCovered: number | null;
+  reservedParkingOpen: number | null;
+  powerBackup: string | null;
+  furnishType: string | null;
+  furnishingsCounts: {
+    item: string | null;
+    count: number | null;
+  }[] | null;
+  amenities: string[] | null;
+  waterSource: string | null;
+  isLiftAvailable: boolean | null;
+  propertyDescription: string | null;
+  status: string | null;
+  completionStep: number | null;
+  progressPercentage: number | null;
+}
+
+export const step3PostPropertyDetailsApiHandler = async (propertyId: string) : Promise<Step3DetailsResponse> => {
+    try{
+        const response = await axiosInstance.get<Step3DetailsResponse>(
+      `property/step-3/${propertyId}`,);
+
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}

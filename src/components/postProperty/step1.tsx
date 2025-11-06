@@ -716,7 +716,7 @@ export default function Step1() {
                   checked={item.code == basicStaticDetails.propertyListFor?.code}
                   label={item.name}
                   onChagne={() => {
-                    setBasicStaticDetails((pre) => ({...pre, propertyListFor: item}))
+                    setBasicStaticDetails((pre) => ({...pre, propertyListFor: item, propertyType: null}))
                     setDynamicFieldDetails({
                       bhk: null,
                       otherBhk: null,
