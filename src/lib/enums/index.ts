@@ -325,7 +325,13 @@ export const FIELD_NAME = {
   CORNER_PROPERTY: 'Corner_property',
   PROPERTY_DESCRRIPTION: 'Property_description',
   PLOT_PRICE: 'Plot_price',
-  LOAN_AVAILABLE: 'Loan_available'
+  LOAN_AVAILABLE: 'Loan_available',
+  ADDITIONAL_ROOM: 'Additional_room',
+  RESERVED_PARKING: 'Reserved_parking',
+  POWER_BACKUP: 'Power_backup',
+  FURNISH_TYPE: 'Furnish_type',
+  WATER_SOURCE: 'Water_source',
+  LIFT_AVAILABILITY: 'Lift_availability',
 }
 
 export const AREA_UNIT_LIST = [
@@ -343,6 +349,44 @@ export const TRANSACTION_TYPE_LIST = [
   {
     name: 'Resale',
     value: 'resale'
+  },
+]
+
+export const WATER_SOURCE = [
+  {
+    name: 'Municipal Supply',
+    value: 'Municipal Supply'
+  },
+  {
+    name: 'BoreWell/ Underground',
+    value: 'BoreWell/ Underground'
+  },
+  {
+    name: 'Other',
+    value: 'other'
+  },
+]
+
+export const ADDITIONAL_ROOM = [
+  'Pooja Room', 'Servant Room', 'Study Room', 'Extra Room'
+]
+
+export const POWER_BACKUP = [
+  'No Back-up', 'Available'
+]
+
+export const FURNISH_TYPE = [
+  {
+    name: 'Fully Furnished',
+    value: 'Furnished'
+  },
+  {
+    name: 'Semi Furnished',
+    value: 'Semi-Furnished'
+  },
+  {
+    name: 'Unfurnished',
+    value: 'Unfurnished'
   },
 ]
 
@@ -375,6 +419,18 @@ export const TRUTY_LIST = [
     value: 'no'
   },
 ]
+
+export const PROPERTY_IMAGE_TYPE = [
+  { label: "Living Room", value: "Living Room" },
+  { label: "Bedroom", value: "Bedroom" },
+  { label: "Kitchen", value: "Kitchen" },
+  { label: "Bathroom", value: "Bathroom" },
+  { label: "Balcony", value: "Balcony" },
+  { label: "Exterior", value: "Exterior" },
+  { label: "Parking", value: "Parking" },
+  { label: "Amenities", value: "Amenities" },
+  { label: "Other", value: "Other" },
+];
 
 export const PROPERTY_CONSTRUCTION_STATUS =[
   {
@@ -536,3 +592,153 @@ export const CUSTOM_SECTION_NAME = {
 }
 
 export const OTP_RESEND_TIME = 30
+
+export  const FURNISHING_LIST = [
+    {
+        icon: 'water-purifier.png',
+        label: 'Water Purifier'
+    },
+    {
+        icon: 'fan.png',
+        label: 'Fan'
+    },
+    {
+        icon: 'fridge.png',
+        label: 'Fridge'
+    },
+    {
+        icon: 'external-fan.png',
+        label: 'Exhaust Fan'
+    },
+    {
+        icon: 'dining.png',
+        label: 'Dining Table'
+    },
+    {
+        icon: 'geyser.png',
+        label: 'Geyser'
+    },
+    {
+        icon: 'stove.png',
+        label: 'Stove'
+    },
+    {
+        icon: 'light.png',
+        label: 'Light'
+    },
+    {
+        icon: 'curtains.png',
+        label: 'Curtains'
+    },
+    {
+        icon: 'chimeny.png',
+        label: 'Modular Kitchen'
+    },
+    {
+        icon: 'television.png',
+        label: 'TV'
+    },
+    {
+        icon: 'chimeny.png',
+        label: 'Chimney'
+    },
+    {
+        icon: 'bed.png',
+        label: 'Bed'
+    },
+    {
+        icon: 'air-conditioner.png',
+        label: 'AC'
+    },
+    {
+        icon: 'wardrobe.png',
+        label: 'Wardrobe'
+    },
+    {
+        icon: 'sofa.png',
+        label: 'Sofa'
+    },
+    {
+        icon: 'bed.png',
+        label: 'Washing Machine'
+    },
+    {
+        icon: 'microwave.png',
+        label: 'Microwave'
+    },
+
+  ]
+
+export  const AMENITISE_LIST = [
+  "Gymnasium",
+  "Swimming Pool",
+  "Badminton Court(s)",
+  "Tennis Court(s)",
+  "Squash Court",
+  "Kids' Play Areas",
+  "Jogging / Cycle Track",
+  "Power Backup",
+  "Central AC",
+  "Central Wi-Fi",
+  "Attached Market",
+  "Restaurant",
+  "Home Automation",
+  "24 x 7 Security",
+  "Clubhouse",
+  "Balcony",
+  "High Speed Elevators",
+  "Pre-School",
+  "Medical Facility",
+  "Day Care Center",
+  "Pet Area",
+  "Indoor Games",
+  "Conference Room",
+  "Large Green Area",
+  "Concierge Desk",
+  "Helipad",
+  "Golf Course",
+  "Multiplex",
+  "Visitor's Parking",
+  "Serviced Apartments",
+  "Service Elevators",
+  "High Street Retail",
+  "Hypermarket",
+  "ATM's",
+  "Food Court",
+  "Servant Quarter",
+  "Study Room",
+  "Private Pool",
+  "Private Gym",
+  "Private Jacuzzi",
+  "View of Water",
+  "View of Landmark",
+  "Built in Wardrobes",
+  "Walk-in Closet",
+  "Lobby in Building",
+  "Barbeque Area",
+  "Double Glazed Windows",
+  "Centrally Air-Conditioned",
+  "Central Heating",
+  "Day Care Center",
+  "Electricity Backup",
+  "Waste Disposal",
+  "First Aid Medical Center",
+  "Tiles",
+  "Service Elevators",
+  "Broadband Internet",
+  "Satellite/Cable TV",
+  "Conference Room",
+  "Intercom",
+  "Jacuzzi",
+  "Kids Play Area",
+  "Reception/Waiting Room",
+  "Maintenance Staff",
+  "Sauna",
+  "Security Staff",
+  "CCTV Security",
+  "Laundry Facility",
+  "Cleaning Services",
+  "Facilities for Disabled",
+  "24 Hours Concierge",
+  "Balcony or Terrace"
+]

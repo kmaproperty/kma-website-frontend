@@ -1,3 +1,4 @@
+import axios from "axios";
 import { axiosInstance } from "./axiosService";
 
 export interface CitiesResponse {
@@ -161,4 +162,56 @@ export const getBhkApiHandler = async ({societyId,propertyTypeId}: BhkPayload) :
     }catch(error: any){
         throw error.response?.data ?? error;
     }
+}
+
+export interface GetFileUploadUrlPayload {
+  filename: string,
+  contentType: string,
+  folder: string,
+  expiresIn: number
+}
+
+export interface GetFileUploadUrlResponse {
+  success: boolean,
+  message: string,
+  data: {
+    url: string,
+    key: string,
+    expiresIn: number,
+  }
+
+}
+
+export const getFileUploadUrlApiHandler = async (payload: GetFileUploadUrlPayload) : Promise<GetFileUploadUrlResponse> => {
+    try{
+        const response = await axiosInstance.post<GetFileUploadUrlResponse>(
+      "uploads/presigned-url" , payload);
+
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}
+
+export interface UploadFileToS3Payload {
+  url: string,
+  file: File
+}
+export interface UploadFileToS3Response {
+  status: number,
+  statusText: string,
+}
+
+export const uploadFileToS3ApiHandler = async ({url, file}: UploadFileToS3Payload) : Promise<UploadFileToS3Response> => {
+  try{
+    const response = await axios.put<UploadFileToS3Response>(url, file, {
+      headers: {
+        "Content-Type": file.type
+      }
+    })
+    console.log('file upload response', response)
+    return {status: response.status, statusText: response.statusText}
+  }catch(error: any){
+    throw error.response?.data ?? error
+  }
 }
