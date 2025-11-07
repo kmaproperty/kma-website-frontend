@@ -25,7 +25,7 @@ const initialState: Progress = {
   step_4_Progress: null,
   totalProgress: 0,
   stepList: POST_PROPERTY_STEPS,
-  activeStep: 2
+  activeStep: 1
 };
 
 const postPropertyProgressSlice = createSlice({
@@ -70,7 +70,7 @@ const postPropertyProgressSlice = createSlice({
           : 0;
     },
 
-    // Merge all steps & compute total (can be dispatched manually)
+    
     calculateTotalProgress: (state) => {
       const allSteps = [
         state.step_1_Progress,
@@ -100,8 +100,12 @@ const postPropertyProgressSlice = createSlice({
     ) => {
       const { step } = action.payload;
       state.activeStep = step
-    }
+    },
 
+    setTotalProgress: ( state,
+      action: PayloadAction<{progress: number }>) => {
+        state.totalProgress = action.payload.progress
+    }
   },
 });
 
@@ -109,7 +113,8 @@ export const {
   updateStepProgress,
   calculateTotalProgress,
   resetProgress,
-  setActiveStep
+  setActiveStep,
+  setTotalProgress
 } = postPropertyProgressSlice.actions;
 
 export default postPropertyProgressSlice.reducer;

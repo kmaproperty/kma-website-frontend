@@ -48,19 +48,19 @@ export const useStepProgress = () => {
    * Auto-run whenever visible or filled fields change
    */
 
-  useEffect(() => {
-    const observer = new MutationObserver(() => calculateProgress());
-    observer.observe(document.body, {
-      attributes: true,
-      childList: true,
-      subtree: true,
-      attributeFilter: ["data-has-value", "style", "class"],
-    });
+  // useEffect(() => {
+  //   const observer = new MutationObserver(() => calculateProgress());
+  //   observer.observe(document.body, {
+  //     attributes: true,
+  //     childList: true,
+  //     subtree: true,
+  //     attributeFilter: ["data-has-value", "style", "class"],
+  //   });
 
-    calculateProgress();
+  //   calculateProgress();
 
-    return () => observer.disconnect();
-  }, [calculateProgress]);
+  //   return () => observer.disconnect();
+  // }, [calculateProgress]);
 
   return { calculateProgress, totalProgress };
 };

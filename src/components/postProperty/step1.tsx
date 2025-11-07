@@ -16,7 +16,7 @@ import Agriculture from "@/assets/agriculture-transparent.svg";
 import DynamicInput from "../common/dynamicInput";
 import { backdropClasses, InputBase } from "@mui/material";
 import { useCitySearch } from "@/hooks/useCitySearch";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useBuildingSearch } from "@/hooks/useBuildingSearch";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { BhkResponse, getBhkApiHandler, getPropertyCategoryApiHandler, getPropertyListApiHandler, getPropertyTypeApiHandler, PropertyCategoryResponse, PropertyListResponse, PropertyTypePayload, PropertyTypeResponse } from "@/services/masterService";
@@ -26,7 +26,7 @@ import { generateBHKAmeneties, generateBHKList } from "@/lib/helper";
 import DynamicSelect from "../common/select";
 import { AREA_UNIT_LIST, FACING_LIST, FIELD_NAME, OWNERSHIP_LIST, PROPERTY_CONSTRUCTION_STATUS, PROPERTY_POSSESSION_STATUS, TRANSACTION_TYPE_LIST } from "@/lib/enums";
 import { useDispatch, useSelector } from "react-redux";
-import { getActiveStep, setActiveStep } from "@/store/postPropertyProgress";
+import { getActiveStep, setActiveStep, setTotalProgress } from "@/store/postPropertyProgress";
 import { Step1DetailsPayload, Step1DetailsResponse, step1PostPropertyCreateApiHandler, step1PostPropertyDetailsApiHandler, Step1PostPropertyPayload, Step1PostPropertyResponse } from "@/services/postProperty";
 import { toast } from "react-toastify";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
@@ -45,6 +45,7 @@ export default function Step1() {
   const { loadCities  } = useCitySearch();
   const { loadBuildings } = useBuildingSearch();
   const { calculateProgress } = useStepProgress()
+  const possessionDateRef = useRef<HTMLInputElement | null>(null);
 
   const router = useRouter()
   const params = useParams()
@@ -692,12 +693,14 @@ export default function Step1() {
         propertyAge: step1Details?.ageOfProperty,
         possesionDate: step1Details?.possessionTime,
       }))
+
+      dispatch(setTotalProgress({progress: step1Details.progressPercentage}))
     }
   },[step1Details])
 
-  useEffect(() => {
-    calculateProgress()
-  }, [dynamicFieldDetails, basicStaticDetails])
+  // useEffect(() => {
+  //   calculateProgress()
+  // }, [dynamicFieldDetails, basicStaticDetails])
 
   return (
     <>
@@ -1104,8 +1107,9 @@ export default function Step1() {
       {renderShowField(FIELD_NAME.POSSESION_DATE) &&
         <div data-field={FIELD_NAME.POSSESION_DATE} data-has-value={!!dynamicFieldDetails.possesionDate}>
           <FieldLabel label="Possession Date" customClass="pb-2" required={true}/>
-          <div>
+          <div onClick={() => {possessionDateRef.current?.showPicker()}}>
             <InputBase
+              inputRef={possessionDateRef}
               placeholder="Selct"
               type="date"
               fullWidth

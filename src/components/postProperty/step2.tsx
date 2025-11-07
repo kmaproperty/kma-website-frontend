@@ -1,7 +1,7 @@
 import { InputBase } from "@mui/material";
 import FieldLabel from "./fieldLabel";
 import ChipTag from "../common/chipTag";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BACHELOR_PREFERENCE, BROKRAGE_CHARGE, CONSTRUCTION_TYPE, CUSTOM_SECTION_NAME, FACING_LIST, FIELD_NAME, LOCK_IN_PERIOD, MAINTENANCE_CHARGES, PROPERTY_POSSESSION_STATUS, RENT_AVAILABEL_FROM, RENT_SUITABLE_FOR, SECURITY_CHARGES, TRANSACTION_TYPE_LIST, TRUTY_LIST } from "@/lib/enums";
 import DynamicSelect from "../common/select";
 import { generateFloors, generateLockInPeriod } from "@/lib/helper";
@@ -10,13 +10,12 @@ import { Step1DetailsResponse, step1PostPropertyDetailsApiHandler, Step2DetailsR
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import CustomCheckbox from "../common/checkbox";
 import { useDispatch, useSelector } from "react-redux";
-import { getActiveStep, setActiveStep } from "@/store/postPropertyProgress";
+import { getActiveStep, setActiveStep, setTotalProgress } from "@/store/postPropertyProgress";
 import { useStepProgress } from "@/hooks/useStepProgress";
 import DynamicInput from "../common/dynamicInputLeft";
 import dynamic from "next/dynamic";
 import { toast } from "react-toastify";
 const QuillEditor = dynamic(() => import("../common/editor"), { ssr: false });
-
 
 
 const RenderSectionName = ({data, secNumber}) => {
@@ -45,6 +44,8 @@ export default function Step2() {
 
   const activeStep = useSelector(getActiveStep);
   const dispatch = useDispatch()
+  const possessionDateref = useRef<HTMLInputElement | null>(null);
+  const availabelDateref = useRef<HTMLInputElement | null>(null);
 
   const [basicStaticDetail, setBasicStaticDetail] = useState({
     propertyListFor: null,
@@ -275,7 +276,7 @@ export default function Step2() {
     }
 
     if(fieldName == FIELD_NAME.BECHLOR_PREFERENCE){
-      if(isResidential && isRent && ['res-rent-flat', 'res-rent-villa', 'res-rent-house', 'res-rent-duplex', , 'res-rent-builder-floor', 'res-rent-penthouse', 'res-rent-studio', 'res-rent-farmhouse'].includes(basicStaticDetail.propertyType?.code ?? '') && dynamicFieldDetails.rentSuitableFor.includes('Bachelors')){
+      if(isResidential && isRent && ['res-rent-flat', 'res-rent-villa', 'res-rent-house', 'res-rent-duplex', , 'res-rent-builder-floor', 'res-rent-penthouse', 'res-rent-studio', 'res-rent-farmhouse'].includes(basicStaticDetail.propertyType?.code ?? '') && dynamicFieldDetails.rentSuitableFor.includes('bachelors')){
         return true
       }
       return false
@@ -417,7 +418,7 @@ export default function Step2() {
   }
 
   const renderOptionalField = (fieldName: string) => {
-    if(renderShowField(FIELD_NAME.BECHLOR_PREFERENCE) && !dynamicFieldDetails.rentSuitableFor.includes('Bachelors')){
+    if(renderShowField(FIELD_NAME.BECHLOR_PREFERENCE) && !dynamicFieldDetails.rentSuitableFor.includes('bachelors')){
       return false
     }
     return true
@@ -443,7 +444,7 @@ export default function Step2() {
       hasError = true;
     }
 
-    if(renderShowField(FIELD_NAME.BECHLOR_PREFERENCE) && dynamicFieldDetails.rentSuitableFor.includes('Bachelors') && !dynamicFieldDetails.rentPreference){
+    if(renderShowField(FIELD_NAME.BECHLOR_PREFERENCE) && dynamicFieldDetails.rentSuitableFor.includes('bachelors') && !dynamicFieldDetails.rentPreference){
       updatedError.rentPreference = 'Please select preference for bachelors'
       hasError = true;
     }
@@ -464,7 +465,7 @@ export default function Step2() {
     }
 
     if(renderShowField(FIELD_NAME.PRICE_COST) && (!dynamicFieldDetails.price || (Number(dynamicFieldDetails.price) < 100000) || (Number(dynamicFieldDetails.price) > 2000000000))){
-      updatedError.rent = 'Rent should be between 1 Lakh and 200 Crore'
+      updatedError.rent = 'Price should be between 1 Lakh and 200 Crore'
       hasError = true;
     }
 
@@ -476,6 +477,28 @@ export default function Step2() {
     if(renderShowField(FIELD_NAME.MAINTENANCE_CHARGE_VALUE) && !dynamicFieldDetails?.otherMaintenanceCharges){
       updatedError.otherMaintenanceCharges = 'Please enter the maintenance charges'
       hasError = true;
+    }
+
+    if(renderShowField(FIELD_NAME.MAINTENANCE_CHARGE_VALUE) && dynamicFieldDetails?.otherMaintenanceCharges){
+      if(renderShowField(FIELD_NAME.PRICE_COST) && dynamicFieldDetails.price){
+        if(((Number(dynamicFieldDetails.price) * 50) / 100) < Number(dynamicFieldDetails?.otherMaintenanceCharges)){
+          updatedError.otherMaintenanceCharges = `Maintenance charge should less then 50% of price`
+          hasError = true;
+        }
+      }
+      if(renderShowField(FIELD_NAME.RENT) && dynamicFieldDetails.rent){
+        if(((Number(dynamicFieldDetails.rent) * 50) / 100) < Number(dynamicFieldDetails?.otherMaintenanceCharges)){
+          updatedError.otherMaintenanceCharges = `Maintenance charge should less then 50% of rent`
+          hasError = true;
+        }
+      }
+      if(renderShowField(FIELD_NAME.PLOT_PRICE) && dynamicFieldDetails.plotPrice){
+        if(((Number(dynamicFieldDetails.plotPrice) * 50) / 100) < Number(dynamicFieldDetails?.otherMaintenanceCharges)){
+          updatedError.otherMaintenanceCharges = `Maintenance charge should less then 50% of plot price`
+          hasError = true;
+        }
+      }
+      
     }
 
     if(renderShowField(FIELD_NAME.SECURITY_DEPOSITE) && !dynamicFieldDetails?.securityDeposite){
@@ -542,9 +565,8 @@ export default function Step2() {
       updatedError.possesionDate = 'Please select possession date'
       hasError = true
     }
-
     if(renderShowField(FIELD_NAME.PLOT_PRICE) && (!dynamicFieldDetails.plotPrice || (Number(dynamicFieldDetails.plotPrice) < 100000) || (Number(dynamicFieldDetails.plotPrice) > 2000000000))){
-      updatedError.plotPrice = 'Rent should be between 1 Lakh and 200 Crore'
+      updatedError.plotPrice = 'Plot price should be between 1 Lakh and 200 Crore'
       hasError = true;
     }
 
@@ -604,7 +626,13 @@ export default function Step2() {
     },
     onSuccess: (response: Step2PostPropertyResponse) => {
       console.log("create owner response", response);
-      dispatch(setActiveStep({step: activeStep + 1}))
+      const propertyType = basicStaticDetail.propertyType?.code
+      const isStep3Skipped = ['res-sale-plot', 'res-sale-agri-land'].includes(propertyType ?? '')
+      if(isStep3Skipped){
+        dispatch(setActiveStep({step: activeStep + 2}))
+      }else{
+        dispatch(setActiveStep({step: activeStep + 1}))
+      }
     },
     onError: (error: any) => {
       console.log("owner create error", error);
@@ -619,7 +647,7 @@ export default function Step2() {
   });
 
   const { data: step1Details } = useQuery({
-    queryKey: ["step1-details", params?.propertyId],
+    queryKey: ["step1-in-2-details", params?.propertyId],
     queryFn: async (): Promise<Step1DetailsResponse> => {
       return step1PostPropertyDetailsApiHandler(String(params?.propertyId ?? ''));
     },
@@ -654,6 +682,7 @@ export default function Step2() {
             propertyCategory: step1Details?.category,
             propertyType: step1Details?.propertyType,
         }))
+        dispatch(setTotalProgress({progress: step1Details.progressPercentage}))
       }
     },[step1Details])
 
@@ -704,9 +733,9 @@ export default function Step2() {
       } 
     },[step2Details])
 
-    useEffect(() => {
-        calculateProgress()
-      }, [dynamicFieldDetails])
+    // useEffect(() => {
+    //     calculateProgress()
+    //   }, [dynamicFieldDetails])
 
   return (
     <>
@@ -1172,7 +1201,7 @@ export default function Step2() {
                       checked={dynamicFieldDetails.rentAvailabelFrom == item.value}
                       label={item.name}
                       onChagne={() => {
-                        setDynamicFieldDetails((pre) => ({...pre, rentAvailabelFrom: item.value}))
+                        setDynamicFieldDetails((pre) => ({...pre, rentAvailabelFrom: item.value, rentAvailableDate: null}))
                         setErrors((pre) => ({...pre, rentAvailabelFrom: ''}))
                       }}
                       value={dynamicFieldDetails.rentAvailabelFrom}
@@ -1188,8 +1217,9 @@ export default function Step2() {
 
         {renderShowField(FIELD_NAME.RENT_AVAILABEL_DATE) && <div data-field={FIELD_NAME.RENT_AVAILABEL_DATE} data-has-value={!!dynamicFieldDetails.rentAvailableDate}>
           <FieldLabel label="Available Date" required={true} />
-          <div className="flex gap-3 pt-2">
+          <div className="flex gap-3 pt-2" onClick={() => {possessionDateref.current?.showPicker()}}>
             <InputBase
+              inputRef={availabelDateref}
               placeholder="Enter Available Date"
               type="date"
               fullWidth
@@ -1259,7 +1289,7 @@ export default function Step2() {
                     checked={item.value == dynamicFieldDetails.propertyPossessionStatus}
                     label={item.name}
                     onChagne={() => {
-                      setDynamicFieldDetails((pre) => ({...pre, propertyPossessionStatus: item.value}))
+                      setDynamicFieldDetails((pre) => ({...pre, propertyPossessionStatus: item.value, propertyAge: null,possesionDate: null}))
                       setErrors((pre) => ({...pre, propertyPossessionStatus: ''}))
                     }}
                     value={dynamicFieldDetails.propertyPossessionStatus}
@@ -1299,8 +1329,9 @@ export default function Step2() {
         {renderShowField(FIELD_NAME.POSSESION_DATE) &&
           <div data-field={FIELD_NAME.POSSESION_DATE} data-has-value={!!dynamicFieldDetails.possesionDate}>
             <FieldLabel label="Possession Date" customClass="pb-2" required={true}/>
-            <div>
+            <div onClick={() => {possessionDateref.current?.showPicker()}}>
               <InputBase
+                inputRef={possessionDateref}
                 placeholder="Selct"
                 type="date"
                 fullWidth
@@ -1326,19 +1357,24 @@ export default function Step2() {
 
         {renderShowField(FIELD_NAME.PLOT_PRICE) && <div data-field={FIELD_NAME.PLOT_PRICE} data-has-value={!!dynamicFieldDetails.plotPrice}>
           <FieldLabel label="Plot Price" required={true} customClass="pb-2"/>
-          <DynamicInput
-            placeHolder="Plot price"
-            options={[{label: 'Per month', value: 'Per month'}]}
-            onChange={(value: string, dropdownValue: string) => {
-              const isOnlyDigits = /^\d*$/.test(value);
-              if(!isOnlyDigits) return
-            setDynamicFieldDetails((pre) => ({...pre, plotPrice: value,}))
-            setErrors((pre) => ({...pre, plotPrice: ''}))
-            }}
-            value={dynamicFieldDetails.plotPrice ?? ''}
-            dropdownValue={'Per month'}
-            disabled={true}
-           />
+           <InputBase
+              placeholder="Plot price"
+              fullWidth
+              value={dynamicFieldDetails.plotPrice ?? ''}
+              onChange={(e) => {
+                const input = e.target.value;
+                const isOnlyDigits = /^\d*$/.test(input);
+                if (!isOnlyDigits) return;
+                setDynamicFieldDetails((pre) => ({...pre, plotPrice: input,}))
+                setErrors((pre) => ({...pre, plotPrice: ''}))
+              }}
+              className={
+                "box-border px-4 py-2 text-sm rounded-full border focus:outline-none border-border text-text-gray h-[40px]"
+              }
+              inputProps={{
+                className: "placeholder-gray",
+              }}
+            />
           {errors?.plotPrice && <p className="pt-1 text-red-500 text-xs">{errors.plotPrice}</p>}
         </div>}
 
@@ -1372,7 +1408,7 @@ export default function Step2() {
                     checked={dynamicFieldDetails.maintenanceCharges == item.value}
                     label={item.name}
                     onChagne={() => {
-                      setDynamicFieldDetails((pre) => ({...pre, maintenanceCharges: item.value}))
+                      setDynamicFieldDetails((pre) => ({...pre, maintenanceCharges: item.value, otherMaintenanceCharges: null,}))
                       setErrors((pre) => ({...pre, maintenanceCharges: ''}))
                     }}
                     value={1}
@@ -1412,7 +1448,7 @@ export default function Step2() {
                     checked={item.value == dynamicFieldDetails.securityDeposite}
                     label={item.name}
                     onChagne={() => {
-                      setDynamicFieldDetails((pre) => ({...pre, securityDeposite: item.value}))
+                      setDynamicFieldDetails((pre) => ({...pre, securityDeposite: item.value, otherSecurityDeposite: null,}))
                       setErrors((pre) => ({...pre, securityDeposite: ''}))
                     }}
                     value={dynamicFieldDetails.securityDeposite}
@@ -1452,7 +1488,7 @@ export default function Step2() {
                     checked={item.value == dynamicFieldDetails.lockInPeriod}
                     label={item.name}
                     onChagne={() => {
-                      setDynamicFieldDetails((pre) => ({...pre, lockInPeriod: item.value}))
+                      setDynamicFieldDetails((pre) => ({...pre, lockInPeriod: item.value, otherLockInPeriod: null,}))
                       setErrors((pre) => ({...pre, lockInPeriod: ''}))
                     }}
                     value={dynamicFieldDetails.lockInPeriod}
@@ -1492,7 +1528,7 @@ export default function Step2() {
                     checked={item.value == dynamicFieldDetails.brokerageCharge}
                     label={item.name}
                     onChagne={() => {
-                      setDynamicFieldDetails((pre) => ({...pre, brokerageCharge: item.value}))
+                      setDynamicFieldDetails((pre) => ({...pre, brokerageCharge: item.value, otherBrokerageCharge: null,}))
                       setErrors((pre) => ({...pre, brokerageCharge: ''}))
                     }}
                     value={dynamicFieldDetails.brokerageCharge}
