@@ -9,7 +9,7 @@ import dynamic from "next/dynamic";
 import { useStepProgress } from "@/hooks/useStepProgress";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { getActiveStep, setActiveStep } from "@/store/postPropertyProgress";
+import { getActiveStep, setActiveStep, setTotalProgress } from "@/store/postPropertyProgress";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   Step1DetailsResponse,
@@ -216,7 +216,7 @@ export default function Step3() {
   }
 
   const { data: step1Details } = useQuery({
-    queryKey: ["step1-details", params?.propertyId],
+    queryKey: ["step1-in-3-details", params?.propertyId],
     queryFn: async (): Promise<Step1DetailsResponse> => {
       return step1PostPropertyDetailsApiHandler(
         String(params?.propertyId ?? "")
@@ -230,8 +230,8 @@ export default function Step3() {
     refetchOnMount: true,
   });
 
-  const { data: step2Details } = useQuery({
-  queryKey: ["step2-details", params?.propertyId],
+  const { data: step3Details } = useQuery({
+  queryKey: ["step3-details", params?.propertyId],
   queryFn: async (): Promise<Step3DetailsResponse> => {
     return step3PostPropertyDetailsApiHandler(String(params?.propertyId ?? ''));
   },
@@ -284,24 +284,25 @@ export default function Step3() {
   });
 
   useEffect(() => {
-    if(step2Details){
-      let furnishing = step2Details.furnishingsCounts.map(item => ({name: item.item, count: item.count}))
+    if(step3Details){
+      let furnishing = step3Details.furnishingsCounts.map(item => ({name: item.item, count: item.count}))
       setDynamicFieldDetails((pre) => ({
         ...pre,
-        additionalRoom: step2Details?.additionalRooms,
-        coveredParking: Number(step2Details?.reservedParkingCovered),
-        openParking: Number(step2Details?.reservedParkingOpen),
-        powerBackup: step2Details?.powerBackup,
-        waterSource: step2Details?.waterSource,
-        liftAvalability: step2Details?.isLiftAvailable,
-        propertyDescription: step2Details?.propertyDescription,
-        amenities: step2Details?.amenities,
-        furnishType: step2Details?.furnishType,
+        additionalRoom: step3Details?.additionalRooms,
+        coveredParking: Number(step3Details?.reservedParkingCovered),
+        openParking: Number(step3Details?.reservedParkingOpen),
+        powerBackup: step3Details?.powerBackup,
+        waterSource: step3Details?.waterSource,
+        liftAvalability: step3Details?.isLiftAvailable,
+        propertyDescription: step3Details?.propertyDescription,
+        amenities: step3Details?.amenities,
+        furnishType: step3Details?.furnishType,
         furnishingsCounts: furnishing
       }))
     }
 
-  },[step2Details])
+
+  },[step3Details])
 
   useEffect(() => {
     if (step1Details) {
@@ -311,12 +312,13 @@ export default function Step3() {
         propertyCategory: step1Details?.category,
         propertyType: step1Details?.propertyType,
       }));
+      dispatch(setTotalProgress({progress: step1Details.progressPercentage}))
     }
   }, [step1Details]);
 
-  useEffect(() => {
-    calculateProgress();
-  }, [dynamicFieldDetails, basicStaticDetail]);
+  // useEffect(() => {
+  //   calculateProgress();
+  // }, [dynamicFieldDetails, basicStaticDetail]);
 
   return (
     <>
@@ -514,6 +516,8 @@ export default function Step3() {
                     setDynamicFieldDetails((pre) => ({
                       ...pre,
                       furnishType: item.value,
+                      furnishingsCounts: [],
+                      amenities: []
                     }));
                     setErrors((pre) => ({...pre, furnishType: ''}))
                   }}

@@ -109,6 +109,7 @@ export interface Step1DetailsResponse {
     createdAt: string;
     updatedAt: string; 
     completionStep: number;
+    progressPercentage: number;
 }
 
 export const step1PostPropertyDetailsApiHandler = async (propertyId: string) : Promise<Step1DetailsResponse> => {
@@ -227,6 +228,7 @@ export interface Step2DetailsResponse {
   completionStep: number | null;
   createdAt: string | null;
   updatedAt: string | null;
+  progressPercentage: number;
 }
 
 
@@ -297,6 +299,51 @@ export const step3PostPropertyDetailsApiHandler = async (propertyId: string) : P
     try{
         const response = await axiosInstance.get<Step3DetailsResponse>(
       `property/step-3/${propertyId}`,);
+
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}
+
+export interface Step4PostPropertyPayload {
+
+}
+
+export interface Step4PostPropertyResponse {
+  message: string
+}
+
+export const step4PostPropertyCreateApiHandler = async (paylaod: Step4PostPropertyPayload) : Promise<Step4PostPropertyResponse> => {
+    try{
+        const response = await axiosInstance.post<Step4PostPropertyResponse>(
+      "property/step-4", paylaod);
+
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}
+
+export interface Step4DetailsResponse {
+  propertyId: string;
+  photos: Array<{
+    view: string | null;
+    fileKey: string;
+    isCoverImage: boolean;
+  }>;
+  videos: Array<{
+    fileKey?: string | null;
+    format?: string | null;
+  }>;
+  status: string;
+  completionStep: number;
+  progressPercentage: number;
+}
+export const step4PostPropertyDetailsApiHandler = async (propertyId: string) : Promise<Step4DetailsResponse> => {
+    try{
+        const response = await axiosInstance.get<Step4DetailsResponse>(
+      `property/step-4/${propertyId}`,);
 
     return response.data;
     }catch(error: any){

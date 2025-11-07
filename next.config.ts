@@ -9,6 +9,14 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        hostname: "kma-property.s3.ap-south-1.amazonaws.com",
+        pathname: '**'
+      },
+    ]
+  },
    turbopack: {
       rules: {
         '*.svg': {

@@ -1,5 +1,7 @@
 "use client";
-import { getActiveStep, getStepList, step } from "@/store/postPropertyProgress";
+import { useStepProgress } from "@/hooks/useStepProgress";
+import { Step1DetailsResponse, step1PostPropertyDetailsApiHandler } from "@/services/postProperty";
+import { getActiveStep, getStepList, setActiveStep, step } from "@/store/postPropertyProgress";
 import {
   Accordion,
   AccordionDetails,
@@ -7,8 +9,11 @@ import {
   Box,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
-import { useSelector } from "react-redux";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 
 const StepContainer = styled(Box)(({ theme }) => ({
@@ -16,12 +21,13 @@ const StepContainer = styled(Box)(({ theme }) => ({
   display: "flex",
 }));
 
-const StepItem = styled(Box)(({ theme }) => ({
+const StepItem = styled(Box)<{active?: boolean}>(({ active }) => ({
   display: "flex",
   alignItems: "flex-start",
   gap: "1rem",
   position: "relative",
   // height: "100%",
+  cursor: active ? 'pointer' : 'default'
 }));
 
 const Circle = styled("div")<{ active?: boolean }>(({ active }) => ({
@@ -80,15 +86,79 @@ const CleanAccordion = styled(Accordion)(() => ({
   },
 }));
 
-function Stepper({activeStep, stepList}: {activeStep: number, stepList: step[]}) {
+function Stepper({activeStep, stepList, basicDetails, totalProgress}: {activeStep: number, stepList: step[], basicDetails: any, totalProgress: number}) {
+  // const isResidential = basicDetails.propertyCategory?.code == 'residential'
+  // const isRent = basicDetails.propertyListFor?.code == 'rent'
+  // const isSell = basicDetails.propertyListFor?.code == 'sale'
+  const dispatch = useDispatch()
+  const propertyType = basicDetails.propertyType?.code
+
+  const isStep3Skipped = ['res-sale-plot', 'res-sale-agri-land'].includes(propertyType ?? '')
+  
   return (
     <StepContainer className="flex-col">
       {stepList.map((step, index) => {
-        const active = activeStep > index;
+        const getActive = () => {
+          if(index == 0 && (totalProgress >= 25 || (isStep3Skipped && totalProgress >= 33))){
+            return true
+          }else if(index == 1 && (totalProgress >= 50 || (isStep3Skipped && totalProgress >= 66))){
+            return true
+          }else if(index == 2 && totalProgress >= 75){
+            return true
+          }else if(index == 3 && totalProgress >= 100){
+            return true
+          }else{
+            return activeStep > index
+          }
+        }
+
+        const active = getActive();
         const isCurrent = activeStep == index + 1;
         const isLast = index === stepList.length - 1;
+
+        const renderStatus = () => {
+          if(isStep3Skipped && index == 2){
+            return 'Skipped'
+          }else if(isCurrent){
+            return 'In Progress'
+          }else if(index == 0 && (totalProgress >= 25 || (isStep3Skipped && totalProgress >= 33))){
+            return 'Completed'
+          }else if(index == 1 && (totalProgress >= 50 || (isStep3Skipped && totalProgress >= 66))){
+            return 'Completed'
+          }else if(index == 2 && totalProgress >= 75){
+            return 'Completed'
+          }else if(index == 3 && totalProgress >= 100){
+            return 'Completed'
+          }else {
+            return 'Pending'
+          }
+
+        }
+
+        const renderStatusColor = () => {
+          if(isStep3Skipped && index == 2){
+            return 'text-[#FF901E]'
+          }else if(isCurrent){
+            return 'text-[#FF901D]'
+          }else if(index == 0 && (totalProgress >= 25 || (isStep3Skipped && totalProgress >= 33))){
+            return 'text-[#4cac0b]'
+          }else if(index == 1 && (totalProgress >= 50 || (isStep3Skipped && totalProgress >= 66))){
+            return 'text-[#4cac0b]'
+          }else if(index == 2 && totalProgress >= 75){
+            return 'text-[#4cac0b]'
+          }else if(index == 3 && totalProgress >= 100){
+            return 'text-[#4cac0b]'
+          }else {
+            return 'text-[#8090FF]'
+          }
+
+        }
         return (
-          <StepItem key={index} className="flex-row h-[120px] sm:h-[90px] 2md:h-auto">
+          <StepItem active={active} onClick={() => {
+            if(active){
+              dispatch(setActiveStep({step: index + 1}))
+            }
+          }} key={index} className="flex-row h-[120px] sm:h-[90px] 2md:h-auto">
             <div
               className="relative flex flex-col items-center "
               style={{ height: "100%" }}
@@ -118,11 +188,9 @@ function Stepper({activeStep, stepList}: {activeStep: number, stepList: step[]})
                 {step.desc}
               </p>
               <p
-                className={`text-xs lg:text-sm font-medium underline ${
-                  isCurrent ? 'text-[#FF901D]' : activeStep <= index ? 'text-[#8090FF]' : 'text-[#4cac0b]'
-                }`}
+                className={`text-xs lg:text-sm font-medium underline ${renderStatusColor()}`}
               >
-                {isCurrent ? 'In Progress' : activeStep <= index ? 'Pending' : 'Completed'}
+                {renderStatus()}
               </p>
             </div>
           </StepItem>
@@ -133,9 +201,39 @@ function Stepper({activeStep, stepList}: {activeStep: number, stepList: step[]})
 }
 
 export default function StepperCustom() {
+  const { totalProgress } = useStepProgress();
   const activeStep = useSelector(getActiveStep);
   const stepList = useSelector(getStepList)
+  const params = useParams()
 
+  const [basicStaticDetail, setBasicStaticDetail] = useState({})
+  
+  const { data: step1Details } = useQuery({
+    queryKey: ["step1-in-stepper-details", params?.propertyId],
+    queryFn: async (): Promise<Step1DetailsResponse> => {
+      return step1PostPropertyDetailsApiHandler(
+        String(params?.propertyId ?? "")
+      );
+    },
+    select: (resposne: Step1DetailsResponse) => {
+      return resposne;
+    },
+    enabled: params?.propertyId ? true : false,
+    staleTime: 0,
+    refetchOnMount: true,
+  });
+
+  useEffect(() => {
+    if(step1Details){
+        setBasicStaticDetail((pre) => ({
+            ...pre,
+            propertyListFor: step1Details?.listingType,
+            propertyCategory: step1Details?.category,
+            propertyType: step1Details?.propertyType,
+        }))
+      }
+  },[step1Details, totalProgress])
+  
   return (
     <div className="bg-[#F4F4F4] rounded-[10px] px-[0.75rem] py-[1rem] h-fit">
       <div className="2md:hidden">
@@ -156,12 +254,12 @@ export default function StepperCustom() {
             </p>
           </AccordionSummary>
           <AccordionDetails>
-            <Stepper activeStep={activeStep} stepList={stepList}/>
+            <Stepper activeStep={activeStep} stepList={stepList} basicDetails={basicStaticDetail} totalProgress={totalProgress}/>
           </AccordionDetails>
         </CleanAccordion>
       </div>
       <div className="hidden 2md:flex">
-        <Stepper activeStep={activeStep} stepList={stepList}/>
+        <Stepper activeStep={activeStep} stepList={stepList} basicDetails={basicStaticDetail} totalProgress={totalProgress}/>
       </div>
     </div>
   );

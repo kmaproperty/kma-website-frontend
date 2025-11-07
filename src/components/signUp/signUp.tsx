@@ -111,6 +111,13 @@ export default function SignUp() {
     },
     onError: (error: any) => {
       console.log('error', error)
+      if(Array.isArray(error.message)){
+        error.message.map((item: string) => {
+          toast.error(item)
+        })
+      }else{
+        toast.error(error.message)
+      }
     },
   });
 
