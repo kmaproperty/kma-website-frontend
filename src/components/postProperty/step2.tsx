@@ -604,6 +604,7 @@ export default function Step2() {
       villaNumber: dynamicFieldDetails?.villaNumber,
       transactionType: dynamicFieldDetails?.transactionType,
       possessionStatus: dynamicFieldDetails?.propertyPossessionStatus,
+      ageOfProperty: dynamicFieldDetails?.propertyAge,
       possessionDate: dynamicFieldDetails?.possesionDate,
       plotPrice: dynamicFieldDetails?.plotPrice,
       loanAvailable: dynamicFieldDetails?.loanAvailable,
@@ -725,7 +726,7 @@ export default function Step2() {
 
           transactionType: step2Details?.transactionType,
           propertyPossessionStatus: step2Details?.possessionStatus,
-          propertyAge: null, //missing
+          propertyAge: step2Details?.ageOfProperty,
           possesionDate: step2Details?.possessionDate,
           plotPrice: step2Details?.plotPrice,
           loanAvailable: step2Details?.loanAvailable,
