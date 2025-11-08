@@ -759,6 +759,7 @@ export default function Step2() {
                 const input = e.target.value;
                 const isOnlyDigits = /^\d*$/.test(input);
                 if (!isOnlyDigits) return;
+                if(Number(input) > 99) return
                 setDynamicFieldDetails((pre) => ({...pre, totalFloor: input}))
                 setErrors((pre) => ({...pre, totalFloor: ''}))
               }}
@@ -789,6 +790,7 @@ export default function Step2() {
               options={generateFloors(dynamicFieldDetails.totalFloor)}
               value={dynamicFieldDetails.floorNumber}
               minHeight={"40px"}
+              fontwidth={'16px'}
             />
             {errors?.floorNumber && <p className="pt-1 text-red-500 text-xs">{errors.floorNumber}</p>}
           </div>}
@@ -1513,6 +1515,7 @@ export default function Step2() {
               options={generateLockInPeriod(36)}
               value={dynamicFieldDetails.otherLockInPeriod}
               minHeight={"40px"}
+              fontwidth={'16px'}
             />
           {errors?.otherLockInPeriod && <p className="pt-1 text-red-500 text-xs">{errors.otherLockInPeriod}</p>}
           </div>}

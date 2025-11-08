@@ -57,8 +57,9 @@ axiosInstance.interceptors.response.use(
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
         window.location.href = "/signup?isLogin=true"
+        window.location.href = "/signup?isLogin=true"
       }
-    }else{
+    }else if(error.response?.status === 401){
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       window.location.href = "/signup?isLogin=true"
