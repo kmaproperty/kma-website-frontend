@@ -124,8 +124,13 @@ export default function Step4() {
   });
 
 const handleUploadFileToS3 = async (files: File[], type: string) => {
-  if (photoList.length + files.length > 50) {
+  if (type == 'image' && photoList.length + files.length > 50) {
     toast.error("Max 50 photos can be uploaded");
+    return;
+  }
+
+  if (type == 'video' && videoList.length + files.length > 5) {
+    toast.error("Max 5 videos can be uploaded");
     return;
   }
 
@@ -262,7 +267,7 @@ const handleUploadFileToS3 = async (files: File[], type: string) => {
     let videos = videoList.map((item) => {
       return {
         fileKey: item.fileKey,
-        format: "MPEG",
+        format: item.fileKey.substring(item.fileKey.lastIndexOf('.') + 1),
       };
     });
     return {
@@ -282,7 +287,7 @@ const handleUploadFileToS3 = async (files: File[], type: string) => {
       console.log("create owner response", response);
       // dispatch(setActiveStep({ step: activeStep + 1 }));
       toast.success('Post Property created successfully')
-        dispatch(setTotalProgress({progress: 100}))
+      dispatch(setTotalProgress({progress: 100}))
     },
     onError: (error: any) => {
       console.log("owner create error", error);
@@ -367,8 +372,9 @@ const handleUploadFileToS3 = async (files: File[], type: string) => {
               onUpload={(file) => {
                 handleUploadFileToS3(file, "image");
               }}
+              type='photo'
               accept={"image/jpeg, image/jpg, image/png, image/gif, image/webp"}
-              label="Upload Property Image"
+              label="Drag and drop file here"
               subLabel="Upto 50 photos • Max. size 10 MB • Formats: PNG, JPG, JPEG, GIF, WEBP"
             />
           </div>
@@ -416,8 +422,9 @@ const handleUploadFileToS3 = async (files: File[], type: string) => {
               onUpload={(file) => {
                 handleUploadFileToS3(file, "video");
               }}
+              type='video'
               accept={"video/mp4,video/mov,video/avi,video/mkv,video/webm"}
-              label="Upload Property Video"
+              label="Drag and drop file here"
               subLabel="Upto 5 video • Max. size 30 MB • Formats: MP4, MOV, AVI, MKV"
             />
           </div>

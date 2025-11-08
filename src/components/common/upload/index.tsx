@@ -9,18 +9,20 @@ interface ImageUploadProps {
   label?: string;
   accept?: string;
   subLabel: string;
+  type: string;
 }
 
 export default function ImageUpload({
   onUpload,
   label = "Upload Image",
   accept = "image/jpeg,image/png,image/jpg,image/gif,image/webp",
-  subLabel
+  subLabel,
+  type
 }: ImageUploadProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
-  const maxSizeMB = 10;
+  const maxSizeMB = type == 'photo' ? 10 : 30;
   const maxSizeBytes = maxSizeMB * 1024 * 1024;
   const validTypes = accept.split(",").map(item => item.trim());
 

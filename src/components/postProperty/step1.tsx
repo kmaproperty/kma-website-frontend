@@ -31,6 +31,7 @@ import { Step1DetailsPayload, Step1DetailsResponse, step1PostPropertyCreateApiHa
 import { toast } from "react-toastify";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useStepProgress } from "@/hooks/useStepProgress";
+import DynamicAsyncAutocomplete from "../common/dynamicAsyncSelectMui";
 
 function CityPlaceholder() {
   return (
@@ -833,10 +834,22 @@ export default function Step1() {
 
       <div data-field={FIELD_NAME.CITY} data-has-value={!!basicStaticDetails.city}>
         <FieldLabel label="City" customClass="pb-2" required={true}/>
-        <DynamicAsyncSelect
+        {/* <DynamicAsyncSelect
           isMulti={false}
           isError={false}
           placeholder={<CityPlaceholder />}
+          onChange={(value) => {
+            setBasicStaticDetails((pre) => ({...pre, city: value, locality: null, society: null}))
+            setErrors((pre) => ({...pre, city: ''}))
+          }}
+          loadOptions={loadCities}
+          value={basicStaticDetails.city}
+          minHeight={"40px"}
+        /> */}
+        <DynamicAsyncAutocomplete
+          isMulti={false}
+          isError={false}
+          placeholder={'Search city'}
           onChange={(value) => {
             setBasicStaticDetails((pre) => ({...pre, city: value, locality: null, society: null}))
             setErrors((pre) => ({...pre, city: ''}))
@@ -854,7 +867,28 @@ export default function Step1() {
           customClass="pb-2"
           required={renderOptionalField(FIELD_NAME.SOCIETY)}
         />
-        <DynamicAsyncSelect
+        {/* <DynamicAsyncSelect
+          isMulti={false}
+          isError={false}
+          placeholder={"Enter Building / Apartment / Society Name"}
+          onChange={(value) => {
+            if(!Array.isArray(value) && (value as OptionType)?.value == '__add_manually__'){
+              handleOpenAddCustomLocation('Society')
+              return
+            }
+            setBasicStaticDetails((pre) => ({...pre, society: value, locality: !Array.isArray(value) && value && "localityName" in value && value.localityName ? {value: value?.localityName, label: value?.localityName} : null}))
+            setErrors((pre) => ({...pre, society: '', locality: !Array.isArray(value) && value && "localityName" in value && value.localityName ?  '' : errors?.localityName ?? ''}))
+            setBhkList(generateBHKList(false))
+            setDynamicFieldDetails((pre) => ({...pre, bhk: null, otherBhk: null}))
+          }}
+          loadOptions={(inputSearch: string) => loadBuildings({query: inputSearch, cityId: basicStaticDetails.city?.id ?? '', cityName: basicStaticDetails.city?.name})}
+          value={basicStaticDetails.society}
+          minHeight={"40px"}
+          enableAddManually={true}
+          menualAddItem={{ value: "__add_manually__",
+          label: `Can't find your Building / Apartment / Society? Add Manually`,}}
+        /> */}
+        <DynamicAsyncAutocomplete
           isMulti={false}
           isError={false}
           placeholder={"Enter Building / Apartment / Society Name"}
@@ -880,7 +914,26 @@ export default function Step1() {
 
       <div data-field={FIELD_NAME.LOCALITY} data-has-value={!!basicStaticDetails.locality}>
         <FieldLabel label="Locality / Sector" customClass="pb-2" required={true}/>
-        <DynamicAsyncSelect
+        {/* <DynamicAsyncSelect
+          isMulti={false}
+          isError={false}
+          placeholder={"Enter Locality / Sector"}
+          onChange={(value) => {
+            if(!Array.isArray(value) && (value as OptionType)?.value == '__add_manually__'){
+              handleOpenAddCustomLocation('Locality')
+              return
+            }
+            setBasicStaticDetails((pre) => ({...pre, locality: value, society: !value ? null : basicStaticDetails.society}))
+            setErrors((pre) => ({...pre, locality: ''}))
+          }}
+          loadOptions={async() => []}
+          value={basicStaticDetails.locality}
+          minHeight={"40px"}
+          enableAddManually={true}
+          menualAddItem={{ value: "__add_manually__",
+          label: `Can't find your Locality / Sector? Add Manually`,}}
+        /> */}
+        <DynamicAsyncAutocomplete
           isMulti={false}
           isError={false}
           placeholder={"Enter Locality / Sector"}

@@ -1,0 +1,137 @@
+import React, { useEffect, useState } from "react";
+import {
+  Autocomplete,
+  CircularProgress,
+  TextField,
+} from "@mui/material";
+
+export type OptionType = {
+  value: string;
+  label: string;
+  [key: string]: any;
+};
+
+export interface DynamicAsyncAutocompleteProps {
+  loadOptions: (inputValue: string) => Promise<OptionType[]>;
+  isMulti?: boolean;
+  isError?: boolean;
+  placeholder?: string | React.ReactNode;
+  onChange?: (value: OptionType | OptionType[] | null) => void;
+  value?: OptionType | null;
+  minHeight?: string | number;
+  enableAddManually?: boolean;
+  menualAddItem?: OptionType;
+  styles?: React.CSSProperties;
+}
+
+const DynamicAsyncAutocomplete: React.FC<DynamicAsyncAutocompleteProps> = ({
+  loadOptions,
+  isMulti = false,
+  placeholder = "Start typing...",
+  onChange,
+  value,
+  isError = false,
+  minHeight = 40,
+  enableAddManually = false,
+  menualAddItem,
+  styles,
+}) => {
+  const [open, setOpen] = useState(false);
+  const [options, setOptions] = useState<OptionType[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+
+  useEffect(() => {
+    let active = true;
+
+    (async () => {
+      if (!open || inputValue.trim() === "") {
+        setOptions([]);
+        return;
+      }
+
+      setLoading(true);
+      const result = await loadOptions(inputValue);
+      if (active) {
+        let opts = Array.isArray(result) ? result : [];
+        if (enableAddManually && menualAddItem) {
+          opts = [...opts, menualAddItem];
+        }
+        setOptions(opts);
+      }
+      setLoading(false);
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [inputValue, open, loadOptions, enableAddManually, menualAddItem]);
+console.log('options', options)
+  return (
+    <Autocomplete
+      multiple={isMulti}
+      open={open}
+      onOpen={() => setOpen(true)}
+      onClose={() => setOpen(false)}
+      options={options}
+      value={value || (isMulti ? [] : null)}
+      onChange={(e, newValue: OptionType | OptionType[]) => onChange?.(newValue)}
+      inputValue={inputValue}
+      onInputChange={(e, val) => setInputValue(val)}
+      getOptionLabel={(option: OptionType) => option?.label ?? ""}
+      isOptionEqualToValue={(opt:OptionType, val: OptionType) => opt.value === val.value}
+      loading={loading}
+      filterOptions={(x) => x}
+      componentsProps={{
+        popupIndicator: { style: { display: "none" } },
+        }}
+      sx={{
+        width: "100%",
+        "& .MuiOutlinedInput-root": {
+          borderRadius: "9999px",
+          minHeight: typeof minHeight === "number" ? `${minHeight}px` : minHeight,
+          fontSize: "0.95rem",
+          paddingLeft: "0.75rem",
+          paddingRight: "0.5rem",
+          "& fieldset": {
+            borderColor: "var(--color-border, #ccc)",
+          },
+          "&:hover fieldset": {
+            borderColor: "var(--color-border, #aaa)",
+          },
+        },
+        "& .MuiInputBase-input": {
+            padding: "0 !important",
+            paddingLeft: "12px !important",
+
+          height: "1.5rem",
+        },
+        "& .MuiInputLabel-root": {
+          fontSize: "0.9rem",
+          color: "var(--color-text-gray)",
+        },
+        ...styles,
+      }}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          placeholder={
+            typeof placeholder === "string" ? placeholder : undefined
+          }
+          InputProps={{
+            ...params.InputProps,
+            endAdornment: (
+              <>
+                {loading ? <CircularProgress color="inherit" size={18} /> : null}
+                {params.InputProps.endAdornment}
+              </>
+            ),
+          }}
+          error={isError}
+        />
+      )}
+    />
+  );
+};
+
+export default DynamicAsyncAutocomplete;

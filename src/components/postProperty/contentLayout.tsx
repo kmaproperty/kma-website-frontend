@@ -25,8 +25,15 @@ export default function ContentLayout({mode}: {mode: string}) {
             </div>
             <div className="w-[100%]">
                 <div className="grid grid-cols-1 2md:grid-cols-[1fr_3fr] gap-4">
-                    <StepperCustom/>
-                    <PostPropertyForm/>
+                    {/* <StepperCustom/>
+                    <PostPropertyForm/> */}
+
+                    <div className=""> 
+                        <StepperCustom />
+                    </div>
+                    <div className="max-h-[calc(100vh-150px)] overflow-y-auto pr-2">
+                      <PostPropertyForm />
+                    </div>
                 </div>
 
             </div>

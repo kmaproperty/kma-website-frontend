@@ -1228,7 +1228,7 @@ export default function Step2() {
                 setErrors((pre) => ({...pre, rentAvailableDate: ''}))
               }}
               value={dynamicFieldDetails.rentAvailableDate}
-              className={'2md:w-[40%]! box-border px-4 py-2 text-sm rounded-full border focus:outline-none border-border text-text-gray h-[40px]'}
+              className={'box-border px-4 py-2 text-sm rounded-full border focus:outline-none border-border text-text-gray h-[40px]'}
               inputProps={{
               className: "placeholder-gray",
               }}
