@@ -1217,7 +1217,7 @@ export default function Step2() {
 
         {renderShowField(FIELD_NAME.RENT_AVAILABEL_DATE) && <div data-field={FIELD_NAME.RENT_AVAILABEL_DATE} data-has-value={!!dynamicFieldDetails.rentAvailableDate}>
           <FieldLabel label="Available Date" required={true} />
-          <div className="flex gap-3 pt-2" onClick={() => {possessionDateref.current?.showPicker()}}>
+          <div className="flex gap-3 pt-2" onClick={() => {availabelDateref.current?.showPicker()}}>
             <InputBase
               inputRef={availabelDateref}
               placeholder="Enter Available Date"
@@ -1228,7 +1228,7 @@ export default function Step2() {
                 setErrors((pre) => ({...pre, rentAvailableDate: ''}))
               }}
               value={dynamicFieldDetails.rentAvailableDate}
-              className={'2md:w-[40%]! box-border px-4 py-2 text-sm rounded-full border focus:outline-none border-border text-text-gray h-[40px]'}
+              className={'box-border px-4 py-2 text-sm rounded-full border focus:outline-none border-border text-text-gray h-[40px]'}
               inputProps={{
               className: "placeholder-gray",
               }}
