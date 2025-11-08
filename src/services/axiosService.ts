@@ -55,8 +55,12 @@ axiosInstance.interceptors.response.use(
         console.error("Token refresh failed", refreshError);
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
-        window.location.href = "/"
+        window.location.href = "/signup?isLogin=true"
       }
+    }else if(error.response?.status === 401){
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      window.location.href = "/signup?isLogin=true"
     }
 
     return Promise.reject(error?.response?.data ?? error);

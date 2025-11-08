@@ -113,6 +113,7 @@ const PhotoViewer: React.FC<PhotoViewerProps> = ({
           <div className="flex justify-end">
             <div className="w-[150px]">
               <DynamicSelect
+                placeholder="Select view"
                 minHeight="30px"
                 options={options}
                 value={data.view}

@@ -24,7 +24,8 @@ export interface DynamicAsyncSelectProps
     value: OptionType | MultiValue<OptionType> | null
   ) => void;
   value?: OptionType | MultiValue<OptionType> | null;
-  minHeight?: string | number
+  minHeight?: string | number,
+  fontwidth?: string
 }
 
 const DynamicSelect = ({
@@ -36,6 +37,7 @@ const DynamicSelect = ({
   isError,
   minHeight = '47.81px',
   options = [],
+  fontwidth,
   ...rest
 }: DynamicAsyncSelectProps) => {
   const defaultStyles: StylesConfig<OptionType, boolean> = {
@@ -49,7 +51,7 @@ const DynamicSelect = ({
       },
       minHeight: typeof minHeight === "number" ? `${minHeight}px` : minHeight,
       paddingLeft: "0.5rem",
-      fontSize: minHeight == '47.81px' ? '1rem' : "0.75rem",
+      fontSize: minHeight == '47.81px' ? '1rem' : (fontwidth ? fontwidth : '0.750rem'),
     }),
     input: (base) => ({ ...base, paddingLeft: 0 }),
     placeholder: (base) => ({
