@@ -35,6 +35,7 @@ axiosInstance.interceptors.response.use(
     const refreshToken = localStorage.getItem("refreshToken");
 
     // Prevent infinite retry loop
+    console.log('error',error)
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
@@ -55,8 +56,12 @@ axiosInstance.interceptors.response.use(
         console.error("Token refresh failed", refreshError);
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
-        window.location.href = "/"
+        window.location.href = "/signup?isLogin=true"
       }
+    }else{
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      window.location.href = "/signup?isLogin=true"
     }
 
     return Promise.reject(error?.response?.data ?? error);
