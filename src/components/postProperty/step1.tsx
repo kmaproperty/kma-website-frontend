@@ -569,7 +569,6 @@ export default function Step1() {
         balconies: dynamicFieldDetails.balconies,
       }
     }
-
     return {
       ...(params?.propertyId ? {propertyId: String(params?.propertyId)} : {}),
       listingTypeId: basicStaticDetails.propertyListFor?.id,
@@ -578,18 +577,18 @@ export default function Step1() {
       
       city: {
         name: basicStaticDetails.city?.name,
-        ...(basicStaticDetails.city?.id ? {longitude: basicStaticDetails.city?.id} : {}),
-        ...(basicStaticDetails.city?.state ? {longitude: basicStaticDetails.city?.state} : {}),
-        ...(basicStaticDetails.city?.latitude ? {longitude: basicStaticDetails.city?.latitude} : {}),
+        ...(basicStaticDetails.city?.id ? {id: basicStaticDetails.city?.id} : {}),
+        ...(basicStaticDetails.city?.state ? {state: basicStaticDetails.city?.state} : {}),
+        ...(basicStaticDetails.city?.latitude ? {latitude: basicStaticDetails.city?.latitude} : {}),
         ...(basicStaticDetails.city?.longitude ? {longitude: basicStaticDetails.city?.longitude} : {}),
       },
 
       society : {
         name: basicStaticDetails.society?.name,
         localityName: basicStaticDetails.locality?.label,
-        ...(basicStaticDetails.society?.id ? {longitude: basicStaticDetails.society?.id} : {}),
-        ...(basicStaticDetails.society?.address ? {longitude: basicStaticDetails.society?.address} : {}),
-        ...(basicStaticDetails.society?.latitude ? {longitude: basicStaticDetails.society?.latitude} : {}),
+        ...(basicStaticDetails.society?.id ? {id: basicStaticDetails.society?.id} : {}),
+        ...(basicStaticDetails.society?.address ? {address: basicStaticDetails.society?.address} : {}),
+        ...(basicStaticDetails.society?.latitude ? {latitude: basicStaticDetails.society?.latitude} : {}),
         ...(basicStaticDetails.society?.longitude ? {longitude: basicStaticDetails.society?.longitude} : {}),
       },
 
@@ -598,7 +597,7 @@ export default function Step1() {
         ...(basicStaticDetails.locality?.id ? {
           id: basicStaticDetails.locality?.id,
           sector: basicStaticDetails.locality?.sector,
-          latitude: basicStaticDetails.locality?.sector,
+          latitude: basicStaticDetails.locality?.latitude,
           longitude: basicStaticDetails.locality?.longitude
         } : {})
       },

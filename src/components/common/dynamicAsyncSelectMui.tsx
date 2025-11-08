@@ -66,7 +66,7 @@ const DynamicAsyncAutocomplete: React.FC<DynamicAsyncAutocompleteProps> = ({
       active = false;
     };
   }, [inputValue, open, loadOptions, enableAddManually, menualAddItem]);
-console.log('options', options)
+
   return (
     <Autocomplete
       multiple={isMulti}
