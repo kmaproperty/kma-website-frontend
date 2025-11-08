@@ -36,7 +36,7 @@ const VideoPreviewDialog: React.FC<VideoPreviewDialogProps> = ({
           sx: {
             borderRadius: fullScreen ? 0 : "1rem",
             maxWidth: "800px",
-            width: "100%",
+            // width: "100%",
             overflow: "hidden",
           },
         },

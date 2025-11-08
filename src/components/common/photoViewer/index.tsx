@@ -62,7 +62,7 @@ const PhotoViewer: React.FC<PhotoViewerProps> = ({
           <div className="flex justify-between">
             <div
               className={`
-                w-[100px] h-[31px] bg-white flex items-center px-1 rounded-full cursor-pointer transition-all
+                w-[80px] h-[31px] bg-white flex items-center px-1 rounded-full cursor-pointer transition-all
               `}
               onClick={() => {
                     if(onCoverChange){
@@ -94,7 +94,7 @@ const PhotoViewer: React.FC<PhotoViewerProps> = ({
                   },
                 }}
               />
-              <span>Cover</span>
+              <span className="text-sm text-text-black">Cover</span>
             </div>
 
             <div
