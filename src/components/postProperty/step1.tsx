@@ -1006,6 +1006,7 @@ export default function Step1() {
             options={renderOtherBhk()}
             value={dynamicFieldDetails.otherBhk}
             minHeight={"40px"}
+            fontwidth={'16px'}
           />
         </div>
           {errors?.otherBhk && <p className="pt-1 text-red-500 text-xs">{errors.otherBhk}</p>}

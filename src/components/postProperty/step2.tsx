@@ -582,7 +582,7 @@ export default function Step2() {
       flatNumber: dynamicFieldDetails?.flatNumber,
       towerBlock: dynamicFieldDetails?.towerNumber,
       propertyAreaAcre: dynamicFieldDetails?.propertyArea,
-      tenantType: dynamicFieldDetails?.rentSuitableFor.lenght > 0 ? dynamicFieldDetails?.rentSuitableFor.join(', ') : null,
+      tenantType: dynamicFieldDetails?.rentSuitableFor.length > 0 ? dynamicFieldDetails?.rentSuitableFor.join(', ') : null,
       companyOccupancy: dynamicFieldDetails?.rentPreference,
       rentAvailability: dynamicFieldDetails?.rentAvailabelFrom,
       availableFromDate: dynamicFieldDetails?.rentAvailableDate,
