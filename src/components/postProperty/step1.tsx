@@ -703,6 +703,15 @@ export default function Step1() {
   //   calculateProgress()
   // }, [dynamicFieldDetails, basicStaticDetails])
 
+  useEffect(() => {
+    if(propertyTypeList && !params?.propertyId){
+      setBasicStaticDetails((pre) => ({
+        ...pre,
+        propertyListFor: propertyTypeList.find(item => item.name == 'Rent')
+      }))
+    }
+  },[propertyTypeList])
+
   return (
     <>
     <div className="flex flex-col gap-4">

@@ -152,6 +152,7 @@ export interface Step2PostPropertyPayload {
   villaNumber?: string | null;
   transactionType?: string | null;
   possessionStatus?: string | null;
+  ageOfProperty?: string | null;
   possessionDate?: string | null;
   plotPrice?: number | null;
   brokerage?: string | null;
@@ -212,6 +213,7 @@ export interface Step2DetailsResponse {
   villaNumber: string | null;
   transactionType: string | null;
   possessionStatus: string | null;
+  ageOfProperty: string | null;
   possessionDate: string | null;
   plotPrice: number | null;
   brokerage: string | null;

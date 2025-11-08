@@ -193,6 +193,7 @@ const handleUploadFileToS3 = async (files: File[], type: string) => {
   }
 
   toast.dismiss(toastRef.current);
+  setErrors((pre) => ({...pre, photo: ''}))
 };
 
 
@@ -227,6 +228,7 @@ const handleUploadFileToS3 = async (files: File[], type: string) => {
       }
     });
     setPhotoList(updatedFile);
+    setErrors((pre) => ({...pre, cover: ''}))
   };
 
   const handleRoomChange = (value: OptionType, id: string) => {
@@ -238,6 +240,7 @@ const handleUploadFileToS3 = async (files: File[], type: string) => {
       return item;
     });
     setPhotoList(updatedFile);
+    setErrors((pre) => ({...pre, view: ''}))
   };
 
   const { data: step4Details } = useQuery({

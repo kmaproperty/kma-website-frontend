@@ -86,32 +86,51 @@ console.log('options', options)
         popupIndicator: { style: { display: "none" } },
         }}
       sx={{
-        width: "100%",
-        "& .MuiOutlinedInput-root": {
-          borderRadius: "9999px",
-          minHeight: typeof minHeight === "number" ? `${minHeight}px` : minHeight,
-          fontSize: "0.95rem",
-          paddingLeft: "0.75rem",
-          paddingRight: "0.5rem",
-          "& fieldset": {
-            borderColor: "var(--color-border, #ccc)",
-          },
-          "&:hover fieldset": {
-            borderColor: "var(--color-border, #aaa)",
-          },
-        },
-        "& .MuiInputBase-input": {
-            padding: "0 !important",
-            paddingLeft: "12px !important",
+  width: "100%",
+  "& .MuiOutlinedInput-root": {
+    borderRadius: "9999px",
+    minHeight: typeof minHeight === "number" ? `${minHeight}px` : minHeight,
+    fontSize: "0.95rem",
+    paddingLeft: "0.75rem",
+    paddingRight: "0.5rem",
+    boxShadow: "none",
 
-          height: "1.5rem",
-        },
-        "& .MuiInputLabel-root": {
-          fontSize: "0.9rem",
-          color: "var(--color-text-gray)",
-        },
-        ...styles,
-      }}
+    "& fieldset": {
+      borderColor: 'var(--color-border)',
+      boxShadow: "none",
+    },
+    "&:hover fieldset": {
+      borderColor: 'var(--color-border)',
+      boxShadow: "none",
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: 'var(--color-border)',
+      boxShadow: "none",
+    },
+    "&.MuiOutlinedInput-root.Mui-focused": {
+      boxShadow: "none",
+    },
+  },
+  "& .MuiInputBase-input": {
+    padding: "0 !important",
+    paddingLeft: "12px !important",
+    height: "1.5rem",
+  },
+  "& .MuiInputLabel-root": {
+    fontSize: "0.9rem",
+    color: "var(--color-text-gray)",
+  },
+  "& .MuiOutlinedInput-notchedOutline": {
+    borderWidth: "1px",
+  },
+  "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
+    borderColor: 'var(--color-border)'
+  },
+  "& .MuiAutocomplete-popupIndicator": {
+    display: "none",
+  },
+  ...styles,
+}}
       renderInput={(params) => (
         <TextField
           {...params}
