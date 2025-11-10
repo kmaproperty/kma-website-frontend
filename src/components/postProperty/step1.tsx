@@ -32,6 +32,7 @@ import { toast } from "react-toastify";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useStepProgress } from "@/hooks/useStepProgress";
 import DynamicAsyncAutocomplete from "../common/dynamicAsyncSelectMui";
+import { useLocalitySearch } from "@/hooks/useLocalitySearch";
 
 function CityPlaceholder() {
   return (
@@ -45,6 +46,8 @@ function CityPlaceholder() {
 export default function Step1() {
   const { loadCities  } = useCitySearch();
   const { loadBuildings } = useBuildingSearch();
+  const { loadLocalities } = useLocalitySearch();
+
   const { calculateProgress } = useStepProgress()
   const possessionDateRef = useRef<HTMLInputElement | null>(null);
 
@@ -950,10 +953,20 @@ export default function Step1() {
               handleOpenAddCustomLocation('Locality')
               return
             }
-            setBasicStaticDetails((pre) => ({...pre, locality: value, society: !value ? null : basicStaticDetails.society}))
+            setBasicStaticDetails((pre) => ({...pre, locality: value}))
             setErrors((pre) => ({...pre, locality: ''}))
           }}
-          loadOptions={async() => []}
+          loadOptions={(inputSearch: string) => {
+            if (basicStaticDetails.society) {
+              return Promise.resolve([]);
+            }
+            // load localities normally
+            return loadLocalities({
+              query: inputSearch,
+              cityId: basicStaticDetails.city?.id ?? "",
+              cityName: basicStaticDetails.city?.name,
+            });
+          }}
           value={basicStaticDetails.locality}
           minHeight={"40px"}
           enableAddManually={true}
