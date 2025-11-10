@@ -129,6 +129,19 @@ export const getBuildingSearchApiHandler = async ({query,cityId, cityName}: Buil
     }
 }
 
+export const getLocalitySearchApiHandler = async ({query,cityId, cityName}: BuildingSearchPayload) : Promise<BuildingSearchResponse[]> => {
+    try{
+        const response = await axiosInstance.get<BuildingSearchResponse[]>(
+      "property/localities/search" , {
+        params: {q: query, cityId: cityId ?? '', cityName: cityName ?? ''}
+      });
+
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}
+
 export interface BhkPayload {
   societyId?: string,
   propertyTypeId?: string
