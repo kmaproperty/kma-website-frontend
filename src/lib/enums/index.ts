@@ -144,48 +144,6 @@ export const COMMERCIAL_PROPERTY_TYPE = [
   }
 ] as const
 
-export const ZONE_TYPE = [
-  {
-    label: 'Industrial',
-    value: 'Industrial'
-  },
-  {
-    label: 'Commercial',
-    value: 'Commercial'
-  },
-  {
-    label: 'Open Spaces',
-    value: 'Open Spaces'
-  },
-  {
-    label: 'Residential',
-    value: 'Residential'
-  },
-  {
-    label: 'Special economic zone',
-    value: 'Special economic zone'
-  },
-  {
-    label: 'Agricultural zone',
-    value: 'Agricultural zone'
-  },
-  {
-    label: 'Others',
-    value: 'Others'
-  },
-] as const
-
-export const PROPERTY_CONDITION = [
-  {
-    label: 'Ready to use',
-    value: 'Ready to use',
-  },
-  {
-    label: 'Bare shell',
-    value: 'Bare shell',
-  },
-] as const
-
 export const OWNERSHIP = [
   {
     label: 'Freehold',
@@ -202,25 +160,6 @@ export const OWNERSHIP = [
   {
     label: 'Power of Attorney',
     value: 'Power of Attorney',
-  },
-] as const
-
-export const CONSTRUCTION_STATUS = [
-  {
-    label: 'No walls',
-    value: 'No walls',
-  },
-  {
-    label: 'Brick walls',
-    value: 'Brick walls',
-  },
-  {
-    label: 'Cemented walls',
-    value: 'Cemented walls',
-  },
-  {
-    label: 'Plastered walls',
-    value: 'Plastered walls',
   },
 ] as const
 
@@ -261,7 +200,22 @@ export const FACING_LIST = [
 ]
 
 export const OWNERSHIP_LIST = [
-  'Freehold', 'Leasehold', 'Co-operative society', 'Power of Attorney'
+  {
+    name: 'Freehold',
+    value: 'freehold',
+  },
+  {
+    name: 'Leasehold',
+    value: 'leasehold',
+  },
+  {
+    name: 'Co-operative society',
+    value: 'cooperative_society',
+  },
+  {
+    name: 'Power of Attorney',
+    value: 'power_of_attorney',
+  }
 ]
 
 export const FIELD_NAME = {
@@ -289,6 +243,27 @@ export const FIELD_NAME = {
   PLOT_AREA: 'Plot_area',
   LENGTH_WIDTH: 'Length_width',
   WIDTH_FACING_ROAD: 'Width_facing_road',
+
+  COMMERCIAL_PROPERTY_POSSESSTION_STATUS: 'Commercial_property_possesion_status',
+  AVAILABEL_DATE: 'Availabel_date',
+  COMMERCIAL_AGE_OF_PROPERTY: 'Commercial_age of Property',
+  LOCATION_HUB: 'Location_hub',
+  OTHER_LOCATION_HUB: 'Other_location_hub',
+  ZONE_TYPE: 'Zone_type',
+  PROPERTY_CONDITION: 'Property_condition',
+  COMMERCIAL_BUILT_UP_AREA: 'Built_up_area',
+  COMMERCIAL_CARPET_AREA: 'Carpet_area',
+  CONSTRUCTION_STATUS: 'Construction_status',
+  SUITABLE_FOR: 'Suitable_for',
+  ENTRANCE_WIDTH: 'Entrance_width',
+  CELLING_HEIGHT: 'Celling_height',
+  LOCATED_NEAR: 'Located_near',
+  COMMERCIAL_PLOT_ARE: 'Commercial_plot_are',
+  PLOT_TYPE: 'Plot_type',
+  PLOT_LENGTH: 'Plot_length',
+  PLOT_BREADTH: 'Plot_breadth',
+  WIDTH_OF_FACING_IN_FEET: 'Width_of_facing_feet',
+  COMMERCIAL_FACING: 'Commercial_facing',
 
   //Step 2
   TOTAL_FLOOR: 'Total_floor',
@@ -326,6 +301,8 @@ export const FIELD_NAME = {
   PROPERTY_DESCRRIPTION: 'Property_description',
   PLOT_PRICE: 'Plot_price',
   LOAN_AVAILABLE: 'Loan_available',
+
+  //Step 3
   ADDITIONAL_ROOM: 'Additional_room',
   RESERVED_PARKING: 'Reserved_parking',
   POWER_BACKUP: 'Power_backup',
@@ -340,6 +317,8 @@ export const AREA_UNIT_LIST = [
   { value: 'Sq. Mt.', label: 'Sq. Mt.' },
   { value: 'Acre', label: 'Acre' },
 ]
+
+
 
 export const TRANSACTION_TYPE_LIST = [
   {
@@ -588,6 +567,14 @@ export const CUSTOM_SECTION_NAME = {
   'PLOT': {
     name: 'Plot Details',
     subName: 'Plot Details'
+  },
+  'POSSESSION': {
+    name: 'Possession Info',
+    subName: ''
+  },
+  'ABOUT_THE_PROPERTY': {
+    name: 'About the Property',
+    subName: ''
   }
 }
 
@@ -741,4 +728,133 @@ export  const AMENITISE_LIST = [
   "Facilities for Disabled",
   "24 Hours Concierge",
   "Balcony or Terrace"
+]
+
+
+export const LOCATION_HUB = {
+  'RENT_OFFICE': [
+    {
+      name: 'IT Park',
+      value: 'it_park',
+    },
+    {
+      name: 'Business Park',
+      value: 'business_park',
+    },
+    {
+      name: 'Others',
+      value: 'others',
+    }
+  ],
+  'RENT_OTHER': [
+    {
+      name: 'Mall',
+      value: 'mall',
+    },
+    {
+      name: 'Commercial Project',
+      value: 'commercial_project',
+    },
+    {
+      name: 'Residential Project',
+      value: 'residential_project',
+    },
+    {
+      name: 'Retail Complex/Building',
+      value: 'retail_complex_building',
+    },
+    {
+      name: 'Market/High Street',
+      value: 'market_high_street',
+    },
+    {
+      name: 'Others',
+      value: 'others',
+    }
+  ]
+}
+//it_park, business_park, mall, commercial_project, residential_project, retail_complex_building, market_high_street, others 
+
+export const ZONE_TYPE = [
+  {
+    name: 'Industrial',
+    value: 'industrial'
+  },
+  {
+    name: 'Commercial',
+    value: 'commercial'
+  },
+  {
+    name: 'Open Spaces',
+    value: 'open_spaces'
+  },
+  {
+    name: 'Residential',
+    value: 'residential'
+  },
+  {
+    name: 'Special economic zone',
+    value: 'special_economic_zone'
+  },
+  {
+    name: 'Agricultural zone',
+    value: 'agricultural_zone'
+  },
+  {
+    name: 'Others',
+    value: 'others'
+  },
+]
+
+export const PROPERTY_CONDITION = [
+  {
+    name: 'Ready to use',
+    value: 'ready_to_use',
+  },
+  {
+    name: 'Bare shell',
+    value: 'bare_shell ',
+  },
+]
+
+export const CONSTRUCTION_STATUS = [
+  {
+    name: 'No walls',
+    value: 'no_walls',
+  },
+  {
+    name: 'Brick walls',
+    value: 'brick_wall',
+  },
+  {
+    name: 'Cemented walls',
+    value: 'cemented_walls',
+  },
+  {
+    name: 'Plastered walls',
+    value: 'plastered_walls ',
+  },
+]
+
+export const SUITABLE_FOR = [
+  'Jewellery', 'Gym', 'Grocery', 'Clinic', 'Footwear', 'Electronics', 'Clothing', 'Others'
+]
+
+export const LOCATED_NEAR = [
+  'Entrance', 'Elevator', 'Stairs'
+]
+
+export const PLOT_LAND_TYPE = [
+  {
+    name: 'Agricultural/ Farm Land',
+    value: 'agricultural_farm_land',
+  },
+  {
+    name: 'Industrial Land/Plots',
+    value: 'industrial_land_plots ',
+  },
+  {
+    name: 'Commercial Land / Plot',
+    value: 'commercial_land_plot  ',
+  },
 ]

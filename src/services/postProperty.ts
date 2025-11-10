@@ -45,23 +45,55 @@ export interface Step1PostPropertyPayload {
   listingTypeId: string;
   categoryId: string;
   propertyTypeId: string;
-  
+
   city: string | City;
   society: string | Society;
   locality: string | Locality;
 
   bhk: BHK;
-  ageOfProperty: number;
-  facing: string;
-  status: 'draft' | 'published' | 'archived' | string;
   transactionType: string | null;
   constructionStatus: string | null;
+  ageOfProperty: number;
+  possessionBy?: string | null;
   possessionTime: string | null;
-  plotArea: string | null;
+  possessionStatus?: string | null;
+  possessionDate?: string | null;
+
+  facing: string;
+  status: string;
+
+  plotArea: number | string | null;
   plotAreaUnit: string | null;
-  plotLength: string | null;
-  plotWidth: string | null;
+  plotLength: number | string | null;
+  plotLengthUnit?: string | null;
+  plotWidth: number | string | null;
+  plotWidthUnit?: string | null;
   plotFacingRoadWidth: string | null;
+
+  locationHub?: string | null;
+  otherLocationHub?: string | null;
+
+  zoneType?: string | null;
+  propertyCondition?: string | null;
+  wallConstructionStatus?: string | null;
+  ownership?: string | null;
+
+  builtUpArea?: number | null;
+  builtUpAreaUnit?: string | null;
+  carpetArea?: number | null;
+  carpetAreaUnit?: string | null;
+
+  suitableFor?: string[] | null;
+  entranceWidth?: number | null;
+  entranceWidthUnit?: string | null;
+  ceilingHeight?: number | null;
+  ceilingHeightUnit?: string | null;
+
+  locatedNear?: string[] | null;
+  plotLandType?: string | null;
+  noOfOpenSides?: number | null;
+  constructionDone?: string | null;
+  constructionTypeOptions?: string[] | null;
 }
 
 export interface Step1PostPropertyResponse {
@@ -110,6 +142,38 @@ export interface Step1DetailsResponse {
     updatedAt: string; 
     completionStep: number;
     progressPercentage: number;
+
+    
+    
+    possessionStatus?: string | null;
+    possessionDate?: string | null;
+
+    plotWidthUnit?: string | null;
+
+    locationHub?: string | null;
+    otherLocationHub?: string | null;
+
+    zoneType?: string | null;
+    propertyCondition?: string | null;
+    wallConstructionStatus?: string | null;
+    ownership?: string | null;
+
+    builtUpArea?: number | null;
+    builtUpAreaUnit?: string | null;
+    carpetArea?: number | null;
+    carpetAreaUnit?: string | null;
+
+    suitableFor?: string[] | null;
+    entranceWidth?: number | null;
+    entranceWidthUnit?: string | null;
+    ceilingHeight?: number | null;
+    ceilingHeightUnit?: string | null;
+
+    locatedNear?: string[] | null;
+    plotLandType?: string | null;
+    noOfOpenSides?: number | null;
+    constructionDone?: string | null;
+    constructionTypeOptions?: string[] | null;
 }
 
 export const step1PostPropertyDetailsApiHandler = async (propertyId: string) : Promise<Step1DetailsResponse> => {
