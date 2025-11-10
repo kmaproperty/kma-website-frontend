@@ -15,27 +15,9 @@ import { useStepProgress } from "@/hooks/useStepProgress";
 import DynamicInput from "../common/dynamicInputLeft";
 import dynamic from "next/dynamic";
 import { toast } from "react-toastify";
+import RenderSectionName from "./renderSecitonName";
 const QuillEditor = dynamic(() => import("../common/editor"), { ssr: false });
 
-
-const RenderSectionName = ({data, secNumber}) => {
-
-  return(
-    <div className={`flex flex-col pb-3 ${secNumber == 2 ? 'pt-3' : ''}`}>
-        <div className="flex items-center gap-2">
-          <div className=" border-r-3 border-text-blue rounded-r-[10px] h-[23px]"></div>
-          <p className="text-text-black font-semibold text-base 2md:text-lg ">
-            {data.name}
-          </p>
-        </div>
-
-        <p className="text-sm text-text-gray pt-1">
-          {data.subName}
-        </p>
-      </div>
-  )
-
-}
 export default function Step2() {
   const router = useRouter()
   const params = useParams()
@@ -117,7 +99,7 @@ export default function Step2() {
     if(isSell && isResidential && ['res-sale-plot', 'res-sale-agri-land'].includes(propertyType)){
       return CUSTOM_SECTION_NAME.PLOT
     }
-    return ''
+    return {name: '', subName: ''}
   }
 
   const renderSecondSectionLabel = () => {
@@ -133,7 +115,7 @@ export default function Step2() {
     if(isSell && isResidential && ['res-sale-flat', 'res-sale-villa', 'res-sale-house', 'res-sale-duplex', 'res-sale-builder-floor', 'res-sale-penthouse', 'res-sale-studio', 'res-sale-farmhouse', 'res-sale-plot', 'res-sale-agri-land'].includes(propertyType)){
       return CUSTOM_SECTION_NAME.PRICE
     }
-    return ''
+    return {name: '', subName:''}
   }
 
   //Show Hide the field based on condition
@@ -745,7 +727,7 @@ export default function Step2() {
           Property Details
         </p>
 
-        {!!renderFirstSectionLabel() && <RenderSectionName secNumber={1} data={renderFirstSectionLabel()}/>}
+        {!!renderFirstSectionLabel().name && <RenderSectionName data={renderFirstSectionLabel()}/>}
 
         {(renderShowField(FIELD_NAME.TOTAL_FLOOR) || renderShowField(FIELD_NAME.FLOOR_NUMBER)) && <div className="grid grid-cols-1 2md:grid-cols-2 gap-3">
           
@@ -1140,7 +1122,7 @@ export default function Step2() {
 
         {/* Seal Plot end*/}
 
-        {!!renderSecondSectionLabel() && <RenderSectionName secNumber={2} data={renderSecondSectionLabel()}/>}
+        {renderSecondSectionLabel().name && <RenderSectionName customClass="pt-3" data={renderSecondSectionLabel()}/>}
 
         {renderShowField(FIELD_NAME.RENT_SUITABLE) && <div data-field={FIELD_NAME.RENT_SUITABLE} data-has-value={dynamicFieldDetails.rentSuitableFor.length > 0}>
           <FieldLabel label="Rent Suitable For/ Preferred Tenant Type" />

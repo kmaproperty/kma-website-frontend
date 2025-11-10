@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import DynamicAsyncSelect, { OptionType } from "../common/asyncSelect";
+import { OptionType } from "../common/asyncSelect";
 import ChipTag from "../common/chipTag";
 import FieldLabel from "./fieldLabel";
 import ApartmentIcon from "@/assets/apartment-transparent.svg";
@@ -13,8 +13,8 @@ import Studio from "@/assets/studio-transparent.svg";
 import FarmHouse from "@/assets/farm-house-transparent.svg";
 import Plot from "@/assets/plot-transparent.svg";
 import Agriculture from "@/assets/agriculture-transparent.svg";
+import PlotCommercial from "@/assets/plot-commercial-transparent.svg";
 import DynamicInput from "../common/dynamicInput";
-import { backdropClasses, InputBase } from "@mui/material";
 import { useCitySearch } from "@/hooks/useCitySearch";
 import { useEffect, useRef, useState } from "react";
 import { useBuildingSearch } from "@/hooks/useBuildingSearch";
@@ -24,14 +24,16 @@ import { PropertyCategory, PropertyList, PropertyType } from "@/types/postProper
 import CustomOptionField from "../common/addCustomOption";
 import { generateBHKAmeneties, generateBHKList } from "@/lib/helper";
 import DynamicSelect from "../common/select";
-import { AREA_UNIT_LIST, FACING_LIST, FIELD_NAME, OWNERSHIP_LIST, PROPERTY_CONSTRUCTION_STATUS, PROPERTY_POSSESSION_STATUS, TRANSACTION_TYPE_LIST } from "@/lib/enums";
+import { AREA_UNIT_LIST, CONSTRUCTION_STATUS, CONSTRUCTION_TYPE, CUSTOM_SECTION_NAME, FACING_LIST, FIELD_NAME, LOCATED_NEAR, LOCATION_HUB, OWNERSHIP_LIST, PLOT_LAND_TYPE, PROPERTY_CONDITION, PROPERTY_CONSTRUCTION_STATUS, PROPERTY_POSSESSION_STATUS, SUITABLE_FOR, TRANSACTION_TYPE_LIST, TRUTY_LIST, ZONE_TYPE } from "@/lib/enums";
 import { useDispatch, useSelector } from "react-redux";
 import { getActiveStep, setActiveStep, setTotalProgress } from "@/store/postPropertyProgress";
-import { Step1DetailsPayload, Step1DetailsResponse, step1PostPropertyCreateApiHandler, step1PostPropertyDetailsApiHandler, Step1PostPropertyPayload, Step1PostPropertyResponse } from "@/services/postProperty";
+import { Step1DetailsResponse, step1PostPropertyCreateApiHandler, step1PostPropertyDetailsApiHandler, Step1PostPropertyPayload, Step1PostPropertyResponse } from "@/services/postProperty";
 import { toast } from "react-toastify";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useStepProgress } from "@/hooks/useStepProgress";
 import DynamicAsyncAutocomplete from "../common/dynamicAsyncSelectMui";
+import { InputBase } from "@mui/material";
+import RenderSectionName from "./renderSecitonName";
 import { useLocalitySearch } from "@/hooks/useLocalitySearch";
 
 function CityPlaceholder() {
@@ -50,6 +52,7 @@ export default function Step1() {
 
   const { calculateProgress } = useStepProgress()
   const possessionDateRef = useRef<HTMLInputElement | null>(null);
+  const availabelDateRef = useRef<HTMLInputElement | null>(null);
 
   const router = useRouter()
   const params = useParams()
@@ -79,19 +82,34 @@ export default function Step1() {
     carpetArea: null,
     transactionType: null,
     propertyConstructionStatus: null,
-    propertyPossessionStatus: null,
     propertyAge: null,
     possesionDate: null,
     bathRooms: null,
     bedRooms: null,
     balconies: null,
-    ownership: null,
     facing: null,
     plotArea: null,
     selectAreaUnit: null,
     plotLength: null,
     plotWidth: null,
     widthOfFacingRoad: null,
+
+    //Commercial Flow extra field
+    loactionHub: null,
+    otherLocationHub: null,
+    zoneType: null,
+    propertyCondition : null,
+    constructionStatus: null,
+    ownership: null,
+    suitableFor: [],
+    entranceWidth: null,
+    cellingHeight: null,
+    locatedNear: [],
+    plotType: null,
+    plotBreadth: null,
+    openSide: null,
+    constructinoDone: null,
+    typeOfConstructionDone: [],
   })
 
   const [errors, setErrors] = useState<any>({})
@@ -157,6 +175,17 @@ export default function Step1() {
         'res-rent-farmhouse': FarmHouse,
         'res-sale-plot': Plot,
         'res-sale-agri-land': Agriculture,
+
+        'com-rent-office': ApartmentIcon,
+        'com-sale-office': ApartmentIcon,
+        'com-rent-plot': PlotCommercial,
+        'com-sale-plot': PlotCommercial,
+        'com-rent-retail-shop': IndependentHouse,
+        'com-sale-retail-shop': IndependentHouse,
+        'com-rent-showroom': Duplex,
+        'com-sale-showroom': Duplex,
+        'com-rent-warehouse': IndependentFloor,
+        'com-sale-warehouse': IndependentFloor,
       }
       return data.propertyTypes.map((item) => ({
         icon: iconList[item.code] ?  iconList[item.code] : Studio,
@@ -224,146 +253,359 @@ export default function Step1() {
       return false
     }
 
-    if(fieldName == FIELD_NAME.BHK){
-      if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society)){
-        return true
+    if(basicStaticDetails.propertyCategory?.code == 'residential'){
+
+      if(fieldName == FIELD_NAME.BHK){
+        if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society)){
+          return true
+        }
+        return false
       }
-      return false
-    }
 
-    if(fieldName == FIELD_NAME.OTHERBHK){
-      if(dynamicFieldDetails.bhk?.id == 'other' && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land')){
-        return true
+      if(fieldName == FIELD_NAME.OTHERBHK){
+        if(dynamicFieldDetails.bhk?.id == 'other' && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land')){
+          return true
+        }
+        return false
       }
-      return false
-    }
 
-    if(fieldName == FIELD_NAME.BUILT_UP_AREA){
-      if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && (dynamicFieldDetails.bhk?.isCustom || dynamicFieldDetails.otherBhk || (dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails))){
-        return true
+      if(fieldName == FIELD_NAME.BUILT_UP_AREA){
+        if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && (dynamicFieldDetails.bhk?.isCustom || dynamicFieldDetails.otherBhk || (dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails))){
+          return true
+        }
+        return false
       }
-      return false
-    }
 
-    if(fieldName == FIELD_NAME.CARPET_AREA){
-      if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && (dynamicFieldDetails.bhk?.isCustom || dynamicFieldDetails.otherBhk || (dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails))){
-        return true
+      if(fieldName == FIELD_NAME.CARPET_AREA){
+        if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && (dynamicFieldDetails.bhk?.isCustom || dynamicFieldDetails.otherBhk || (dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails))){
+          return true
+        }
+        return false
       }
-      return false
-    }
 
-    if(fieldName == FIELD_NAME.TRANSACTION_TYPE){
-      // if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code == 'res-sale-plot' || basicStaticDetails.propertyType?.code == 'res-sale-agri-land')){
-      //   return true
-      // }else 
-      if(basicStaticDetails.propertyListFor?.name == 'Sale' && basicStaticDetails.propertyType && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && (dynamicFieldDetails.bhk || dynamicFieldDetails.otherBhk || (dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails))){
-        return true
+      if(fieldName == FIELD_NAME.TRANSACTION_TYPE){
+        if(basicStaticDetails.propertyListFor?.name == 'Sale' && basicStaticDetails.propertyType && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && (dynamicFieldDetails.bhk || dynamicFieldDetails.otherBhk || (dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails))){
+          return true
+        }
+        return false
       }
-      return false
-    }
 
-    if(fieldName == FIELD_NAME.PROPERTY_CONSTRUCTION_STATUS){
-      if(basicStaticDetails.propertyListFor?.name == 'Sale' && basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && (dynamicFieldDetails.bhk || dynamicFieldDetails.otherBhk || (dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails))){
-        return true
+      if(fieldName == FIELD_NAME.PROPERTY_CONSTRUCTION_STATUS){
+        if(basicStaticDetails.propertyListFor?.name == 'Sale' && basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && (dynamicFieldDetails.bhk || dynamicFieldDetails.otherBhk || (dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails))){
+          return true
+        }
+        return false
       }
-      return false
-    }
 
-    // if(fieldName == FIELD_NAME.PROPERTY_POSSESSTION_STATUS){
-    //   if(basicStaticDetails.propertyListFor?.name == 'Sale' && basicStaticDetails.propertyType  && (basicStaticDetails.propertyType?.code == 'res-sale-plot' || basicStaticDetails.propertyType?.code == 'res-sale-agri-land')){
-    //     return true
-    //   }
-    //   return false
-    // }
-
-    if(fieldName == FIELD_NAME.AGE_OF_PROPERTY){
-      // if(basicStaticDetails.propertyListFor?.name == 'Sale' && (basicStaticDetails.propertyType?.code == 'res-sale-plot' || basicStaticDetails.propertyType?.code == 'res-sale-agri-land') && dynamicFieldDetails.propertyPossessionStatus == 'Immediate'){
-      //   return true
-      // }
+      if(fieldName == FIELD_NAME.AGE_OF_PROPERTY){
       if(((basicStaticDetails.propertyListFor?.name == 'Sale' && dynamicFieldDetails.propertyConstructionStatus == 'ready_to_move') || basicStaticDetails.propertyListFor?.name == 'Rent') && basicStaticDetails.propertyType && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && (dynamicFieldDetails.bhk || dynamicFieldDetails.otherBhk || (dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails))){
-        return true
+          return true
+        }
+        return false
       }
-      return false
+
+      if(fieldName == FIELD_NAME.POSSESION_DATE){
+        if(basicStaticDetails.propertyListFor?.name == 'Sale' && dynamicFieldDetails.propertyConstructionStatus == 'under_construction' && basicStaticDetails.propertyType && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && (dynamicFieldDetails.bhk || dynamicFieldDetails.otherBhk || (dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails))){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.BATHTROOMS){
+        if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && (dynamicFieldDetails.bhk?.isCustom || dynamicFieldDetails.otherBhk || (dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails))){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.BALCONIES){
+        if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && (dynamicFieldDetails.bhk?.isCustom || dynamicFieldDetails.otherBhk || (dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails))){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.BEDROOMS){
+        if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && (dynamicFieldDetails.bhk?.isCustom || dynamicFieldDetails.otherBhk || (dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails))){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.FACING){
+        if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land')){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.PLOT_AREA){
+        if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code == 'res-sale-plot' || basicStaticDetails.propertyType?.code == 'res-sale-agri-land')){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.LENGTH_WIDTH){
+        if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code == 'res-sale-plot' || basicStaticDetails.propertyType?.code == 'res-sale-agri-land')){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.WIDTH_FACING_ROAD){
+        if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code == 'res-sale-plot' || basicStaticDetails.propertyType?.code == 'res-sale-agri-land')){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.WIDTH_FACING_ROAD){
+        if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code == 'res-sale-plot' || basicStaticDetails.propertyType?.code == 'res-sale-agri-land')){
+          return true
+        }
+        return false
+      }
     }
 
-    if(fieldName == FIELD_NAME.POSSESION_DATE){
-      // if(basicStaticDetails.propertyListFor?.name == 'Sale' && (basicStaticDetails.propertyType?.code == 'res-sale-plot' || basicStaticDetails.propertyType?.code == 'res-sale-agri-land') && dynamicFieldDetails.propertyPossessionStatus == 'In Future'){
-      //   return true
-      // }
-      if(basicStaticDetails.propertyListFor?.name == 'Sale' && dynamicFieldDetails.propertyConstructionStatus == 'under_construction' && basicStaticDetails.propertyType && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && (dynamicFieldDetails.bhk || dynamicFieldDetails.otherBhk || (dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails))){
-        return true
-      }
-      return false
-    }
+    if(basicStaticDetails.propertyCategory?.code == 'commercial'){
 
-    if(fieldName == FIELD_NAME.BATHTROOMS){
-      if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && (dynamicFieldDetails.bhk?.isCustom || dynamicFieldDetails.otherBhk || (dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails))){
-        return true
+      if(fieldName == 'possession_date_section'){
+        if(basicStaticDetails.propertyType?.code && ['com-rent-office', 'com-rent-retail-shop', 'com-rent-showroom', 'com-rent-warehouse', 'com-sale-office', 'com-sale-retail-shop', 'com-sale-showroom', 'com-sale-warehouse'].includes(basicStaticDetails.propertyType?.code)){
+          return true
+        }
+        return false
       }
-      return false
-    }
 
-    if(fieldName == FIELD_NAME.BALCONIES){
-      if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && (dynamicFieldDetails.bhk?.isCustom || dynamicFieldDetails.otherBhk || (dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails))){
-        return true
+      if(fieldName == FIELD_NAME.COMMERCIAL_PROPERTY_POSSESSTION_STATUS){
+        if(basicStaticDetails.propertyType?.code && ['com-rent-office', 'com-rent-retail-shop', 'com-rent-showroom', 'com-rent-warehouse', 'com-sale-office', 'com-sale-retail-shop', 'com-sale-showroom', 'com-sale-warehouse'].includes(basicStaticDetails.propertyType?.code)){
+          return true
+        }
+        return false
       }
-      return false
-    }
 
-    if(fieldName == FIELD_NAME.BEDROOMS){
-      if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && (dynamicFieldDetails.bhk?.isCustom || dynamicFieldDetails.otherBhk || (dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails))){
-        return true
+      if(fieldName == FIELD_NAME.AVAILABEL_DATE){
+        if(basicStaticDetails.propertyType?.code && (['com-rent-office', 'com-rent-retail-shop', 'com-rent-showroom', 'com-rent-warehouse', 'com-sale-retail-shop', 'com-sale-showroom'].includes(basicStaticDetails.propertyType?.code) || (['com-sale-office', 'com-sale-warehouse'].includes(basicStaticDetails.propertyType?.code) && dynamicFieldDetails.propertyConstructionStatus == 'under_construction'))){
+          return true
+        }
+        return false
       }
-      return false
-    }
 
-    if(fieldName == FIELD_NAME.FACING){
-      if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land')){
-        return true
+      if(fieldName == FIELD_NAME.COMMERCIAL_AGE_OF_PROPERTY){
+        if(basicStaticDetails.propertyType?.code && ((['com-rent-office', 'com-rent-retail-shop', 'com-rent-showroom', 'com-rent-warehouse', 'com-sale-retail-shop', 'com-sale-showroom', 'com-sale-office', 'com-sale-warehouse'].includes(basicStaticDetails.propertyType?.code) && dynamicFieldDetails.propertyConstructionStatus == 'ready_to_move'))){
+          return true
+        } //|| (['com-sale-office', 'com-sale-warehouse'].includes(basicStaticDetails.propertyType?.code) && dynamicFieldDetails.propertyConstructionStatus == 'ready_to_move'))
+        return false
       }
-      return false
-    }
 
-    if(fieldName == FIELD_NAME.OWNERSHIP){
-      if(basicStaticDetails.propertyType && basicStaticDetails.propertyCategory == 'commercial' && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land')){
-        return true
+      if(fieldName == 'about_property_section'){
+        if(basicStaticDetails.propertyType?.code && ['com-rent-office', 'com-rent-retail-shop', 'com-rent-showroom', 'com-rent-warehouse', 'com-rent-plot', 'com-sale-office', 'com-sale-retail-shop', 'com-sale-showroom', 'com-sale-warehouse', 'com-sale-plot'].includes(basicStaticDetails.propertyType?.code)){
+          return true
+        }
+        return false
       }
-      return false
-    }
 
-    if(fieldName == FIELD_NAME.PLOT_AREA){
-      if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code == 'res-sale-plot' || basicStaticDetails.propertyType?.code == 'res-sale-agri-land')){
-        return true
+       if(fieldName == FIELD_NAME.SUITABLE_FOR){
+        if(basicStaticDetails.propertyType?.code && ['com-rent-retail-shop', 'com-rent-showroom', 'com-sale-retail-shop', 'com-sale-showroom', 'com-sale-warehouse'].includes(basicStaticDetails.propertyType?.code)){
+          return true
+        }
+        return false
       }
-      return false
-    }
 
-    if(fieldName == FIELD_NAME.LENGTH_WIDTH){
-      if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code == 'res-sale-plot' || basicStaticDetails.propertyType?.code == 'res-sale-agri-land')){
-        return true
+      if(fieldName == FIELD_NAME.LOCATION_HUB){
+        if(basicStaticDetails.propertyType?.code && ['com-rent-office', 'com-rent-retail-shop', 'com-rent-showroom', 'com-rent-warehouse', 'com-sale-office', 'com-sale-retail-shop', 'com-sale-showroom', 'com-sale-warehouse'].includes(basicStaticDetails.propertyType?.code)){
+          return true
+        }
+        return false
       }
-      return false
-    }
 
-    if(fieldName == FIELD_NAME.WIDTH_FACING_ROAD){
-      if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code == 'res-sale-plot' || basicStaticDetails.propertyType?.code == 'res-sale-agri-land')){
-        return true
+      if(fieldName == FIELD_NAME.OTHER_LOCATION_HUB){
+        if(basicStaticDetails.propertyType?.code && ['com-rent-office', 'com-rent-retail-shop', 'com-rent-showroom', 'com-rent-warehouse', 'com-sale-office', 'com-sale-retail-shop', 'com-sale-showroom', 'com-sale-warehouse'].includes(basicStaticDetails.propertyType?.code) && dynamicFieldDetails.loactionHub == 'others'){
+          return true
+        }
+        return false
       }
-      return false
-    }
 
-    if(fieldName == FIELD_NAME.WIDTH_FACING_ROAD){
-      if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code == 'res-sale-plot' || basicStaticDetails.propertyType?.code == 'res-sale-agri-land')){
-        return true
+      if(fieldName == FIELD_NAME.ZONE_TYPE){
+        if(basicStaticDetails.propertyType?.code && ['com-rent-office', 'com-sale-office'].includes(basicStaticDetails.propertyType?.code)){
+          return true
+        }
+        return false
       }
-      return false
-    }
 
+      if(fieldName == FIELD_NAME.PROPERTY_CONDITION){
+        if(basicStaticDetails.propertyType?.code && ['com-rent-office', 'com-sale-office'].includes(basicStaticDetails.propertyType?.code)){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.COMMERCIAL_BUILT_UP_AREA){
+        if(basicStaticDetails.propertyType?.code && ['com-rent-office', 'com-rent-retail-shop', 'com-rent-showroom', 'com-rent-warehouse', 'com-sale-office', 'com-sale-retail-shop', 'com-sale-showroom'].includes(basicStaticDetails.propertyType?.code)){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.COMMERCIAL_CARPET_AREA){
+        if(basicStaticDetails.propertyType?.code && (['com-rent-retail-shop', 'com-rent-showroom', 'com-sale-office', 'com-rent-warehouse', 'com-sale-office', 'com-sale-retail-shop', 'com-sale-showroom'].includes(basicStaticDetails.propertyType?.code) || (['com-rent-office'].includes(basicStaticDetails.propertyType?.code) && dynamicFieldDetails?.propertyCondition == 'ready_to_use'))){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.ENTRANCE_WIDTH){
+        if(basicStaticDetails.propertyType?.code && ['com-rent-retail-shop', 'com-rent-showroom', 'com-sale-retail-shop', 'com-sale-showroom'].includes(basicStaticDetails.propertyType?.code)){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.CELLING_HEIGHT){
+        if(basicStaticDetails.propertyType?.code && ['com-rent-retail-shop', 'com-rent-showroom', 'com-sale-retail-shop', 'com-sale-showroom'].includes(basicStaticDetails.propertyType?.code)){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.CONSTRUCTION_STATUS){
+        if(basicStaticDetails.propertyType?.code && ['com-rent-office', 'com-sale-office'].includes(basicStaticDetails.propertyType?.code)){
+          return true
+        }
+        return false
+      }
+
+       if(fieldName == FIELD_NAME.OWNERSHIP){
+        if(basicStaticDetails.propertyType?.code && ['com-rent-office', 'com-rent-retail-shop', 'com-rent-showroom', 'com-rent-warehouse', 'com-sale-retail-shop', 'com-sale-office', 'com-sale-showroom', 'com-sale-warehouse', 'com-sale-plot'].includes(basicStaticDetails.propertyType?.code)){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.LOCATED_NEAR){
+        if(basicStaticDetails.propertyType?.code && ['com-rent-retail-shop', 'com-rent-showroom', 'com-sale-retail-shop', 'com-sale-showroom'].includes(basicStaticDetails.propertyType?.code)){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.PLOT_TYPE){
+        if(basicStaticDetails.propertyType?.code && ['com-rent-plot', 'com-sale-plot'].includes(basicStaticDetails.propertyType?.code)){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.COMMERCIAL_PLOT_ARE){
+        if(basicStaticDetails.propertyType?.code && ['com-rent-warehouse', 'com-sale-warehouse', 'com-rent-plot', 'com-sale-plot'].includes(basicStaticDetails.propertyType?.code)){
+          return true
+        }
+        return false
+      }
+      
+      if(fieldName == FIELD_NAME.PLOT_LENGTH){
+        if(basicStaticDetails.propertyType?.code && ['com-rent-plot', 'com-sale-plot'].includes(basicStaticDetails.propertyType?.code)){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.PLOT_BREADTH){
+        if(basicStaticDetails.propertyType?.code && ['com-rent-plot', 'com-sale-plot'].includes(basicStaticDetails.propertyType?.code)){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.WIDTH_OF_FACING_IN_FEET){
+        if(basicStaticDetails.propertyType?.code && ['com-rent-plot', 'com-sale-plot'].includes(basicStaticDetails.propertyType?.code)){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.OPEN_SIDE){
+        if(basicStaticDetails.propertyType?.code && ['com-rent-plot','com-sale-plot'].includes(basicStaticDetails.propertyType?.code)){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.CONSTRUCTION_DONE){
+        if(basicStaticDetails.propertyType?.code && ['com-rent-plot', 'com-sale-plot'].includes(basicStaticDetails.propertyType?.code)){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.TYPE_OF_CONSTRUCTION){
+        if(basicStaticDetails.propertyType?.code && ['com-rent-plot', 'com-sale-plot'].includes(basicStaticDetails.propertyType?.code) && dynamicFieldDetails.constructinoDone == 'yes'){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.COMMERCIAL_FACING){
+        if(basicStaticDetails.propertyType?.code && ['com-rent-plot', 'com-sale-plot'].includes(basicStaticDetails.propertyType?.code)){
+          return true
+        }
+        return false
+      }
+    }
   }
 
   const renderOptionalField = (fieldName: string) => {
     if(fieldName == FIELD_NAME.SOCIETY){
-      if(['res-rent-villa', 'res-sale-villa', 'res-sale-house', 'res-rent-house', 'res-sale-duplex', 'res-rent-duplex', 'res-rent-penthouse', 'res-sale-penthouse', 'res-sale-studio', 'res-rent-studio', 'res-rent-farmhouse', 'res-sale-farmhouse', 'res-sale-plot', 'res-rent-builder-floor', 'res-sale-builder-floor', 'res-sale-agri-land'].includes(basicStaticDetails.propertyType?.code)){
+      const optionalArray = [
+        "res-rent-villa",
+        "res-sale-villa",
+        "res-sale-house",
+        "res-rent-house",
+        "res-sale-duplex",
+        "res-rent-duplex",
+        "res-rent-penthouse",
+        "res-sale-penthouse",
+        "res-sale-studio",
+        "res-rent-studio",
+        "res-rent-farmhouse",
+        "res-sale-farmhouse",
+        "res-sale-plot",
+        "res-rent-builder-floor",
+        "res-sale-builder-floor",
+        "res-sale-agri-land",
+        'com-rent-office',
+        'com-rent-retail-shop',
+        'com-rent-warehouse',
+        'com-rent-plot',
+        'com-rent-showroom',
+        'com-sale-office',
+        'com-sale-retail-shop',
+        'com-sale-showroom',
+        'com-sale-warehouse',
+        'com-sale-plot'
+      ];
+      if(optionalArray.includes(basicStaticDetails.propertyType?.code)){
+        return false
+      }
+      return true
+    }
+
+    if(fieldName == FIELD_NAME.COMMERCIAL_CARPET_AREA){
+      if(['com-rent-office', 'com-rent-warehouse', 'com-sale-office'].includes(basicStaticDetails.propertyType?.code)){
+        return false
+      }
+      return true
+    }
+
+    if(fieldName == FIELD_NAME.COMMERCIAL_BUILT_UP_AREA){
+      if(['com-rent-warehouse'].includes(basicStaticDetails.propertyType?.code)){
+        return false
+      }
+      return true
+    }
+
+    if(fieldName == FIELD_NAME.COMMERCIAL_PLOT_ARE){
+      if(['com-rent-warehouse'].includes(basicStaticDetails.propertyType?.code)){
         return false
       }
       return true
@@ -405,112 +647,212 @@ export default function Step1() {
       updatedError.locality = 'Please provide the locality details'
       hasError = true;
     }
-
-    //Dynamic Validation
-    if(renderShowField(FIELD_NAME.BHK) && !dynamicFieldDetails.bhk){
-      updatedError.bhk = 'Please select the BHK'
-      hasError = true;
-    }
-
-    if(renderShowField(FIELD_NAME.OTHERBHK) && !dynamicFieldDetails.otherBhk){
-      updatedError.otherBhk = 'Please select other BHK'
-      hasError = true;
-    }
-
-    if(renderShowField(FIELD_NAME.BUILT_UP_AREA) && !dynamicFieldDetails.builtUpArea){
-      updatedError.builtUpArea = 'Please enter a built up area'
-      hasError = true
-    }
-
-    let currentBhk = Number(dynamicFieldDetails.bhk?.bhk ?? 0)
-    let otherBhk = Number(dynamicFieldDetails.otherBhk?.bhk ?? 0)
-    if(renderShowField(FIELD_NAME.BUILT_UP_AREA) && dynamicFieldDetails.builtUpArea && (dynamicFieldDetails.builtUpArea > ((currentBhk || otherBhk || 1) * 1500) || dynamicFieldDetails.builtUpArea < (currentBhk || otherBhk || 1) * 150)){
-      updatedError.builtUpArea = `Builup area should be between ${(currentBhk || otherBhk || 1) * 150} and ${(currentBhk || otherBhk || 1) * 1500}`
-      hasError = true
-    }
-
-    if(renderShowField(FIELD_NAME.CARPET_AREA) && !dynamicFieldDetails.carpetArea){
-      updatedError.carpetArea = 'Please enter a carpet area'
-      hasError = true
-    }
-
-    if(renderShowField(FIELD_NAME.CARPET_AREA) && dynamicFieldDetails.carpetArea && (Number(dynamicFieldDetails.carpetArea) > Number(dynamicFieldDetails.builtUpArea))){
-      updatedError.carpetArea = 'Carpet area should be less than built up area'
-      hasError = true
-    }
-
-    if(renderShowField(FIELD_NAME.AGE_OF_PROPERTY) && !dynamicFieldDetails.propertyAge){
-      updatedError.propertyAge = 'Please add Age of property details'
-      hasError = true
-    }
-
-    if(renderShowField(FIELD_NAME.TRANSACTION_TYPE) && !dynamicFieldDetails.transactionType){
-      updatedError.transactionType = 'Please select transaction type'
-      hasError = true
-    }
-
-    if(renderShowField(FIELD_NAME.PROPERTY_CONSTRUCTION_STATUS) && !dynamicFieldDetails.propertyConstructionStatus){
-      updatedError.propertyConstructionStatus = 'Please select construction status'
-      hasError = true
-    }
-
-    if(renderShowField(FIELD_NAME.PROPERTY_POSSESSTION_STATUS) && !dynamicFieldDetails.propertyPossessionStatus){
-      updatedError.propertyPossessionStatus = 'Please select possession status'
-      hasError = true
-    }
-
-    if(renderShowField(FIELD_NAME.AGE_OF_PROPERTY) && dynamicFieldDetails.propertyAge && (Number(dynamicFieldDetails.propertyAge) < 0 || Number(dynamicFieldDetails.propertyAge) > 99)){
-      updatedError.propertyAge = 'Age of property should be between 0 and 99'
-      hasError = true
-    }
-
-    if(renderShowField(FIELD_NAME.POSSESION_DATE) && !dynamicFieldDetails.possesionDate){
-      updatedError.possesionDate = 'Please select possession date'
-      hasError = true
-    }
-
-    if(renderShowField(FIELD_NAME.BATHTROOMS) && !dynamicFieldDetails.bathRooms){
-      updatedError.bathRooms = 'Please select the bathroom count'
-      hasError = true
-    }
-
-    if(renderShowField(FIELD_NAME.BEDROOMS) && !dynamicFieldDetails.bedRooms){
-      updatedError.bedRooms = 'Please select the bedroom count'
-      hasError = true
-    }
-
-    if(renderShowField(FIELD_NAME.BALCONIES) && (!dynamicFieldDetails.balconies && dynamicFieldDetails.balconies != 0)){
-      updatedError.balconies = 'Please select the balconies count'
-      hasError = true
-    }
-
-    if(renderShowField(FIELD_NAME.PLOT_AREA) && (!dynamicFieldDetails.plotArea || Number(dynamicFieldDetails.plotArea ?? 0) < 10 || Number(dynamicFieldDetails.plotArea) > 100000)){
-      updatedError.plotArea = 'Plot area should be between 10 and 100000'
-      hasError = true
-    }
     
-    if(renderShowField(FIELD_NAME.PLOT_AREA) && (dynamicFieldDetails.plotArea && dynamicFieldDetails.plotLength && dynamicFieldDetails.plotWidth && ( (Number(dynamicFieldDetails.plotLength) * Number(dynamicFieldDetails.plotWidth)) > Number(dynamicFieldDetails.plotArea)))){
-      updatedError.plotArea = 'Plot Area value is not as per the value of the dimensions'
-      hasError = true
+    if(basicStaticDetails.propertyCategory?.code == 'residential'){
+
+      //Dynamic Validation
+      if(renderShowField(FIELD_NAME.BHK) && !dynamicFieldDetails.bhk){
+        updatedError.bhk = 'Please select the BHK'
+        hasError = true;
+      }
+
+      if(renderShowField(FIELD_NAME.OTHERBHK) && !dynamicFieldDetails.otherBhk){
+        updatedError.otherBhk = 'Please select other BHK'
+        hasError = true;
+      }
+
+      if(renderShowField(FIELD_NAME.BUILT_UP_AREA) && !dynamicFieldDetails.builtUpArea){
+        updatedError.builtUpArea = 'Please enter a built up area'
+        hasError = true
+      }
+
+      let currentBhk = Number(dynamicFieldDetails.bhk?.bhk ?? 0)
+      let otherBhk = Number(dynamicFieldDetails.otherBhk?.bhk ?? 0)
+      if(renderShowField(FIELD_NAME.BUILT_UP_AREA) && dynamicFieldDetails.builtUpArea && (dynamicFieldDetails.builtUpArea > ((currentBhk || otherBhk || 1) * 1500) || dynamicFieldDetails.builtUpArea < (currentBhk || otherBhk || 1) * 150)){
+        updatedError.builtUpArea = `Builup area should be between ${(currentBhk || otherBhk || 1) * 150} and ${(currentBhk || otherBhk || 1) * 1500}`
+        hasError = true
+      }
+
+      if(renderShowField(FIELD_NAME.CARPET_AREA) && !dynamicFieldDetails.carpetArea){
+        updatedError.carpetArea = 'Please enter a carpet area'
+        hasError = true
+      }
+
+      if(renderShowField(FIELD_NAME.CARPET_AREA) && dynamicFieldDetails.carpetArea && (Number(dynamicFieldDetails.carpetArea) > Number(dynamicFieldDetails.builtUpArea))){
+        updatedError.carpetArea = 'Carpet area should be less than built up area'
+        hasError = true
+      }
+
+      if(renderShowField(FIELD_NAME.AGE_OF_PROPERTY) && !dynamicFieldDetails.propertyAge){
+        updatedError.propertyAge = 'Please add Age of property details'
+        hasError = true
+      }
+
+      if(renderShowField(FIELD_NAME.TRANSACTION_TYPE) && !dynamicFieldDetails.transactionType){
+        updatedError.transactionType = 'Please select transaction type'
+        hasError = true
+      }
+
+      if(renderShowField(FIELD_NAME.PROPERTY_CONSTRUCTION_STATUS) && !dynamicFieldDetails.propertyConstructionStatus){
+        updatedError.propertyConstructionStatus = 'Please select construction status'
+        hasError = true
+      }
+
+      if(renderShowField(FIELD_NAME.AGE_OF_PROPERTY) && dynamicFieldDetails.propertyAge && (Number(dynamicFieldDetails.propertyAge) < 0 || Number(dynamicFieldDetails.propertyAge) > 99)){
+        updatedError.propertyAge = 'Age of property should be between 0 and 99'
+        hasError = true
+      }
+
+      if(renderShowField(FIELD_NAME.POSSESION_DATE) && !dynamicFieldDetails.possesionDate){
+        updatedError.possesionDate = 'Please select possession date'
+        hasError = true
+      }
+
+      if(renderShowField(FIELD_NAME.BATHTROOMS) && !dynamicFieldDetails.bathRooms){
+        updatedError.bathRooms = 'Please select the bathroom count'
+        hasError = true
+      }
+
+      if(renderShowField(FIELD_NAME.BEDROOMS) && !dynamicFieldDetails.bedRooms){
+        updatedError.bedRooms = 'Please select the bedroom count'
+        hasError = true
+      }
+
+      if(renderShowField(FIELD_NAME.BALCONIES) && (!dynamicFieldDetails.balconies && dynamicFieldDetails.balconies != 0)){
+        updatedError.balconies = 'Please select the balconies count'
+        hasError = true
+      }
+
+      if(renderShowField(FIELD_NAME.PLOT_AREA) && (!dynamicFieldDetails.plotArea || Number(dynamicFieldDetails.plotArea ?? 0) < 10 || Number(dynamicFieldDetails.plotArea) > 100000)){
+        updatedError.plotArea = 'Plot area should be between 10 and 100000'
+        hasError = true
+      }
+      
+      if(renderShowField(FIELD_NAME.PLOT_AREA) && (dynamicFieldDetails.plotArea && dynamicFieldDetails.plotLength && dynamicFieldDetails.plotWidth && ( (Number(dynamicFieldDetails.plotLength) * Number(dynamicFieldDetails.plotWidth)) > Number(dynamicFieldDetails.plotArea)))){
+        updatedError.plotArea = 'Plot Area value is not as per the value of the dimensions'
+        hasError = true
+      }
+
+      if(renderShowField(FIELD_NAME.LENGTH_WIDTH) && (!dynamicFieldDetails.plotLength || Number(dynamicFieldDetails.plotLength ?? 0) < 1 || Number(dynamicFieldDetails.plotLength) > 10000)){
+        updatedError.plotLength = 'Length should be between 1 and 10000'
+        hasError = true
+      } 
+
+      if(renderShowField(FIELD_NAME.LENGTH_WIDTH) && (!dynamicFieldDetails.plotWidth || Number(dynamicFieldDetails.plotWidth ?? 0) < 1 || Number(dynamicFieldDetails.plotWidth) > 10000)){
+        updatedError.plotWidth = 'Width should be between 1 and 10000'
+        hasError = true
+      }
+
+      if(renderShowField(FIELD_NAME.WIDTH_FACING_ROAD) && (!dynamicFieldDetails.widthOfFacingRoad || Number(dynamicFieldDetails.widthOfFacingRoad ?? 0) < 50 || Number(dynamicFieldDetails.widthOfFacingRoad) > 500)){
+        updatedError.widthOfFacingRoad = 'Facing with should be between 50 and 500'
+        hasError = true
+      }
     }
 
-    if(renderShowField(FIELD_NAME.LENGTH_WIDTH) && (!dynamicFieldDetails.plotLength || Number(dynamicFieldDetails.plotLength ?? 0) < 1 || Number(dynamicFieldDetails.plotLength) > 10000)){
-      updatedError.plotLength = 'Length should be between 1 and 10000'
-      hasError = true
-    } 
+    if(basicStaticDetails.propertyCategory?.code == 'commercial'){
+      
+      if(renderShowField(FIELD_NAME.COMMERCIAL_PROPERTY_POSSESSTION_STATUS) && !dynamicFieldDetails.propertyConstructionStatus){
+        updatedError.propertyConstructionStatus = 'Please select posession status'
+        hasError = true;
+      }
 
-    if(renderShowField(FIELD_NAME.LENGTH_WIDTH) && (!dynamicFieldDetails.plotWidth || Number(dynamicFieldDetails.plotWidth ?? 0) < 1 || Number(dynamicFieldDetails.plotWidth) > 10000)){
-      updatedError.plotWidth = 'Width should be between 1 and 10000'
-      hasError = true
-    }
+      if(renderShowField(FIELD_NAME.AVAILABEL_DATE) && !dynamicFieldDetails.possesionDate){
+        updatedError.possesionDate = 'Please enter the availabel from date'
+        hasError = true;
+      }
 
-    if(renderShowField(FIELD_NAME.WIDTH_FACING_ROAD) && (!dynamicFieldDetails.widthOfFacingRoad || Number(dynamicFieldDetails.widthOfFacingRoad ?? 0) < 50 || Number(dynamicFieldDetails.widthOfFacingRoad) > 500)){
-      updatedError.widthOfFacingRoad = 'Facing with should be between 50 and 500'
-      hasError = true
+      if(renderShowField(FIELD_NAME.COMMERCIAL_AGE_OF_PROPERTY) && !dynamicFieldDetails.propertyAge || (dynamicFieldDetails.propertyAge && (Number(dynamicFieldDetails.propertyAge) < 0 || Number(dynamicFieldDetails.propertyAge) > 99))){
+        updatedError.propertyAge = 'Age of property should be between 0 and 99'
+        hasError = true;
+      }
+
+      if(renderShowField(FIELD_NAME.LOCATION_HUB) && !dynamicFieldDetails.loactionHub){
+        updatedError.loactionHub = 'Please select location hub'
+        hasError = true;
+      }
+
+      if(renderShowField(FIELD_NAME.OTHER_LOCATION_HUB) && !dynamicFieldDetails.otherLocationHub){
+        updatedError.otherLocationHub = 'Please select other location hub'
+        hasError = true;
+      }
+
+      if(renderShowField(FIELD_NAME.ZONE_TYPE) && !dynamicFieldDetails.zoneType){
+        updatedError.zoneType = 'Please select zone type'
+        hasError = true;
+      }
+
+      if(renderShowField(FIELD_NAME.PROPERTY_CONDITION) && !dynamicFieldDetails.propertyCondition){
+        updatedError.propertyCondition = 'Please select property condition'
+        hasError = true;
+      }
+
+      if(renderShowField(FIELD_NAME.COMMERCIAL_BUILT_UP_AREA) && renderOptionalField(FIELD_NAME.COMMERCIAL_BUILT_UP_AREA) && (!dynamicFieldDetails.builtUpArea || (dynamicFieldDetails.builtUpArea && ( Number(dynamicFieldDetails.builtUpArea) < 50 || Number(dynamicFieldDetails.builtUpArea) > 300000)))){
+        updatedError.builtUpArea = 'Built up area should be between 50 and 300000'
+        hasError = true;
+      }
+
+      if(renderShowField(FIELD_NAME.COMMERCIAL_CARPET_AREA) && renderOptionalField(FIELD_NAME.COMMERCIAL_CARPET_AREA) && !dynamicFieldDetails.carpetArea){
+        updatedError.carpetArea = 'Carpet area is required'
+        hasError = true;
+      }
+      if(renderShowField(FIELD_NAME.COMMERCIAL_CARPET_AREA) && (dynamicFieldDetails.builtUpArea && (Number(dynamicFieldDetails.builtUpArea) <= Number(dynamicFieldDetails.carpetArea)))){
+        updatedError.carpetArea = 'Carpet area should less the built up area'
+        hasError = true;
+      }
+
+      if(renderShowField(FIELD_NAME.CONSTRUCTION_STATUS) && !dynamicFieldDetails.constructionStatus){
+        updatedError.constructionStatus = 'Please select construction status'
+        hasError = true;
+      }
+
+      if(renderShowField(FIELD_NAME.OWNERSHIP) && !dynamicFieldDetails.ownership){
+        updatedError.ownership = 'Please select ownership'
+        hasError = true;
+      }
+
+      if(renderShowField(FIELD_NAME.SUITABLE_FOR) && dynamicFieldDetails.suitableFor.length == 0){
+        updatedError.suitableFor = 'Please select Suitable for'
+        hasError = true;
+      }
+
+      if(renderShowField(FIELD_NAME.ENTRANCE_WIDTH) && (!dynamicFieldDetails.entranceWidth || (dynamicFieldDetails.entranceWidth && (Number(dynamicFieldDetails.entranceWidth) < 2 || Number(dynamicFieldDetails.entranceWidth > 18))))){
+        updatedError.entranceWidth = 'Entrance width should be between 2 and 18'
+        hasError = true;
+      }
+
+      if(renderShowField(FIELD_NAME.CELLING_HEIGHT) && (!dynamicFieldDetails.cellingHeight || (dynamicFieldDetails.cellingHeight && (Number(dynamicFieldDetails.cellingHeight) < 5 || Number(dynamicFieldDetails.cellingHeight > 40))))){
+        updatedError.cellingHeight = 'Celling height should be between 5 and 40'
+        hasError = true;
+      }
+
+      if(renderShowField(FIELD_NAME.PLOT_TYPE) && !dynamicFieldDetails.plotType){
+        updatedError.plotType = 'Please select Plot type'
+        hasError = true;
+      }
+
+      if(renderShowField(FIELD_NAME.COMMERCIAL_PLOT_ARE) && renderOptionalField(FIELD_NAME.COMMERCIAL_PLOT_ARE) && !dynamicFieldDetails.plotArea){
+        updatedError.plotArea = 'Plot area is required'
+        hasError = true;
+      }
+
+      if(renderShowField(FIELD_NAME.TYPE_OF_CONSTRUCTION) && (dynamicFieldDetails.constructinoDone == 'yes' && !dynamicFieldDetails.typeOfConstructionDone)){
+        updatedError.typeOfConstructionDone = 'Please select construction done'
+        hasError = true;
+      }
+
     }
 
     setErrors(updatedError)
     return hasError;
+  }
+
+  const renderLoactionHubOption = (type: string) => {
+    if(type == 'com-rent-office' || type == 'com-sale-office'){
+      return LOCATION_HUB.RENT_OFFICE
+    }else if(['com-rent-retail-shop' ,'com-rent-showroom', 'com-rent-warehouse', 'com-sale-retail-shop', 'com-sale-showroom', 'com-sale-warehouse'].includes(type)){
+      return LOCATION_HUB.RENT_OTHER
+    }
+    return []
   }
 
   const handleOpenAddCustomLocation = (label: string) => {
@@ -610,14 +952,36 @@ export default function Step1() {
       transactionType: dynamicFieldDetails.transactionType,
       constructionStatus: dynamicFieldDetails.propertyConstructionStatus,
       ageOfProperty: dynamicFieldDetails.propertyAge,
-      possessionTime: dynamicFieldDetails.possesionDate,
+      possessionDate: dynamicFieldDetails.possesionDate,
+      possessionTime: '',
       facing: dynamicFieldDetails.facing,
-      status: 'draft',
+      status: dynamicFieldDetails?.status ? dynamicFieldDetails?.status : 'draft',
       plotArea: dynamicFieldDetails.plotArea,
       plotAreaUnit: dynamicFieldDetails.selectAreaUnit,
       plotLength: dynamicFieldDetails.plotLength,
-      plotWidth: dynamicFieldDetails.plotWidth,
+      plotWidth: dynamicFieldDetails?.plotWidth  ? dynamicFieldDetails?.plotWidth : dynamicFieldDetails?.plotBreadth,
       plotFacingRoadWidth: dynamicFieldDetails.widthOfFacingRoad,
+
+      locationHub: dynamicFieldDetails?.loactionHub,
+      otherLocationHub: dynamicFieldDetails?.otherLocationHub,
+      zoneType: dynamicFieldDetails?.zoneType,
+      propertyCondition: dynamicFieldDetails?.propertyCondition,
+      builtUpArea: dynamicFieldDetails?.builtUpArea,
+      builtUpAreaUnit: 'sq_ft', //sq_ft, sq_yd, sq_m, acres, hectares
+      carpetArea: dynamicFieldDetails?.carpetArea,
+      carpetAreaUnit: 'sq_ft', //sq_ft, sq_yd, sq_m, acres, hectares
+      wallConstructionStatus: dynamicFieldDetails?.constructionStatus,
+      ownership: dynamicFieldDetails?.ownership,
+      suitableFor: dynamicFieldDetails?.suitableFor,
+      entranceWidth: dynamicFieldDetails?.entranceWidth,
+      entranceWidthUnit: 'ft',// ft, m, in, cm
+      ceilingHeight: dynamicFieldDetails?.cellingHeight,
+      ceilingHeightUnit: 'ft', // ft, m, in, cm
+      locatedNear: dynamicFieldDetails?.locatedNear,
+      plotLandType: dynamicFieldDetails?.plotType,
+      noOfOpenSides: dynamicFieldDetails?.openSide,
+      constructionDone: dynamicFieldDetails?.constructinoDone,
+      constructionTypeOptions: dynamicFieldDetails?.constructionTypeOptions
     }
   }
 
@@ -678,8 +1042,8 @@ export default function Step1() {
         otherBhk: null,
         isStaticBhkDetails: false,
         staticBhKDetails: null,
-        builtUpArea: step1Details?.bhk?.buildUpAreaSqFt,
-        carpetArea: step1Details?.bhk?.carpetAreaSqFt,
+        builtUpArea: step1Details?.bhk?.buildUpAreaSqFt ? step1Details?.bhk?.buildUpAreaSqFt : step1Details.builtUpArea,
+        carpetArea: step1Details?.bhk?.carpetAreaSqFt ? step1Details?.bhk?.carpetAreaSqFt : step1Details?.carpetArea,
         bathRooms: step1Details?.bhk?.noOfBathrooms,
         bedRooms: step1Details?.bhk?.noOfBedrooms,
         balconies: step1Details?.bhk?.balconies,
@@ -694,7 +1058,28 @@ export default function Step1() {
         transactionType: TRANSACTION_TYPE_LIST.find(item => item.value == step1Details.transactionType)?.value,
         propertyConstructionStatus: PROPERTY_CONSTRUCTION_STATUS.find(item => item.value == step1Details.constructionStatus)?.value,
         propertyAge: step1Details?.ageOfProperty,
-        possesionDate: step1Details?.possessionTime,
+        possesionDate: step1Details?.possessionDate,
+        status: step1Details?.status ?? '',
+
+        loactionHub: step1Details.locationHub,
+        otherLocationHub: step1Details.otherLocationHub,
+        zoneType: step1Details.zoneType,
+        propertyCondition: step1Details.propertyCondition,
+        builtUpAreaUnit: 'sq_ft', //sq_ft, sq_yd, sq_m, acres, hectares
+        carpetAreaUnit: '',
+        constructionStatus: step1Details.wallConstructionStatus,
+        ownership: step1Details.ownership,
+        suitableFor: step1Details.suitableFor,
+        entranceWidth: step1Details.entranceWidth,
+        entranceWidthUnit: '',
+        cellingHeight: step1Details.ceilingHeight,
+        ceilingHeightUnit: '',
+        locatedNear: step1Details.locatedNear,
+        plotType: step1Details.plotLandType,
+        openSide: step1Details.noOfOpenSides,
+        constructinoDone: step1Details.constructionDone,
+        constructionTypeOptions: step1Details.constructionTypeOptions
+
       }))
 
       dispatch(setTotalProgress({progress: step1Details.progressPercentage}))
@@ -741,19 +1126,27 @@ export default function Step1() {
                       carpetArea: null,
                       transactionType: null,
                       propertyConstructionStatus: null,
-                      propertyPossessionStatus: null,
                       propertyAge: null,
                       possesionDate: null,
                       bathRooms: null,
                       bedRooms: null,
                       balconies: null,
-                      ownership: null,
                       facing: null,
                       plotArea: null,
                       selectAreaUnit: null,
                       plotLength: null,
                       plotWidth: null,
                       widthOfFacingRoad: null,
+                      loactionHub: null,
+                      otherLocationHub: null,
+                      zoneType: null,
+                      propertyCondition : null,
+                      constructionStatus: null,
+                      ownership: null,
+                      suitableFor: [],
+                      entranceWidth: null,
+                      cellingHeight: null,
+                      locatedNear: []
                     })
                     setErrors((pre) => ({...pre, propertyListFor: ''}))
                   }}
@@ -789,19 +1182,27 @@ export default function Step1() {
                       carpetArea: null,
                       transactionType: null,
                       propertyConstructionStatus: null,
-                      propertyPossessionStatus: null,
                       propertyAge: null,
                       possesionDate: null,
                       bathRooms: null,
                       bedRooms: null,
                       balconies: null,
-                      ownership: null,
                       facing: null,
                       plotArea: null,
                       selectAreaUnit: null,
                       plotLength: null,
                       plotWidth: null,
                       widthOfFacingRoad: null,
+                      loactionHub: null,
+                      otherLocationHub: null,
+                      zoneType: null,
+                      propertyCondition : null,
+                      constructionStatus: null,
+                      ownership: null,
+                      suitableFor: [],
+                      entranceWidth: null,
+                      cellingHeight: null,
+                      locatedNear: []
                     })
                     setErrors((pre) => ({...pre, propertyCategory: ''}))
                   }}
@@ -842,6 +1243,8 @@ export default function Step1() {
         </div>
         {errors?.propertyType && <p className="pt-1 text-red-500 text-xs">{errors.propertyType}</p>}
       </div>}
+
+      {/* Dyname Residential Flow Field Start*/}
 
       <div data-field={FIELD_NAME.CITY} data-has-value={!!basicStaticDetails.city}>
         <FieldLabel label="City" customClass="pb-2" required={true}/>
@@ -1132,30 +1535,6 @@ export default function Step1() {
         {errors?.propertyConstructionStatus && <p className="pt-1 text-red-500 text-xs">{errors.propertyConstructionStatus}</p>}
       </div>}
 
-      {renderShowField(FIELD_NAME.PROPERTY_POSSESSTION_STATUS) && <div data-field={FIELD_NAME.PROPERTY_POSSESSTION_STATUS} data-has-value={!!dynamicFieldDetails.propertyPossessionStatus}>
-        <FieldLabel label="Possession Status" customClass="pb-2" required={true}/>
-        <div className="flex flex-wrap gap-3 pt-2">
-           {
-            PROPERTY_POSSESSION_STATUS.map(item => {
-              return(
-                <ChipTag
-                  checked={item.value == dynamicFieldDetails.propertyPossessionStatus}
-                  label={item.name}
-                  onChagne={() => {
-                    setDynamicFieldDetails((pre) => ({...pre, propertyPossessionStatus: item.value}))
-                    setErrors((pre) => ({...pre, propertyPossessionStatus: ''}))
-                  }}
-                  value={dynamicFieldDetails.propertyPossessionStatus}
-                  isIcon={false}
-                  containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[180px]"
-                />
-              )
-            })
-           }
-        </div>
-        {errors?.propertyPossessionStatus && <p className="pt-1 text-red-500 text-xs">{errors.propertyPossessionStatus}</p>}
-      </div>}
-
      {renderShowField(FIELD_NAME.AGE_OF_PROPERTY) && <div data-field={FIELD_NAME.AGE_OF_PROPERTY} data-has-value={!!dynamicFieldDetails.propertyAge || dynamicFieldDetails.propertyAge === 0}>
           <FieldLabel label="Age of Property ( in Years)" customClass="pb-2" required={true}/>
           <InputBase
@@ -1194,7 +1573,7 @@ export default function Step1() {
               }
               }
               value={dynamicFieldDetails.possesionDate}
-              className={'box-border h-[47.81px] px-4 py-2 text-sm rounded-full border border-border focus:border-blue text-text-gray'}
+              className={'box-border h-[40px] px-4 py-2 text-sm rounded-full border border-border focus:border-blue text-text-gray'}
               inputProps={{
                 className: "placeholder-gray",
               }}
@@ -1289,28 +1668,6 @@ export default function Step1() {
           }
         </div>
           {errors?.balconies && <p className="pt-1 text-red-500 text-xs">{errors.balconies}</p>}
-      </div>}
-      
-      {renderShowField(FIELD_NAME.OWNERSHIP) && <div data-field={FIELD_NAME.OWNERSHIP} data-has-value={!!dynamicFieldDetails.ownership}>
-        <FieldLabel label="OwnerShip"/>
-        <div className="flex flex-wrap gap-3 pt-2">
-          {
-            OWNERSHIP_LIST.map(item => {
-              return(
-                <ChipTag
-                  checked={item == dynamicFieldDetails.ownership}
-                  label={item}
-                  onChagne={() => {
-                    setDynamicFieldDetails((pre) => ({...pre, ownership: item}))
-                  }}
-                  value={dynamicFieldDetails.ownership}
-                  isIcon={false}
-                  containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[180px]"
-                />
-              )
-            })
-          }
-        </div>
       </div>}
 
       {renderShowField(FIELD_NAME.FACING) && <div data-field={FIELD_NAME.FACING} data-has-value={!!dynamicFieldDetails.facing}>
@@ -1449,11 +1806,559 @@ export default function Step1() {
           {errors?.widthOfFacingRoad && <p className="pt-1 text-red-500 text-xs">{errors.widthOfFacingRoad}</p>}
       </div> }
 
+      {/* Dyname Residential Flow Field End*/}
+
+      {/* Dyname Commercial Flow Field Start*/}
+      
+      {renderShowField('possession_date_section') && <RenderSectionName data={CUSTOM_SECTION_NAME.POSSESSION} customClass="pt-3"/>} 
+
+      {renderShowField(FIELD_NAME.COMMERCIAL_PROPERTY_POSSESSTION_STATUS) && <div data-field={FIELD_NAME.PROPERTY_CONSTRUCTION_STATUS} data-has-value={!!dynamicFieldDetails.propertyConstructionStatus}>
+        <FieldLabel label="Possession status" customClass="pb-2" required={true}/>
+        <div className="flex flex-wrap gap-3">
+           {
+            PROPERTY_CONSTRUCTION_STATUS.map((item) => {
+              return(
+                <ChipTag
+                  checked={item.value == dynamicFieldDetails.propertyConstructionStatus}
+                  label={item.name}
+                  onChagne={() => {
+                    setDynamicFieldDetails((pre) => ({...pre, propertyConstructionStatus: item.value}))
+                    setErrors((pre) => ({...pre, propertyConstructionStatus: ''}))
+                  }}
+                  value={dynamicFieldDetails.propertyConstructionStatus}
+                  isIcon={false}
+                  containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[180px]"
+                />
+              )
+            })
+           }
+        </div>
+        {errors?.propertyConstructionStatus && <p className="pt-1 text-red-500 text-xs">{errors.propertyConstructionStatus}</p>}
+      </div>}
+
+      {(renderShowField(FIELD_NAME.AVAILABEL_DATE) || renderShowField(FIELD_NAME.COMMERCIAL_AGE_OF_PROPERTY)) && <div className="grid grid-cols-1 2md:grid-cols-2 gap-3">
+        {renderShowField(FIELD_NAME.AVAILABEL_DATE) &&
+        <div data-field={FIELD_NAME.AVAILABEL_DATE} data-has-value={!!dynamicFieldDetails.possesionDate}>
+          <FieldLabel label="Available From" customClass="pb-2" required={true}/>
+          <div className="w-auto" onClick={() => {availabelDateRef.current?.showPicker()}}>
+            <InputBase
+              inputRef={availabelDateRef}
+              placeholder="Selct"
+              type="date"
+              fullWidth
+              onChange={(e) =>{
+                setDynamicFieldDetails((pre) => ({...pre, possesionDate: e.target.value}))
+                setErrors((pre) => ({...pre, possesionDate: ''}))
+              }
+              }
+              value={dynamicFieldDetails.possesionDate}
+              className={'box-border h-[40px] px-4 py-2 text-sm rounded-full border border-border focus:border-blue text-text-gray'}
+              inputProps={{
+                className: "placeholder-gray",
+                min: new Date().toISOString().split('T')[0],
+              }}
+            />
+            {errors.possesionDate && (
+              <p className="pt-1 text-red-500 text-xs">
+                {errors.possesionDate}
+              </p>
+            )}
+          </div>
+        </div>
+        }
+        {renderShowField(FIELD_NAME.COMMERCIAL_AGE_OF_PROPERTY) && <div data-field={FIELD_NAME.AGE_OF_PROPERTY} data-has-value={!!dynamicFieldDetails.propertyAge || dynamicFieldDetails.propertyAge === 0}>
+            <FieldLabel label="Age of Property ( in Years)" customClass="pb-2" required={true}/>
+            <InputBase
+              placeholder="Enter property age"
+              fullWidth
+              type="number"
+              value={dynamicFieldDetails.propertyAge}
+              onChange={(event) => {
+                const input = event.target.value;
+                const isOnlyDigits = /^\d*$/.test(input);
+                if(!isOnlyDigits) return
+                if(Number(input) > 99) return
+                setDynamicFieldDetails((pre) => ({...pre, propertyAge: input}))
+                setErrors((pre) => ({...pre, propertyAge: ''}))
+              }}
+              className='box-border h-[40px] px-4 py-2 text-sm rounded-full border border-border text-text-gray'
+              inputProps={{
+                className: "placeholder-gray",
+              }}
+            />
+            {errors?.propertyAge && <p className="pt-1 text-red-500 text-xs">{errors.propertyAge}</p>}
+        </div> }
+      </div>}
+      
+      {renderShowField('about_property_section') && <RenderSectionName data={CUSTOM_SECTION_NAME.ABOUT_THE_PROPERTY} customClass="pt-3"/> }
+      
+      {renderShowField(FIELD_NAME.PLOT_TYPE) && <div data-field={FIELD_NAME.PLOT_TYPE} data-has-value={!!dynamicFieldDetails.plotType}>
+        <FieldLabel label="Plot/Land Type" customClass="pb-2" required={true}/>
+        <div className="flex flex-wrap gap-3">
+           {
+            PLOT_LAND_TYPE.map((item) => {
+              return(
+                <ChipTag
+                  checked={item.value == dynamicFieldDetails.plotType}
+                  label={item.name}
+                  onChagne={() => {
+                    setDynamicFieldDetails((pre) => ({...pre, plotType: item.value}))
+                    setErrors((pre) => ({...pre, plotType: ''}))
+                  }}
+                  value={dynamicFieldDetails.plotType}
+                  isIcon={false}
+                  containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[180px]"
+                />
+              )
+            })
+           }
+        </div>
+        {errors?.plotType && <p className="pt-1 text-red-500 text-xs">{errors.plotType}</p>}
+      </div>}
+
+      {renderShowField(FIELD_NAME.SUITABLE_FOR) && <div data-field={FIELD_NAME.SUITABLE_FOR} data-has-value={!!dynamicFieldDetails.suitableFor}>
+        <FieldLabel label="Suitable For" customClass="pb-2" required={true}/>
+        <div className="flex flex-wrap gap-3">
+           {
+            SUITABLE_FOR.map((item) => {
+              return(
+                <ChipTag
+                  checked={dynamicFieldDetails.suitableFor?.includes(item)}
+                  label={item}
+                  onChagne={() => {
+                    let data = []
+                    if(dynamicFieldDetails.suitableFor?.includes(item)){
+                      data = dynamicFieldDetails.suitableFor.filter(suitable => suitable != item)
+                    }else{
+                      data = [...dynamicFieldDetails.suitableFor, item]
+                    }
+                    setDynamicFieldDetails((pre) => ({...pre, suitableFor: data}))
+                    setErrors((pre) => ({...pre, suitableFor: ''}))
+                  }}
+                  value={item}
+                  isIcon={false}
+                  containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[180px]"
+                />
+              )
+            })
+           }
+        </div>
+        {errors?.suitableFor && <p className="pt-1 text-red-500 text-xs">{errors.suitableFor}</p>}
+      </div>}
+
+      {renderShowField(FIELD_NAME.LOCATION_HUB) && <div data-field={FIELD_NAME.PROPERTY_CONSTRUCTION_STATUS} data-has-value={!!dynamicFieldDetails.loactionHub}>
+        <FieldLabel label="Location Hub" customClass="pb-2" required={true}/>
+        <div className="flex flex-wrap gap-3">
+           {
+            renderLoactionHubOption(basicStaticDetails.propertyType?.code ?? '').map((item) => {
+              return(
+                <ChipTag
+                  checked={item.value == dynamicFieldDetails.loactionHub}
+                  label={item.name}
+                  onChagne={() => {
+                    setDynamicFieldDetails((pre) => ({...pre, loactionHub: item.value}))
+                    setErrors((pre) => ({...pre, loactionHub: ''}))
+                  }}
+                  value={dynamicFieldDetails.loactionHub}
+                  isIcon={false}
+                  containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[180px]"
+                />
+              )
+            })
+           }
+        </div>
+        {errors?.loactionHub && <p className="pt-1 text-red-500 text-xs">{errors.loactionHub}</p>}
+      </div>}
+
+      {renderShowField(FIELD_NAME.OTHER_LOCATION_HUB) && <div data-field={FIELD_NAME.OTHER_LOCATION_HUB} data-has-value={!!dynamicFieldDetails.otherLocationHub}>
+        <FieldLabel label="Other (Location Hub)" required={true} customClass="pb-2"/>
+          <InputBase
+            placeholder="Enter location hub"
+            fullWidth
+            value={dynamicFieldDetails.otherLocationHub ?? ''}
+            onChange={(e) => {
+              setDynamicFieldDetails((pre) => ({...pre, otherLocationHub: e.target.value}))
+              setErrors((pre) => ({...pre, otherLocationHub: ''}))
+            }}
+            className={
+              "box-border px-4 py-2 text-sm rounded-full border focus:outline-none border-border text-text-gray h-[40px]"
+            }
+            inputProps={{
+              className: "placeholder-gray",
+            }}
+          />
+        {errors?.otherLocationHub && <p className="pt-1 text-red-500 text-xs">{errors.otherLocationHub}</p>}
+      </div>}
+
+      {renderShowField(FIELD_NAME.ZONE_TYPE) && <div data-field={FIELD_NAME.ZONE_TYPE} data-has-value={!!dynamicFieldDetails.zoneType}>
+        <FieldLabel label="Zone Type" customClass="pb-2" required={true}/>
+        <div className="flex flex-wrap gap-3">
+           {
+            ZONE_TYPE.map((item) => {
+              return(
+                <ChipTag
+                  checked={item.value == dynamicFieldDetails.zoneType}
+                  label={item.name}
+                  onChagne={() => {
+                    setDynamicFieldDetails((pre) => ({...pre, zoneType: item.value}))
+                    setErrors((pre) => ({...pre, zoneType: ''}))
+                  }}
+                  value={dynamicFieldDetails.zoneType}
+                  isIcon={false}
+                  containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[180px]"
+                />
+              )
+            })
+           }
+        </div>
+        {errors?.zoneType && <p className="pt-1 text-red-500 text-xs">{errors.zoneType}</p>}
+      </div>}
+
+      {renderShowField(FIELD_NAME.PROPERTY_CONDITION) && <div data-field={FIELD_NAME.PROPERTY_CONDITION} data-has-value={!!dynamicFieldDetails.propertyCondition}>
+        <FieldLabel label="Property Condition" customClass="pb-2" required={true}/>
+        <div className="flex flex-wrap gap-3">
+           {
+            PROPERTY_CONDITION.map((item) => {
+              return(
+                <ChipTag
+                  checked={item.value == dynamicFieldDetails.propertyCondition}
+                  label={item.name}
+                  onChagne={() => {
+                    setDynamicFieldDetails((pre) => ({...pre, propertyCondition: item.value}))
+                    setErrors((pre) => ({...pre, propertyCondition: ''}))
+                  }}
+                  value={dynamicFieldDetails.propertyCondition}
+                  isIcon={false}
+                  containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[180px]"
+                />
+              )
+            })
+           }
+        </div>
+        {errors?.propertyCondition && <p className="pt-1 text-red-500 text-xs">{errors.propertyCondition}</p>}
+      </div>}
+      
+      {renderShowField(FIELD_NAME.COMMERCIAL_PLOT_ARE) && <div data-field={FIELD_NAME.COMMERCIAL_PLOT_ARE} data-has-value={!!dynamicFieldDetails.plotArea}>
+        <FieldLabel label="Plot Area" customClass="pb-2" required={renderOptionalField(FIELD_NAME.COMMERCIAL_PLOT_ARE)}/>
+        <DynamicInput
+           placeHolder='Enter plot area'
+           options={AREA_UNIT_LIST}
+           onChange={(value: string, dropdownValue: string) => {
+            const isOnlyDigits = /^\d*$/.test(value);
+            if(!isOnlyDigits) return
+            setDynamicFieldDetails((pre) => ({...pre, plotArea: value,}))
+            setErrors((pre) => ({...pre, plotArea: ''}))
+           }}
+           value={dynamicFieldDetails.plotArea ??''}
+           dropdownValue={AREA_UNIT_LIST[0].value}
+           />
+          {errors?.plotArea && <p className="pt-1 text-red-500 text-xs">{errors.plotArea}</p>}
+      </div>}
+
+      {(renderShowField(FIELD_NAME.COMMERCIAL_BUILT_UP_AREA) || renderShowField(FIELD_NAME.COMMERCIAL_CARPET_AREA) )&& <div className="grid grid-cols-1 2md:grid-cols-2 gap-3">
+        {renderShowField(FIELD_NAME.COMMERCIAL_BUILT_UP_AREA) && <div data-field={FIELD_NAME.COMMERCIAL_BUILT_UP_AREA} data-has-value={!!dynamicFieldDetails.builtUpArea}>
+        <FieldLabel label="Built Up Area" customClass="pb-2" required={renderOptionalField(FIELD_NAME.COMMERCIAL_BUILT_UP_AREA)}/>
+        <DynamicInput
+           placeHolder='Enter built up area'
+           options={AREA_UNIT_LIST}
+           onChange={(value: string, dropdownValue: string) => {
+            const isOnlyDigits = /^\d*$/.test(value);
+            if(!isOnlyDigits) return
+            setDynamicFieldDetails((pre) => ({...pre, builtUpArea: value,}))
+            setErrors((pre) => ({...pre, builtUpArea: ''}))
+           }}
+           value={dynamicFieldDetails.builtUpArea ?? ''}
+           dropdownValue={AREA_UNIT_LIST[0].value}
+           />
+          {errors?.builtUpArea && <p className="pt-1 text-red-500 text-xs">{errors.builtUpArea}</p>}
+        </div>}
+
+        {renderShowField(FIELD_NAME.COMMERCIAL_CARPET_AREA) && <div data-field={FIELD_NAME.COMMERCIAL_CARPET_AREA} data-has-value={!!dynamicFieldDetails.carpetArea}>
+          <FieldLabel label="Carpet Area" customClass="pb-2" required={renderOptionalField(FIELD_NAME.COMMERCIAL_CARPET_AREA)}/>
+          <DynamicInput
+            placeHolder='Enter carpet area'
+            options={AREA_UNIT_LIST}
+            onChange={(value: string, dropdownValue: string) => {
+              const isOnlyDigits = /^\d*$/.test(value);
+              if(!isOnlyDigits) return
+              setDynamicFieldDetails((pre) => ({...pre, carpetArea: value,}))
+              setErrors((pre) => ({...pre, carpetArea: ''}))
+            }}
+            value={dynamicFieldDetails.carpetArea ?? ''}
+            dropdownValue={AREA_UNIT_LIST[0].value}
+            />
+            {errors?.carpetArea && <p className="pt-1 text-red-500 text-xs">{errors.carpetArea}</p>}
+        </div>}
+      </div>}
+
+      {(renderShowField(FIELD_NAME.PLOT_LENGTH) || renderShowField(FIELD_NAME.PLOT_BREADTH)) && <div className="grid grid-cols-1 2md:grid-cols-2 gap-3">
+        {renderShowField(FIELD_NAME.PLOT_LENGTH) && <div data-field={FIELD_NAME.PLOT_LENGTH} data-has-value={!!dynamicFieldDetails.plotLength}>
+        <FieldLabel label="Length of plot/Land" customClass="pb-2"/>
+        <DynamicInput
+           placeHolder='Enter length of plot/land'
+           options={AREA_UNIT_LIST}
+           onChange={(value: string, dropdownValue: string) => {
+            const isOnlyDigits = /^\d*$/.test(value);
+            if(!isOnlyDigits) return
+            setDynamicFieldDetails((pre) => ({...pre, plotLength: value,}))
+            setErrors((pre) => ({...pre, plotLength: ''}))
+           }}
+           value={dynamicFieldDetails.plotLength ?? ''}
+           dropdownValue={AREA_UNIT_LIST[0].value}
+           />
+          {errors?.plotLength && <p className="pt-1 text-red-500 text-xs">{errors.plotLength}</p>}
+        </div>}
+        {renderShowField(FIELD_NAME.PLOT_BREADTH) && <div data-field={FIELD_NAME.PLOT_BREADTH} data-has-value={!!dynamicFieldDetails.plotBreadth}>
+          <FieldLabel label="Breadth of Plot/Land" customClass="pb-2"/>
+          <DynamicInput
+            placeHolder='Enter breadth of plot/land'
+            options={AREA_UNIT_LIST}
+            onChange={(value: string, dropdownValue: string) => {
+              const isOnlyDigits = /^\d*$/.test(value);
+              if(!isOnlyDigits) return
+              setDynamicFieldDetails((pre) => ({...pre, plotBreadth: value,}))
+              setErrors((pre) => ({...pre, plotBreadth: ''}))
+            }}
+            value={dynamicFieldDetails.plotBreadth ?? ''}
+            dropdownValue={AREA_UNIT_LIST[0].value}
+            />
+            {errors?.plotBreadth && <p className="pt-1 text-red-500 text-xs">{errors.plotBreadth}</p>}
+        </div>}
+      </div>}
+
+      {(renderShowField(FIELD_NAME.ENTRANCE_WIDTH) || renderShowField(FIELD_NAME.CELLING_HEIGHT)) && <div className="grid grid-cols-1 2md:grid-cols-2 gap-3">
+        {renderShowField(FIELD_NAME.ENTRANCE_WIDTH) && <div data-field={FIELD_NAME.ENTRANCE_WIDTH} data-has-value={!!dynamicFieldDetails.entranceWidth}>
+        <FieldLabel label="Entrance Width" customClass="pb-2" required={true}/>
+        <DynamicInput
+           placeHolder='Enter entrance width'
+           options={AREA_UNIT_LIST}
+           onChange={(value: string, dropdownValue: string) => {
+            const isOnlyDigits = /^\d*$/.test(value);
+            if(!isOnlyDigits) return
+            setDynamicFieldDetails((pre) => ({...pre, entranceWidth: value,}))
+            setErrors((pre) => ({...pre, entranceWidth: ''}))
+           }}
+           value={dynamicFieldDetails.entranceWidth ?? ''}
+           dropdownValue={AREA_UNIT_LIST[0].value}
+           />
+          {errors?.entranceWidth && <p className="pt-1 text-red-500 text-xs">{errors.entranceWidth}</p>}
+        </div>}
+        {renderShowField(FIELD_NAME.CELLING_HEIGHT) && <div data-field={FIELD_NAME.CELLING_HEIGHT} data-has-value={!!dynamicFieldDetails.cellingHeight}>
+          <FieldLabel label="Ceiling Height" customClass="pb-2" required={true}/>
+          <DynamicInput
+            placeHolder='Enter ceiling height'
+            options={AREA_UNIT_LIST}
+              onChange={(value: string, dropdownValue: string) => {
+              const isOnlyDigits = /^\d*$/.test(value);
+              if(!isOnlyDigits) return
+              setDynamicFieldDetails((pre) => ({...pre, cellingHeight: value,}))
+              setErrors((pre) => ({...pre, cellingHeight: ''}))
+            }}
+            value={dynamicFieldDetails.cellingHeight}
+            dropdownValue={AREA_UNIT_LIST[0].value}
+            />
+            {errors?.cellingHeight && <p className="pt-1 text-red-500 text-xs">{errors.cellingHeight}</p>}
+        </div>}
+      </div>}
+      
+      {renderShowField(FIELD_NAME.WIDTH_OF_FACING_IN_FEET) && <div data-field={FIELD_NAME.WIDTH_OF_FACING_IN_FEET} data-has-value={!!dynamicFieldDetails.widthOfFacingRoad}>
+        <FieldLabel label="Width of facing road (in Feet)" customClass="pb-2"  required={true}/>
+        <DynamicInput
+           placeHolder='Enter width of facing road'
+           options={AREA_UNIT_LIST}
+           onChange={(value: string, dropdownValue: string) => {
+            setDynamicFieldDetails((pre) => ({...pre, widthOfFacingRoad: value,}))
+            setErrors((pre) => ({...pre, widthOfFacingRoad: ''}))
+           }}
+           value={dynamicFieldDetails.plotBreadth ??''}
+           dropdownValue={AREA_UNIT_LIST[0].value}
+           />
+          {errors?.widthOfFacingRoad && <p className="pt-1 text-red-500 text-xs">{errors.widthOfFacingRoad}</p>}
+      </div>}
+
+      {renderShowField(FIELD_NAME.OPEN_SIDE) && <div data-field={FIELD_NAME.OPEN_SIDE} data-has-value={!!dynamicFieldDetails.openSide}>
+        <FieldLabel label="No. of open sides"/>
+        <div className="flex flex-wrap gap-3 pt-2">
+          {
+            ['1', '2', '3+'].map(item => {
+              return(
+                <ChipTag
+                  checked={item == dynamicFieldDetails.openSide}
+                  label={item}
+                  onChagne={() => {
+                    setDynamicFieldDetails((pre) => ({...pre, openSide: item}))
+                  }}
+                  value={dynamicFieldDetails.openSide}
+                  isIcon={false}
+                  containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[180px]"
+                />
+              )
+            })
+          }
+        </div>
+      </div>}
+
+       {renderShowField(FIELD_NAME.CONSTRUCTION_DONE) && <div data-field={FIELD_NAME.CONSTRUCTION_DONE} data-has-value={!!dynamicFieldDetails.constructinoDone}>
+        <FieldLabel label="Any Construction Done On This Property?" customClass="pb-2"/>
+        <div className="flex flex-wrap gap-3">
+           {
+            TRUTY_LIST.map((item) => {
+              return(
+                <ChipTag
+                  checked={item.value == dynamicFieldDetails.constructinoDone}
+                  label={item.name}
+                  onChagne={() => {
+                    setDynamicFieldDetails((pre) => ({...pre, constructinoDone: item.value}))
+                    setErrors((pre) => ({...pre, constructinoDone: ''}))
+                  }}
+                  value={dynamicFieldDetails.constructinoDone}
+                  isIcon={false}
+                  containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[180px]"
+                />
+              )
+            })
+           }
+        </div>
+        {errors?.constructinoDone && <p className="pt-1 text-red-500 text-xs">{errors.constructinoDone}</p>}
+      </div>}
+
+      {renderShowField(FIELD_NAME.TYPE_OF_CONSTRUCTION) && <div data-field={FIELD_NAME.TYPE_OF_CONSTRUCTION} data-has-value={!!dynamicFieldDetails.constructionStatus}>
+        <FieldLabel label="What Type of Construction Has Been Done?" customClass="pb-2" required={true}/>
+        <div className="flex flex-wrap gap-3">
+           {
+            CONSTRUCTION_TYPE.map((item) => {
+              return(
+                <ChipTag
+                  checked={item.value == dynamicFieldDetails.typeOfConstructionDone}
+                  label={item.name}
+                  onChagne={() => {
+                    let data = []
+                    const isavailable = dynamicFieldDetails.typeOfConstructionDone.find(type => type == item.value)
+                    if(isavailable){
+                      data = dynamicFieldDetails.typeOfConstructionDone.filter(type => type != item.value)
+                    }else{
+                      data = [...dynamicFieldDetails.typeOfConstructionDone, item.value]
+                    }
+                    setDynamicFieldDetails((pre) => ({...pre, typeOfConstructionDone: data}))
+                    setErrors((pre) => ({...pre, typeOfConstructionDone: ''}))
+                  }}
+                  value={dynamicFieldDetails.typeOfConstructionDone}
+                  isIcon={false}
+                  containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[180px]"
+                />
+              )
+            })
+           }
+        </div>
+        {errors?.typeOfConstructionDone && <p className="pt-1 text-red-500 text-xs">{errors.typeOfConstructionDone}</p>}
+      </div>}
+
+      {renderShowField(FIELD_NAME.CONSTRUCTION_STATUS) && <div data-field={FIELD_NAME.PROPERTY_CONSTRUCTION_STATUS} data-has-value={!!dynamicFieldDetails.constructionStatus}>
+        <FieldLabel label="Construction Status" customClass="pb-2" required={true}/>
+        <div className="flex flex-wrap gap-3">
+           {
+            CONSTRUCTION_STATUS.map((item) => {
+              return(
+                <ChipTag
+                  checked={item.value == dynamicFieldDetails.constructionStatus}
+                  label={item.name}
+                  onChagne={() => {
+                    setDynamicFieldDetails((pre) => ({...pre, constructionStatus: item.value}))
+                    setErrors((pre) => ({...pre, constructionStatus: ''}))
+                  }}
+                  value={dynamicFieldDetails.constructionStatus}
+                  isIcon={false}
+                  containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[180px]"
+                />
+              )
+            })
+           }
+        </div>
+        {errors?.constructionStatus && <p className="pt-1 text-red-500 text-xs">{errors.constructionStatus}</p>}
+      </div>}
+
+      {renderShowField(FIELD_NAME.LOCATED_NEAR) && <div data-field={FIELD_NAME.LOCATED_NEAR} data-has-value={!!dynamicFieldDetails.locatedNear}>
+        <FieldLabel label="Located Near" customClass="pb-2"/>
+        <div className="flex flex-wrap gap-3">
+           {
+            LOCATED_NEAR.map((item) => {
+              return(
+                <ChipTag
+                  checked={dynamicFieldDetails.locatedNear.includes(item)}
+                  label={item}
+                  onChagne={() => {
+                    let data = []
+                    if(dynamicFieldDetails.locatedNear?.includes(item)){
+                      data = dynamicFieldDetails.locatedNear.filter(suitable => suitable != item)
+                    }else{
+                      data = [...dynamicFieldDetails.locatedNear, item]
+                    }
+                    setDynamicFieldDetails((pre) => ({...pre, constructionStatus: data}))
+                    setErrors((pre) => ({...pre, constructionStatus: ''}))
+                  }}
+                  value={item}
+                  isIcon={false}
+                  containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[180px]"
+                />
+              )
+            })
+           }
+        </div>
+        {errors?.locatedNear && <p className="pt-1 text-red-500 text-xs">{errors.locatedNear}</p>}
+      </div>}
+
+      {renderShowField(FIELD_NAME.OWNERSHIP) && <div data-field={FIELD_NAME.OWNERSHIP} data-has-value={!!dynamicFieldDetails.ownership}>
+        <FieldLabel label="OwnerShip" required={true}/>
+        <div className="flex flex-wrap gap-3 pt-2">
+          {
+            OWNERSHIP_LIST.map(item => {
+              return(
+                <ChipTag
+                  checked={item.value == dynamicFieldDetails.ownership}
+                  label={item.name}
+                  onChagne={() => {
+                    setDynamicFieldDetails((pre) => ({...pre, ownership: item.value}))
+                    setErrors((pre) => ({...pre, ownership: ''}))
+                  }}
+                  value={dynamicFieldDetails.ownership}
+                  isIcon={false}
+                  containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[180px]"
+                />
+              )
+            })
+          }
+        </div>
+        {errors?.ownership && <p className="pt-1 text-red-500 text-xs">{errors.ownership}</p>}
+      </div>}
+
+      {renderShowField(FIELD_NAME.COMMERCIAL_FACING) && <div data-field={FIELD_NAME.COMMERCIAL_FACING} data-has-value={!!dynamicFieldDetails.facing}>
+        <FieldLabel label="Property Facing" />
+        <div className="flex flex-wrap gap-3 pt-2">
+          {
+            FACING_LIST.map(item => {
+              return(
+                <ChipTag
+                  checked={item == dynamicFieldDetails.facing}
+                  label={item}
+                  onChagne={() => {
+                    setDynamicFieldDetails((pre) => ({...pre, facing: item}))
+                  }}
+                  value={dynamicFieldDetails.facing}
+                  isIcon={false}
+                  containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[80px]"
+                />
+              )
+            })
+          }
+        </div>
+      </div>}
+
+      {/* Dyname Commercial Flow Field End*/}
+
     </div>
-      <hr className="text-[#D9D9D9] mt-6"></hr>
       <CustomOptionField open={openCustomFieldPopup} onClose={() => handleOpenAddCustomLocation('')} label={customFieldLabel} onSubmit={handleAddCustomLocation}/>
       <div className="flex justify-end w-full">
-        <div className="flex flex-wrap justify-start flex-row gap-2 items-center mt-8">
+        <div className="flex flex-wrap justify-start flex-row gap-2 items-center mt-8 sm:mt-10">
           <button onClick={() => {
             if(activeStep != 1){
                 dispatch(setActiveStep({step: activeStep - 1}))

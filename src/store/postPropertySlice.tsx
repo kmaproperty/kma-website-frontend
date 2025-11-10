@@ -576,7 +576,7 @@ const residential_rent_apartment = {
 }
 
 const residential_sell_apartment = {
-
+  
 }
 
 const postPropertyFormSlice = createSlice({
