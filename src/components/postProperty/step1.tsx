@@ -24,7 +24,7 @@ import { PropertyCategory, PropertyList, PropertyType } from "@/types/postProper
 import CustomOptionField from "../common/addCustomOption";
 import { generateBHKAmeneties, generateBHKList } from "@/lib/helper";
 import DynamicSelect from "../common/select";
-import { AREA_UNIT_LIST, CONSTRUCTION_STATUS, CONSTRUCTION_TYPE, CUSTOM_SECTION_NAME, FACING_LIST, FIELD_NAME, LOCATED_NEAR, LOCATION_HUB, OWNERSHIP_LIST, PLOT_LAND_TYPE, PROPERTY_CONDITION, PROPERTY_CONSTRUCTION_STATUS, PROPERTY_POSSESSION_STATUS, SUITABLE_FOR, TRANSACTION_TYPE_LIST, TRUTY_LIST, ZONE_TYPE } from "@/lib/enums";
+import { AREA_UNIT_LIST, CONSTRUCTION_STATUS, CONSTRUCTION_TYPE, CUSTOM_SECTION_NAME, FACING_LIST, FIELD_NAME, LOCATED_NEAR, LOCATION_HUB, OWNERSHIP_LIST, PLOT_LAND_TYPE, PLOT_UNIT_LIST, PROPERTY_CONDITION, PROPERTY_CONSTRUCTION_STATUS, PROPERTY_POSSESSION_STATUS, SUITABLE_FOR, TRANSACTION_TYPE_LIST, TRUTY_LIST, ZONE_TYPE } from "@/lib/enums";
 import { useDispatch, useSelector } from "react-redux";
 import { getActiveStep, setActiveStep, setTotalProgress } from "@/store/postPropertyProgress";
 import { Step1DetailsResponse, step1PostPropertyCreateApiHandler, step1PostPropertyDetailsApiHandler, Step1PostPropertyPayload, Step1PostPropertyResponse } from "@/services/postProperty";
@@ -79,7 +79,9 @@ export default function Step1() {
     isStaticBhkDetails: false,
     staticBhKDetails: null,
     builtUpArea: null,
+    builtUpAreaUnit: AREA_UNIT_LIST[0].value,
     carpetArea: null,
+    carpetAreaUnit: AREA_UNIT_LIST[0].value,
     transactionType: null,
     propertyConstructionStatus: null,
     propertyAge: null,
@@ -89,9 +91,11 @@ export default function Step1() {
     balconies: null,
     facing: null,
     plotArea: null,
-    selectAreaUnit: null,
+    selectAreaUnit: AREA_UNIT_LIST[0].value,
     plotLength: null,
+    plotLenghtUnit: PLOT_UNIT_LIST[0].value,
     plotWidth: null,
+    plotWidthUnit: PLOT_UNIT_LIST[0].value,
     widthOfFacingRoad: null,
 
     //Commercial Flow extra field
@@ -103,7 +107,9 @@ export default function Step1() {
     ownership: null,
     suitableFor: [],
     entranceWidth: null,
+    entranceWidthUnit: PLOT_UNIT_LIST[0].value,
     cellingHeight: null,
+    ceilingHeightUnit: PLOT_UNIT_LIST[0].value,
     locatedNear: [],
     plotType: null,
     plotBreadth: null,
@@ -959,7 +965,9 @@ export default function Step1() {
       plotArea: dynamicFieldDetails.plotArea,
       plotAreaUnit: dynamicFieldDetails.selectAreaUnit,
       plotLength: dynamicFieldDetails.plotLength,
+      plotLengthUnit: dynamicFieldDetails.plotLenghtUnit,
       plotWidth: dynamicFieldDetails?.plotWidth  ? dynamicFieldDetails?.plotWidth : dynamicFieldDetails?.plotBreadth,
+      plotWidthUnit: dynamicFieldDetails.plotWidthUnit,
       plotFacingRoadWidth: dynamicFieldDetails.widthOfFacingRoad,
 
       locationHub: dynamicFieldDetails?.loactionHub,
@@ -967,21 +975,21 @@ export default function Step1() {
       zoneType: dynamicFieldDetails?.zoneType,
       propertyCondition: dynamicFieldDetails?.propertyCondition,
       builtUpArea: dynamicFieldDetails?.builtUpArea,
-      builtUpAreaUnit: 'sq_ft', //sq_ft, sq_yd, sq_m, acres, hectares
+      builtUpAreaUnit: dynamicFieldDetails.builtUpAreaUnit, //sq_ft, sq_yd, sq_m, acres, hectares
       carpetArea: dynamicFieldDetails?.carpetArea,
-      carpetAreaUnit: 'sq_ft', //sq_ft, sq_yd, sq_m, acres, hectares
+      carpetAreaUnit: dynamicFieldDetails.carpetAreaUnit, //sq_ft, sq_yd, sq_m, acres, hectares
       wallConstructionStatus: dynamicFieldDetails?.constructionStatus,
       ownership: dynamicFieldDetails?.ownership,
       suitableFor: dynamicFieldDetails?.suitableFor,
       entranceWidth: dynamicFieldDetails?.entranceWidth,
-      entranceWidthUnit: 'ft',// ft, m, in, cm
+      entranceWidthUnit: dynamicFieldDetails.entranceWidthUnit,// ft, m, in, cm
       ceilingHeight: dynamicFieldDetails?.cellingHeight,
-      ceilingHeightUnit: 'ft', // ft, m, in, cm
+      ceilingHeightUnit: dynamicFieldDetails.ceilingHeightUnit, // ft, m, in, cm
       locatedNear: dynamicFieldDetails?.locatedNear,
       plotLandType: dynamicFieldDetails?.plotType,
       noOfOpenSides: dynamicFieldDetails?.openSide,
       constructionDone: dynamicFieldDetails?.constructinoDone,
-      constructionTypeOptions: dynamicFieldDetails?.constructionTypeOptions
+      constructionTypeOptions: dynamicFieldDetails?.typeOfConstructionDone
     }
   }
 
@@ -1065,20 +1073,21 @@ export default function Step1() {
         otherLocationHub: step1Details.otherLocationHub,
         zoneType: step1Details.zoneType,
         propertyCondition: step1Details.propertyCondition,
-        builtUpAreaUnit: 'sq_ft', //sq_ft, sq_yd, sq_m, acres, hectares
-        carpetAreaUnit: '',
+        builtUpAreaUnit: step1Details.builtUpAreaUnit, //sq_ft, sq_yd, sq_m, acres, hectares
+        carpetAreaUnit: step1Details.carpetAreaUnit,
         constructionStatus: step1Details.wallConstructionStatus,
         ownership: step1Details.ownership,
         suitableFor: step1Details.suitableFor,
         entranceWidth: step1Details.entranceWidth,
-        entranceWidthUnit: '',
+        entranceWidthUnit: step1Details.entranceWidthUnit,
         cellingHeight: step1Details.ceilingHeight,
-        ceilingHeightUnit: '',
+        ceilingHeightUnit: step1Details.ceilingHeightUnit,
         locatedNear: step1Details.locatedNear,
         plotType: step1Details.plotLandType,
         openSide: step1Details.noOfOpenSides,
         constructinoDone: step1Details.constructionDone,
-        constructionTypeOptions: step1Details.constructionTypeOptions
+        typeOfConstructionDone: step1Details.constructionTypeOptions,
+        plotBreadth: step1Details.plotWidth,
 
       }))
 
@@ -1137,6 +1146,7 @@ export default function Step1() {
                       plotLength: null,
                       plotWidth: null,
                       widthOfFacingRoad: null,
+
                       loactionHub: null,
                       otherLocationHub: null,
                       zoneType: null,
@@ -1146,7 +1156,12 @@ export default function Step1() {
                       suitableFor: [],
                       entranceWidth: null,
                       cellingHeight: null,
-                      locatedNear: []
+                      locatedNear: [],
+                      plotType: null,
+                      plotBreadth: null,
+                      openSide: null,
+                      constructinoDone: null,
+                      typeOfConstructionDone: [],
                     })
                     setErrors((pre) => ({...pre, propertyListFor: ''}))
                   }}
@@ -1193,6 +1208,7 @@ export default function Step1() {
                       plotLength: null,
                       plotWidth: null,
                       widthOfFacingRoad: null,
+
                       loactionHub: null,
                       otherLocationHub: null,
                       zoneType: null,
@@ -1202,7 +1218,12 @@ export default function Step1() {
                       suitableFor: [],
                       entranceWidth: null,
                       cellingHeight: null,
-                      locatedNear: []
+                      locatedNear: [],
+                      plotType: null,
+                      plotBreadth: null,
+                      openSide: null,
+                      constructinoDone: null,
+                      typeOfConstructionDone: [],
                     })
                     setErrors((pre) => ({...pre, propertyCategory: ''}))
                   }}
@@ -1463,11 +1484,11 @@ export default function Step1() {
            placeHolder='Enter built up area'
            options={AREA_UNIT_LIST}
            onChange={(value: string, dropdownValue: string) => {
-            setDynamicFieldDetails((pre) => ({...pre, builtUpArea: value,}))
+            setDynamicFieldDetails((pre) => ({...pre, builtUpArea: value,builtUpAreaUnit: dropdownValue}))
             setErrors((pre) => ({...pre, builtUpArea: ''}))
            }}
            value={dynamicFieldDetails.builtUpArea}
-           dropdownValue={AREA_UNIT_LIST[0].value}
+           dropdownValue={dynamicFieldDetails?.builtUpAreaUnit}
            />
           {errors?.builtUpArea && <p className="pt-1 text-red-500 text-xs">{errors.builtUpArea}</p>}
       </div>}
@@ -1478,11 +1499,11 @@ export default function Step1() {
            placeHolder='Enter carpet area'
            options={AREA_UNIT_LIST}
             onChange={(value: string, dropdownValue: string) => {
-            setDynamicFieldDetails((pre) => ({...pre, carpetArea: value,}))
+            setDynamicFieldDetails((pre) => ({...pre, carpetArea: value,carpetAreaUnit: dropdownValue}))
             setErrors((pre) => ({...pre, carpetArea: ''}))
            }}
            value={dynamicFieldDetails.carpetArea}
-           dropdownValue={AREA_UNIT_LIST[0].value}
+           dropdownValue={dynamicFieldDetails?.carpetAreaUnit}
            />
           {errors?.carpetArea && <p className="pt-1 text-red-500 text-xs">{errors.carpetArea}</p>}
       </div>}
@@ -1700,7 +1721,7 @@ export default function Step1() {
            onChange={(value: string, dropdownValue: string) => {
             const isOnlyDigits = /^\d*$/.test(value);
             if(!isOnlyDigits) return;
-            setDynamicFieldDetails((pre) => ({...pre, plotArea: value,selectAreaUnit: dropdownValue}))
+            setDynamicFieldDetails((pre) => ({...pre, plotArea: value, selectAreaUnit: dropdownValue}))
             let isPloatAreaError = errors?.plotArea
             if(value && (Number(dynamicFieldDetails.plotLength) * Number(dynamicFieldDetails.plotWidth)) > Number(value)){
               isPloatAreaError = 'Plot Area value is not as per the value of the dimensions'
@@ -1710,7 +1731,7 @@ export default function Step1() {
             setErrors((pre) => ({...pre, plotArea: isPloatAreaError}))
            }}
            value={dynamicFieldDetails.plotArea ?? ''}
-           dropdownValue={dynamicFieldDetails.selectAreaUnit ?? AREA_UNIT_LIST[0].value}
+           dropdownValue={dynamicFieldDetails.selectAreaUnit}
            />
           {errors?.plotArea && <p className="pt-1 text-red-500 text-xs">{errors.plotArea}</p>}
       </div>}
@@ -2046,11 +2067,11 @@ export default function Step1() {
            onChange={(value: string, dropdownValue: string) => {
             const isOnlyDigits = /^\d*$/.test(value);
             if(!isOnlyDigits) return
-            setDynamicFieldDetails((pre) => ({...pre, plotArea: value,}))
+            setDynamicFieldDetails((pre) => ({...pre, plotArea: value,selectAreaUnit: dropdownValue}))
             setErrors((pre) => ({...pre, plotArea: ''}))
            }}
            value={dynamicFieldDetails.plotArea ??''}
-           dropdownValue={AREA_UNIT_LIST[0].value}
+           dropdownValue={dynamicFieldDetails.selectAreaUnit}
            />
           {errors?.plotArea && <p className="pt-1 text-red-500 text-xs">{errors.plotArea}</p>}
       </div>}
@@ -2064,11 +2085,11 @@ export default function Step1() {
            onChange={(value: string, dropdownValue: string) => {
             const isOnlyDigits = /^\d*$/.test(value);
             if(!isOnlyDigits) return
-            setDynamicFieldDetails((pre) => ({...pre, builtUpArea: value,}))
+            setDynamicFieldDetails((pre) => ({...pre, builtUpArea: value,builtUpAreaUnit: dropdownValue}))
             setErrors((pre) => ({...pre, builtUpArea: ''}))
            }}
            value={dynamicFieldDetails.builtUpArea ?? ''}
-           dropdownValue={AREA_UNIT_LIST[0].value}
+           dropdownValue={dynamicFieldDetails.builtUpAreaUnit}
            />
           {errors?.builtUpArea && <p className="pt-1 text-red-500 text-xs">{errors.builtUpArea}</p>}
         </div>}
@@ -2081,11 +2102,11 @@ export default function Step1() {
             onChange={(value: string, dropdownValue: string) => {
               const isOnlyDigits = /^\d*$/.test(value);
               if(!isOnlyDigits) return
-              setDynamicFieldDetails((pre) => ({...pre, carpetArea: value,}))
+              setDynamicFieldDetails((pre) => ({...pre, carpetArea: value,carpetAreaUnit: dropdownValue}))
               setErrors((pre) => ({...pre, carpetArea: ''}))
             }}
             value={dynamicFieldDetails.carpetArea ?? ''}
-            dropdownValue={AREA_UNIT_LIST[0].value}
+            dropdownValue={dynamicFieldDetails.carpetAreaUnit}
             />
             {errors?.carpetArea && <p className="pt-1 text-red-500 text-xs">{errors.carpetArea}</p>}
         </div>}
@@ -2096,15 +2117,15 @@ export default function Step1() {
         <FieldLabel label="Length of plot/Land" customClass="pb-2"/>
         <DynamicInput
            placeHolder='Enter length of plot/land'
-           options={AREA_UNIT_LIST}
+           options={PLOT_UNIT_LIST}
            onChange={(value: string, dropdownValue: string) => {
             const isOnlyDigits = /^\d*$/.test(value);
             if(!isOnlyDigits) return
-            setDynamicFieldDetails((pre) => ({...pre, plotLength: value,}))
+            setDynamicFieldDetails((pre) => ({...pre, plotLength: value,plotLenghtUnit: dropdownValue}))
             setErrors((pre) => ({...pre, plotLength: ''}))
            }}
            value={dynamicFieldDetails.plotLength ?? ''}
-           dropdownValue={AREA_UNIT_LIST[0].value}
+           dropdownValue={dynamicFieldDetails?.plotLenghtUnit}
            />
           {errors?.plotLength && <p className="pt-1 text-red-500 text-xs">{errors.plotLength}</p>}
         </div>}
@@ -2112,15 +2133,15 @@ export default function Step1() {
           <FieldLabel label="Breadth of Plot/Land" customClass="pb-2"/>
           <DynamicInput
             placeHolder='Enter breadth of plot/land'
-            options={AREA_UNIT_LIST}
+            options={PLOT_UNIT_LIST}
             onChange={(value: string, dropdownValue: string) => {
               const isOnlyDigits = /^\d*$/.test(value);
               if(!isOnlyDigits) return
-              setDynamicFieldDetails((pre) => ({...pre, plotBreadth: value,}))
+              setDynamicFieldDetails((pre) => ({...pre, plotBreadth: value,plotWidthUnit: dropdownValue}))
               setErrors((pre) => ({...pre, plotBreadth: ''}))
             }}
             value={dynamicFieldDetails.plotBreadth ?? ''}
-            dropdownValue={AREA_UNIT_LIST[0].value}
+            dropdownValue={dynamicFieldDetails?.plotWidthUnit}
             />
             {errors?.plotBreadth && <p className="pt-1 text-red-500 text-xs">{errors.plotBreadth}</p>}
         </div>}
@@ -2131,15 +2152,15 @@ export default function Step1() {
         <FieldLabel label="Entrance Width" customClass="pb-2" required={true}/>
         <DynamicInput
            placeHolder='Enter entrance width'
-           options={AREA_UNIT_LIST}
+           options={PLOT_UNIT_LIST}
            onChange={(value: string, dropdownValue: string) => {
             const isOnlyDigits = /^\d*$/.test(value);
             if(!isOnlyDigits) return
-            setDynamicFieldDetails((pre) => ({...pre, entranceWidth: value,}))
+            setDynamicFieldDetails((pre) => ({...pre, entranceWidth: value,entranceWidthUnit: dropdownValue}))
             setErrors((pre) => ({...pre, entranceWidth: ''}))
            }}
            value={dynamicFieldDetails.entranceWidth ?? ''}
-           dropdownValue={AREA_UNIT_LIST[0].value}
+           dropdownValue={dynamicFieldDetails?.entranceWidthUnit}
            />
           {errors?.entranceWidth && <p className="pt-1 text-red-500 text-xs">{errors.entranceWidth}</p>}
         </div>}
@@ -2147,15 +2168,15 @@ export default function Step1() {
           <FieldLabel label="Ceiling Height" customClass="pb-2" required={true}/>
           <DynamicInput
             placeHolder='Enter ceiling height'
-            options={AREA_UNIT_LIST}
+            options={PLOT_UNIT_LIST}
               onChange={(value: string, dropdownValue: string) => {
               const isOnlyDigits = /^\d*$/.test(value);
               if(!isOnlyDigits) return
-              setDynamicFieldDetails((pre) => ({...pre, cellingHeight: value,}))
+              setDynamicFieldDetails((pre) => ({...pre, cellingHeight: value,ceilingHeightUnit: dropdownValue}))
               setErrors((pre) => ({...pre, cellingHeight: ''}))
             }}
             value={dynamicFieldDetails.cellingHeight}
-            dropdownValue={AREA_UNIT_LIST[0].value}
+            dropdownValue={dynamicFieldDetails?.ceilingHeightUnit}
             />
             {errors?.cellingHeight && <p className="pt-1 text-red-500 text-xs">{errors.cellingHeight}</p>}
         </div>}
@@ -2170,7 +2191,7 @@ export default function Step1() {
             setDynamicFieldDetails((pre) => ({...pre, widthOfFacingRoad: value,}))
             setErrors((pre) => ({...pre, widthOfFacingRoad: ''}))
            }}
-           value={dynamicFieldDetails.plotBreadth ??''}
+           value={dynamicFieldDetails.widthOfFacingRoad ??''}
            dropdownValue={AREA_UNIT_LIST[0].value}
            />
           {errors?.widthOfFacingRoad && <p className="pt-1 text-red-500 text-xs">{errors.widthOfFacingRoad}</p>}
@@ -2229,7 +2250,7 @@ export default function Step1() {
             CONSTRUCTION_TYPE.map((item) => {
               return(
                 <ChipTag
-                  checked={item.value == dynamicFieldDetails.typeOfConstructionDone}
+                  checked={dynamicFieldDetails.typeOfConstructionDone.includes(item.value)}
                   label={item.name}
                   onChagne={() => {
                     let data = []

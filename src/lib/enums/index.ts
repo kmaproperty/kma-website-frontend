@@ -312,13 +312,19 @@ export const FIELD_NAME = {
 }
 
 export const AREA_UNIT_LIST = [
-  { value: 'Sq. Ft.', label: 'Sq. Ft.' },
-  { value: 'Sq. Yd.', label: 'Sq. Yd.' },
-  { value: 'Sq. Mt.', label: 'Sq. Mt.' },
-  { value: 'Acre', label: 'Acre' },
+  { value: 'Sq. Ft.', label: 'sq_ft' },
+  { value: 'Sq. Yd.', label: 'sq_yd' },
+  { value: 'Sq. Mt.', label: 'sq_m' },
+  { value: 'Acre', label: 'acres' },
+  { value: 'Hectares', label: 'hectares' },
 ]
 
-
+export const PLOT_UNIT_LIST = [
+  { value: 'ft.', label: 'ft' },
+  { value: 'm.', label: 'm' },
+  { value: 'in.', label: 'in' },
+  { value: 'cm.', label: 'cm' },
+]
 
 export const TRANSACTION_TYPE_LIST = [
   {
@@ -376,7 +382,7 @@ export const CONSTRUCTION_TYPE = [
   },
   {
     name: 'Rooms',
-    value: 'rooms'
+    value: 'room'
   },
   {
     name: 'Washroom',
