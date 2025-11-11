@@ -189,11 +189,15 @@ export const step1PostPropertyDetailsApiHandler = async (propertyId: string) : P
 
 export interface Step2PostPropertyPayload {
   propertyId?: string | null;
+
+  // Floor & Unit Details
   floorNumber?: number | null;
   totalFloors?: number | null;
   flatNumber?: string | null;
   towerBlock?: string | null;
   propertyAreaAcre?: number | null;
+
+  // Rental Details
   tenantType?: string | null;
   companyOccupancy?: string | null;
   rentAvailability?: string | null;
@@ -208,17 +212,34 @@ export interface Step2PostPropertyPayload {
   brokerageType?: string | null;
   brokerageAmount?: number | null;
   isBrokerageNegotiable?: boolean | null;
+  isRentNegotiable?: boolean | null;
+
+  // Additional Charges & Utilities
+  dgUpsChargeIncluded?: string | null;
+  electricityChargeIncluded?: string | null;
+  waterChargeIncluded?: string | null;
+  taxGovtChargeIncluded?: string | null;
+  expectedRentIncrease?: string | null;
+
+  // Pre-Leased / Investment Info
+  isPreLeasedRented?: string | null;
+  currentRentPerMonth?: number | null;
+  leaseYears?: number | null;
+
+  // Pricing & Plot Details
   price?: number | null;
   plotArea?: number | null;
   plotAreaUnit?: string | null;
   plotNumber?: string | null;
   houseNumber?: string | null;
   villaNumber?: string | null;
+  plotPrice?: number | null;
+
+  // Property Transaction & Status
   transactionType?: string | null;
   possessionStatus?: string | null;
-  ageOfProperty?: string | null;
   possessionDate?: string | null;
-  plotPrice?: number | null;
+  ageOfProperty?: number | null;
   brokerage?: string | null;
   loanAvailable?: string | null;
   facing?: string | null;
@@ -229,7 +250,15 @@ export interface Step2PostPropertyPayload {
   constructionType?: string | null;
   cornerProperty?: string | null;
   propertyDescription?: string | null;
+
+  // Structural / Facilities Info
+  noOfStaircases?: number | null;
+  privateParking?: number | null;
+  privateWashrooms?: number | null;
+  publicParking?: number | null;
+  publicWashrooms?: number | null;
 }
+
 
 export interface Step2PostPropertyResponse {
   id: string,
@@ -295,6 +324,21 @@ export interface Step2DetailsResponse {
   createdAt: string | null;
   updatedAt: string | null;
   progressPercentage: number;
+
+  noOfStaircases: string | null,
+  privateParking: string | null,
+  publicParking: string | null,
+  isRentNegotiable: boolean | null,
+  dgUpsChargeIncluded: string | null,
+  electricityChargeIncluded: string | null,
+  waterChargeIncluded: string | null,
+  expectedRentIncrease: string | null,
+  taxGovtChargeIncluded: string | null,
+  isPreLeasedRented: string | null,
+  leaseYears: string | null,
+  currentRentPerMonth: string | null,
+  privateWashrooms: string | null,
+  publicWashrooms: string | null,
 }
 
 

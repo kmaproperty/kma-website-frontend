@@ -25,7 +25,7 @@ const initialState: Progress = {
   step_4_Progress: null,
   totalProgress: 0,
   stepList: POST_PROPERTY_STEPS,
-  activeStep: 1
+  activeStep: 2
 };
 
 const postPropertyProgressSlice = createSlice({
