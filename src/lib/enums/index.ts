@@ -302,6 +302,33 @@ export const FIELD_NAME = {
   PLOT_PRICE: 'Plot_price',
   LOAN_AVAILABLE: 'Loan_available',
 
+  COMMERCIAL_TOTAL_FLOOR: 'Commercial_total_floor',
+  COMMERCIAL_YOUR_FLOOR: 'Commercial_your_floor',
+  STAIR_CASE: 'Stair_case',
+  LIFTS: 'Lifts',
+  PRIVATE_PARKING: 'Private_parking',
+  PUBLIC_PARKING: 'Public_parking',
+  COMMERCIAL_RENT: 'Commercial_rent',
+  COMMERCIAL_SECURITY_DEPOSITE: 'Commercial_security_deposite',
+  NEGOTIABLE: 'Negotiable',
+  DG_UPS_CHARGE: 'Dg_ups_charge',
+  ELECTRICITY_CHARGE: 'Electricity_charge',
+  WATER_CHARGE: 'Water_charege',
+  EXPECTED_RENT_INCREASE: 'Expected_rent_increase',
+  COMMERCIAL_LOCK_IN_PERIOD: 'Commercial_lock_in_period',
+  COMMERCIAL_CUSTOM_LOCK_IN_PERIOD: "Commercial_custom_lock_in_period",
+  COMMERCIAL_BROKERAGE_CHARGE: 'Commercial_brokerage_charge',
+  COMMERCIAL_CUSTOM_BROKERAGE_CHARGE: 'Commercial_custom_brokerage_charge',
+  COMMERCIAL_PRICE: 'Commercial_price',
+  GOVT_CHARGES: 'Gov_charges',
+  PRE_LEASED: 'Pre_leased',
+  CURRENT_RENT_PER_MONTH: 'Current_rent_per_month',
+  LEASE_YEAR: 'Lease_year',
+  PRIVATE_WASHROOM: 'Private_washroom',
+  PUBLIC_WASHROOM: 'Public_washroom',
+  COMMERCIAL_PROPERTY_DESCRIPTION: 'Commercial_property_description',
+  EXPECTED_RETURN: 'Expected_return',
+
   //Step 3
   ADDITIONAL_ROOM: 'Additional_room',
   RESERVED_PARKING: 'Reserved_parking',
@@ -581,6 +608,18 @@ export const CUSTOM_SECTION_NAME = {
   'ABOUT_THE_PROPERTY': {
     name: 'About the Property',
     subName: ''
+  },
+  'FINACIAL': {
+    name: 'Financials',
+    subName: ''
+  },
+  'OTHER': {
+    name: 'Other',
+    subName: ''
+  },
+  'FACILITIES': {
+    name: 'Facilities',
+    subName: ''
   }
 }
 
@@ -838,16 +877,59 @@ export const CONSTRUCTION_STATUS = [
   },
   {
     name: 'Plastered walls',
-    value: 'plastered_walls ',
+    value: 'plastered_walls',
   },
 ]
 
 export const SUITABLE_FOR = [
-  'Jewellery', 'Gym', 'Grocery', 'Clinic', 'Footwear', 'Electronics', 'Clothing', 'Others'
+  {
+    name: 'Jewellery',
+    value: 'jewellery',
+  },
+  {
+    name: 'Gym',
+    value: 'gym',
+  },
+  {
+    name: 'Grocery',
+    value: 'grocery',
+  },
+  {
+    name: 'Clinic',
+    value: 'clinic',
+  },
+  {
+    name: 'Footwear',
+    value: 'footwear',
+  },
+  {
+    name: 'Electronics',
+    value: 'electronics',
+  },
+  {
+    name: 'Clothing',
+    value: 'clothing',
+  },
+  {
+    name: 'Others',
+    value: 'others',
+  },
+
 ]
 
 export const LOCATED_NEAR = [
-  'Entrance', 'Elevator', 'Stairs'
+  {
+    name: 'Entrance',
+    value: 'entrance',
+  },
+  {
+    name: 'Elevator',
+    value: 'elevator',
+  },
+  {
+    name: 'Stairs',
+    value: 'stairs',
+  },
 ]
 
 export const PLOT_LAND_TYPE = [
@@ -863,4 +945,15 @@ export const PLOT_LAND_TYPE = [
     name: 'Commercial Land / Plot',
     value: 'commercial_land_plot  ',
   },
+]
+
+export const LIFTS = [
+  {
+    name: 'Available',
+    value: 'available',
+  },
+  {
+    name: 'Not-Available',
+    value: 'not_available',
+  }
 ]

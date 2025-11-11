@@ -1958,19 +1958,20 @@ export default function Step1() {
             SUITABLE_FOR.map((item) => {
               return(
                 <ChipTag
-                  checked={dynamicFieldDetails.suitableFor?.includes(item)}
-                  label={item}
+                  checked={dynamicFieldDetails.suitableFor?.includes(item.value)}
+                  label={item.name}
                   onChagne={() => {
                     let data = []
-                    if(dynamicFieldDetails.suitableFor?.includes(item)){
-                      data = dynamicFieldDetails.suitableFor.filter(suitable => suitable != item)
+                    const isavailable = dynamicFieldDetails.suitableFor.find(type => type == item.value)
+                    if(isavailable){
+                      data = dynamicFieldDetails.suitableFor.filter(type => type != item.value)
                     }else{
-                      data = [...dynamicFieldDetails.suitableFor, item]
+                      data = [...dynamicFieldDetails.suitableFor, item.value]
                     }
                     setDynamicFieldDetails((pre) => ({...pre, suitableFor: data}))
                     setErrors((pre) => ({...pre, suitableFor: ''}))
                   }}
-                  value={item}
+                  value={item.name}
                   isIcon={false}
                   containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[180px]"
                 />
@@ -2319,19 +2320,20 @@ export default function Step1() {
             LOCATED_NEAR.map((item) => {
               return(
                 <ChipTag
-                  checked={dynamicFieldDetails.locatedNear.includes(item)}
-                  label={item}
+                  checked={dynamicFieldDetails.locatedNear.includes(item.value)}
+                  label={item.name}
                   onChagne={() => {
                     let data = []
-                    if(dynamicFieldDetails.locatedNear?.includes(item)){
-                      data = dynamicFieldDetails.locatedNear.filter(suitable => suitable != item)
+                    const isavailable = dynamicFieldDetails.locatedNear.find(type => type == item.value)
+                    if(isavailable){
+                      data = dynamicFieldDetails.locatedNear.filter(type => type != item.value)
                     }else{
-                      data = [...dynamicFieldDetails.locatedNear, item]
+                      data = [...dynamicFieldDetails.locatedNear, item.value]
                     }
-                    setDynamicFieldDetails((pre) => ({...pre, constructionStatus: data}))
-                    setErrors((pre) => ({...pre, constructionStatus: ''}))
+                    setDynamicFieldDetails((pre) => ({...pre, locatedNear: data}))
+                    setErrors((pre) => ({...pre, locatedNear: ''}))
                   }}
-                  value={item}
+                  value={item.name}
                   isIcon={false}
                   containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[180px]"
                 />
