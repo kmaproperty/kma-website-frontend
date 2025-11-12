@@ -49,6 +49,7 @@ export default function Otp() {
   // Dialog Close Handler
   const handleClose: DialogProps["onClose"] = (event, reason) => {
     if (reason === "backdropClick" || reason === "escapeKeyDown") return;
+    setOtp('')
     router.push(pathname);
   };
 
@@ -84,6 +85,7 @@ export default function Otp() {
       localStorage.setItem("accessToken", res.accessToken);
       localStorage.setItem("refreshToken", res.refreshToken);
       localStorage.setItem("user", JSON.stringify(res.user));
+      setOtp('')
       router.replace("/");
       toast.success(res.message)
     },
@@ -120,6 +122,7 @@ const verifyOtp = (val: string) => {
       code,
       isLogin: true,
     });
+    setOtp('')
     router.push(`${pathname}${params}`);
   };
 
@@ -158,7 +161,9 @@ const verifyOtp = (val: string) => {
         <div className="flex flex-col w-full sm:w-[400px] p-2">
           <div className="flex justify-end w-full">
             <Image
-              onClick={() => router.push(pathname)}
+              onClick={() => {
+                setOtp('')
+                router.push(pathname)}}
               src="/assets/close-icon.svg"
               alt="close"
               width={24}

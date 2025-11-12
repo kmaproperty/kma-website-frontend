@@ -147,7 +147,7 @@ export default function MobileInput({
         <InputBase
           placeholder={placeHolder}
           fullWidth
-          value={mobileNumber}
+          value={mobileNumber ?? ''}
           onChange={handleMobileChange}
           disabled={disabled}
           className="px-4 py-2 text-gray text-sm border-l border-gray-300"

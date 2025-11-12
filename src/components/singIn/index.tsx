@@ -54,6 +54,7 @@ export default function SignIn() {
           // ...(selectedPartnerType == USER_TYPE.OWNER ? {propertyIntent: propertyIntent,} : '')
         })
         toast.success(response.otp)
+        setMobileInput({value: '', validationMessage: '', code: '+91'})
         router.replace(`${pathname}${params}`);
       },
       onError: (error: any) => {
@@ -80,7 +81,8 @@ export default function SignIn() {
 
   const handleClose: DialogProps["onClose"] = (event, reason) => {
     if (reason === "backdropClick" || reason === "escapeKeyDown") return;
-     router.push(`${pathname}`);
+    setMobileInput({value: '', validationMessage: '', code: '+91'})
+    router.push(`${pathname}`);
   };
 
   const createAccountRedirect = () => {
@@ -88,10 +90,12 @@ export default function SignIn() {
       const params = createURLSearchParam({
         mobile: mobileInput.value
       })
+      setMobileInput({value: '', validationMessage: '', code: '+91'})
       router.replace(`/signup${params}`, {});
       return
     }
-      router.replace(`/signup`, {});
+    setMobileInput({value: '', validationMessage: '', code: '+91'})
+    router.replace(`/signup`, {});
   }
 
   const openPopup = React.useMemo(() => {
@@ -99,10 +103,10 @@ export default function SignIn() {
   }, [isLogin])
 
   React.useEffect(() => {
-    if(code && mobileNumber){
-      setMobileInput({validationMessage: '', value: mobileNumber, code: code})
+    if(mobileNumber){
+      setMobileInput({validationMessage: '', value: mobileNumber, code: '+91'})
     }
-  },[mobileNumber, code])
+  },[mobileNumber])
 
   return (
     <React.Fragment>
@@ -124,7 +128,8 @@ export default function SignIn() {
             <div className="flex justify-end w-full">
               <Image
                 onClick={() => {
-                   router.push(`${pathname}`);
+                  setMobileInput({value: '', validationMessage: '', code: '+91'})
+                  router.push(`${pathname}`);
                 }}
                 src="/assets/close-icon.svg"
                 alt="close"
