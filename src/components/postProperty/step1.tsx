@@ -90,7 +90,7 @@ function CityPlaceholder() {
   );
 }
 
-export default function Step1() {
+export default function Step1({containerRef}) {
   const { loadCities  } = useCitySearch();
   const { loadBuildings } = useBuildingSearch();
   const { loadLocalities } = useLocalitySearch();
@@ -277,8 +277,15 @@ export default function Step1() {
         return false
       }
 
+      // if(fieldName == FIELD_NAME.BUILT_UP_AREA){
+      //   if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && (dynamicFieldDetails.bhk?.isCustom || dynamicFieldDetails.otherBhk || (dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails))){
+      //     return true
+      //   }
+      //   return false
+      // }
+
       if(fieldName == FIELD_NAME.BUILT_UP_AREA){
-        if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && (dynamicFieldDetails.bhk?.isCustom || dynamicFieldDetails.otherBhk || (dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails))){
+        if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && ((dynamicFieldDetails.bhk && dynamicFieldDetails.bhk?.code != 'other') || dynamicFieldDetails.otherBhk)){
           return true
         }
         return false
@@ -319,22 +326,43 @@ export default function Step1() {
         return false
       }
 
+      // if(fieldName == FIELD_NAME.BATHTROOMS){
+      //   if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && (dynamicFieldDetails.bhk?.isCustom || dynamicFieldDetails.otherBhk || (dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails))){
+      //     return true
+      //   }
+      //   return false
+      // }
+
+      // if(fieldName == FIELD_NAME.BALCONIES){
+      //   if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && (dynamicFieldDetails.bhk?.isCustom || dynamicFieldDetails.otherBhk || (dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails))){
+      //     return true
+      //   }
+      //   return false
+      // }
+
+      // if(fieldName == FIELD_NAME.BEDROOMS){
+      //   if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && (dynamicFieldDetails.bhk?.isCustom || dynamicFieldDetails.otherBhk || (dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails))){
+      //     return true
+      //   }
+      //   return false
+      // }
+
       if(fieldName == FIELD_NAME.BATHTROOMS){
-        if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && (dynamicFieldDetails.bhk?.isCustom || dynamicFieldDetails.otherBhk || (dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails))){
+        if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && ((dynamicFieldDetails.bhk && dynamicFieldDetails.bhk?.code != 'other') || dynamicFieldDetails.otherBhk)){
           return true
         }
         return false
       }
 
       if(fieldName == FIELD_NAME.BALCONIES){
-        if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && (dynamicFieldDetails.bhk?.isCustom || dynamicFieldDetails.otherBhk || (dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails))){
+        if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && ((dynamicFieldDetails.bhk && dynamicFieldDetails.bhk?.code != 'other') || dynamicFieldDetails.otherBhk)){
           return true
         }
         return false
       }
 
       if(fieldName == FIELD_NAME.BEDROOMS){
-        if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && (dynamicFieldDetails.bhk?.isCustom || dynamicFieldDetails.otherBhk || (dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails))){
+        if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && ((dynamicFieldDetails.bhk && dynamicFieldDetails.bhk?.code != 'other') || dynamicFieldDetails.otherBhk)){
           return true
         }
         return false
@@ -355,13 +383,6 @@ export default function Step1() {
       }
 
       if(fieldName == FIELD_NAME.LENGTH_WIDTH){
-        if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code == 'res-sale-plot' || basicStaticDetails.propertyType?.code == 'res-sale-agri-land')){
-          return true
-        }
-        return false
-      }
-
-      if(fieldName == FIELD_NAME.WIDTH_FACING_ROAD){
         if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code == 'res-sale-plot' || basicStaticDetails.propertyType?.code == 'res-sale-agri-land')){
           return true
         }
@@ -907,10 +928,20 @@ export default function Step1() {
         noOfBedrooms: dynamicFieldDetails.bedRooms,
         balconies: dynamicFieldDetails.balconies,
       }
-    }else if(dynamicFieldDetails.isStaticBhkDetails){
+    }else if(dynamicFieldDetails.isStaticBhkDetails && dynamicFieldDetails.staticBhKDetails){
       bhk = {
         id: dynamicFieldDetails.staticBhKDetails?.id && dynamicFieldDetails.staticBhKDetails?.id.length > 3 ? dynamicFieldDetails.staticBhKDetails?.id : null ,
         name: dynamicFieldDetails.staticBhKDetails?.name,
+        buildUpAreaSqFt: dynamicFieldDetails.builtUpArea,
+        carpetAreaSqFt: dynamicFieldDetails.carpetArea,
+        noOfBathrooms: dynamicFieldDetails.bathRooms,
+        noOfBedrooms: dynamicFieldDetails.bedRooms,
+        balconies: dynamicFieldDetails.balconies,
+      }
+    }else if(dynamicFieldDetails.isStaticBhkDetails){
+      bhk = {
+        id: dynamicFieldDetails.bhk?.id && dynamicFieldDetails.bhk?.id.length > 3 ? dynamicFieldDetails.bhk?.id : null ,
+        name: dynamicFieldDetails?.bhk?.name,
         buildUpAreaSqFt: dynamicFieldDetails.builtUpArea,
         carpetAreaSqFt: dynamicFieldDetails.carpetArea,
         noOfBathrooms: dynamicFieldDetails.bathRooms,
@@ -1118,7 +1149,7 @@ export default function Step1() {
 
   return (
     <>
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4" ref={containerRef}>
       <p className="text-text-black font-semibold text-lg 2md:text-xl pb-2">
         Basic Details
       </p>
@@ -1159,7 +1190,7 @@ export default function Step1() {
                   checked={item.code == basicStaticDetails.propertyCategory?.code}
                   label={item.name}
                   onChagne={() => {
-                    setBasicStaticDetails((pre) => ({...pre, propertyCategory: item, city: null, locality: null, society: null}))
+                    setBasicStaticDetails((pre) => ({...pre, propertyCategory: item, propertyType: null, city: null, locality: null, society: null}))
                     setDynamicFieldDetails(initialState)
                     setErrors((pre) => ({...pre, propertyCategory: ''}))
                   }}
@@ -1350,7 +1381,7 @@ export default function Step1() {
                     setBhkList(generateBHKList(true))
                     return
                   }else{
-                    setDynamicFieldDetails((pre) => ({...pre, bhk: item, otherBhk: null, bathRooms: null, bedRooms: null, balconies: null}))
+                    setDynamicFieldDetails((pre) => ({...pre, bhk: item, otherBhk: null, isStaticBhkDetails: false, staticBhKDetails: null, builtUpArea: null, carpetArea: null, bathRooms: null, bedRooms: null, balconies: null}))
                     setErrors((pre) => ({...pre, bhk: ''}))
                   }
                 }}
@@ -1373,7 +1404,7 @@ export default function Step1() {
             isError={false}
             placeholder={'Select BHK'}
             onChange={(value) => {
-              setDynamicFieldDetails((pre) => ({...pre, otherBhk: value, bathRooms: null, bedRooms: null, balconies: null}))
+              setDynamicFieldDetails((pre) => ({...pre, otherBhk: value, isStaticBhkDetails: false, staticBhKDetails: null, builtUpArea: null, carpetArea: null, bathRooms: null, bedRooms: null, balconies: null}))
             setErrors((pre) => ({...pre, otherBhk: ''}))
             }}
             options={renderOtherBhk()}
@@ -1394,7 +1425,7 @@ export default function Step1() {
                   setDynamicFieldDetails((pre) => ({
                     ...pre, isStaticBhkDetails: true, staticBhKDetails: item, builtUpArea: item?.superBuiltUpArea, carpetArea: item?.carpetArea, bathRooms: item?.noOfBathrooms, bedRooms: item?.noOfBedrooms, balconies: item?.balconies, 
                   }))
-                  setErrors((pre) => ({...pre, builtUpArea: ''}))
+                  setErrors((pre) => ({...pre, builtUpArea: '', bathRooms: '', bedRooms: '', balconies: ''}))
                 }} className={`flex flex-1 min-w-[240px] justify-between cursor-pointer ${(dynamicFieldDetails.isStaticBhkDetails && (dynamicFieldDetails.staticBhKDetails?.id == item?.id)) ? 'bg-light-purple' : ''} p-3 border border-border border-1 rounded-[10px] gap-5`}>
                   <div className="flex flex-col justify-between">
                       <p className="font-medium text-sm text-text-black">{item.superBuiltUpArea} Sq Ft</p>
@@ -1407,7 +1438,7 @@ export default function Step1() {
             })
           }
             <div onClick={() => {
-              setDynamicFieldDetails((pre) => ({...pre, isStaticBhkDetails: true, staticBhKDetails: null}))
+              setDynamicFieldDetails((pre) => ({...pre, isStaticBhkDetails: true, staticBhKDetails: null, builtUpArea: null, carpetArea: null, bathRooms: null, bedRooms: null, balconies: null}))
             }}  className={`flex flex-1 min-w-[240px] flex-col justify-center cursor-pointer p-3 border border-border border-1 rounded-[10px] text-center ${(dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails) ? 'bg-light-purple' : ''} `}>
               <p className="font-medium text-sm text-text-black">+ Add Here</p>
               <p className="text-sm text-text-gray">My unit is not listed</p>
@@ -1421,10 +1452,13 @@ export default function Step1() {
            placeHolder='Enter built up area'
            options={AREA_UNIT_LIST}
            onChange={(value: string, dropdownValue: string) => {
+            const isOnlyDigits = /^\d*$/.test(value);
+            if(!isOnlyDigits) return
+            if(Number(value) > 99999) return
             setDynamicFieldDetails((pre) => ({...pre, builtUpArea: value,builtUpAreaUnit: dropdownValue}))
             setErrors((pre) => ({...pre, builtUpArea: ''}))
            }}
-           value={dynamicFieldDetails.builtUpArea}
+           value={dynamicFieldDetails.builtUpArea ?? ''}
            dropdownValue={dynamicFieldDetails?.builtUpAreaUnit}
            />
           {errors?.builtUpArea && <p className="pt-1 text-red-500 text-xs">{errors.builtUpArea}</p>}
@@ -1436,10 +1470,13 @@ export default function Step1() {
            placeHolder='Enter carpet area'
            options={AREA_UNIT_LIST}
             onChange={(value: string, dropdownValue: string) => {
+            const isOnlyDigits = /^\d*$/.test(value);
+            if(!isOnlyDigits) return
+            if(Number(value) > 99999) return
             setDynamicFieldDetails((pre) => ({...pre, carpetArea: value,carpetAreaUnit: dropdownValue}))
             setErrors((pre) => ({...pre, carpetArea: ''}))
            }}
-           value={dynamicFieldDetails.carpetArea}
+           value={dynamicFieldDetails.carpetArea ?? ''}
            dropdownValue={dynamicFieldDetails?.carpetAreaUnit}
            />
           {errors?.carpetArea && <p className="pt-1 text-red-500 text-xs">{errors.carpetArea}</p>}
@@ -1534,6 +1571,7 @@ export default function Step1() {
               className={'box-border h-[40px] px-4 py-2 text-sm rounded-full border border-border focus:border-blue text-text-gray'}
               inputProps={{
                 className: "placeholder-gray",
+                min: new Date().toISOString().split('T')[0],
               }}
             />
             {errors.possesionDate && (
@@ -1658,6 +1696,7 @@ export default function Step1() {
            onChange={(value: string, dropdownValue: string) => {
             const isOnlyDigits = /^\d*$/.test(value);
             if(!isOnlyDigits) return;
+            if(Number(value) > 100000) return
             setDynamicFieldDetails((pre) => ({...pre, plotArea: value, selectAreaUnit: dropdownValue}))
             let isPloatAreaError = errors?.plotArea
             if(value && (Number(dynamicFieldDetails.plotLength) * Number(dynamicFieldDetails.plotWidth)) > Number(value)){
@@ -1753,6 +1792,7 @@ export default function Step1() {
               const input = event.target.value;
               const isOnlyDigits = /^\d*$/.test(input);
               if(!isOnlyDigits) return
+              if(Number(input) > 500) return
               setDynamicFieldDetails((pre) => ({...pre, widthOfFacingRoad: input}))
               setErrors((pre) => ({...pre, widthOfFacingRoad: ''}))
             }}
@@ -2005,6 +2045,7 @@ export default function Step1() {
            onChange={(value: string, dropdownValue: string) => {
             const isOnlyDigits = /^\d*$/.test(value);
             if(!isOnlyDigits) return
+            if(Number(value) > 100000) return
             setDynamicFieldDetails((pre) => ({...pre, plotArea: value,selectAreaUnit: dropdownValue}))
             setErrors((pre) => ({...pre, plotArea: ''}))
            }}
@@ -2023,6 +2064,7 @@ export default function Step1() {
            onChange={(value: string, dropdownValue: string) => {
             const isOnlyDigits = /^\d*$/.test(value);
             if(!isOnlyDigits) return
+            if(Number(value) > 99999) return
             setDynamicFieldDetails((pre) => ({...pre, builtUpArea: value,builtUpAreaUnit: dropdownValue}))
             setErrors((pre) => ({...pre, builtUpArea: ''}))
            }}
@@ -2059,6 +2101,7 @@ export default function Step1() {
            onChange={(value: string, dropdownValue: string) => {
             const isOnlyDigits = /^\d*$/.test(value);
             if(!isOnlyDigits) return
+            if(Number(value) > 99999) return
             setDynamicFieldDetails((pre) => ({...pre, plotLength: value,plotLenghtUnit: dropdownValue}))
             setErrors((pre) => ({...pre, plotLength: ''}))
            }}
@@ -2075,6 +2118,7 @@ export default function Step1() {
             onChange={(value: string, dropdownValue: string) => {
               const isOnlyDigits = /^\d*$/.test(value);
               if(!isOnlyDigits) return
+              if(Number(value) > 99999) return
               setDynamicFieldDetails((pre) => ({...pre, plotBreadth: value,plotWidthUnit: dropdownValue}))
               setErrors((pre) => ({...pre, plotBreadth: ''}))
             }}
@@ -2094,6 +2138,7 @@ export default function Step1() {
            onChange={(value: string, dropdownValue: string) => {
             const isOnlyDigits = /^\d*$/.test(value);
             if(!isOnlyDigits) return
+            if(Number(value) > 999) return
             setDynamicFieldDetails((pre) => ({...pre, entranceWidth: value,entranceWidthUnit: dropdownValue}))
             setErrors((pre) => ({...pre, entranceWidth: ''}))
            }}
@@ -2110,6 +2155,7 @@ export default function Step1() {
               onChange={(value: string, dropdownValue: string) => {
               const isOnlyDigits = /^\d*$/.test(value);
               if(!isOnlyDigits) return
+              if(Number(value) > 20) return
               setDynamicFieldDetails((pre) => ({...pre, cellingHeight: value,ceilingHeightUnit: dropdownValue}))
               setErrors((pre) => ({...pre, cellingHeight: ''}))
             }}
@@ -2337,6 +2383,7 @@ export default function Step1() {
                 return
               }
               let payload = generatePayload()
+              console.log('payload', payload)
               handleStep1Submit(payload)
             }
           }} className="w-full md:w-[130px] text-sm 1xl:text-base animated-button px-12 py-3 border border-blue text-center cursor-pointer">

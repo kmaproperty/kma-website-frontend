@@ -18,7 +18,7 @@ import { toast } from "react-toastify";
 import RenderSectionName from "./renderSecitonName";
 const QuillEditor = dynamic(() => import("../common/editor"), { ssr: false });
 
-export default function Step2() {
+export default function Step2({containerRef}) {
   const router = useRouter()
   const params = useParams()
   const searchParams = useSearchParams();
@@ -1097,7 +1097,7 @@ export default function Step2() {
 
   return (
     <>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4" ref={containerRef}>
         <p className="text-text-black font-semibold text-lg 2md:text-xl pb-2">
           Property Details
         </p>
@@ -1268,6 +1268,7 @@ export default function Step2() {
               const input = e.target.value;
               const isOnlyDigits = /^\d*$/.test(input);
               if (!isOnlyDigits) return;
+              if(Number(input) > 100000) return
               setDynamicFieldDetails((pre) => ({...pre, propertyArea: input}))
               setErrors((pre) => ({...pre, propertyArea: ''}))
             }}
@@ -1291,6 +1292,7 @@ export default function Step2() {
               const input = e.target.value;
               const isOnlyDigits = /^\d*$/.test(input);
               if (!isOnlyDigits) return;
+              if(Number(input) > 99999) return
               setDynamicFieldDetails((pre) => ({...pre, ploatArea: input}))
               setErrors((pre) => ({...pre, ploatArea: ''}))
             }}
@@ -1749,6 +1751,7 @@ export default function Step2() {
               className={'box-border px-4 py-2 text-sm rounded-full border focus:outline-none border-border text-text-gray h-[40px]'}
               inputProps={{
               className: "placeholder-gray",
+                min: new Date().toISOString().split('T')[0],
               }}
           />
           </div>
@@ -1761,9 +1764,12 @@ export default function Step2() {
             placeHolder="Enter monthly rent"
             options={[{label: 'Per month', value: 'Per month'}]}
             onChange={(value: string, dropdownValue: string) => {
-            setDynamicFieldDetails((pre) => ({...pre, rent: value,}))
-            setErrors((pre) => ({...pre, rent: ''}))
-            }}
+              const isOnlyDigits = /^\d*$/.test(value);
+              if(!isOnlyDigits) return
+              if(Number(value) > 99999) return
+              setDynamicFieldDetails((pre) => ({...pre, rent: value,}))
+              setErrors((pre) => ({...pre, rent: ''}))
+              }}
             value={dynamicFieldDetails.rent}
             dropdownValue={'Per month'}
             disabled={true}
@@ -1862,6 +1868,7 @@ export default function Step2() {
                 className={'box-border h-[47.81px] px-4 py-2 text-sm rounded-full border border-border focus:border-blue text-text-gray'}
                 inputProps={{
                   className: "placeholder-gray",
+                  min: new Date().toISOString().split('T')[0],
                 }}
               />
               {errors.possesionDate && (
@@ -1945,6 +1952,7 @@ export default function Step2() {
               onChange={(value: string, dropdownValue: string) => {
                 const isOnlyDigits = /^\d*$/.test(value);
                 if (!isOnlyDigits) return;
+                if(Number(value) > 99999) return 
               setDynamicFieldDetails((pre) => ({...pre, otherMaintenanceCharges: value,}))
               setErrors((pre) => ({...pre, otherMaintenanceCharges: ''}))
               }}
@@ -1985,6 +1993,7 @@ export default function Step2() {
               onChange={(value: string, dropdownValue: string) => {
                 const isOnlyDigits = /^\d*$/.test(value);
                 if (!isOnlyDigits) return;
+                if(Number(value) > 99999) return
               setDynamicFieldDetails((pre) => ({...pre, otherSecurityDeposite: value,}))
               setErrors((pre) => ({...pre, otherSecurityDeposite: ''}))
               }}
@@ -2068,6 +2077,7 @@ export default function Step2() {
                 const input = e.target.value;
                 const isOnlyDigits = /^\d*$/.test(input);
                 if (!isOnlyDigits) return;
+                if(Number(input) > 99999) return
                 setDynamicFieldDetails((pre) => ({...pre, otherBrokerageCharge: input}))
                 setErrors((pre) => ({...pre, otherBrokerageCharge: ''}))
               }}
@@ -2123,6 +2133,7 @@ export default function Step2() {
                 const input = e.target.value;
                 const isOnlyDigits = /^\d*$/.test(input);
                 if (!isOnlyDigits) return;
+                if(Number(input) > 99999) return
                 setDynamicFieldDetails((pre) => ({...pre, rent: input}))
                 setErrors((pre) => ({...pre, rent: ''}))
               }}
@@ -2149,6 +2160,7 @@ export default function Step2() {
                 const input = e.target.value;
                 const isOnlyDigits = /^\d*$/.test(input);
                 if (!isOnlyDigits) return;
+                if(Number(input) > 99999) return
                 setDynamicFieldDetails((pre) => ({...pre, otherSecurityDeposite: input}))
                 setErrors((pre) => ({...pre, otherSecurityDeposite: ''}))
               }}
@@ -2392,6 +2404,7 @@ export default function Step2() {
                 const input = e.target.value;
                 const isOnlyDigits = /^\d*$/.test(input);
                 if (!isOnlyDigits) return;
+                if(Number(input) > 99999) return
                 setDynamicFieldDetails((pre) => ({...pre, otherBrokerageCharge: input}))
                 setErrors((pre) => ({...pre, otherBrokerageCharge: ''}))
               }}
@@ -2449,6 +2462,7 @@ export default function Step2() {
               const input = e.target.value;
               const isOnlyDigits = /^\d*$/.test(input);
               if (!isOnlyDigits) return;
+              if(Number(input) > 99999) return
               setDynamicFieldDetails((pre) => ({...pre, currentRentPerMonth: input}))
               setErrors((pre) => ({...pre, currentRentPerMonth: ''}))
             }}

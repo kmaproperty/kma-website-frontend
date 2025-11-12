@@ -37,7 +37,7 @@ import RenderSectionName from "./renderSecitonName";
 import { InputBase } from "@mui/material";
 import AmenitiesList from "./amenities";
 
-export default function Step3() {
+export default function Step3({containerRef}) {
   const { calculateProgress } = useStepProgress();
 
   const router = useRouter();
@@ -539,7 +539,7 @@ export default function Step3() {
 
   return (
     <>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4" ref={containerRef}>
         <p className="text-text-black font-semibold text-lg 2md:text-xl pb-2">
           Amenities & Description
         </p>
