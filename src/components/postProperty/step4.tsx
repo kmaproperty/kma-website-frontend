@@ -457,7 +457,7 @@ const handleUploadFileToS3 = async (files: File[], type: string) => {
             onClick={() => {
               if (activeStep != 1) {
                 const propertyType = basicStaticDetail.propertyType?.code
-                const isStep3Skipped = ['res-sale-plot', 'res-sale-agri-land'].includes(propertyType ?? '')
+                const isStep3Skipped = ['res-sale-plot', 'res-sale-agri-land', 'com-rent-warehouse', 'com-sale-warehouse', 'com-rent-plot', 'com-sale-plot'].includes(propertyType ?? '')
                 if(isStep3Skipped){
                   dispatch(setActiveStep({step: activeStep - 2}))
                 }else{

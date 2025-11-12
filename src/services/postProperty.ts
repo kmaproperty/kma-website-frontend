@@ -368,13 +368,23 @@ export interface Step3PostPropertyPayload {
   propertyDescription?: string | null;
   waterSource?: string | null;
   isLiftAvailable?: boolean | null;
+  minNumberOfSeats?: string | null,
+  maxNumberOfSeats?: string | null,
+  numberOfCabins?: string | null,
+  numberOfMeetingRooms?: string | null,
+  privateWashrooms?: string | null,
+  publicWashrooms?: string | null,
+  conferenceRoom?: string | null,
+  receptionArea?: string | null,
+  privateParking?: string | null,
+  publicParking?: string | null,
 }
 
 export interface Step3PostPropertyResponse {
   message: string;
 }
 
-export const step3PostPropertyCreateApiHandler = async (paylaod: Step2PostPropertyPayload) : Promise<Step3PostPropertyResponse> => {
+export const step3PostPropertyCreateApiHandler = async (paylaod: Step3PostPropertyPayload) : Promise<Step3PostPropertyResponse> => {
     try{
         const response = await axiosInstance.post<Step3PostPropertyResponse>(
       "property/step-3", paylaod);
@@ -403,6 +413,16 @@ export interface Step3DetailsResponse {
   status: string | null;
   completionStep: number | null;
   progressPercentage: number | null;
+  minNumberOfSeats?: string | null,
+  maxNumberOfSeats?: string | null,
+  numberOfCabins?: string | null,
+  numberOfMeetingRooms?: string | null,
+  privateWashrooms?: string | null,
+  publicWashrooms?: string | null,
+  conferenceRoom?: string | null,
+  receptionArea?: string | null,
+  privateParking?: string | null,
+  publicParking?: string | null,
 }
 
 export const step3PostPropertyDetailsApiHandler = async (propertyId: string) : Promise<Step3DetailsResponse> => {

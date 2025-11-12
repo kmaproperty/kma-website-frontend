@@ -334,8 +334,15 @@ export const FIELD_NAME = {
   RESERVED_PARKING: 'Reserved_parking',
   POWER_BACKUP: 'Power_backup',
   FURNISH_TYPE: 'Furnish_type',
+  AMENITIES: 'Amenities',
   WATER_SOURCE: 'Water_source',
   LIFT_AVAILABILITY: 'Lift_availability',
+  MIN_NUMBER_OF_SEATS: 'Min_number_of_seats',
+  MAX_NUMBER_OF_SEATS: 'Max_number_of_seats',
+  NUMBER_OF_CABIN: 'Number_of_cabin',
+  NUMBER_OF_MEETING_ROOM: 'Number_of_meeting_room',
+  CONFERENCE_ROOM: 'Conference_room',
+  RECEPTION_AREA: 'Reception_area'
 }
 
 export const AREA_UNIT_LIST = [
@@ -347,10 +354,10 @@ export const AREA_UNIT_LIST = [
 ]
 
 export const PLOT_UNIT_LIST = [
-  { label: 'ft.', value: 'ft' },
-  { label: 'm.', value: 'm' },
-  { label: 'in.', value: 'in' },
-  { label: 'cm.', value: 'cm' },
+  { label: 'Ft.', value: 'ft' },
+  { label: 'M.', value: 'm' },
+  { label: 'In.', value: 'in' },
+  { label: 'Cm.', value: 'cm' },
 ]
 
 export const TRANSACTION_TYPE_LIST = [
@@ -699,7 +706,91 @@ export  const FURNISHING_LIST = [
         label: 'Microwave'
     },
 
-  ]
+]
+
+export const COMMERCIAL_FURNISHING_LIST =[
+    {
+      icon: 'water-purifier.png',
+      label: 'Water Purifier'
+    },
+    {
+        icon: 'fan.png',
+        label: 'Fan'
+    },
+    {
+        icon: 'fridge.png',
+        label: 'Fridge'
+    },
+    {
+        icon: 'external-fan.png',
+        label: 'Exhaust Fan'
+    },
+    {
+        icon: 'stove.png',
+        label: 'Stove'
+    },
+    {
+        icon: 'light.png',
+        label: 'Light'
+    },
+    {
+        icon: 'curtains.png',
+        label: 'Curtains'
+    },
+    {
+        icon: 'chimeny.png',
+        label: 'Modular Kitchen'
+    },
+    {
+        icon: 'air-conditioner.png',
+        label: 'AC'
+    },
+    {
+        icon: 'microwave.png',
+        label: 'Microwave'
+    },
+    {
+      icon: 'table.png',
+      label: 'Tables'
+    },
+    {
+      icon: 'chair.png',
+      label: 'Chairs'
+    },
+    {
+      icon: 'meeting-room.png',
+      label: 'Meeting Rooms'
+    },
+    {
+      icon: 'conference-room.png',
+      label: 'Conference Rooms'
+    },
+    {
+      icon: 'first_aid_kit.png',
+      label: 'Medical Kit'
+    },
+    {
+      icon: 'Recreational.png',
+      label: 'Recreational Facility',
+    },
+    {
+      icon: 'printing-machine.png',
+      label: 'Printing Machines',
+    },
+    {
+      icon: 'coffee_machine.png',
+      label: 'Coffee Machines'
+    },
+    {
+      icon: 'Smartboard.png',
+      label: 'Smartboard'
+    },
+    {
+      icon: 'projector.png',
+      label: 'Projector'
+    }
+]
+
 
 export  const AMENITISE_LIST = [
   "Gymnasium",
@@ -756,7 +847,6 @@ export  const AMENITISE_LIST = [
   "Waste Disposal",
   "First Aid Medical Center",
   "Tiles",
-  "Service Elevators",
   "Broadband Internet",
   "Satellite/Cable TV",
   "Conference Room",
@@ -955,5 +1045,16 @@ export const LIFTS = [
   {
     name: 'Not-Available',
     value: 'not_available',
+  }
+]
+
+export const RECEPTION_AREA = [
+  {
+    name: 'Available',
+    value: 'yes',
+  },
+  {
+    name: 'Not-Available',
+    value: 'no',
   }
 ]

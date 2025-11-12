@@ -93,7 +93,7 @@ function Stepper({activeStep, stepList, basicDetails, totalProgress}: {activeSte
   const dispatch = useDispatch()
   const propertyType = basicDetails.propertyType?.code
 
-  const isStep3Skipped = ['res-sale-plot', 'res-sale-agri-land'].includes(propertyType ?? '')
+  const isStep3Skipped = ['res-sale-plot', 'res-sale-agri-land', 'com-rent-warehouse', 'com-sale-warehouse', 'com-rent-plot', 'com-sale-plot'].includes(propertyType ?? '')
   
   return (
     <StepContainer className="flex-col">

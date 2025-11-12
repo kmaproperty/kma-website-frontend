@@ -1,7 +1,7 @@
 import ChipTag from "../common/chipTag";
 import FieldLabel from "./fieldLabel";
 import AmenitiesCard from "../common/amenities";
-import Amenities from "./amenities";
+import Furnishing from "./furnishing";
 import CustomCheckbox from "../common/checkbox";
 const QuillEditor = dynamic(() => import("../common/editor"), { ssr: false });
 import { useEffect, useState } from "react";
@@ -22,14 +22,20 @@ import {
 } from "@/services/postProperty";
 import {
   ADDITIONAL_ROOM,
+  COMMERCIAL_FURNISHING_LIST,
+  CUSTOM_SECTION_NAME,
   FIELD_NAME,
   FURNISH_TYPE,
   FURNISHING_LIST,
   POWER_BACKUP,
+  RECEPTION_AREA,
   TRUTY_LIST,
   WATER_SOURCE,
 } from "@/lib/enums";
 import { toast } from "react-toastify";
+import RenderSectionName from "./renderSecitonName";
+import { InputBase } from "@mui/material";
+import AmenitiesList from "./amenities";
 
 export default function Step3() {
   const { calculateProgress } = useStepProgress();
@@ -45,6 +51,7 @@ export default function Step3() {
     propertyListFor: null,
     propertyCategory: null,
     propertyType: null,
+    propertyCondition: null,
   });
 
   const [dynamicFieldDetails, setDynamicFieldDetails] = useState<any>({
@@ -58,10 +65,22 @@ export default function Step3() {
     furnishType: null,
     furnishingsCounts: [],
     amenities: [],
+
+    minNumberOfSeats: null,
+    maxNumberOfSeats: null,
+    numberOfCabins: null,
+    numberOfMeetingRooms: null,
+    privateWashrooms: null,
+    publicWashrooms: null,
+    conferenceRoom: null,
+    receptionArea: null,
+    privateParking: null,
+    publicParking: null,
   });
 
   const [errors, setErrors] = useState<any>({});
   const [popupOpen, setPopupOpen] = useState(false);
+  const [openAmenitiesPopup, setOpenAmenitiesPopup] = useState(false)
   console.log('step3', dynamicFieldDetails,errors)
 
   const handleUpdateFurnishedCount = (name: string, value: number) => {
@@ -117,100 +136,266 @@ export default function Step3() {
     setDynamicFieldDetails((pre) => ({ ...pre, amenities: updatedData }));
   };
 
+  const renderFirstSectionLabel = () => {
+      const isResidential = basicStaticDetail.propertyCategory?.code == 'residential'
+      const isCommercial = basicStaticDetail.propertyCategory?.code == 'commercial'
+      const isRent = basicStaticDetail.propertyListFor?.code == 'rent'
+      const isSell = basicStaticDetail.propertyListFor?.code == 'sale'
+      const propertyType = basicStaticDetail.propertyType?.code
+      const isReadyTouse = basicStaticDetail.propertyCondition == 'ready_to_use'
+      if((isRent || isSell) && isCommercial && ((['com-rent-office', 'com-sale-office'].includes(propertyType) && isReadyTouse) || ['com-rent-retail-shop', 'com-sale-retail-shop', 'com-rent-showroom', 'com-sale-showroom'].includes(propertyType))){
+        return CUSTOM_SECTION_NAME.FACILITIES
+      }
+      
+      return {name: '', subName:''}
+    }
+
   //Show Hide the field based on condition
   const renderShowField = (fieldName: string) => {
     const isResidential = basicStaticDetail.propertyCategory?.code == 'residential'
+    const isCommercial = basicStaticDetail.propertyCategory?.code == 'commercial'
     const isRent = basicStaticDetail.propertyListFor?.code == 'rent'
     const isSell = basicStaticDetail.propertyListFor?.code == 'sale'
-
-    if(fieldName == FIELD_NAME.ADDITIONAL_ROOM){
-      if(isResidential &&  ['res-rent-flat', 'res-sale-flat', 'res-rent-villa', 'res-sale-villa', 'res-rent-house', 'res-sale-house', 'res-rent-duplex', 'res-sale-duplex', 'res-rent-builder-floor', 'res-sale-builder-floor', 'res-sale-penthouse', 'res-rent-penthouse', 'res-rent-studio', 'res-sale-studio', 'res-rent-farmhouse', 'res-sale-farmhouse'].includes(basicStaticDetail.propertyType?.code ?? '')){
-        return true
+    const isReadyTouse = basicStaticDetail.propertyCondition == 'ready_to_use'
+    if(isResidential){
+      if(fieldName == FIELD_NAME.ADDITIONAL_ROOM){
+        if(isResidential &&  ['res-rent-flat', 'res-sale-flat', 'res-rent-villa', 'res-sale-villa', 'res-rent-house', 'res-sale-house', 'res-rent-duplex', 'res-sale-duplex', 'res-rent-builder-floor', 'res-sale-builder-floor', 'res-sale-penthouse', 'res-rent-penthouse', 'res-rent-studio', 'res-sale-studio', 'res-rent-farmhouse', 'res-sale-farmhouse'].includes(basicStaticDetail.propertyType?.code ?? '')){
+          return true
+        }
+        return false
       }
-      return false
+
+      if(fieldName == FIELD_NAME.RESERVED_PARKING){
+        if(isResidential &&  ['res-rent-flat', 'res-sale-flat', 'res-rent-villa', 'res-sale-villa', 'res-rent-house', 'res-sale-house', 'res-rent-duplex', 'res-sale-duplex', 'res-rent-builder-floor', 'res-sale-builder-floor', 'res-sale-penthouse', 'res-rent-penthouse', 'res-rent-studio', 'res-sale-studio', 'res-rent-farmhouse', 'res-sale-farmhouse'].includes(basicStaticDetail.propertyType?.code ?? '')){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.POWER_BACKUP){
+        if(isResidential &&  ['res-rent-flat', 'res-sale-flat', 'res-rent-villa', 'res-sale-villa', 'res-rent-house', 'res-sale-house', 'res-rent-duplex', 'res-sale-duplex', 'res-rent-builder-floor', 'res-sale-builder-floor', 'res-sale-penthouse', 'res-rent-penthouse', 'res-rent-studio', 'res-sale-studio', 'res-rent-farmhouse', 'res-sale-farmhouse'].includes(basicStaticDetail.propertyType?.code ?? '')){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.WATER_SOURCE){
+        if(isResidential &&  ['res-rent-villa', 'res-sale-villa', 'res-rent-house', 'res-sale-house', 'res-rent-duplex', 'res-sale-duplex', 'res-rent-builder-floor', 'res-sale-builder-floor', 'res-sale-penthouse', 'res-rent-penthouse'].includes(basicStaticDetail.propertyType?.code ?? '')){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.LIFT_AVAILABILITY){
+        if(isResidential &&  ['res-rent-villa', 'res-sale-villa', 'res-rent-builder-floor', 'res-sale-builder-floor', 'res-sale-penthouse', 'res-rent-penthouse'].includes(basicStaticDetail.propertyType?.code ?? '')){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.FURNISH_TYPE){
+        if(isResidential &&  ['res-rent-flat', 'res-sale-flat', 'res-rent-villa', 'res-sale-villa', 'res-rent-house', 'res-sale-house', 'res-rent-duplex', 'res-sale-duplex', 'res-rent-builder-floor', 'res-sale-builder-floor', 'res-sale-penthouse', 'res-rent-penthouse', 'res-rent-studio', 'res-sale-studio', 'res-rent-farmhouse', 'res-sale-farmhouse'].includes(basicStaticDetail.propertyType?.code ?? '')){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.AMENITIES){
+        if(isResidential &&  ['res-rent-flat', 'res-sale-flat', 'res-rent-villa', 'res-sale-villa', 'res-rent-house', 'res-sale-house', 'res-rent-duplex', 'res-sale-duplex', 'res-rent-builder-floor', 'res-sale-builder-floor', 'res-sale-penthouse', 'res-rent-penthouse', 'res-rent-studio', 'res-sale-studio', 'res-rent-farmhouse', 'res-sale-farmhouse'].includes(basicStaticDetail.propertyType?.code ?? '')){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.PROPERTY_DESCRRIPTION){
+        if(isResidential &&  ['res-rent-flat', 'res-sale-flat', 'res-rent-villa','res-sale-villa', 'res-rent-house', 'res-sale-house', 'res-rent-duplex', 'res-sale-duplex', 'res-rent-builder-floor', 'res-sale-builder-floor', 'res-sale-penthouse', 'res-rent-penthouse', 'res-rent-studio', 'res-sale-studio', 'res-rent-farmhouse', 'res-sale-farmhouse'].includes(basicStaticDetail.propertyType?.code ?? '')){
+          return true
+        }
+        return false
+      }
+    }
+    
+    if(isCommercial){
+
+      if(fieldName == FIELD_NAME.MIN_NUMBER_OF_SEATS){
+        if((isRent || isSell) && ((['com-rent-office', 'com-sale-office'].includes(basicStaticDetail.propertyType?.code ?? '') && isReadyTouse) || [].includes(basicStaticDetail.propertyType?.code ?? ''))){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.MAX_NUMBER_OF_SEATS){
+        if((isRent || isSell) && ((['com-rent-office', 'com-sale-office'].includes(basicStaticDetail.propertyType?.code ?? '') && isReadyTouse) || [].includes(basicStaticDetail.propertyType?.code ?? ''))){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.NUMBER_OF_CABIN){
+        if((isRent || isSell) && ((['com-rent-office', 'com-sale-office'].includes(basicStaticDetail.propertyType?.code ?? '') && isReadyTouse) || [].includes(basicStaticDetail.propertyType?.code ?? ''))){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.NUMBER_OF_MEETING_ROOM){
+        if((isRent || isSell) && ((['com-rent-office', 'com-sale-office'].includes(basicStaticDetail.propertyType?.code ?? '') && isReadyTouse) || [].includes(basicStaticDetail.propertyType?.code ?? ''))){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.PRIVATE_WASHROOM){
+        if((isRent || isSell) && ((['com-rent-office', 'com-sale-office'].includes(basicStaticDetail.propertyType?.code ?? '') && isReadyTouse) || ['com-rent-retail-shop', 'com-sale-retail-shop', 'com-rent-showroom', 'com-sale-showroom'].includes(basicStaticDetail.propertyType?.code ?? ''))){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.PUBLIC_WASHROOM){
+        if((isRent || isSell) && ((['com-rent-office', 'com-sale-office'].includes(basicStaticDetail.propertyType?.code ?? '') && isReadyTouse) || ['com-rent-retail-shop', 'com-sale-retail-shop', 'com-rent-showroom', 'com-sale-showroom'].includes(basicStaticDetail.propertyType?.code ?? ''))){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.PRIVATE_PARKING){
+        if((isRent || isSell) && (['com-rent-retail-shop', 'com-sale-retail-shop', 'com-rent-showroom', 'com-sale-showroom'].includes(basicStaticDetail.propertyType?.code ?? ''))){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.PUBLIC_PARKING){
+        if((isRent || isSell) && (['com-rent-retail-shop', 'com-sale-retail-shop', 'com-rent-showroom', 'com-sale-showroom'].includes(basicStaticDetail.propertyType?.code ?? ''))){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.CONFERENCE_ROOM){
+        if((isRent || isSell) && ((['com-rent-office', 'com-sale-office'].includes(basicStaticDetail.propertyType?.code ?? '') && isReadyTouse) || [].includes(basicStaticDetail.propertyType?.code ?? ''))){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.RECEPTION_AREA){
+        if((isRent || isSell) && ((['com-rent-office', 'com-sale-office'].includes(basicStaticDetail.propertyType?.code ?? '') && isReadyTouse) || [].includes(basicStaticDetail.propertyType?.code ?? ''))){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.FURNISH_TYPE){
+        if((isRent || isSell) && ['com-rent-office', 'com-sale-office', 'com-rent-retail-shop', 'com-sale-retail-shop', 'com-rent-showroom', 'com-sale-showroom'].includes(basicStaticDetail.propertyType?.code ?? '')){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.PROPERTY_DESCRRIPTION){
+        if((isRent || isSell) && ['com-rent-office', 'com-sale-office', 'com-rent-retail-shop', 'com-sale-retail-shop', 'com-rent-showroom', 'com-sale-showroom'].includes(basicStaticDetail.propertyType?.code ?? '')){
+          return true
+        }
+        return false
+      }
     }
 
-    if(fieldName == FIELD_NAME.RESERVED_PARKING){
-      if(isResidential &&  ['res-rent-flat', 'res-sale-flat', 'res-rent-villa', 'res-sale-villa', 'res-rent-house', 'res-sale-house', 'res-rent-duplex', 'res-sale-duplex', 'res-rent-builder-floor', 'res-sale-builder-floor', 'res-sale-penthouse', 'res-rent-penthouse', 'res-rent-studio', 'res-sale-studio', 'res-rent-farmhouse', 'res-sale-farmhouse'].includes(basicStaticDetail.propertyType?.code ?? '')){
-        return true
-      }
-      return false
-    }
 
-    if(fieldName == FIELD_NAME.POWER_BACKUP){
-      if(isResidential &&  ['res-rent-flat', 'res-sale-flat', 'res-rent-villa', 'res-sale-villa', 'res-rent-house', 'res-sale-house', 'res-rent-duplex', 'res-sale-duplex', 'res-rent-builder-floor', 'res-sale-builder-floor', 'res-sale-penthouse', 'res-rent-penthouse', 'res-rent-studio', 'res-sale-studio', 'res-rent-farmhouse', 'res-sale-farmhouse'].includes(basicStaticDetail.propertyType?.code ?? '')){
-        return true
-      }
-      return false
-    }
-
-    if(fieldName == FIELD_NAME.WATER_SOURCE){
-      if(isResidential &&  ['res-rent-villa', 'res-sale-villa', 'res-rent-house', 'res-sale-house', 'res-rent-duplex', 'res-sale-duplex', 'res-rent-builder-floor', 'res-sale-builder-floor', 'res-sale-penthouse', 'res-rent-penthouse'].includes(basicStaticDetail.propertyType?.code ?? '')){
-        return true
-      }
-      return false
-    }
-
-    if(fieldName == FIELD_NAME.LIFT_AVAILABILITY){
-      if(isResidential &&  ['res-rent-villa', 'res-sale-villa', 'res-rent-builder-floor', 'res-sale-builder-floor', 'res-sale-penthouse', 'res-rent-penthouse'].includes(basicStaticDetail.propertyType?.code ?? '')){
-        return true
-      }
-      return false
-    }
-
-    if(fieldName == FIELD_NAME.FURNISH_TYPE){
-      if(isResidential &&  ['res-rent-flat', 'res-sale-flat', 'res-rent-villa', 'res-sale-villa', 'res-rent-house', 'res-sale-house', 'res-rent-duplex', 'res-sale-duplex', 'res-rent-builder-floor', 'res-sale-builder-floor', 'res-sale-penthouse', 'res-rent-penthouse', 'res-rent-studio', 'res-sale-studio', 'res-rent-farmhouse', 'res-sale-farmhouse'].includes(basicStaticDetail.propertyType?.code ?? '')){
-        return true
-      }
-      return false
-    }
-
-    if(fieldName == FIELD_NAME.PROPERTY_DESCRRIPTION){
-      if(isResidential &&  ['res-rent-flat', 'res-sale-flat', 'res-rent-villa','res-sale-villa', 'res-rent-house', 'res-sale-house', 'res-rent-duplex', 'res-sale-duplex', 'res-rent-builder-floor', 'res-sale-builder-floor', 'res-sale-penthouse', 'res-rent-penthouse', 'res-rent-studio', 'res-sale-studio', 'res-rent-farmhouse', 'res-sale-farmhouse'].includes(basicStaticDetail.propertyType?.code ?? '')){
-        return true
-      }
-      return false
-    }
-
-
-    return true
+    return false
   }
 
   //Validation
   const validate = () => {
+    const isResidential = basicStaticDetail.propertyCategory?.code == 'residential'
+    const isCommercial = basicStaticDetail.propertyCategory?.code == 'commercial'
     let hasError = false;
     let updatedError: any = {}
 
-    if(renderShowField(FIELD_NAME.FURNISH_TYPE) && !dynamicFieldDetails.furnishType){
-      updatedError.furnishType = 'Please select the furnish type'
-      hasError = true;
+    if(isResidential){
+      if(renderShowField(FIELD_NAME.FURNISH_TYPE) && !dynamicFieldDetails.furnishType){
+        updatedError.furnishType = 'Please select the furnish type'
+        hasError = true;
+      }
+
+      if(renderShowField(FIELD_NAME.FURNISH_TYPE) && dynamicFieldDetails.furnishType == 'Furnished' && dynamicFieldDetails.furnishingsCounts.length < 3){
+        updatedError.furnishingsCounts = 'Please add atleast 3 flat furnishings to continue'
+        hasError = true;
+      }
+
+      if(renderShowField(FIELD_NAME.FURNISH_TYPE) && dynamicFieldDetails.furnishType == 'Semi-Furnished' && dynamicFieldDetails.furnishingsCounts.length < 1){
+        updatedError.furnishingsCounts = 'Please add atleast 1 flat furnishings to continue'
+        hasError = true;
+      }
+
+      if(renderShowField(FIELD_NAME.WATER_SOURCE) && !dynamicFieldDetails.waterSource){
+        updatedError.waterSource = 'Please select water source'
+        hasError = true;
+      }
+
+      if(renderShowField(FIELD_NAME.LIFT_AVAILABILITY) && !dynamicFieldDetails.liftAvalability){
+        updatedError.liftAvalability = 'Please select lift availability'
+        hasError = true;
+      }
+
+      if(renderShowField(FIELD_NAME.PROPERTY_DESCRRIPTION) && (!dynamicFieldDetails.propertyDescription || dynamicFieldDetails.propertyDescription == '<p><br></p>')){
+        updatedError.propertyDescription = 'Please add property description'
+        hasError = true;
+      }
     }
 
-    if(renderShowField(FIELD_NAME.FURNISH_TYPE) && dynamicFieldDetails.furnishType == 'Furnished' && dynamicFieldDetails.furnishingsCounts.length < 3){
-      updatedError.furnishingsCounts = 'Please add atleast 3 flat furnishings to continue'
-      hasError = true;
-    }
+    if(isCommercial){
+      if(renderShowField(FIELD_NAME.MIN_NUMBER_OF_SEATS) && !dynamicFieldDetails.minNumberOfSeats){
+        updatedError.minNumberOfSeats = 'Please enter minimun seats'
+        hasError = true;
+      }
 
-    if(renderShowField(FIELD_NAME.FURNISH_TYPE) && dynamicFieldDetails.furnishType == 'Semi-Furnished' && dynamicFieldDetails.furnishingsCounts.length < 1){
-      updatedError.furnishingsCounts = 'Please add atleast 1 flat furnishings to continue'
-      hasError = true;
-    }
+      if(renderShowField(FIELD_NAME.MAX_NUMBER_OF_SEATS) && !dynamicFieldDetails.maxNumberOfSeats){
+        updatedError.maxNumberOfSeats = 'Please enter maximum seats'
+        hasError = true;
+      }
 
-    if(renderShowField(FIELD_NAME.WATER_SOURCE) && !dynamicFieldDetails.waterSource){
-      updatedError.waterSource = 'Please select water source'
-      hasError = true;
-    }
+      if(renderShowField(FIELD_NAME.NUMBER_OF_CABIN) && !dynamicFieldDetails.numberOfCabins){
+        updatedError.numberOfCabins = 'cabins should be between 0 and 1000'
+        hasError = true;
+      }
 
-    if(renderShowField(FIELD_NAME.LIFT_AVAILABILITY) && !dynamicFieldDetails.liftAvalability){
-      updatedError.liftAvalability = 'Please select lift availability'
-      hasError = true;
-    }
+      if(renderShowField(FIELD_NAME.NUMBER_OF_MEETING_ROOM) && !dynamicFieldDetails.numberOfMeetingRooms){
+        updatedError.numberOfMeetingRooms = 'Meeting rooms should be between 0 and 100'
+        hasError = true;
+      }
 
-    if(renderShowField(FIELD_NAME.PROPERTY_DESCRRIPTION) && (!dynamicFieldDetails.propertyDescription || dynamicFieldDetails.propertyDescription == '<p><br></p>')){
-      updatedError.propertyDescription = 'Please add property description'
-      hasError = true;
-    }
+      if(renderShowField(FIELD_NAME.PRIVATE_WASHROOM) && !dynamicFieldDetails.privateWashrooms){
+        updatedError.privateWashrooms = 'washrooms should be between 0 and 200'
+        hasError = true;
+      }
 
+      if(renderShowField(FIELD_NAME.PUBLIC_WASHROOM) && !dynamicFieldDetails.publicWashrooms){
+        updatedError.publicWashrooms = 'washrooms should be between 0 and 200'
+        hasError = true;
+      }
+
+      if(renderShowField(FIELD_NAME.FURNISH_TYPE) && !dynamicFieldDetails.furnishType){
+        updatedError.furnishType = 'Please select the furnish type'
+        hasError = true;
+      }
+
+      if(renderShowField(FIELD_NAME.FURNISH_TYPE) && dynamicFieldDetails.furnishType == 'Furnished' && dynamicFieldDetails.furnishingsCounts.length < 3){
+        updatedError.furnishingsCounts = 'Please add atleast 3 flat furnishings to continue'
+        hasError = true;
+      }
+
+      if(renderShowField(FIELD_NAME.FURNISH_TYPE) && dynamicFieldDetails.furnishType == 'Semi-Furnished' && dynamicFieldDetails.furnishingsCounts.length < 1){
+        updatedError.furnishingsCounts = 'Please add atleast 1 flat furnishings to continue'
+        hasError = true;
+      }
+
+      if(renderShowField(FIELD_NAME.PROPERTY_DESCRRIPTION) && (!dynamicFieldDetails.propertyDescription || dynamicFieldDetails.propertyDescription == '<p><br></p>')){
+        updatedError.propertyDescription = 'Please add property description'
+        hasError = true;
+      }
+    }
     setErrors(updatedError)
     return hasError
   }
@@ -257,7 +442,17 @@ export default function Step3() {
       amenities: dynamicFieldDetails.amenities,
       propertyDescription: dynamicFieldDetails.propertyDescription && dynamicFieldDetails.propertyDescription != '' ? dynamicFieldDetails.propertyDescription : null,
       waterSource: dynamicFieldDetails.waterSource,
-      isLiftAvailable: dynamicFieldDetails.liftAvalability == 'yes' ? true : false
+      isLiftAvailable: dynamicFieldDetails.liftAvalability == 'yes' ? true : false,
+      minNumberOfSeats: dynamicFieldDetails.minNumberOfSeats,
+      maxNumberOfSeats: dynamicFieldDetails.maxNumberOfSeats,
+      numberOfCabins: dynamicFieldDetails.numberOfCabins,
+      numberOfMeetingRooms: dynamicFieldDetails.numberOfMeetingRooms,
+      privateWashrooms: dynamicFieldDetails.privateWashrooms,
+      publicWashrooms: dynamicFieldDetails.publicWashrooms,
+      conferenceRoom: dynamicFieldDetails.conferenceRoom,
+      receptionArea: dynamicFieldDetails.receptionArea,
+      privateParking: dynamicFieldDetails.privateParking, //missing
+      publicParking: dynamicFieldDetails.publicParking, //missing
     }
   }
 
@@ -297,11 +492,19 @@ export default function Step3() {
         propertyDescription: step3Details?.propertyDescription,
         amenities: step3Details?.amenities,
         furnishType: step3Details?.furnishType,
-        furnishingsCounts: furnishing
+        furnishingsCounts: furnishing,
+        minNumberOfSeats: step3Details?.minNumberOfSeats,
+        maxNumberOfSeats: step3Details?.maxNumberOfSeats,
+        numberOfCabins: step3Details?.numberOfCabins,
+        numberOfMeetingRooms: step3Details?.numberOfMeetingRooms,
+        privateWashrooms: step3Details?.privateWashrooms,
+        publicWashrooms: step3Details?.publicWashrooms,
+        conferenceRoom: step3Details?.conferenceRoom,
+        receptionArea: step3Details?.receptionArea,
+        privateParking: step3Details?.privateParking,
+        publicParking: step3Details?.publicParking,
       }))
     }
-
-
   },[step3Details])
 
   useEffect(() => {
@@ -311,6 +514,7 @@ export default function Step3() {
         propertyListFor: step1Details?.listingType,
         propertyCategory: step1Details?.category,
         propertyType: step1Details?.propertyType,
+        propertyCondition: step1Details?.propertyCondition
       }));
       dispatch(setTotalProgress({progress: step1Details.progressPercentage}))
     }
@@ -320,6 +524,18 @@ export default function Step3() {
   //   calculateProgress();
   // }, [dynamicFieldDetails, basicStaticDetail]);
 
+  const renderFurnishing = () => {
+    const isResidential = basicStaticDetail.propertyCategory?.code == 'residential'
+    const isCommercial = basicStaticDetail.propertyCategory?.code == 'commercial'
+    if(isResidential){
+      return FURNISHING_LIST
+    }
+    if(isCommercial){
+      return COMMERCIAL_FURNISHING_LIST
+    }
+    return []
+  }
+
   return (
     <>
       <div className="flex flex-col gap-4">
@@ -327,6 +543,285 @@ export default function Step3() {
           Amenities & Description
         </p>
 
+        {/* Commercial flow start */}
+
+        {renderFirstSectionLabel().name && <RenderSectionName customClass="pt-3" data={renderFirstSectionLabel()}/>}
+
+        {(renderShowField(FIELD_NAME.MIN_NUMBER_OF_SEATS) || renderShowField(FIELD_NAME.PUBLIC_WASHROOM)) && <div className="grid grid-cols-1 2md:grid-cols-2 gap-3">
+                  
+          {renderShowField(FIELD_NAME.MIN_NUMBER_OF_SEATS) && <div data-field={FIELD_NAME.MIN_NUMBER_OF_SEATS} data-has-value={!!dynamicFieldDetails.minNumberOfSeats}>
+            <FieldLabel label="Min. Number of seats" customClass="pb-2" required={true} />
+            <InputBase
+              placeholder="Enter number"
+              fullWidth
+              value={dynamicFieldDetails.minNumberOfSeats ?? ''}
+              onChange={(e) => {
+                const input = e.target.value;
+                const isOnlyDigits = /^\d*$/.test(input);
+                if (!isOnlyDigits) return;
+                if(Number(input) > 999) return
+                setDynamicFieldDetails((pre) => ({...pre, minNumberOfSeats: input}))
+                setErrors((pre) => ({...pre, minNumberOfSeats: ''}))
+              }}
+              className={
+                "box-border px-4 py-2 text-sm rounded-full border focus:outline-none border-border text-text-gray h-[40px]"
+              }
+              inputProps={{
+                className: "placeholder-gray",
+              }}
+            />
+            {errors?.minNumberOfSeats && <p className="pt-1 text-red-500 text-xs">{errors.minNumberOfSeats}</p>}
+          </div>}
+
+          {renderShowField(FIELD_NAME.MAX_NUMBER_OF_SEATS) && <div data-field={FIELD_NAME.MAX_NUMBER_OF_SEATS} data-has-value={!!dynamicFieldDetails.maxNumberOfSeats}>
+            <FieldLabel
+              label="Max. Number of seats"
+              customClass="pb-2"
+              required={true}
+            />
+            <InputBase
+              placeholder="Enter number"
+              fullWidth
+              value={dynamicFieldDetails.maxNumberOfSeats ?? ''}
+              onChange={(e) => {
+                const input = e.target.value;
+                const isOnlyDigits = /^\d*$/.test(input);
+                if (!isOnlyDigits) return;
+                if(Number(input) > 999) return
+                setDynamicFieldDetails((pre) => ({...pre, maxNumberOfSeats: input}))
+                setErrors((pre) => ({...pre, maxNumberOfSeats: ''}))
+              }}
+              className={
+                "box-border px-4 py-2 text-sm rounded-full border focus:outline-none border-border text-text-gray h-[40px]"
+              }
+              inputProps={{
+                className: "placeholder-gray",
+              }}
+            />
+            {errors?.maxNumberOfSeats && <p className="pt-1 text-red-500 text-xs">{errors.maxNumberOfSeats}</p>}
+          </div>}
+        </div>}
+
+        {(renderShowField(FIELD_NAME.NUMBER_OF_CABIN) || renderShowField(FIELD_NAME.NUMBER_OF_MEETING_ROOM)) && <div className="grid grid-cols-1 2md:grid-cols-2 gap-3">
+                  
+          {renderShowField(FIELD_NAME.NUMBER_OF_CABIN) && <div data-field={FIELD_NAME.NUMBER_OF_CABIN} data-has-value={!!dynamicFieldDetails.numberOfCabins}>
+            <FieldLabel label="Number of Cabins" customClass="pb-2" required={true} />
+            <InputBase
+              placeholder="Enter number"
+              fullWidth
+              value={dynamicFieldDetails.numberOfCabins ?? ''}
+              onChange={(e) => {
+                const input = e.target.value;
+                const isOnlyDigits = /^\d*$/.test(input);
+                if (!isOnlyDigits) return;
+                if(Number(input) > 1000) return
+                setDynamicFieldDetails((pre) => ({...pre, numberOfCabins: input}))
+                setErrors((pre) => ({...pre, numberOfCabins: ''}))
+              }}
+              className={
+                "box-border px-4 py-2 text-sm rounded-full border focus:outline-none border-border text-text-gray h-[40px]"
+              }
+              inputProps={{
+                className: "placeholder-gray",
+              }}
+            />
+            {errors?.numberOfCabins && <p className="pt-1 text-red-500 text-xs">{errors.numberOfCabins}</p>}
+          </div>}
+
+          {renderShowField(FIELD_NAME.NUMBER_OF_MEETING_ROOM) && <div data-field={FIELD_NAME.NUMBER_OF_MEETING_ROOM} data-has-value={!!dynamicFieldDetails.numberOfMeetingRooms}>
+            <FieldLabel
+              label="Number of Meeting Rooms"
+              customClass="pb-2"
+              required={true}
+            />
+            <InputBase
+              placeholder="Enter number"
+              fullWidth
+              value={dynamicFieldDetails.numberOfMeetingRooms ?? ''}
+              onChange={(e) => {
+                const input = e.target.value;
+                const isOnlyDigits = /^\d*$/.test(input);
+                if (!isOnlyDigits) return;
+                if(Number(input) > 100) return
+                setDynamicFieldDetails((pre) => ({...pre, numberOfMeetingRooms: input}))
+                setErrors((pre) => ({...pre, numberOfMeetingRooms: ''}))
+              }}
+              className={
+                "box-border px-4 py-2 text-sm rounded-full border focus:outline-none border-border text-text-gray h-[40px]"
+              }
+              inputProps={{
+                className: "placeholder-gray",
+              }}
+            />
+            {errors?.numberOfMeetingRooms && <p className="pt-1 text-red-500 text-xs">{errors.numberOfMeetingRooms}</p>}
+          </div>}
+        </div>}
+
+        {(renderShowField(FIELD_NAME.PRIVATE_WASHROOM) || renderShowField(FIELD_NAME.PUBLIC_WASHROOM)) && <div className="grid grid-cols-1 2md:grid-cols-2 gap-3">
+                  
+        {renderShowField(FIELD_NAME.PRIVATE_WASHROOM) && <div data-field={FIELD_NAME.PRIVATE_WASHROOM} data-has-value={!!dynamicFieldDetails.privateWashrooms}>
+          <FieldLabel label="Private washrooms" customClass="pb-2" required={true} />
+          <InputBase
+            placeholder="Enter number"
+            fullWidth
+            value={dynamicFieldDetails.privateWashrooms ?? ''}
+            onChange={(e) => {
+              const input = e.target.value;
+              const isOnlyDigits = /^\d*$/.test(input);
+              if (!isOnlyDigits) return;
+              if(Number(input) > 200) return
+              setDynamicFieldDetails((pre) => ({...pre, privateWashrooms: input}))
+              setErrors((pre) => ({...pre, privateWashrooms: ''}))
+            }}
+            className={
+              "box-border px-4 py-2 text-sm rounded-full border focus:outline-none border-border text-text-gray h-[40px]"
+            }
+            inputProps={{
+              className: "placeholder-gray",
+            }}
+          />
+          {errors?.privateWashrooms && <p className="pt-1 text-red-500 text-xs">{errors.privateWashrooms}</p>}
+        </div>}
+
+        {renderShowField(FIELD_NAME.PUBLIC_WASHROOM) && <div data-field={FIELD_NAME.PUBLIC_WASHROOM} data-has-value={!!dynamicFieldDetails.publicWashrooms}>
+          <FieldLabel
+            label="Public Washrooms"
+            customClass="pb-2"
+            required={true}
+          />
+          <InputBase
+            placeholder="Enter number"
+            fullWidth
+            value={dynamicFieldDetails.publicWashrooms ?? ''}
+            onChange={(e) => {
+              const input = e.target.value;
+              const isOnlyDigits = /^\d*$/.test(input);
+              if (!isOnlyDigits) return;
+              if(Number(input) > 200) return
+              setDynamicFieldDetails((pre) => ({...pre, publicWashrooms: input}))
+              setErrors((pre) => ({...pre, publicWashrooms: ''}))
+            }}
+            className={
+              "box-border px-4 py-2 text-sm rounded-full border focus:outline-none border-border text-text-gray h-[40px]"
+            }
+            inputProps={{
+              className: "placeholder-gray",
+            }}
+          />
+          {errors?.publicWashrooms && <p className="pt-1 text-red-500 text-xs">{errors.publicWashrooms}</p>}
+        </div>}
+        </div>}
+
+        {renderShowField(FIELD_NAME.PRIVATE_PARKING) && <div className="grid grid-cols-1 2md:grid-cols-2 gap-3 items-end">      
+        {renderShowField(FIELD_NAME.PRIVATE_PARKING) && <div data-field={FIELD_NAME.PRIVATE_PARKING} data-has-value={!!dynamicFieldDetails.privateParking}>
+          <FieldLabel label="Parking" customClass="pb-2" />
+          <InputBase
+            placeholder="Enter private parking"
+            fullWidth
+            value={dynamicFieldDetails.privateParking ?? ''}
+            onChange={(e) => {
+              const input = e.target.value;
+              const isOnlyDigits = /^\d*$/.test(input);
+              if (!isOnlyDigits) return;
+              if(Number(input) > 99) return
+              setDynamicFieldDetails((pre) => ({...pre, privateParking: input}))
+              setErrors((pre) => ({...pre, privateParking: ''}))
+            }}
+            className={
+              "box-border px-4 py-2 text-sm rounded-full border focus:outline-none border-border text-text-gray h-[40px]"
+            }
+            inputProps={{
+              className: "placeholder-gray",
+            }}
+          />
+          {errors?.privateParking && <p className="pt-1 text-red-500 text-xs">{errors.privateParking}</p>}
+        </div>}
+
+        {renderShowField(FIELD_NAME.PUBLIC_PARKING) && <div data-field={FIELD_NAME.PUBLIC_PARKING} data-has-value={!!dynamicFieldDetails.publicParking}>
+          <FieldLabel
+            label=""
+            customClass="pb-2"
+          />
+          <InputBase
+            placeholder="Enter public parking"
+            fullWidth
+            value={dynamicFieldDetails.publicParking ?? ''}
+            onChange={(e) => {
+              const input = e.target.value;
+              const isOnlyDigits = /^\d*$/.test(input);
+              if (!isOnlyDigits) return;
+              if(Number(input) > 99) return
+              setDynamicFieldDetails((pre) => ({...pre, publicParking: input}))
+              setErrors((pre) => ({...pre, publicParking: ''}))
+            }}
+            className={
+              "box-border px-4 py-2 text-sm rounded-full border focus:outline-none border-border text-text-gray h-[40px]"
+            }
+            inputProps={{
+              className: "placeholder-gray",
+            }}
+          />
+          {errors?.publicParking && <p className="pt-1 text-red-500 text-xs">{errors.publicParking}</p>}
+        </div>}
+      </div>}
+
+        {(renderShowField(FIELD_NAME.CONFERENCE_ROOM) || renderShowField(FIELD_NAME.RECEPTION_AREA)) && <div className="grid grid-cols-1 2md:grid-cols-2 gap-3">
+                  
+          {renderShowField(FIELD_NAME.CONFERENCE_ROOM) && <div data-field={FIELD_NAME.CONFERENCE_ROOM} data-has-value={!!dynamicFieldDetails.conferenceRoom}>
+            <FieldLabel label="Conference Room" customClass="pb-2" />
+            <InputBase
+              placeholder="Enter number"
+              fullWidth
+              value={dynamicFieldDetails.conferenceRoom ?? ''}
+              onChange={(e) => {
+                const input = e.target.value;
+                const isOnlyDigits = /^\d*$/.test(input);
+                if (!isOnlyDigits) return;
+                if(Number(input) > 200) return
+                setDynamicFieldDetails((pre) => ({...pre, conferenceRoom: input}))
+                setErrors((pre) => ({...pre, conferenceRoom: ''}))
+              }}
+              className={
+                "box-border px-4 py-2 text-sm rounded-full border focus:outline-none border-border text-text-gray h-[40px]"
+              }
+              inputProps={{
+                className: "placeholder-gray",
+              }}
+            />
+            {errors?.conferenceRoom && <p className="pt-1 text-red-500 text-xs">{errors.conferenceRoom}</p>}
+          </div>}
+
+          {renderShowField(FIELD_NAME.RECEPTION_AREA) && <div data-field={FIELD_NAME.RECEPTION_AREA} data-has-value={!!dynamicFieldDetails.numberOfMeetingRooms}>
+            <FieldLabel
+              label="Reception Area"
+              customClass="pb-2"
+            />
+            <div className="flex flex-wrap gap-3">
+              {
+              RECEPTION_AREA.map((item) => {
+                return(
+                  <ChipTag
+                    checked={item.value == dynamicFieldDetails.receptionArea}
+                    label={item.name}
+                    onChagne={() => {
+                      setDynamicFieldDetails((pre) => ({...pre, receptionArea: item.value}))
+                      setErrors((pre) => ({...pre, receptionArea: ''}))
+                    }}
+                    value={dynamicFieldDetails.receptionArea}
+                    isIcon={false}
+                    containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[180px]"
+                  />
+                )
+              })
+              }
+              </div>
+            {errors?.receptionArea && <p className="pt-1 text-red-500 text-xs">{errors.receptionArea}</p>}
+          </div>}
+        </div>}
+
+
+          
+          {/* Commercial flow End */}
         {renderShowField(FIELD_NAME.ADDITIONAL_ROOM) && <div>
           <FieldLabel label="Additional Rooms" />
           <div className="flex flex-wrap gap-3 pt-2 flex-wrap">
@@ -519,8 +1014,12 @@ export default function Step3() {
                       furnishingsCounts: [],
                       amenities: []
                     }));
+                    if(item.value != 'Unfurnished'){
+                      setPopupOpen(!popupOpen)
+                    }
                     setErrors((pre) => ({...pre, furnishType: ''}))
                   }}
+                  
                   value={item.value}
                   isIcon={false}
                   containerStyle="flex flex-1 justify-center gap-2 min-w-[150px]"
@@ -532,19 +1031,6 @@ export default function Step3() {
             <p className="pt-1 text-red-500 text-xs">{errors.furnishType}</p>
           )}
 
-          <FieldLabel
-            label="Select Furnishings Amenities"
-            customClass="pt-3 pb-2"
-          />
-          <div
-            className={`w-fit px-10 h-[40px]  flex items-center justify-center py-[10px] cursor-pointer border border-border rounded-full
-                    `}
-            onClick={() => setPopupOpen(!popupOpen)}
-          >
-            <span className={`text-sm leading-[24px] text-center`}>
-              {"+ Add Furnishings / Amenities"}
-            </span>
-          </div>
           {errors?.furnishingsCounts && (
             <p className="pt-1 text-red-500 text-xs">{errors.furnishingsCounts}</p>
           )}
@@ -568,8 +1054,18 @@ export default function Step3() {
           </div>
         </div>}
 
-        {renderShowField(FIELD_NAME.FURNISH_TYPE) &&<div className="bg-background-gray rounded-[10px] p-3">
+        {renderShowField(FIELD_NAME.AMENITIES) &&<div className="bg-background-gray rounded-[10px] p-3">
           <FieldLabel label="Amenities" customClass="text-base!" />
+
+          <div
+            className={`w-fit my-3 px-10 h-[40px]  flex items-center justify-center cursor-pointer border border-border rounded-full
+                    `}
+            onClick={() => setOpenAmenitiesPopup(!openAmenitiesPopup)}
+          >
+            <span className={`text-sm leading-[24px] text-center`}>
+              {"+ Add Amenities"}
+            </span>
+          </div>
 
           {dynamicFieldDetails.amenities.length > 0 && <div className="flex gap-4 flex-wrap pt-2">
             {dynamicFieldDetails.amenities.map((item) => {
@@ -636,9 +1132,20 @@ export default function Step3() {
         </div>
     </div>
 
-      <Amenities
+      <Furnishing
         open={popupOpen}
         onHide={() => setPopupOpen(!popupOpen)}
+        furnishingList={renderFurnishing()}
+        setDynamicFieldDetails={setDynamicFieldDetails}
+        dynamicFieldDetails={dynamicFieldDetails}
+        handleAddFurnished={handleAddFurnished}
+        handleUpdateFurnishedCount={handleUpdateFurnishedCount}
+        handleAddRemoveAmenitise={handleAddRemoveAmenitise}
+      />
+
+      <AmenitiesList
+        open={openAmenitiesPopup}
+        onHide={() => setOpenAmenitiesPopup(!openAmenitiesPopup)}
         setDynamicFieldDetails={setDynamicFieldDetails}
         dynamicFieldDetails={dynamicFieldDetails}
         handleAddFurnished={handleAddFurnished}
