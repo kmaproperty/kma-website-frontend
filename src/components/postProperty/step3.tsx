@@ -1038,13 +1038,13 @@ export default function Step3() {
 
           <div className="flex gap-3 flex-wrap pt-2">
             {dynamicFieldDetails.furnishingsCounts.map((item, index) => {
-              let findIcon = FURNISHING_LIST.find(
+              let findIcon = renderFurnishing().find(
                 (furnish) => furnish.label == item.name
               );
               return (
                 <AmenitiesCard
                   checked={Number(item.count) > 0}
-                  icon={findIcon.icon}
+                  icon={findIcon?.icon ?? ''}
                   label={item.name}
                   count={Number(item.count)}
                   handleAddFurnished={handleAddFurnished}
