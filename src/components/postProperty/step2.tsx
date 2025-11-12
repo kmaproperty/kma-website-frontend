@@ -660,7 +660,7 @@ export default function Step2() {
       }
      
     }
-
+    
   }
 
   const renderOptionalField = (fieldName: string) => {
@@ -970,7 +970,7 @@ export default function Step2() {
     onSuccess: (response: Step2PostPropertyResponse) => {
       console.log("create owner response", response);
       const propertyType = basicStaticDetail.propertyType?.code
-      const isStep3Skipped = ['res-sale-plot', 'res-sale-agri-land'].includes(propertyType ?? '')
+      const isStep3Skipped = ['res-sale-plot', 'res-sale-agri-land', 'com-rent-warehouse', 'com-sale-warehouse', 'com-rent-plot', 'com-sale-plot'].includes(propertyType ?? '')
       if(isStep3Skipped){
         dispatch(setActiveStep({step: activeStep + 2}))
       }else{
@@ -2144,13 +2144,13 @@ export default function Step2() {
             <InputBase
               placeholder="Enter security deposit"
               fullWidth
-              value={dynamicFieldDetails.securityDeposite ?? ''}
+              value={dynamicFieldDetails.otherSecurityDeposite ?? ''}
               onChange={(e) => {
                 const input = e.target.value;
                 const isOnlyDigits = /^\d*$/.test(input);
                 if (!isOnlyDigits) return;
-                setDynamicFieldDetails((pre) => ({...pre, securityDeposite: input}))
-                setErrors((pre) => ({...pre, securityDeposite: ''}))
+                setDynamicFieldDetails((pre) => ({...pre, otherSecurityDeposite: input}))
+                setErrors((pre) => ({...pre, otherSecurityDeposite: ''}))
               }}
               className={
                 "box-border px-4 py-2 text-sm rounded-full border focus:outline-none border-border text-text-gray h-[40px]"
@@ -2159,7 +2159,7 @@ export default function Step2() {
                 className: "placeholder-gray",
               }}
             />
-            {errors?.securityDeposite && <p className="pt-1 text-red-500 text-xs">{errors.securityDeposite}</p>}
+            {errors?.otherSecurityDeposite && <p className="pt-1 text-red-500 text-xs">{errors.otherSecurityDeposite}</p>}
           </div>}
         </div>}
 

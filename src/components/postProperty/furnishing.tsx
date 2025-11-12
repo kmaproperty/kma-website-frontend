@@ -8,15 +8,15 @@ import Image from "next/image";
 import { usePathname, } from "next/navigation";
 import { useRouter } from "next/navigation";
 import AmenitiesCard from "../common/amenities";
-import CustomCheckbox from "../common/checkbox";
-import { AMENITISE_LIST, FURNISHING_LIST } from "@/lib/enums";
 
 export interface Amenities {
   name: string,
   count: number
 }
 
-export default function AmenitiesList({open, onHide, dynamicFieldDetails, handleUpdateFurnishedCount, handleAddFurnished, handleAddRemoveAmenitise} : {open: boolean, onHide: () => void, setDynamicFieldDetails: (value: any) => void, dynamicFieldDetails: any, handleUpdateFurnishedCount: (name:string, value: number) => void, handleAddFurnished: (name: string) => void, handleAddRemoveAmenitise: (value: string) => void}) {
+export default function Furnishing({open, onHide, dynamicFieldDetails, handleUpdateFurnishedCount, handleAddFurnished, furnishingList} : {open: boolean, onHide: () => void, setDynamicFieldDetails: (value: any) => void, dynamicFieldDetails: any, handleUpdateFurnishedCount: (name:string, value: number) => void, handleAddFurnished: (name: string) => void, handleAddRemoveAmenitise: (value: string) => void, furnishingList: {label: string , icon: string}[]}) {
+  const pathname = usePathname()
+  const router = useRouter()
   const theme = useTheme()
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -41,7 +41,7 @@ export default function AmenitiesList({open, onHide, dynamicFieldDetails, handle
         <DialogContent>
           <div >
             <div className="flex justify-between w-full">
-                <p className="text-lg text-text-black font-semibold">Add property amenities</p>
+                <p className="text-lg text-text-black font-semibold">Add property furnishings</p>
               <Image
                 onClick={() => {
                    onHide()
@@ -54,16 +54,17 @@ export default function AmenitiesList({open, onHide, dynamicFieldDetails, handle
               />
             </div>
             <div className="pt-4">
-              <p className="text-lg text-text-black font-medium pb-3">Amenities</p>
-              <div className="grid grid-cols-[1fr_1fr] 2md:grid-cols-[1fr_1fr_1fr] xl:grid-cols-[1fr_1fr_1fr_1fr] gap-3 flex-wrap">
-              {
-                AMENITISE_LIST.map((item, index) => {
-                  const isIncluded = dynamicFieldDetails.amenities.includes(item)
-                    return (
-                        <CustomCheckbox onClick={handleAddRemoveAmenitise} label={item} value={item} checked={isIncluded}/>
-                    )
-                })
-              }
+              <p className="text-lg text-text-black font-medium pb-3">Select Furnishings</p>
+              <div className="grid grid-cols-[1fr] 2md:grid-cols-[1fr_1fr_1fr_1fr] xl:grid-cols-[1fr_1fr_1fr_1fr] gap-3 flex-wrap"> 
+                  {
+                      furnishingList.map((item, index) => {
+                        let furnisher = dynamicFieldDetails.furnishingsCounts.find(furnish => furnish.name == item.label)
+                          
+                        return(
+                            <AmenitiesCard key={index} checked={furnisher ? true : false} icon={item.icon} label={item.label} count={furnisher?.count ?? 0} handleAddFurnished={handleAddFurnished} handleUpdateFurnishedCount={handleUpdateFurnishedCount}/>
+                          )
+                      })
+                  }
               </div>
             </div>
             <div className="flex justify-end">

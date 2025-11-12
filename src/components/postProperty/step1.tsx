@@ -36,44 +36,7 @@ import { InputBase } from "@mui/material";
 import RenderSectionName from "./renderSecitonName";
 import { useLocalitySearch } from "@/hooks/useLocalitySearch";
 
-function CityPlaceholder() {
-  return (
-    <div className="flex gap-2">
-      <Image alt="search" src={"/assets/search.svg"} width={14} height={14} />
-      <p className="text-text-gray text-[16px]">Search City</p>
-    </div>
-  );
-}
-
-export default function Step1() {
-  const { loadCities  } = useCitySearch();
-  const { loadBuildings } = useBuildingSearch();
-  const { loadLocalities } = useLocalitySearch();
-
-  const { calculateProgress } = useStepProgress()
-  const possessionDateRef = useRef<HTMLInputElement | null>(null);
-  const availabelDateRef = useRef<HTMLInputElement | null>(null);
-
-  const router = useRouter()
-  const params = useParams()
-  const searchParams = useSearchParams();
-
-  const activeStep = useSelector(getActiveStep);
-  const dispatch = useDispatch()
-
-  const [openCustomFieldPopup, setOpenCustomFieldPopup] = useState<boolean>(false)
-  const [customFieldLabel, setCustomFieldLabel] = useState<string>('')
-
-  const [basicStaticDetails, setBasicStaticDetails] = useState({
-    propertyListFor: null,
-    propertyCategory: null,
-    propertyType: null,
-    city: null,
-    society: null,
-    locality: null,
-  })
-
-  const [dynamicFieldDetails, setDynamicFieldDetails] = useState<any>({
+const initialState = {
     bhk: null,
     otherBhk: null,
     isStaticBhkDetails: false,
@@ -116,7 +79,46 @@ export default function Step1() {
     openSide: null,
     constructinoDone: null,
     typeOfConstructionDone: [],
+  }
+
+function CityPlaceholder() {
+  return (
+    <div className="flex gap-2">
+      <Image alt="search" src={"/assets/search.svg"} width={14} height={14} />
+      <p className="text-text-gray text-[16px]">Search City</p>
+    </div>
+  );
+}
+
+export default function Step1() {
+  const { loadCities  } = useCitySearch();
+  const { loadBuildings } = useBuildingSearch();
+  const { loadLocalities } = useLocalitySearch();
+
+  const { calculateProgress } = useStepProgress()
+  const possessionDateRef = useRef<HTMLInputElement | null>(null);
+  const availabelDateRef = useRef<HTMLInputElement | null>(null);
+
+  const router = useRouter()
+  const params = useParams()
+  const searchParams = useSearchParams();
+
+  const activeStep = useSelector(getActiveStep);
+  const dispatch = useDispatch()
+
+  const [openCustomFieldPopup, setOpenCustomFieldPopup] = useState<boolean>(false)
+  const [customFieldLabel, setCustomFieldLabel] = useState<string>('')
+
+  const [basicStaticDetails, setBasicStaticDetails] = useState({
+    propertyListFor: null,
+    propertyCategory: null,
+    propertyType: null,
+    city: null,
+    society: null,
+    locality: null,
   })
+
+  const [dynamicFieldDetails, setDynamicFieldDetails] = useState<any>(initialState)
 
   const [errors, setErrors] = useState<any>({})
 
@@ -831,6 +833,11 @@ export default function Step1() {
         hasError = true;
       }
 
+      if(renderShowField(FIELD_NAME.WIDTH_OF_FACING_IN_FEET) && (!dynamicFieldDetails.widthOfFacingRoad || dynamicFieldDetails.widthOfFacingRoad == 0)){
+        updatedError.widthOfFacingRoad = 'Width of facing road should be between 1 to 1000'
+        hasError = true;
+      }
+
       if(renderShowField(FIELD_NAME.PLOT_TYPE) && !dynamicFieldDetails.plotType){
         updatedError.plotType = 'Please select Plot type'
         hasError = true;
@@ -841,7 +848,7 @@ export default function Step1() {
         hasError = true;
       }
 
-      if(renderShowField(FIELD_NAME.TYPE_OF_CONSTRUCTION) && (dynamicFieldDetails.constructinoDone == 'yes' && !dynamicFieldDetails.typeOfConstructionDone)){
+      if(renderShowField(FIELD_NAME.TYPE_OF_CONSTRUCTION) && (dynamicFieldDetails.constructinoDone == 'yes' && dynamicFieldDetails.typeOfConstructionDone.length == 0)){
         updatedError.typeOfConstructionDone = 'Please select construction done'
         hasError = true;
       }
@@ -1125,51 +1132,8 @@ export default function Step1() {
                   checked={item.code == basicStaticDetails.propertyListFor?.code}
                   label={item.name}
                   onChagne={() => {
-                    setBasicStaticDetails((pre) => ({...pre, propertyListFor: item, propertyType: null}))
-                    setDynamicFieldDetails({
-                      bhk: null,
-                      otherBhk: null,
-                      isStaticBhkDetails: false,
-                      staticBhKDetails: null,
-                      builtUpArea: null,
-                      builtUpAreaUnit: AREA_UNIT_LIST[0].value,
-                      carpetArea: null,
-                      carpetAreaUnit: AREA_UNIT_LIST[0].value,
-                      transactionType: null,
-                      propertyConstructionStatus: null,
-                      propertyAge: null,
-                      possesionDate: null,
-                      bathRooms: null,
-                      bedRooms: null,
-                      balconies: null,
-                      facing: null,
-                      plotArea: null,
-                      selectAreaUnit: AREA_UNIT_LIST[0].value,
-                      plotLength: null,
-                      plotLenghtUnit: PLOT_UNIT_LIST[0].value,
-                      plotWidth: null,
-                      plotWidthUnit: PLOT_UNIT_LIST[0].value,
-                      widthOfFacingRoad: null,
-
-                      //Commercial Flow extra field
-                      loactionHub: null,
-                      otherLocationHub: null,
-                      zoneType: null,
-                      propertyCondition : null,
-                      constructionStatus: null,
-                      ownership: null,
-                      suitableFor: [],
-                      entranceWidth: null,
-                      entranceWidthUnit: PLOT_UNIT_LIST[0].value,
-                      cellingHeight: null,
-                      ceilingHeightUnit: PLOT_UNIT_LIST[0].value,
-                      locatedNear: [],
-                      plotType: null,
-                      plotBreadth: null,
-                      openSide: null,
-                      constructinoDone: null,
-                      typeOfConstructionDone: [],
-                    })
+                    setBasicStaticDetails((pre) => ({...pre, propertyListFor: item, propertyType: null, city: null, locality: null, society: null}))
+                    setDynamicFieldDetails(initialState)
                     setErrors((pre) => ({...pre, propertyListFor: ''}))
                   }}
                   value={item.id}
@@ -1194,51 +1158,8 @@ export default function Step1() {
                   checked={item.code == basicStaticDetails.propertyCategory?.code}
                   label={item.name}
                   onChagne={() => {
-                    setBasicStaticDetails((pre) => ({...pre, propertyCategory: item}))
-                    setDynamicFieldDetails({
-                      bhk: null,
-                      otherBhk: null,
-                      isStaticBhkDetails: false,
-                      staticBhKDetails: null,
-                      builtUpArea: null,
-                      builtUpAreaUnit: AREA_UNIT_LIST[0].value,
-                      carpetArea: null,
-                      carpetAreaUnit: AREA_UNIT_LIST[0].value,
-                      transactionType: null,
-                      propertyConstructionStatus: null,
-                      propertyAge: null,
-                      possesionDate: null,
-                      bathRooms: null,
-                      bedRooms: null,
-                      balconies: null,
-                      facing: null,
-                      plotArea: null,
-                      selectAreaUnit: AREA_UNIT_LIST[0].value,
-                      plotLength: null,
-                      plotLenghtUnit: PLOT_UNIT_LIST[0].value,
-                      plotWidth: null,
-                      plotWidthUnit: PLOT_UNIT_LIST[0].value,
-                      widthOfFacingRoad: null,
-
-                      //Commercial Flow extra field
-                      loactionHub: null,
-                      otherLocationHub: null,
-                      zoneType: null,
-                      propertyCondition : null,
-                      constructionStatus: null,
-                      ownership: null,
-                      suitableFor: [],
-                      entranceWidth: null,
-                      entranceWidthUnit: PLOT_UNIT_LIST[0].value,
-                      cellingHeight: null,
-                      ceilingHeightUnit: PLOT_UNIT_LIST[0].value,
-                      locatedNear: [],
-                      plotType: null,
-                      plotBreadth: null,
-                      openSide: null,
-                      constructinoDone: null,
-                      typeOfConstructionDone: [],
-                    })
+                    setBasicStaticDetails((pre) => ({...pre, propertyCategory: item, city: null, locality: null, society: null}))
+                    setDynamicFieldDetails(initialState)
                     setErrors((pre) => ({...pre, propertyCategory: ''}))
                   }}
                   value={item.id}
@@ -1263,7 +1184,8 @@ export default function Step1() {
                   item.id == basicStaticDetails.propertyType?.id ? "bg-light-purple font-medium" : "text-[#888888]"
                 }`}
                 onClick={() => {
-                  setBasicStaticDetails((pre) => ({...pre, propertyType: item}))
+                  setBasicStaticDetails((pre) => ({...pre, propertyType: item, city: null, locality: null, society: null}))
+                  setDynamicFieldDetails(initialState)
                   setErrors((pre) => ({...pre, propertyType: ''}))
                 }}
                 key={item.id}
@@ -2198,16 +2120,19 @@ export default function Step1() {
       </div>}
       
       {renderShowField(FIELD_NAME.WIDTH_OF_FACING_IN_FEET) && <div data-field={FIELD_NAME.WIDTH_OF_FACING_IN_FEET} data-has-value={!!dynamicFieldDetails.widthOfFacingRoad}>
-        <FieldLabel label="Width of facing road (in Feet)" customClass="pb-2"  required={true}/>
+        <FieldLabel label="Width of facing road" customClass="pb-2"  required={true}/>
         <DynamicInput
            placeHolder='Enter width of facing road'
-           options={AREA_UNIT_LIST}
+           options={PLOT_UNIT_LIST}
            onChange={(value: string, dropdownValue: string) => {
+            const isOnlyDigits = /^\d*$/.test(value);
+            if(!isOnlyDigits) return
+            if(Number(value) > 1000 ) return
             setDynamicFieldDetails((pre) => ({...pre, widthOfFacingRoad: value,}))
             setErrors((pre) => ({...pre, widthOfFacingRoad: ''}))
            }}
            value={dynamicFieldDetails.widthOfFacingRoad ??''}
-           dropdownValue={AREA_UNIT_LIST[0].value}
+           dropdownValue={PLOT_UNIT_LIST[0].value}
            />
           {errors?.widthOfFacingRoad && <p className="pt-1 text-red-500 text-xs">{errors.widthOfFacingRoad}</p>}
       </div>}
