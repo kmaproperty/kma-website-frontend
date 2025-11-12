@@ -206,8 +206,11 @@ const handleUploadFileToS3 = async (files: File[], type: string) => {
   };
 
   const handleOpenVideoPreview = (url: string) => {
-    setVideoPreviewUrl(url);
-    setOpenVideoPreview(true);
+    if(url){
+      const cleanUrl = url?.split('#')[0];
+      setVideoPreviewUrl(cleanUrl ?? '');
+      setOpenVideoPreview(true);
+    }
   };
 
   const handleClosePreview = () => {
