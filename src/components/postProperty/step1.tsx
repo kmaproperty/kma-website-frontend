@@ -125,7 +125,7 @@ export default function Step1() {
   //Other list
   const [bhkList, setBhkList] = useState(generateBHKList(false))
 
-  console.log('details', basicStaticDetails, dynamicFieldDetails, errors)
+  console.log('step1 state', basicStaticDetails, dynamicFieldDetails, errors)
 
   //Master APIS
   const { data: propertyTypeList } = useQuery({
@@ -855,6 +855,7 @@ export default function Step1() {
 
     }
 
+    console.log('step1 validation error', updatedError)
     setErrors(updatedError)
     return hasError;
   }
@@ -1000,20 +1001,20 @@ export default function Step1() {
     }
   }
 
-  const { mutate: handleStep1Submit, isPending: ownerLoader } = useMutation({
+  const { mutate: handleStep1Submit, isPending: step1Loader } = useMutation({
     mutationFn: async (
       payload: Step1PostPropertyPayload
     ): Promise<Step1PostPropertyResponse> => {
       return await step1PostPropertyCreateApiHandler(payload);
     },
     onSuccess: (response: Step1PostPropertyResponse) => {
-      console.log("create owner response", response);
+      console.log("step1 create response", response);
       let propertyId = response.id
       dispatch(setActiveStep({step: activeStep + 1}))
       router.push(`/post-property/${propertyId}`)
     },
     onError: (error: any) => {
-      console.log("owner create error", error);
+      console.log("step2 error response", error);
       if(Array.isArray(error.message)){
         error.message.map((item: string) => {
           toast.error(item)
@@ -1030,7 +1031,7 @@ export default function Step1() {
       return step1PostPropertyDetailsApiHandler(String(params?.propertyId ?? ''));
     },
     select: (resposne: Step1DetailsResponse) => {
-      console.log('Step1DetailsResponse',resposne)
+      console.log('step1 details',resposne)
       return resposne
     },
     enabled: params?.propertyId ? true : false,
@@ -2330,7 +2331,7 @@ export default function Step1() {
               <p className={`text-nowrap font-medium`}>Back</p>
             </span>
           </button>
-          <button onClick={() => {
+          <button disabled={step1Loader} onClick={() => {
             if(activeStep != 4){
               if(validate()){
                 return

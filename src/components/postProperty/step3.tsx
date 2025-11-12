@@ -81,7 +81,7 @@ export default function Step3() {
   const [errors, setErrors] = useState<any>({});
   const [popupOpen, setPopupOpen] = useState(false);
   const [openAmenitiesPopup, setOpenAmenitiesPopup] = useState(false)
-  console.log('step3', dynamicFieldDetails,errors)
+  console.log('step3 state details', dynamicFieldDetails,errors)
 
   const handleUpdateFurnishedCount = (name: string, value: number) => {
     let updatedData = [...dynamicFieldDetails.furnishingsCounts];
@@ -396,6 +396,7 @@ export default function Step3() {
         hasError = true;
       }
     }
+    console.log('step3 validation error', updatedError)
     setErrors(updatedError)
     return hasError
   }
@@ -421,7 +422,7 @@ export default function Step3() {
     return step3PostPropertyDetailsApiHandler(String(params?.propertyId ?? ''));
   },
   select: (resposne: Step3DetailsResponse) => {
-    console.log('Step1DetailsResponse',resposne)
+    console.log('step3 details',resposne)
     return resposne
   },
   enabled: params?.propertyId ? true : false,
@@ -456,18 +457,18 @@ export default function Step3() {
     }
   }
 
-  const { mutate: handleStep3Submit, isPending: ownerLoader } = useMutation({
+  const { mutate: handleStep3Submit, isPending: step3Loader } = useMutation({
     mutationFn: async (
       payload: Step3PostPropertyPayload
     ): Promise<Step3PostPropertyResponse> => {
       return await step3PostPropertyCreateApiHandler(payload);
     },
     onSuccess: (response: Step3PostPropertyResponse) => {
-      console.log("create owner response", response);
+      console.log("step3 success response", response);
       dispatch(setActiveStep({step: activeStep + 1}))
     },
     onError: (error: any) => {
-      console.log("owner create error", error);
+      console.log("step3 error response", error);
       if(Array.isArray(error.message)){
         error.message.map((item: string) => {
           toast.error(item)
@@ -1116,7 +1117,7 @@ export default function Step3() {
               <p className={`text-nowrap font-medium`}>Back</p>
             </span>
           </button>
-          <button onClick={() => {
+          <button disabled={step3Loader} onClick={() => {
             if(activeStep != 4){
               if(validate()){
                 return
