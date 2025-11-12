@@ -908,7 +908,6 @@ export const LOCATION_HUB = {
     }
   ]
 }
-//it_park, business_park, mall, commercial_project, residential_project, retail_complex_building, market_high_street, others 
 
 export const ZONE_TYPE = [
   {
@@ -948,7 +947,7 @@ export const PROPERTY_CONDITION = [
   },
   {
     name: 'Bare shell',
-    value: 'bare_shell ',
+    value: 'bare_shell',
   },
 ]
 
@@ -1029,11 +1028,11 @@ export const PLOT_LAND_TYPE = [
   },
   {
     name: 'Industrial Land/Plots',
-    value: 'industrial_land_plots ',
+    value: 'industrial_land_plots',
   },
   {
     name: 'Commercial Land / Plot',
-    value: 'commercial_land_plot  ',
+    value: 'commercial_land_plot',
   },
 ]
 

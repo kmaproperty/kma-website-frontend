@@ -97,7 +97,7 @@ export default function Step2() {
 
   const [errors, setErrors] = useState<any>({})
 
-  console.log('step-2', dynamicFieldDetails, errors)
+  console.log('step2 state details', dynamicFieldDetails, errors)
 
   const renderFirstSectionLabel = () => {
     const isResidential = basicStaticDetail.propertyCategory?.code == 'residential'
@@ -896,7 +896,7 @@ export default function Step2() {
         hasError = true;
       }
     }
-
+    console.log('step2 validation error', updatedError)
     setErrors(updatedError)
     return hasError
   }
@@ -961,14 +961,14 @@ export default function Step2() {
     }
   }
 
-  const { mutate: handleStep2Submit, isPending: ownerLoader } = useMutation({
+  const { mutate: handleStep2Submit, isPending: step2Loader } = useMutation({
     mutationFn: async (
       payload: Step2PostPropertyPayload
     ): Promise<Step2PostPropertyResponse> => {
       return await step2PostPropertyCreateApiHandler(payload);
     },
     onSuccess: (response: Step2PostPropertyResponse) => {
-      console.log("create owner response", response);
+      console.log("step2 success response", response);
       const propertyType = basicStaticDetail.propertyType?.code
       const isStep3Skipped = ['res-sale-plot', 'res-sale-agri-land', 'com-rent-warehouse', 'com-sale-warehouse', 'com-rent-plot', 'com-sale-plot'].includes(propertyType ?? '')
       if(isStep3Skipped){
@@ -978,7 +978,7 @@ export default function Step2() {
       }
     },
     onError: (error: any) => {
-      console.log("owner create error", error);
+      console.log("step2 error response", error);
       if(Array.isArray(error.message)){
         error.message.map((item: string) => {
           toast.error(item)
@@ -995,7 +995,7 @@ export default function Step2() {
       return step1PostPropertyDetailsApiHandler(String(params?.propertyId ?? ''));
     },
     select: (resposne: Step1DetailsResponse) => {
-      console.log('Step1DetailsResponse',resposne)
+      console.log('step1 details',resposne)
       return resposne
     },
     enabled: params?.propertyId ? true : false,
@@ -1009,7 +1009,7 @@ export default function Step2() {
       return step2PostPropertyDetailsApiHandler(String(params?.propertyId ?? ''));
     },
     select: (resposne: Step2DetailsResponse) => {
-      console.log('Step1DetailsResponse',resposne)
+      console.log('step2 details',resposne)
       return resposne
     },
     enabled: params?.propertyId ? true : false,
@@ -2588,14 +2588,13 @@ export default function Step2() {
                 <p className={`text-nowrap font-medium`}>Back</p>
               </span>
             </button>
-            <button onClick={() => {
+            <button disabled={step2Loader} onClick={() => {
               if(activeStep != 4){
                 if(validate()){
                   return
                 }
                 let payload = generatePayload()
                 handleStep2Submit(payload)
-                // dispatch(setActiveStep({step: activeStep + 1}))
               }
             }} className="w-full md:w-[130px] text-sm 1xl:text-base animated-button px-12 py-3 border border-blue text-center cursor-pointer">
               <span className="gap-3 relative flex justify-center">

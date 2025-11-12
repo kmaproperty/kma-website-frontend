@@ -31,10 +31,7 @@ import {
 
 export default function Step4() {
   const { calculateProgress } = useStepProgress();
-
-  const router = useRouter();
   const params = useParams();
-  const searchParams = useSearchParams();
   const toastRef = useRef(null);
 
   const activeStep = useSelector(getActiveStep);
@@ -54,7 +51,7 @@ export default function Step4() {
   const [openVideoPreview, setOpenVideoPreview] = useState(false);
   const [videoPreviewUrl, setVideoPreviewUrl] = useState("");
 
-  console.log("step4", photoList, videoList);
+  console.log("step4 state details", photoList, videoList);
 
   const validate = () => {
     let hasError = false;
@@ -80,7 +77,7 @@ export default function Step4() {
         hasError = true;
       }
     }
-
+    console.log('step4 validation error', updatedErrors)
     setErrors(updatedErrors);
     return hasError;
   };
@@ -251,7 +248,7 @@ const handleUploadFileToS3 = async (files: File[], type: string) => {
       );
     },
     select: (resposne: Step4DetailsResponse) => {
-      console.log("Step1DetailsResponse", resposne);
+      console.log("step4 details", resposne);
       return resposne;
     },
     enabled: params?.propertyId ? true : false,
@@ -280,20 +277,20 @@ const handleUploadFileToS3 = async (files: File[], type: string) => {
     };
   };
 
-  const { mutate: handleStep4Submit } = useMutation({
+  const { mutate: handleStep4Submit, isPending: step4Loader } = useMutation({
     mutationFn: async (
       payload: Step4PostPropertyPayload
     ): Promise<Step4PostPropertyResponse> => {
       return await step4PostPropertyCreateApiHandler(payload);
     },
     onSuccess: (response: Step4PostPropertyResponse) => {
-      console.log("create owner response", response);
+      console.log("step4 success response", response);
       // dispatch(setActiveStep({ step: activeStep + 1 }));
       toast.success('Post Property created successfully')
       dispatch(setTotalProgress({progress: 100}))
     },
     onError: (error: any) => {
-      console.log("owner create error", error);
+      console.log("step4 error response", error);
       if (Array.isArray(error.message)) {
         error.message.map((item: string) => {
           toast.error(item);
@@ -472,6 +469,7 @@ const handleUploadFileToS3 = async (files: File[], type: string) => {
             </span>
           </button>
           <button
+            disabled={step4Loader}
             onClick={() => {
               if (activeStep == 4) {
                 if (validate()) {
