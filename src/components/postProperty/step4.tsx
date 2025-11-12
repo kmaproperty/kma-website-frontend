@@ -29,7 +29,7 @@ import {
   Step4PostPropertyResponse,
 } from "@/services/postProperty";
 
-export default function Step4() {
+export default function Step4({containerRef}) {
   const { calculateProgress } = useStepProgress();
   const params = useParams();
   const toastRef = useRef(null);
@@ -355,7 +355,7 @@ const handleUploadFileToS3 = async (files: File[], type: string) => {
 
   return (
     <>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4" ref={containerRef}>
         <p className="text-text-black font-semibold text-lg 2md:text-xl pb-2">
           Amenities & Description
         </p>
