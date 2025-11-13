@@ -2138,7 +2138,7 @@ export default function Step2({containerRef}) {
                 const input = e.target.value;
                 const isOnlyDigits = /^\d*$/.test(input);
                 if (!isOnlyDigits) return;
-                if(Number(input) > 99999) return
+                if(Number(input) > 999999) return
                 setDynamicFieldDetails((pre) => ({...pre, rent: input}))
                 setErrors((pre) => ({...pre, rent: ''}))
               }}
@@ -2165,7 +2165,7 @@ export default function Step2({containerRef}) {
                 const input = e.target.value;
                 const isOnlyDigits = /^\d*$/.test(input);
                 if (!isOnlyDigits) return;
-                if(Number(input) > 99999) return
+                if(Number(input) > 999999) return
                 setDynamicFieldDetails((pre) => ({...pre, otherSecurityDeposite: input}))
                 setErrors((pre) => ({...pre, otherSecurityDeposite: ''}))
               }}

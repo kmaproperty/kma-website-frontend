@@ -1,10 +1,8 @@
 'use client'
 
-import ContactInformation from "../contactInformation";
-import CopyRightFooter from "../footer/copyrightFooter";
 import UserHeader from "../header/userHeader";
-import Otp from "../otp";
-import SignIn from "../singIn";
+
+
 export default function MainLayout({ children }:{children:React.ReactNode}) {
   return (
     <div className="">
