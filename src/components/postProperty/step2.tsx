@@ -1161,6 +1161,7 @@ export default function Step2({containerRef}) {
             value={dynamicFieldDetails.towerNumber}
             onChange={(e) => {
               const input = e.target.value;
+              if(input.length > 6) return
               setDynamicFieldDetails((pre) => ({...pre, towerNumber: input}))
               setErrors((pre) => ({...pre, towerNumber: ''}))
             }}
@@ -1182,6 +1183,7 @@ export default function Step2({containerRef}) {
             value={dynamicFieldDetails.flatNumber}
             onChange={(e) => {
               const input = e.target.value;
+              if(input.length > 6) return
               setDynamicFieldDetails((pre) => ({...pre, flatNumber: input}))
               setErrors((pre) => ({...pre, flatNumber: ''}))
             }}
@@ -1203,6 +1205,7 @@ export default function Step2({containerRef}) {
             value={dynamicFieldDetails.villaNumber}
             onChange={(e) => {
               const input = e.target.value;
+              if(input.length > 6) return
               setDynamicFieldDetails((pre) => ({...pre, villaNumber: input}))
               setErrors((pre) => ({...pre, villaNumber: ''}))
             }}
@@ -1224,6 +1227,7 @@ export default function Step2({containerRef}) {
             value={dynamicFieldDetails.houseNumber}
             onChange={(e) => {
               const input = e.target.value;
+              if(input.length > 6) return
               setDynamicFieldDetails((pre) => ({...pre, houseNumber: input}))
               setErrors((pre) => ({...pre, houseNumber: ''}))
             }}
@@ -1245,6 +1249,7 @@ export default function Step2({containerRef}) {
             value={dynamicFieldDetails.houseNumber}
             onChange={(e) => {
               const input = e.target.value;
+              if(input.length > 6) return
               setDynamicFieldDetails((pre) => ({...pre, houseNumber: input}))
               setErrors((pre) => ({...pre, houseNumber: ''}))
             }}
@@ -1747,7 +1752,7 @@ export default function Step2({containerRef}) {
                 setDynamicFieldDetails((pre) => ({...pre, rentAvailableDate: e.target.value}))
                 setErrors((pre) => ({...pre, rentAvailableDate: ''}))
               }}
-              value={dynamicFieldDetails.rentAvailableDate}
+              value={dynamicFieldDetails.rentAvailableDate ?? ''}
               className={'box-border px-4 py-2 text-sm rounded-full border focus:outline-none border-border text-text-gray h-[40px]'}
               inputProps={{
               className: "placeholder-gray",
@@ -1864,7 +1869,7 @@ export default function Step2({containerRef}) {
                   setErrors((pre) => ({...pre, possesionDate: ''}))
                 }
                 }
-                value={dynamicFieldDetails.possesionDate}
+                value={dynamicFieldDetails.possesionDate ?? ''}
                 className={'box-border h-[47.81px] px-4 py-2 text-sm rounded-full border border-border focus:border-blue text-text-gray'}
                 inputProps={{
                   className: "placeholder-gray",
@@ -2031,7 +2036,7 @@ export default function Step2({containerRef}) {
             <DynamicSelect
               isMulti={false}
               isError={false}
-              placeholder={'Enter Lock in Period (Per Month)'}
+              placeholder={'Select Lock in Period (Per Month)'}
               onChange={(value) => {
                 setDynamicFieldDetails((pre) => ({...pre, otherLockInPeriod: value}))
                 setErrors((pre) => ({...pre, otherLockInPeriod: ''}))

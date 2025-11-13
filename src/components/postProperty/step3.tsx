@@ -452,8 +452,6 @@ export default function Step3({containerRef}) {
       publicWashrooms: dynamicFieldDetails.publicWashrooms,
       conferenceRoom: dynamicFieldDetails.conferenceRoom,
       receptionArea: dynamicFieldDetails.receptionArea,
-      privateParking: dynamicFieldDetails.privateParking, //missing
-      publicParking: dynamicFieldDetails.publicParking, //missing
     }
   }
 
@@ -714,19 +712,19 @@ export default function Step3({containerRef}) {
         </div>}
 
         {renderShowField(FIELD_NAME.PRIVATE_PARKING) && <div className="grid grid-cols-1 2md:grid-cols-2 gap-3 items-end">      
-        {renderShowField(FIELD_NAME.PRIVATE_PARKING) && <div data-field={FIELD_NAME.PRIVATE_PARKING} data-has-value={!!dynamicFieldDetails.privateParking}>
+        {renderShowField(FIELD_NAME.PRIVATE_PARKING) && <div data-field={FIELD_NAME.PRIVATE_PARKING} data-has-value={!!dynamicFieldDetails.coveredParking}>
           <FieldLabel label="Parking" customClass="pb-2" />
           <InputBase
             placeholder="Enter private parking"
             fullWidth
-            value={dynamicFieldDetails.privateParking ?? ''}
+            value={dynamicFieldDetails.coveredParking ?? ''}
             onChange={(e) => {
               const input = e.target.value;
               const isOnlyDigits = /^\d*$/.test(input);
               if (!isOnlyDigits) return;
               if(Number(input) > 99) return
-              setDynamicFieldDetails((pre) => ({...pre, privateParking: input}))
-              setErrors((pre) => ({...pre, privateParking: ''}))
+              setDynamicFieldDetails((pre) => ({...pre, coveredParking: input}))
+              setErrors((pre) => ({...pre, coveredParking: ''}))
             }}
             className={
               "box-border px-4 py-2 text-sm rounded-full border focus:outline-none border-border text-text-gray h-[40px]"
@@ -735,10 +733,10 @@ export default function Step3({containerRef}) {
               className: "placeholder-gray",
             }}
           />
-          {errors?.privateParking && <p className="pt-1 text-red-500 text-xs">{errors.privateParking}</p>}
+          {errors?.coveredParking && <p className="pt-1 text-red-500 text-xs">{errors.coveredParking}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.PUBLIC_PARKING) && <div data-field={FIELD_NAME.PUBLIC_PARKING} data-has-value={!!dynamicFieldDetails.publicParking}>
+        {renderShowField(FIELD_NAME.PUBLIC_PARKING) && <div data-field={FIELD_NAME.PUBLIC_PARKING} data-has-value={!!dynamicFieldDetails.reservedParkingOpen}>
           <FieldLabel
             label=""
             customClass="pb-2"
@@ -746,14 +744,14 @@ export default function Step3({containerRef}) {
           <InputBase
             placeholder="Enter public parking"
             fullWidth
-            value={dynamicFieldDetails.publicParking ?? ''}
+            value={dynamicFieldDetails.openParking ?? ''}
             onChange={(e) => {
               const input = e.target.value;
               const isOnlyDigits = /^\d*$/.test(input);
               if (!isOnlyDigits) return;
               if(Number(input) > 99) return
-              setDynamicFieldDetails((pre) => ({...pre, publicParking: input}))
-              setErrors((pre) => ({...pre, publicParking: ''}))
+              setDynamicFieldDetails((pre) => ({...pre, openParking: input}))
+              setErrors((pre) => ({...pre, openParking: ''}))
             }}
             className={
               "box-border px-4 py-2 text-sm rounded-full border focus:outline-none border-border text-text-gray h-[40px]"
@@ -762,7 +760,7 @@ export default function Step3({containerRef}) {
               className: "placeholder-gray",
             }}
           />
-          {errors?.publicParking && <p className="pt-1 text-red-500 text-xs">{errors.publicParking}</p>}
+          {errors?.openParking && <p className="pt-1 text-red-500 text-xs">{errors.openParking}</p>}
         </div>}
       </div>}
 

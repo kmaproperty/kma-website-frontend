@@ -930,7 +930,7 @@ export default function Step1({containerRef}) {
       }
     }else if(dynamicFieldDetails.isStaticBhkDetails && dynamicFieldDetails.staticBhKDetails){
       bhk = {
-        id: dynamicFieldDetails.staticBhKDetails?.id && dynamicFieldDetails.staticBhKDetails?.id.length > 3 ? dynamicFieldDetails.staticBhKDetails?.id : null ,
+        id: dynamicFieldDetails.bhk?.id && dynamicFieldDetails.bhk?.id.length > 3 ? dynamicFieldDetails.bhk?.id : null ,
         name: dynamicFieldDetails.staticBhKDetails?.name,
         buildUpAreaSqFt: dynamicFieldDetails.builtUpArea,
         carpetAreaSqFt: dynamicFieldDetails.carpetArea,
@@ -1567,7 +1567,7 @@ export default function Step1({containerRef}) {
                 setErrors((pre) => ({...pre, possesionDate: ''}))
               }
               }
-              value={dynamicFieldDetails.possesionDate}
+              value={dynamicFieldDetails.possesionDate ?? ''}
               className={'box-border h-[40px] px-4 py-2 text-sm rounded-full border border-border focus:border-blue text-text-gray'}
               inputProps={{
                 className: "placeholder-gray",
@@ -1849,7 +1849,7 @@ export default function Step1({containerRef}) {
                 setErrors((pre) => ({...pre, possesionDate: ''}))
               }
               }
-              value={dynamicFieldDetails.possesionDate}
+              value={dynamicFieldDetails.possesionDate ?? ''}
               className={'box-border h-[40px] px-4 py-2 text-sm rounded-full border border-border focus:border-blue text-text-gray'}
               inputProps={{
                 className: "placeholder-gray",
