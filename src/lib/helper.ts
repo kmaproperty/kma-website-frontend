@@ -127,6 +127,6 @@ export const generateFloors = (count: number): OptionType[] => {
 
 export const generateLockInPeriod = (count: number): OptionType[] => {
   let upperFloors: any = Array.from({ length: count }, (_, i) => (i + 1).toString());
-  upperFloors = upperFloors.map(item => ({label: item, value: item}))
+  upperFloors = upperFloors.map(item => ({label: item + ' month', value: item}))
   return upperFloors
 };

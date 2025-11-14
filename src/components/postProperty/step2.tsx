@@ -72,7 +72,7 @@ export default function Step2({containerRef}) {
 
     transactionType: null,
     propertyPossessionStatus: null,
-    propertyAge: null, //missing
+    propertyAge: null,
     possesionDate: null,
     plotPrice: null,
     loanAvailable: null,
@@ -92,7 +92,7 @@ export default function Step2({containerRef}) {
     currentRentPerMonth: null,
     privateWashroom: null,
     publicWashroom: null,
-    expectedReturnOnInvestment: null, //missing
+    expectedReturnOnInvestment: null,
   })
 
   const [errors, setErrors] = useState<any>({})
@@ -909,7 +909,7 @@ export default function Step2({containerRef}) {
       flatNumber: dynamicFieldDetails?.flatNumber,
       towerBlock: dynamicFieldDetails?.towerNumber,
       propertyAreaAcre: dynamicFieldDetails?.propertyArea,
-      tenantType: dynamicFieldDetails?.rentSuitableFor.length > 0 ? dynamicFieldDetails?.rentSuitableFor.join(', ') : null,
+      tenantType: dynamicFieldDetails?.rentSuitableFor,
       companyOccupancy: dynamicFieldDetails?.rentPreference,
       rentAvailability: dynamicFieldDetails?.rentAvailabelFrom,
       availableFromDate: dynamicFieldDetails?.rentAvailableDate,
@@ -958,6 +958,8 @@ export default function Step2({containerRef}) {
       currentRentPerMonth: dynamicFieldDetails?.currentRentPerMonth,
       privateWashrooms: dynamicFieldDetails?.privateWashroom,
       publicWashrooms: dynamicFieldDetails?.publicWashroom,
+      expectedReturnOnInvestment: dynamicFieldDetails?.expectedReturnOnInvestment,
+      isLiftAvailable: dynamicFieldDetails?.lifts
     }
   }
 
@@ -1040,7 +1042,7 @@ export default function Step2({containerRef}) {
           houseNumber: step2Details?.houseNumber,
           propertyArea: step2Details?.propertyAreaAcre,
           ploatArea: step2Details?.plotArea,
-          rentSuitableFor: step2Details?.tenantType ? step2Details?.tenantType.split(','): [],
+          rentSuitableFor: step2Details?.tenantType,
           rentPreference: step2Details?.companyOccupancy,
           rentAvailabelFrom: step2Details?.rentAvailability,
           rentAvailableDate: step2Details?.availableFromDate,
@@ -1087,6 +1089,7 @@ export default function Step2({containerRef}) {
           currentRentPerMonth: step2Details?.currentRentPerMonth,
           privateWashroom: step2Details?.privateWashrooms,
           publicWashroom: step2Details?.publicWashrooms,
+          expectedReturnOnInvestment: step2Details?.expectedReturnOnInvestment
         }))
       } 
     },[step2Details])
@@ -1273,7 +1276,7 @@ export default function Step2({containerRef}) {
               const input = e.target.value;
               const isOnlyDigits = /^\d*$/.test(input);
               if (!isOnlyDigits) return;
-              if(Number(input) > 100000) return
+              if(Number(input) > 1000000) return
               setDynamicFieldDetails((pre) => ({...pre, propertyArea: input}))
               setErrors((pre) => ({...pre, propertyArea: ''}))
             }}
@@ -1676,9 +1679,18 @@ export default function Step2({containerRef}) {
                     onChagne={() => {
                       if(dynamicFieldDetails.rentSuitableFor.includes(item.value)){
                         let newData = dynamicFieldDetails.rentSuitableFor.filter(preItem => preItem != item.value)
-                        setDynamicFieldDetails((pre) => ({...pre, rentSuitableFor: newData}))
+                        if(newData.includes('bachelors')){
+                          setDynamicFieldDetails((pre) => ({...pre, rentSuitableFor: newData}))
+                        }else{
+                          setDynamicFieldDetails((pre) => ({...pre, rentSuitableFor: newData, rentPreference: null}))
+                        }
                       }else{
-                        setDynamicFieldDetails((pre) => ({...pre, rentSuitableFor: [...dynamicFieldDetails.rentSuitableFor, item.value]}))
+                        let allData = [...dynamicFieldDetails.rentSuitableFor, item.value]
+                        if(allData.includes('bachelors')){
+                          setDynamicFieldDetails((pre) => ({...pre, rentSuitableFor: [...dynamicFieldDetails.rentSuitableFor, item.value]}))
+                        }else{
+                          setDynamicFieldDetails((pre) => ({...pre, rentSuitableFor: [...dynamicFieldDetails.rentSuitableFor, item.value], rentPreference: null}))
+                        }
                       }
                       setErrors((pre) => ({...pre, rentSuitableFor: ''}))
                     }}
