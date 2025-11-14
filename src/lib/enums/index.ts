@@ -1039,11 +1039,11 @@ export const PLOT_LAND_TYPE = [
 export const LIFTS = [
   {
     name: 'Available',
-    value: 'available',
+    value: true,
   },
   {
     name: 'Not-Available',
-    value: 'not_available',
+    value: false,
   }
 ]
 

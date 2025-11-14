@@ -257,6 +257,8 @@ export interface Step2PostPropertyPayload {
   privateWashrooms?: number | null;
   publicParking?: number | null;
   publicWashrooms?: number | null;
+  expectedReturnOnInvestment?: number | null;
+  isLiftAvailable?: boolean | null
 }
 
 
@@ -339,6 +341,8 @@ export interface Step2DetailsResponse {
   currentRentPerMonth: string | null,
   privateWashrooms: string | null,
   publicWashrooms: string | null,
+  expectedReturnOnInvestment: number | null,
+  isLiftAvailable: boolean | null,
 }
 
 
@@ -474,6 +478,28 @@ export const step4PostPropertyDetailsApiHandler = async (propertyId: string) : P
     try{
         const response = await axiosInstance.get<Step4DetailsResponse>(
       `property/step-4/${propertyId}`,);
+
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}
+
+export interface resetAPIPayload {
+  propertyId?: string | null
+}
+
+export interface resetAPIResponse {
+  completionStep: string
+  id: string
+  progressPercentage: string
+  status: string
+}
+
+export const resetPostPropertyApiHandler = async (paylaod: resetAPIPayload) : Promise<resetAPIResponse> => {
+    try{
+        const response = await axiosInstance.post<resetAPIResponse>(
+      "property/reset", paylaod);
 
     return response.data;
     }catch(error: any){

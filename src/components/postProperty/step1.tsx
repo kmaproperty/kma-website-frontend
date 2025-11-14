@@ -27,7 +27,7 @@ import DynamicSelect from "../common/select";
 import { AREA_UNIT_LIST, CONSTRUCTION_STATUS, CONSTRUCTION_TYPE, CUSTOM_SECTION_NAME, FACING_LIST, FIELD_NAME, LOCATED_NEAR, LOCATION_HUB, OWNERSHIP_LIST, PLOT_LAND_TYPE, PLOT_UNIT_LIST, PROPERTY_CONDITION, PROPERTY_CONSTRUCTION_STATUS, PROPERTY_POSSESSION_STATUS, SUITABLE_FOR, TRANSACTION_TYPE_LIST, TRUTY_LIST, ZONE_TYPE } from "@/lib/enums";
 import { useDispatch, useSelector } from "react-redux";
 import { getActiveStep, setActiveStep, setTotalProgress } from "@/store/postPropertyProgress";
-import { Step1DetailsResponse, step1PostPropertyCreateApiHandler, step1PostPropertyDetailsApiHandler, Step1PostPropertyPayload, Step1PostPropertyResponse } from "@/services/postProperty";
+import { resetAPIPayload, resetAPIResponse, resetPostPropertyApiHandler, Step1DetailsResponse, step1PostPropertyCreateApiHandler, step1PostPropertyDetailsApiHandler, Step1PostPropertyPayload, Step1PostPropertyResponse } from "@/services/postProperty";
 import { toast } from "react-toastify";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useStepProgress } from "@/hooks/useStepProgress";
@@ -35,6 +35,7 @@ import DynamicAsyncAutocomplete from "../common/dynamicAsyncSelectMui";
 import { InputBase } from "@mui/material";
 import RenderSectionName from "./renderSecitonName";
 import { useLocalitySearch } from "@/hooks/useLocalitySearch";
+import ConfirmationDailog from "../common/confirmationDailog";
 
 const initialState = {
     bhk: null,
@@ -107,6 +108,9 @@ export default function Step1({containerRef}) {
   const dispatch = useDispatch()
 
   const [openCustomFieldPopup, setOpenCustomFieldPopup] = useState<boolean>(false)
+  const [openConfirmationPopup, setConfirmationPopup] = useState<boolean>(false)
+  const [storeUserAction, setStoreUserAction] = useState(null)
+
   const [customFieldLabel, setCustomFieldLabel] = useState<string>('')
 
   const [basicStaticDetails, setBasicStaticDetails] = useState({
@@ -897,14 +901,49 @@ export default function Step1({containerRef}) {
 
   const handleAddCustomLocation = (value: string, label: string) => {
     if(label == 'Society'){
-      setBasicStaticDetails((pre) => ({...pre, society: {value: value, label: value}}))
+      setBasicStaticDetails((pre) => ({...pre, society: {value: value, label: value, name:value}}))
       setErrors((pre) => ({...pre, society: ''}))
     }
     if(label == 'Locality'){
-      setBasicStaticDetails((pre) => ({...pre, locality: {value: value, label: value}}))
+      setBasicStaticDetails((pre) => ({...pre, locality: {value: value, label: value, name: value}}))
       setErrors((pre) => ({...pre, locality: ''}))
     }
   }
+
+  const handleCloseConfirmationDailog = (isYes: boolean) => {
+    if(isYes){
+      if(storeUserAction){
+        storeUserAction()
+        resetPostProperty({propertyId: String(params?.propertyId ?? '')})
+      }
+      setConfirmationPopup(false)
+    }else{
+      setConfirmationPopup(false)
+      setStoreUserAction(null)
+    }
+  }
+
+  const { mutate: resetPostProperty } = useMutation({
+    mutationFn: async (
+      payload: resetAPIPayload
+    ): Promise<resetAPIResponse> => {
+      return await resetPostPropertyApiHandler(payload);
+    },
+    onSuccess: (response: resetAPIResponse) => {
+      console.log("step1 create response", response);
+      dispatch(setTotalProgress({progress: Number(response.progressPercentage ?? 0)}))
+    },
+    onError: (error: any) => {
+      console.log("step2 error response", error);
+      if(Array.isArray(error.message)){
+        error.message.map((item: string) => {
+          toast.error(item)
+        })
+      }else{
+        toast.error(error.message)
+      }
+    },
+  });
 
   const generatePayload = ():Step1PostPropertyPayload => {
     let bhk = {}
@@ -967,7 +1006,7 @@ export default function Step1({containerRef}) {
       
       city: {
         name: basicStaticDetails.city?.name,
-        ...(basicStaticDetails.city?.id ? {id: basicStaticDetails.city?.id} : {}),
+        ...((basicStaticDetails.city?.id && basicStaticDetails.city?.source != 'google') ? {id: basicStaticDetails.city?.id} : {}),
         ...(basicStaticDetails.city?.state ? {state: basicStaticDetails.city?.state} : {}),
         ...(basicStaticDetails.city?.latitude ? {latitude: basicStaticDetails.city?.latitude} : {}),
         ...(basicStaticDetails.city?.longitude ? {longitude: basicStaticDetails.city?.longitude} : {}),
@@ -976,15 +1015,15 @@ export default function Step1({containerRef}) {
       society : {
         name: basicStaticDetails.society?.name,
         localityName: basicStaticDetails.locality?.label,
-        ...(basicStaticDetails.society?.id ? {id: basicStaticDetails.society?.id} : {}),
+        ...((basicStaticDetails.society?.id && basicStaticDetails.society?.source != 'google') ? {id: basicStaticDetails.society?.id} : {}),
         ...(basicStaticDetails.society?.address ? {address: basicStaticDetails.society?.address} : {}),
         ...(basicStaticDetails.society?.latitude ? {latitude: basicStaticDetails.society?.latitude} : {}),
         ...(basicStaticDetails.society?.longitude ? {longitude: basicStaticDetails.society?.longitude} : {}),
       },
 
       locality: {
-        name: basicStaticDetails.locality?.label,
-        ...(basicStaticDetails.locality?.id ? {
+        name: basicStaticDetails.locality?.name,
+        ...((basicStaticDetails.locality?.id && basicStaticDetails.city?.source != 'google') ? {
           id: basicStaticDetails.locality?.id,
           sector: basicStaticDetails.locality?.sector,
           latitude: basicStaticDetails.locality?.latitude,
@@ -1078,8 +1117,8 @@ export default function Step1({containerRef}) {
           propertyCategory: step1Details?.category,
           propertyType: step1Details?.propertyType,
           city: {...step1Details?.city, value: step1Details?.city?.id || step1Details?.city?.name, label: step1Details?.city?.name},
-          society: {...step1Details?.society, value: step1Details?.society?.id || step1Details?.society?.name, label: step1Details?.society?.name},
-          locality: {...step1Details?.locality, value: step1Details?.locality?.id || step1Details?.locality?.name, label: step1Details?.locality?.name}
+          society: {...step1Details?.society, value: step1Details?.society?.id || step1Details?.society?.name, label: step1Details?.society?.name, name: step1Details?.society?.name},
+          locality: {...step1Details?.locality, value: step1Details?.locality?.id || step1Details?.locality?.name, label: step1Details?.locality?.name, name: step1Details?.locality?.name}
       }))
 
       let num = step1Details?.bhk?.name.match(/[\d.]+/)?.[0] || "2"
@@ -1147,6 +1186,7 @@ export default function Step1({containerRef}) {
     }
   },[propertyTypeList])
 
+
   return (
     <>
     <div className="flex flex-col gap-4" ref={containerRef}>
@@ -1164,9 +1204,19 @@ export default function Step1({containerRef}) {
                   checked={item.code == basicStaticDetails.propertyListFor?.code}
                   label={item.name}
                   onChagne={() => {
-                    setBasicStaticDetails((pre) => ({...pre, propertyListFor: item, propertyType: null, city: null, locality: null, society: null}))
-                    setDynamicFieldDetails(initialState)
-                    setErrors((pre) => ({...pre, propertyListFor: ''}))
+                    if(basicStaticDetails?.propertyListFor?.code == item.code) return
+                    const initialFn = () => {
+                      setBasicStaticDetails((pre) => ({...pre, propertyListFor: item, propertyType: null, city: null, locality: null, society: null}))
+                      setDynamicFieldDetails(initialState)
+                      setErrors((pre) => ({...pre, propertyListFor: ''}))
+                    }
+
+                    if(params?.propertyId){
+                      setConfirmationPopup(true)
+                      setStoreUserAction(() => initialFn)
+                    }else{
+                      initialFn()
+                    }
                   }}
                   value={item.id}
                   iconSrc={item.icon}
@@ -1190,9 +1240,18 @@ export default function Step1({containerRef}) {
                   checked={item.code == basicStaticDetails.propertyCategory?.code}
                   label={item.name}
                   onChagne={() => {
-                    setBasicStaticDetails((pre) => ({...pre, propertyCategory: item, propertyType: null, city: null, locality: null, society: null}))
-                    setDynamicFieldDetails(initialState)
-                    setErrors((pre) => ({...pre, propertyCategory: ''}))
+                    if(basicStaticDetails?.propertyCategory?.code == item.code) return
+                    const initialFn = () => {
+                      setBasicStaticDetails((pre) => ({...pre, propertyCategory: item, propertyType: null, city: null, locality: null, society: null}))
+                      setDynamicFieldDetails(initialState)
+                      setErrors((pre) => ({...pre, propertyCategory: ''}))
+                    }
+                    if(params?.propertyId){
+                      setConfirmationPopup(true)
+                      setStoreUserAction(() => initialFn)
+                    }else{
+                      initialFn()
+                    }
                   }}
                   value={item.id}
                   iconSrc={item.icon}
@@ -1216,9 +1275,19 @@ export default function Step1({containerRef}) {
                   item.id == basicStaticDetails.propertyType?.id ? "bg-light-purple font-medium" : "text-[#888888]"
                 }`}
                 onClick={() => {
-                  setBasicStaticDetails((pre) => ({...pre, propertyType: item, city: null, locality: null, society: null}))
-                  setDynamicFieldDetails(initialState)
-                  setErrors((pre) => ({...pre, propertyType: ''}))
+                  if(basicStaticDetails?.propertyType?.code == item.code) return
+                  const initialFn = () => {
+                      setBasicStaticDetails((pre) => ({...pre, propertyType: item, city: null, locality: null, society: null}))
+                      setDynamicFieldDetails(initialState)
+                      setErrors((pre) => ({...pre, propertyType: ''}))
+                    }
+                    if(params?.propertyId){
+                      setConfirmationPopup(true)
+                      setStoreUserAction(() => initialFn)
+                    }else{
+                      initialFn()
+                    }
+                  
                 }}
                 key={item.id}
               >
@@ -1300,7 +1369,7 @@ export default function Step1({containerRef}) {
               handleOpenAddCustomLocation('Society')
               return
             }
-            setBasicStaticDetails((pre) => ({...pre, society: value, locality: !Array.isArray(value) && value && "localityName" in value && value.localityName ? {value: value?.localityName, label: value?.localityName} : null}))
+            setBasicStaticDetails((pre) => ({...pre, society: value, locality: !Array.isArray(value) && value && "localityName" in value && value.localityName ? {value: value?.localityName, label: value?.localityName, name: value?.localityName} : null}))
             setErrors((pre) => ({...pre, society: '', locality: !Array.isArray(value) && value && "localityName" in value && value.localityName ?  '' : errors?.localityName ?? ''}))
             setBhkList(generateBHKList(false))
             setDynamicFieldDetails((pre) => ({...pre, bhk: null, otherBhk: null}))
@@ -2393,6 +2462,7 @@ export default function Step1({containerRef}) {
           </button>
         </div>
     </div>
+    <ConfirmationDailog open={openConfirmationPopup} onClose={(isYes) => handleCloseConfirmationDailog(isYes)}/>
       </>
   );
 } 
