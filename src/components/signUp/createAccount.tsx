@@ -1,6 +1,6 @@
 "use client";
 import { InputBase } from "@mui/material";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { OptionType } from "../common/asyncSelect";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { PROPERTY_TYPE, USER_TYPE } from "@/lib/enums";
@@ -41,7 +41,8 @@ interface FormErrors {
 export default function CreateAccount({ step }: { step: number }) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const pathname = usePathname()
+  const pathname = usePathname();
+  const dateRef = useRef<HTMLInputElement | null>(null)
   // const ownerType = searchParams.get('ownerType')
   const propertyIntent = searchParams.get("propertyIntent");
   const [userData, setUserData] = useState<User | null>(null);
@@ -384,8 +385,9 @@ export default function CreateAccount({ step }: { step: number }) {
                     <p className="required-label text-sm 1xl:text-base text-text-black">
                       In Bussiness Since
                     </p>
-                    <div>
+                    <div onClick={() => {dateRef.current?.showPicker()}}>
                       <InputBase
+                        inputRef={dateRef}
                         placeholder="Selct"
                         type="date"
                         fullWidth

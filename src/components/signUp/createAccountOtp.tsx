@@ -9,10 +9,13 @@ import { useMutation } from "@tanstack/react-query";
 import { UserType } from "@/types/user";
 import { createURLSearchParam } from "@/lib/helper";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { resetForm } from "@/store/createAccountSlice";
 
 export default function CreateAccountOtp() {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const dispatch = useDispatch()
 
   const mobileNumber = searchParams.get('mobile')
   const code = searchParams.get('code')
@@ -46,6 +49,7 @@ export default function CreateAccountOtp() {
       const params = createURLSearchParam({
         ...(ownerType == USER_TYPE.OWNER ? {propertyIntent: propertyIntent,} : '')
       })
+      dispatch(resetForm())
       router.replace(`/create-account${params}`)
     },
     onError: (error: any) => {

@@ -82,7 +82,7 @@ export default function SignIn() {
   const handleClose: DialogProps["onClose"] = (event, reason) => {
     if (reason === "backdropClick" || reason === "escapeKeyDown") return;
     setMobileInput({value: '', validationMessage: '', code: '+91'})
-    router.push(`${pathname}`);
+    router.replace(`${pathname}`);
   };
 
   const createAccountRedirect = () => {
@@ -129,7 +129,7 @@ export default function SignIn() {
               <Image
                 onClick={() => {
                   setMobileInput({value: '', validationMessage: '', code: '+91'})
-                  router.push(`${pathname}`);
+                  router.replace(`${pathname}`);
                 }}
                 src="/assets/close-icon.svg"
                 alt="close"
