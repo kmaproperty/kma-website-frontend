@@ -29,11 +29,11 @@ export default function ImageUpload({
  
   const validateFile = (file: File) => {
     if (file.size > maxSizeBytes) {
-      toast.warning(`${file.name} exceeds ${maxSizeMB} MB. Skipped.`);
+      toast.error(`${file.name} exceeds ${maxSizeMB} MB.`);
       return false;
     }
     if (!validTypes.includes(file.type)) {
-      toast.warning(`${file.name} is not a supported format. Skipped.`);
+      toast.error(`${file.name} is not a supported format.`);
       return false;
     }
     return true;

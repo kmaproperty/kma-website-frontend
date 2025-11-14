@@ -23,6 +23,7 @@ axiosInstance.interceptors.request.use(
     return config;
   },
   (error) => {
+    console.log('error', error)
     return Promise.reject(error);
   }
 );
@@ -61,7 +62,7 @@ axiosInstance.interceptors.response.use(
       localStorage.clear();
       window.location.href = "/signup"
     }
-
+    console.log('error in reject', error)
     return Promise.reject(error?.response?.data ?? error);
   }
 );

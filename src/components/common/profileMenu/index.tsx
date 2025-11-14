@@ -6,7 +6,7 @@ export default function ProfileMenu(){
 
     const handleLogout = () => {
         localStorage.clear()
-        router.push('/signup?isLogin=true')    
+        router.replace('/signup')    
     }
 
     return(
