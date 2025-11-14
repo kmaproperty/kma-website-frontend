@@ -459,12 +459,12 @@ export default function CreateAccount({ step }: { step: number }) {
                 </p>
               </span>
             </button>
-            <p className="flex-1 text-sm lg:text-sm 2xl:text-lg text-text-gray">
+            {/* <p className="flex-1 text-sm lg:text-sm 2xl:text-lg text-text-gray">
               Already have an account?{" "}
               <span onClick={handleRedirectToLogin} className="text-sm lg:text-sm 2xl:text-lg font-semibold underline text-text-black cursor-pointer">
                 Login Here
               </span>
-            </p>
+            </p> */}
           </div>
         </div>
       </div>

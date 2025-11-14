@@ -14,7 +14,7 @@ export interface Amenities {
   count: number
 }
 
-export default function Furnishing({open, onHide, dynamicFieldDetails, handleUpdateFurnishedCount, handleAddFurnished, furnishingList} : {open: boolean, onHide: () => void, setDynamicFieldDetails: (value: any) => void, dynamicFieldDetails: any, handleUpdateFurnishedCount: (name:string, value: number) => void, handleAddFurnished: (name: string) => void, handleAddRemoveAmenitise: (value: string) => void, furnishingList: {label: string , icon: string}[]}) {
+export default function Furnishing({open, onHide, dynamicFieldDetails, handleUpdateFurnishedCount, handleAddFurnished, furnishingList, setDynamicFieldDetails} : {open: boolean, onHide: () => void, setDynamicFieldDetails: (value: any) => void, dynamicFieldDetails: any, handleUpdateFurnishedCount: (name:string, value: number) => void, handleAddFurnished: (name: string) => void, handleAddRemoveAmenitise: (value: string) => void, furnishingList: {label: string , icon: string}[]}) {
   const pathname = usePathname()
   const router = useRouter()
   const theme = useTheme()
@@ -67,7 +67,14 @@ export default function Furnishing({open, onHide, dynamicFieldDetails, handleUpd
                   }
               </div>
             </div>
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-3">
+              <button onClick={() => {
+                setDynamicFieldDetails((pre) => ({...pre, furnishingsCounts: []}))
+              }} className="mt-4 w-full md:w-[130px] text-sm 1xl:text-base px-12 py-3 border border-blue text-center cursor-pointer rounded-full bg-light-purple">
+                <span className="gap-3 relative flex justify-center">
+                  <p className={`text-nowrap font-medium`}>Reset All</p>
+                </span>
+              </button>
             <button
               onClick={onHide}
                 className="mt-4 w-full md:w-[150px] text-sm 1xl:text-base animated-button px-12 py-3 border border-blue text-center cursor-pointer"

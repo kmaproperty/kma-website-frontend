@@ -1007,12 +1007,19 @@ export default function Step3({containerRef}) {
                   checked={item.value == dynamicFieldDetails.furnishType}
                   label={item.name}
                   onChagne={() => {
-                    setDynamicFieldDetails((pre) => ({
+                    if(dynamicFieldDetails.furnishType == item.value){
+                      setDynamicFieldDetails((pre) => ({
+                      ...pre,
+                      furnishType: item.value,
+                    }));
+                    }else{
+                      setDynamicFieldDetails((pre) => ({
                       ...pre,
                       furnishType: item.value,
                       furnishingsCounts: [],
-                      amenities: []
                     }));
+                    }
+                    
                     if(item.value != 'Unfurnished'){
                       setPopupOpen(!popupOpen)
                     }

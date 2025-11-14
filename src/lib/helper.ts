@@ -61,7 +61,7 @@ export function generateBHKList(showMore = false): BhkOption[] {
     bhkList.push({
       id: bhkList.length + 1,
       name: `${i % 1 === 0 ? i : i.toFixed(1)} BHK`,
-      value: i % 1 === 0 ? i : i.toFixed(1),
+      value: bhkList.length + 1,
       builtUpAreas: [],
       bhk: Math.ceil(Number(i.toFixed(1))),
       isCustom: true
@@ -72,7 +72,7 @@ export function generateBHKList(showMore = false): BhkOption[] {
       id: bhkList.length + 1,
       name: "5+ BHK",
       isPlusItem: true,
-      value: 5,
+      value: bhkList.length + 1,
       bhk: 5,
       builtUpAreas: []
     });
@@ -84,7 +84,7 @@ export function generateBHKList(showMore = false): BhkOption[] {
       bhkList.push({
         id: bhkList.length + 1,
         name: `${i} BHK`,
-        value: Number(i),
+        value: bhkList.length + 1,
         builtUpAreas: [],
         bhk: Number(i),
         isCustom: true
