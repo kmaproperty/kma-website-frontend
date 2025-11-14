@@ -246,7 +246,7 @@ export default function Step1({containerRef}) {
     })
     return bhkList as unknown as OptionType[]
   }
-
+console.log('renderOtherBhk', renderOtherBhk())
   const renderBHKAmeneties = () => {
     if(dynamicFieldDetails.bhk?.id == 'other' && dynamicFieldDetails.otherBhk?.value){
       return generateBHKAmeneties(dynamicFieldDetails.otherBhk?.bhk)
@@ -711,10 +711,10 @@ export default function Step1({containerRef}) {
         hasError = true
       }
 
-      if(renderShowField(FIELD_NAME.CARPET_AREA) && dynamicFieldDetails.carpetArea && (Number(dynamicFieldDetails.carpetArea) > Number(dynamicFieldDetails.builtUpArea))){
-        updatedError.carpetArea = 'Carpet area should be less than built up area'
-        hasError = true
-      }
+      // if(renderShowField(FIELD_NAME.CARPET_AREA) && dynamicFieldDetails.carpetArea && (Number(dynamicFieldDetails.carpetArea) > Number(dynamicFieldDetails.builtUpArea))){
+      //   updatedError.carpetArea = 'Carpet area should be less than built up area'
+      //   hasError = true
+      // }
 
       if(renderShowField(FIELD_NAME.AGE_OF_PROPERTY) && !dynamicFieldDetails.propertyAge){
         updatedError.propertyAge = 'Please add Age of property details'
@@ -1492,7 +1492,7 @@ export default function Step1({containerRef}) {
               return(
                 <div onClick={() => {
                   setDynamicFieldDetails((pre) => ({
-                    ...pre, isStaticBhkDetails: true, staticBhKDetails: item, builtUpArea: item?.superBuiltUpArea, carpetArea: item?.carpetArea, bathRooms: item?.noOfBathrooms, bedRooms: item?.noOfBedrooms, balconies: item?.balconies, 
+                    ...pre, isStaticBhkDetails: true, staticBhKDetails: item, carpetArea: item?.carpetArea, bathRooms: item?.noOfBathrooms, bedRooms: item?.noOfBedrooms, balconies: item?.balconies, 
                   }))
                   setErrors((pre) => ({...pre, builtUpArea: '', bathRooms: '', bedRooms: '', balconies: ''}))
                 }} className={`flex flex-1 min-w-[240px] justify-between cursor-pointer ${(dynamicFieldDetails.isStaticBhkDetails && (dynamicFieldDetails.staticBhKDetails?.id == item?.id)) ? 'bg-light-purple' : ''} p-3 border border-border border-1 rounded-[10px] gap-5`}>
@@ -1534,7 +1534,7 @@ export default function Step1({containerRef}) {
       </div>}
 
       {renderShowField(FIELD_NAME.CARPET_AREA) && <div data-field={FIELD_NAME.CARPET_AREA} data-has-value={!!dynamicFieldDetails.carpetArea}>
-        <FieldLabel label="Carpet Area" customClass="pb-2" required={true}/>
+        <FieldLabel label="Carpet Area" customClass="pb-2"/>
         <DynamicInput
            placeHolder='Enter carpet area'
            options={AREA_UNIT_LIST}

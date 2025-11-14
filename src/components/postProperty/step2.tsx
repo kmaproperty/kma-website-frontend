@@ -1120,7 +1120,7 @@ export default function Step2({containerRef}) {
                 const isOnlyDigits = /^\d*$/.test(input);
                 if (!isOnlyDigits) return;
                 if(Number(input) > 99) return
-                setDynamicFieldDetails((pre) => ({...pre, totalFloor: input}))
+                setDynamicFieldDetails((pre) => ({...pre, totalFloor: input, floorNumber: null}))
                 setErrors((pre) => ({...pre, totalFloor: ''}))
               }}
               className={
@@ -1522,7 +1522,7 @@ export default function Step2({containerRef}) {
                 const isOnlyDigits = /^\d*$/.test(input);
                 if (!isOnlyDigits) return;
                 if(Number(input) > 99) return
-                setDynamicFieldDetails((pre) => ({...pre, totalFloor: input}))
+                setDynamicFieldDetails((pre) => ({...pre, totalFloor: input, floorNumber: null}))
                 setErrors((pre) => ({...pre, totalFloor: ''}))
               }}
               className={
@@ -2005,7 +2005,7 @@ export default function Step2({containerRef}) {
           {errors?.securityDeposite && <p className="pt-1 text-red-500 text-xs">{errors.securityDeposite}</p>}
         {renderShowField(FIELD_NAME.CUSTOM_SECURITY_DEPOSITE) &&  <div data-field={FIELD_NAME.CUSTOM_SECURITY_DEPOSITE} data-has-value={!!dynamicFieldDetails.otherSecurityDeposite}>
             <DynamicInput 
-              placeHolder="Enter Security Deposit"
+              placeHolder="Enter Security Deposit (In Ruppes)"
               options={[{label: 'Per month', value: 'Per month'}]}
               onChange={(value: string, dropdownValue: string) => {
                 const isOnlyDigits = /^\d*$/.test(value);
@@ -2048,7 +2048,7 @@ export default function Step2({containerRef}) {
             <DynamicSelect
               isMulti={false}
               isError={false}
-              placeholder={'Select Lock in Period (Per Month)'}
+              placeholder={'Select Lock in Period (In Month)'}
               onChange={(value) => {
                 setDynamicFieldDetails((pre) => ({...pre, otherLockInPeriod: value}))
                 setErrors((pre) => ({...pre, otherLockInPeriod: ''}))
@@ -2087,7 +2087,7 @@ export default function Step2({containerRef}) {
           {errors?.brokerageCharge && <p className="pt-1 text-red-500 text-xs">{errors.brokerageCharge}</p>}
           {renderShowField(FIELD_NAME.BROKERAGE_CHARGE_VALUE) && <div data-field={FIELD_NAME.BROKERAGE_CHARGE_VALUE} data-has-value={!!dynamicFieldDetails.otherBrokerageCharge}>
             <InputBase
-              placeholder="Enter brokerage (Per Month)"
+              placeholder="Enter brokerage (In Ruppes)"
               fullWidth
               value={dynamicFieldDetails.otherBrokerageCharge ?? ''}
               onChange={(e) => {
@@ -2170,7 +2170,7 @@ export default function Step2({containerRef}) {
               customClass="pb-2"
             />
             <InputBase
-              placeholder="Enter security deposit"
+              placeholder="Enter security deposit (In Ruppes)"
               fullWidth
               value={dynamicFieldDetails.otherSecurityDeposite ?? ''}
               onChange={(e) => {
@@ -2414,7 +2414,7 @@ export default function Step2({containerRef}) {
           {errors?.brokerageCharge && <p className="pt-1 text-red-500 text-xs">{errors.brokerageCharge}</p>}
           {renderShowField(FIELD_NAME.COMMERCIAL_CUSTOM_BROKERAGE_CHARGE) && <div data-field={FIELD_NAME.COMMERCIAL_CUSTOM_BROKERAGE_CHARGE} data-has-value={!!dynamicFieldDetails.otherBrokerageCharge}>
             <InputBase
-              placeholder="Enter brokerage (In Rupees)"
+              placeholder="Enter brokerage (In Ruppes)"
               fullWidth
               value={dynamicFieldDetails.otherBrokerageCharge ?? ''}
               onChange={(e) => {

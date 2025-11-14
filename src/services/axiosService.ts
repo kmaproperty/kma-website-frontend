@@ -50,17 +50,16 @@ axiosInstance.interceptors.response.use(
           originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
           return axiosInstance(originalRequest);
         }else{
-          window.location.href = '/signup?isLogin=true'
+          window.location.href = '/signup'
         }
       } catch (refreshError) {
         console.error("Token refresh failed", refreshError);
         localStorage.clear();
-        window.location.href = "/signup?isLogin=true"
-        window.location.href = "/signup?isLogin=true"
+        window.location.href = "/signup"
       }
     }else if(error.response?.status === 401){
       localStorage.clear();
-      window.location.href = "/signup?isLogin=true"
+      window.location.href = "/signup"
     }
 
     return Promise.reject(error?.response?.data ?? error);
