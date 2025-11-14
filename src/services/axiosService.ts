@@ -54,14 +54,12 @@ axiosInstance.interceptors.response.use(
         }
       } catch (refreshError) {
         console.error("Token refresh failed", refreshError);
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
+        localStorage.clear();
         window.location.href = "/signup?isLogin=true"
         window.location.href = "/signup?isLogin=true"
       }
     }else if(error.response?.status === 401){
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
+      localStorage.clear();
       window.location.href = "/signup?isLogin=true"
     }
 
