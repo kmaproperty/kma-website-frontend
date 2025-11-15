@@ -31,7 +31,7 @@ export default function ContentLayout({mode}: {mode: string}) {
                     <div className=""> 
                         <StepperCustom />
                     </div>
-                    <div className="max-h-[calc(100vh-150px)] overflow-y-auto pr-2">
+                    <div id='formWrapper' className="max-h-[calc(100vh-150px)] overflow-y-auto pr-2">
                       <PostPropertyForm />
                     </div>
                 </div>
