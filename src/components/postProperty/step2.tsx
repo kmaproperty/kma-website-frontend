@@ -1113,7 +1113,8 @@ export default function Step2({containerRef}) {
           currentRentPerMonth: step2Details?.currentRentPerMonth,
           privateWashroom: step2Details?.privateWashrooms,
           publicWashroom: step2Details?.publicWashrooms,
-          expectedReturnOnInvestment: step2Details?.expectedReturnOnInvestment
+          expectedReturnOnInvestment: step2Details?.expectedReturnOnInvestment,
+          lifts: step2Details?.isLiftAvailable,
         }))
       } 
     },[step2Details])
