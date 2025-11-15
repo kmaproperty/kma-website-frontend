@@ -398,8 +398,32 @@ export default function Step3({containerRef}) {
     }
     console.log('step3 validation error', updatedError)
     setErrors(updatedError)
-    return hasError
+    return {hasError: hasError, errorData: updatedError};
   }
+
+  const scrollToError = (errorsObj) => {
+    const fields = Object.keys(errorsObj);
+    if (!fields || fields.length === 0) return;
+
+    const firstErrorField = fields[0];
+    const el = document.getElementById(firstErrorField);
+    const container = document.getElementById("formWrapper");
+    if (el && container) {
+      const containerRect = container.getBoundingClientRect();
+      const elementRect = el.getBoundingClientRect();
+      const offset =
+        elementRect.top - containerRect.top + container.scrollTop - 80;
+
+      container.scrollTo({
+        top: offset,
+        behavior: "smooth",
+      });
+  //     el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // const data = {
+  //   message: `Scrolled to element with id 'builtUpArea'.`
+  // };
+    }
+  };
 
   const { data: step1Details } = useQuery({
     queryKey: ["step1-in-3-details", params?.propertyId],
@@ -548,7 +572,7 @@ export default function Step3({containerRef}) {
 
         {(renderShowField(FIELD_NAME.MIN_NUMBER_OF_SEATS) || renderShowField(FIELD_NAME.PUBLIC_WASHROOM)) && <div className="grid grid-cols-1 2md:grid-cols-2 gap-3">
                   
-          {renderShowField(FIELD_NAME.MIN_NUMBER_OF_SEATS) && <div data-field={FIELD_NAME.MIN_NUMBER_OF_SEATS} data-has-value={!!dynamicFieldDetails.minNumberOfSeats}>
+          {renderShowField(FIELD_NAME.MIN_NUMBER_OF_SEATS) && <div id='minNumberOfSeats' data-field={FIELD_NAME.MIN_NUMBER_OF_SEATS} data-has-value={!!dynamicFieldDetails.minNumberOfSeats}>
             <FieldLabel label="Min. Number of seats" customClass="pb-2" required={true} />
             <InputBase
               placeholder="Enter number"
@@ -572,7 +596,7 @@ export default function Step3({containerRef}) {
             {errors?.minNumberOfSeats && <p className="pt-1 text-red-500 text-xs">{errors.minNumberOfSeats}</p>}
           </div>}
 
-          {renderShowField(FIELD_NAME.MAX_NUMBER_OF_SEATS) && <div data-field={FIELD_NAME.MAX_NUMBER_OF_SEATS} data-has-value={!!dynamicFieldDetails.maxNumberOfSeats}>
+          {renderShowField(FIELD_NAME.MAX_NUMBER_OF_SEATS) && <div id='maxNumberOfSeats' data-field={FIELD_NAME.MAX_NUMBER_OF_SEATS} data-has-value={!!dynamicFieldDetails.maxNumberOfSeats}>
             <FieldLabel
               label="Max. Number of seats"
               customClass="pb-2"
@@ -603,7 +627,7 @@ export default function Step3({containerRef}) {
 
         {(renderShowField(FIELD_NAME.NUMBER_OF_CABIN) || renderShowField(FIELD_NAME.NUMBER_OF_MEETING_ROOM)) && <div className="grid grid-cols-1 2md:grid-cols-2 gap-3">
                   
-          {renderShowField(FIELD_NAME.NUMBER_OF_CABIN) && <div data-field={FIELD_NAME.NUMBER_OF_CABIN} data-has-value={!!dynamicFieldDetails.numberOfCabins}>
+          {renderShowField(FIELD_NAME.NUMBER_OF_CABIN) && <div id='numberOfCabins' data-field={FIELD_NAME.NUMBER_OF_CABIN} data-has-value={!!dynamicFieldDetails.numberOfCabins}>
             <FieldLabel label="Number of Cabins" customClass="pb-2" required={true} />
             <InputBase
               placeholder="Enter number"
@@ -627,7 +651,7 @@ export default function Step3({containerRef}) {
             {errors?.numberOfCabins && <p className="pt-1 text-red-500 text-xs">{errors.numberOfCabins}</p>}
           </div>}
 
-          {renderShowField(FIELD_NAME.NUMBER_OF_MEETING_ROOM) && <div data-field={FIELD_NAME.NUMBER_OF_MEETING_ROOM} data-has-value={!!dynamicFieldDetails.numberOfMeetingRooms}>
+          {renderShowField(FIELD_NAME.NUMBER_OF_MEETING_ROOM) && <div id='numberOfMeetingRooms' data-field={FIELD_NAME.NUMBER_OF_MEETING_ROOM} data-has-value={!!dynamicFieldDetails.numberOfMeetingRooms}>
             <FieldLabel
               label="Number of Meeting Rooms"
               customClass="pb-2"
@@ -658,7 +682,7 @@ export default function Step3({containerRef}) {
 
         {(renderShowField(FIELD_NAME.PRIVATE_WASHROOM) || renderShowField(FIELD_NAME.PUBLIC_WASHROOM)) && <div className="grid grid-cols-1 2md:grid-cols-2 gap-3">
                   
-        {renderShowField(FIELD_NAME.PRIVATE_WASHROOM) && <div data-field={FIELD_NAME.PRIVATE_WASHROOM} data-has-value={!!dynamicFieldDetails.privateWashrooms}>
+        {renderShowField(FIELD_NAME.PRIVATE_WASHROOM) && <div id='privateWashrooms' data-field={FIELD_NAME.PRIVATE_WASHROOM} data-has-value={!!dynamicFieldDetails.privateWashrooms}>
           <FieldLabel label="Private washrooms" customClass="pb-2" required={true} />
           <InputBase
             placeholder="Enter number"
@@ -682,7 +706,7 @@ export default function Step3({containerRef}) {
           {errors?.privateWashrooms && <p className="pt-1 text-red-500 text-xs">{errors.privateWashrooms}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.PUBLIC_WASHROOM) && <div data-field={FIELD_NAME.PUBLIC_WASHROOM} data-has-value={!!dynamicFieldDetails.publicWashrooms}>
+        {renderShowField(FIELD_NAME.PUBLIC_WASHROOM) && <div id='publicWashrooms' data-field={FIELD_NAME.PUBLIC_WASHROOM} data-has-value={!!dynamicFieldDetails.publicWashrooms}>
           <FieldLabel
             label="Public Washrooms"
             customClass="pb-2"
@@ -712,7 +736,7 @@ export default function Step3({containerRef}) {
         </div>}
 
         {renderShowField(FIELD_NAME.PRIVATE_PARKING) && <div className="grid grid-cols-1 2md:grid-cols-2 gap-3 items-end">      
-        {renderShowField(FIELD_NAME.PRIVATE_PARKING) && <div data-field={FIELD_NAME.PRIVATE_PARKING} data-has-value={!!dynamicFieldDetails.coveredParking}>
+        {renderShowField(FIELD_NAME.PRIVATE_PARKING) && <div id='coveredParking' data-field={FIELD_NAME.PRIVATE_PARKING} data-has-value={!!dynamicFieldDetails.coveredParking}>
           <FieldLabel label="Parking" customClass="pb-2" />
           <InputBase
             placeholder="Enter private parking"
@@ -736,7 +760,7 @@ export default function Step3({containerRef}) {
           {errors?.coveredParking && <p className="pt-1 text-red-500 text-xs">{errors.coveredParking}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.PUBLIC_PARKING) && <div data-field={FIELD_NAME.PUBLIC_PARKING} data-has-value={!!dynamicFieldDetails.reservedParkingOpen}>
+        {renderShowField(FIELD_NAME.PUBLIC_PARKING) && <div id='openParking' data-field={FIELD_NAME.PUBLIC_PARKING} data-has-value={!!dynamicFieldDetails.reservedParkingOpen}>
           <FieldLabel
             label=""
             customClass="pb-2"
@@ -766,7 +790,7 @@ export default function Step3({containerRef}) {
 
         {(renderShowField(FIELD_NAME.CONFERENCE_ROOM) || renderShowField(FIELD_NAME.RECEPTION_AREA)) && <div className="grid grid-cols-1 2md:grid-cols-2 gap-3">
                   
-          {renderShowField(FIELD_NAME.CONFERENCE_ROOM) && <div data-field={FIELD_NAME.CONFERENCE_ROOM} data-has-value={!!dynamicFieldDetails.conferenceRoom}>
+          {renderShowField(FIELD_NAME.CONFERENCE_ROOM) && <div id='conferenceRoom' data-field={FIELD_NAME.CONFERENCE_ROOM} data-has-value={!!dynamicFieldDetails.conferenceRoom}>
             <FieldLabel label="Conference Room" customClass="pb-2" />
             <InputBase
               placeholder="Enter number"
@@ -790,7 +814,7 @@ export default function Step3({containerRef}) {
             {errors?.conferenceRoom && <p className="pt-1 text-red-500 text-xs">{errors.conferenceRoom}</p>}
           </div>}
 
-          {renderShowField(FIELD_NAME.RECEPTION_AREA) && <div data-field={FIELD_NAME.RECEPTION_AREA} data-has-value={!!dynamicFieldDetails.numberOfMeetingRooms}>
+          {renderShowField(FIELD_NAME.RECEPTION_AREA) && <div id='receptionArea' data-field={FIELD_NAME.RECEPTION_AREA} data-has-value={!!dynamicFieldDetails.numberOfMeetingRooms}>
             <FieldLabel
               label="Reception Area"
               customClass="pb-2"
@@ -952,7 +976,7 @@ export default function Step3({containerRef}) {
           </div>
         </div>}
 
-        {renderShowField(FIELD_NAME.WATER_SOURCE) && <div data-field={FIELD_NAME.WATER_SOURCE} data-has-value={!!dynamicFieldDetails.waterSource}>
+        {renderShowField(FIELD_NAME.WATER_SOURCE) && <div id='waterSource' data-field={FIELD_NAME.WATER_SOURCE} data-has-value={!!dynamicFieldDetails.waterSource}>
           <FieldLabel label="Water Source" required={true}/>
           <div className="flex flex-wrap gap-3 pt-2">
             {
@@ -975,7 +999,7 @@ export default function Step3({containerRef}) {
             {errors?.waterSource && <p className="pt-1 text-red-500 text-xs">{errors.waterSource}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.LIFT_AVAILABILITY) && <div data-field={FIELD_NAME.LIFT_AVAILABILITY} data-has-value={!!dynamicFieldDetails.liftAvalability}>
+        {renderShowField(FIELD_NAME.LIFT_AVAILABILITY) && <div id='liftAvalability' data-field={FIELD_NAME.LIFT_AVAILABILITY} data-has-value={!!dynamicFieldDetails.liftAvalability}>
           <FieldLabel label="Lift Availability" required={true}/>
           <div className="flex flex-wrap gap-3 pt-2">
             {
@@ -998,7 +1022,7 @@ export default function Step3({containerRef}) {
             {errors?.liftAvalability && <p className="pt-1 text-red-500 text-xs">{errors.liftAvalability}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.FURNISH_TYPE) &&<div className="bg-background-gray rounded-[10px] p-3">
+        {renderShowField(FIELD_NAME.FURNISH_TYPE) &&<div id='furnishType' className="bg-background-gray rounded-[10px] p-3">
           <FieldLabel label="Furnish Type" customClass="text-base!" required={true}/>
           <div className="flex flex-wrap gap-3 pt-2">
             {FURNISH_TYPE.map((item) => {
@@ -1089,7 +1113,7 @@ export default function Step3({containerRef}) {
           </div>}
         </div>}
 
-        {renderShowField(FIELD_NAME.PROPERTY_DESCRRIPTION) &&<div>
+        {renderShowField(FIELD_NAME.PROPERTY_DESCRRIPTION) &&<div id='propertyDescription'>
           <FieldLabel label="Property Description" required={true}/>
           <FieldLabel
             label="Please write a detailed description about property so clients can understand property better or generate using our AI tool."
@@ -1124,9 +1148,11 @@ export default function Step3({containerRef}) {
           </button>
           <button disabled={step3Loader} onClick={() => {
             if(activeStep != 4){
-              if(validate()){
-                return
-              }
+              let state = validate()
+                if(state.hasError){
+                  scrollToError(state.errorData);
+                  return
+                }
               let payload = generatePayload()
               handleStep3Submit(payload)
             }

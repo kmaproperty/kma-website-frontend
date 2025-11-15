@@ -16,7 +16,7 @@ import Agriculture from "@/assets/agriculture-transparent.svg";
 import PlotCommercial from "@/assets/plot-commercial-transparent.svg";
 import DynamicInput from "../common/dynamicInput";
 import { useCitySearch } from "@/hooks/useCitySearch";
-import { useEffect, useRef, useState } from "react";
+import { act, useEffect, useRef, useState } from "react";
 import { useBuildingSearch } from "@/hooks/useBuildingSearch";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { BhkResponse, getBhkApiHandler, getPropertyCategoryApiHandler, getPropertyListApiHandler, getPropertyTypeApiHandler, PropertyCategoryResponse, PropertyListResponse, PropertyTypePayload, PropertyTypeResponse } from "@/services/masterService";
@@ -706,15 +706,15 @@ console.log('renderOtherBhk', renderOtherBhk())
         hasError = true
       }
 
-      if(renderShowField(FIELD_NAME.CARPET_AREA) && !dynamicFieldDetails.carpetArea){
-        updatedError.carpetArea = 'Please enter a carpet area'
-        hasError = true
-      }
-
-      // if(renderShowField(FIELD_NAME.CARPET_AREA) && dynamicFieldDetails.carpetArea && (Number(dynamicFieldDetails.carpetArea) > Number(dynamicFieldDetails.builtUpArea))){
-      //   updatedError.carpetArea = 'Carpet area should be less than built up area'
+      // if(renderShowField(FIELD_NAME.CARPET_AREA) && !dynamicFieldDetails.carpetArea){
+      //   updatedError.carpetArea = 'Please enter a carpet area'
       //   hasError = true
       // }
+
+      if(renderShowField(FIELD_NAME.CARPET_AREA) && dynamicFieldDetails.carpetArea && (Number(dynamicFieldDetails.carpetArea) > Number(dynamicFieldDetails.builtUpArea))){
+        updatedError.carpetArea = 'Carpet area should be less than built up area'
+        hasError = true
+      }
 
       if(renderShowField(FIELD_NAME.AGE_OF_PROPERTY) && !dynamicFieldDetails.propertyAge){
         updatedError.propertyAge = 'Please add Age of property details'
@@ -882,7 +882,7 @@ console.log('renderOtherBhk', renderOtherBhk())
 
     console.log('step1 validation error', updatedError)
     setErrors(updatedError)
-    return hasError;
+    return {hasError: hasError, errorData: updatedError};
   }
 
   const renderLoactionHubOption = (type: string) => {
@@ -922,6 +922,30 @@ console.log('renderOtherBhk', renderOtherBhk())
       setStoreUserAction(null)
     }
   }
+
+  const scrollToError = (errorsObj) => {
+    const fields = Object.keys(errorsObj);
+    if (!fields || fields.length === 0) return;
+
+    const firstErrorField = fields[0];
+    const el = document.getElementById(firstErrorField);
+    const container = document.getElementById("formWrapper");
+    if (el && container) {
+      const containerRect = container.getBoundingClientRect();
+      const elementRect = el.getBoundingClientRect();
+      const offset =
+        elementRect.top - containerRect.top + container.scrollTop - 80;
+
+      container.scrollTo({
+        top: offset,
+        behavior: "smooth",
+      });
+  //     el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // const data = {
+  //   message: `Scrolled to element with id 'builtUpArea'.`
+  // };
+    }
+  };
 
   const { mutate: resetPostProperty } = useMutation({
     mutationFn: async (
@@ -1194,7 +1218,7 @@ console.log('renderOtherBhk', renderOtherBhk())
         Basic Details
       </p>
 
-      <div data-field={FIELD_NAME.LISTING_FOR} data-has-value={!!basicStaticDetails.propertyListFor}>
+      <div id='propertyListFor' data-field={FIELD_NAME.LISTING_FOR} data-has-value={!!basicStaticDetails.propertyListFor}>
         {Array.isArray(propertyTypeList) && <FieldLabel label="Property Listing For"  required={true}/>}
         <div className="flex flex-wrap gap-3 pt-2">
           {Array.isArray(propertyTypeList) &&
@@ -1230,7 +1254,7 @@ console.log('renderOtherBhk', renderOtherBhk())
         {errors?.propertyListFor && <p className="pt-1 text-red-500 text-xs">{errors.propertyListFor}</p>}
       </div>
 
-      <div data-field={FIELD_NAME.PROPERTY_CATEGORY} data-has-value={!!basicStaticDetails.propertyCategory}>
+      <div id='propertyCategory' data-field={FIELD_NAME.PROPERTY_CATEGORY} data-has-value={!!basicStaticDetails.propertyCategory}>
         {Array.isArray(propertyCategoryList) && <FieldLabel label="Property Category" required={true}/>}
         <div className="flex flex-wrap gap-3 pt-2">
           {Array.isArray(propertyCategoryList) && 
@@ -1267,7 +1291,7 @@ console.log('renderOtherBhk', renderOtherBhk())
 
       {renderShowField(FIELD_NAME.PROPERTY_TYPE) && <div data-field={FIELD_NAME.PORPERTY_TYPE} data-has-value={!!basicStaticDetails.propertyType}>
         <FieldLabel label="Property Type" customClass="pb-2" required={true}/>
-        <div className="flex flex-wrap gap-3">
+        <div id='propertyType' className="flex flex-wrap gap-3">
           {Array.isArray(propertyList) && propertyList.map((item, index) => {
             return (
               <button
@@ -1304,7 +1328,7 @@ console.log('renderOtherBhk', renderOtherBhk())
 
       {/* Dyname Residential Flow Field Start*/}
 
-      <div data-field={FIELD_NAME.CITY} data-has-value={!!basicStaticDetails.city}>
+      <div id='city' data-field={FIELD_NAME.CITY} data-has-value={!!basicStaticDetails.city}>
         <FieldLabel label="City" customClass="pb-2" required={true}/>
         {/* <DynamicAsyncSelect
           isMulti={false}
@@ -1333,7 +1357,7 @@ console.log('renderOtherBhk', renderOtherBhk())
         {errors?.city && <p className="pt-1 text-red-500 text-xs">{errors.city}</p>}
       </div>
 
-      <div data-field={FIELD_NAME.SOCIETY} data-has-value={!!basicStaticDetails.society}>
+      <div id='society' data-field={FIELD_NAME.SOCIETY} data-has-value={!!basicStaticDetails.society}>
         <FieldLabel
           label="Building / Apartment / Society Name"
           customClass="pb-2"
@@ -1384,7 +1408,7 @@ console.log('renderOtherBhk', renderOtherBhk())
         {renderOptionalField(FIELD_NAME.SOCIETY) && errors?.society && <p className="pt-1 text-red-500 text-xs">{errors.society}</p>}
       </div>
 
-      <div data-field={FIELD_NAME.LOCALITY} data-has-value={!!basicStaticDetails.locality}>
+      <div id='locality' data-field={FIELD_NAME.LOCALITY} data-has-value={!!basicStaticDetails.locality}>
         <FieldLabel label="Locality / Sector" customClass="pb-2" required={true}/>
         {/* <DynamicAsyncSelect
           isMulti={false}
@@ -1437,7 +1461,7 @@ console.log('renderOtherBhk', renderOtherBhk())
         {errors?.locality && <p className="pt-1 text-red-500 text-xs">{errors.locality}</p>}
       </div>
 
-      {renderShowField(FIELD_NAME.BHK) && <div data-field={FIELD_NAME.BHK} data-has-value={!!dynamicFieldDetails.bhk}>
+      {renderShowField(FIELD_NAME.BHK) && <div id='bhk' data-field={FIELD_NAME.BHK} data-has-value={!!dynamicFieldDetails.bhk}>
         <FieldLabel label="Rooms / BHK" required={true}/>
         <div className="flex flex-wrap gap-3 pt-2">
           {returnBhkList().map((item) => {
@@ -1465,7 +1489,7 @@ console.log('renderOtherBhk', renderOtherBhk())
           {errors?.bhk && <p className="pt-1 text-red-500 text-xs">{errors.bhk}</p>}
       </div>}
 
-      {renderShowField(FIELD_NAME.OTHERBHK) && <div data-field={FIELD_NAME.OTHERBHK} data-has-value={!!dynamicFieldDetails.otherBhk}>
+      {renderShowField(FIELD_NAME.OTHERBHK) && <div id='otherBhk' data-field={FIELD_NAME.OTHERBHK} data-has-value={!!dynamicFieldDetails.otherBhk}>
         <FieldLabel label="Choose BHK" required={true}/>
         <div className="flex flex-wrap gap-3 pt-2">
           <DynamicSelect
@@ -1515,7 +1539,7 @@ console.log('renderOtherBhk', renderOtherBhk())
         </div>
       </div>}
       
-      {renderShowField(FIELD_NAME.BUILT_UP_AREA) && <div data-field={FIELD_NAME.BUILT_UP_AREA} data-has-value={!!dynamicFieldDetails.builtUpArea}>
+      {renderShowField(FIELD_NAME.BUILT_UP_AREA) && <div id='builtUpArea' data-field={FIELD_NAME.BUILT_UP_AREA} data-has-value={!!dynamicFieldDetails.builtUpArea}>
         <FieldLabel label="Built Up Area" customClass="pb-2" required={true}/>
         <DynamicInput
            placeHolder='Enter built up area'
@@ -1533,7 +1557,7 @@ console.log('renderOtherBhk', renderOtherBhk())
           {errors?.builtUpArea && <p className="pt-1 text-red-500 text-xs">{errors.builtUpArea}</p>}
       </div>}
 
-      {renderShowField(FIELD_NAME.CARPET_AREA) && <div data-field={FIELD_NAME.CARPET_AREA} data-has-value={!!dynamicFieldDetails.carpetArea}>
+      {renderShowField(FIELD_NAME.CARPET_AREA) && <div id='carpetArea' data-field={FIELD_NAME.CARPET_AREA} data-has-value={!!dynamicFieldDetails.carpetArea}>
         <FieldLabel label="Carpet Area" customClass="pb-2"/>
         <DynamicInput
            placeHolder='Enter carpet area'
@@ -1551,7 +1575,7 @@ console.log('renderOtherBhk', renderOtherBhk())
           {errors?.carpetArea && <p className="pt-1 text-red-500 text-xs">{errors.carpetArea}</p>}
       </div>}
 
-      {renderShowField(FIELD_NAME.TRANSACTION_TYPE) && <div data-field={FIELD_NAME.TRANSACTION_TYPE} data-has-value={!!dynamicFieldDetails.transactionType}>
+      {renderShowField(FIELD_NAME.TRANSACTION_TYPE) && <div id='transactionType' data-field={FIELD_NAME.TRANSACTION_TYPE} data-has-value={!!dynamicFieldDetails.transactionType}>
         <FieldLabel label="Transaction Type" customClass="pb-2" required={true}/>
         <div className="flex flex-wrap gap-3 pt-2">
            {
@@ -1575,7 +1599,7 @@ console.log('renderOtherBhk', renderOtherBhk())
         {errors?.transactionType && <p className="pt-1 text-red-500 text-xs">{errors.transactionType}</p>}
       </div>}
 
-      {renderShowField(FIELD_NAME.PROPERTY_CONSTRUCTION_STATUS) && <div data-field={FIELD_NAME.PROPERTY_CONSTRUCTION_STATUS} data-has-value={!!dynamicFieldDetails.propertyConstructionStatus}>
+      {renderShowField(FIELD_NAME.PROPERTY_CONSTRUCTION_STATUS) && <div id='propertyConstructionStatus' data-field={FIELD_NAME.PROPERTY_CONSTRUCTION_STATUS} data-has-value={!!dynamicFieldDetails.propertyConstructionStatus}>
         <FieldLabel label="Construction Status" customClass="pb-2" required={true}/>
         <div className="flex flex-wrap gap-3 pt-2">
            {
@@ -1599,8 +1623,8 @@ console.log('renderOtherBhk', renderOtherBhk())
         {errors?.propertyConstructionStatus && <p className="pt-1 text-red-500 text-xs">{errors.propertyConstructionStatus}</p>}
       </div>}
 
-     {renderShowField(FIELD_NAME.AGE_OF_PROPERTY) && <div data-field={FIELD_NAME.AGE_OF_PROPERTY} data-has-value={!!dynamicFieldDetails.propertyAge || dynamicFieldDetails.propertyAge === 0}>
-          <FieldLabel label="Age of Property ( in Years)" customClass="pb-2" required={true}/>
+     {renderShowField(FIELD_NAME.AGE_OF_PROPERTY) && <div id='propertyAge' data-field={FIELD_NAME.AGE_OF_PROPERTY} data-has-value={!!dynamicFieldDetails.propertyAge || dynamicFieldDetails.propertyAge === 0}>
+          <FieldLabel label="Age of Property ( In Years)" customClass="pb-2" required={true}/>
           <InputBase
             placeholder="Enter property age"
             fullWidth
@@ -1623,7 +1647,7 @@ console.log('renderOtherBhk', renderOtherBhk())
       </div> }
 
       {renderShowField(FIELD_NAME.POSSESION_DATE) &&
-        <div data-field={FIELD_NAME.POSSESION_DATE} data-has-value={!!dynamicFieldDetails.possesionDate}>
+        <div id='possesionDate' data-field={FIELD_NAME.POSSESION_DATE} data-has-value={!!dynamicFieldDetails.possesionDate}>
           <FieldLabel label="Possession Date" customClass="pb-2" required={true}/>
           <div onClick={() => {possessionDateRef.current?.showPicker()}}>
             <InputBase
@@ -1652,7 +1676,7 @@ console.log('renderOtherBhk', renderOtherBhk())
         </div>
       }
 
-      {renderShowField(FIELD_NAME.BATHTROOMS) && <div data-field={FIELD_NAME.BATHTROOMS} data-has-value={!!dynamicFieldDetails.bathRooms}>
+      {renderShowField(FIELD_NAME.BATHTROOMS) && <div id='bathRooms' data-field={FIELD_NAME.BATHTROOMS} data-has-value={!!dynamicFieldDetails.bathRooms}>
         <FieldLabel label="Bathrooms" required={true}/>
         <div className="flex flex-wrap gap-3 pt-2">
           {
@@ -1676,7 +1700,7 @@ console.log('renderOtherBhk', renderOtherBhk())
           {errors?.bathRooms && <p className="pt-1 text-red-500 text-xs">{errors.bathRooms}</p>}
       </div>}
 
-      {renderShowField(FIELD_NAME.BEDROOMS) && <div data-field={FIELD_NAME.BEDROOMS} data-has-value={!!dynamicFieldDetails.bedRooms}>
+      {renderShowField(FIELD_NAME.BEDROOMS) && <div id='bedRooms' data-field={FIELD_NAME.BEDROOMS} data-has-value={!!dynamicFieldDetails.bedRooms}>
         <FieldLabel label="Bedroom" required={true}/>
         <div className="flex flex-wrap gap-3 pt-2">
           {
@@ -1700,7 +1724,7 @@ console.log('renderOtherBhk', renderOtherBhk())
           {errors?.bedRooms && <p className="pt-1 text-red-500 text-xs">{errors.bedRooms}</p>}
       </div>}
 
-      {renderShowField(FIELD_NAME.BALCONIES) && <div data-field={FIELD_NAME.BALCONIES} data-has-value={!!dynamicFieldDetails.balconies || dynamicFieldDetails.balconies === 0}>
+      {renderShowField(FIELD_NAME.BALCONIES) && <div id='balconies' data-field={FIELD_NAME.BALCONIES} data-has-value={!!dynamicFieldDetails.balconies || dynamicFieldDetails.balconies === 0}>
         <FieldLabel label="Balconies" required={true}/>
         <div className="flex flex-wrap gap-3 pt-2">
           <ChipTag
@@ -1735,7 +1759,7 @@ console.log('renderOtherBhk', renderOtherBhk())
           {errors?.balconies && <p className="pt-1 text-red-500 text-xs">{errors.balconies}</p>}
       </div>}
 
-      {renderShowField(FIELD_NAME.FACING) && <div data-field={FIELD_NAME.FACING} data-has-value={!!dynamicFieldDetails.facing}>
+      {renderShowField(FIELD_NAME.FACING) && <div id='facing' data-field={FIELD_NAME.FACING} data-has-value={!!dynamicFieldDetails.facing}>
         <FieldLabel label="Facing" />
         <div className="flex flex-wrap gap-3 pt-2">
           {
@@ -1757,7 +1781,7 @@ console.log('renderOtherBhk', renderOtherBhk())
         </div>
       </div>}
 
-      {renderShowField(FIELD_NAME.PLOT_AREA) && <div data-field={FIELD_NAME.PLOT_AREA} data-has-value={!!dynamicFieldDetails.plotArea}>
+      {renderShowField(FIELD_NAME.PLOT_AREA) && <div id='plotArea' data-field={FIELD_NAME.PLOT_AREA} data-has-value={!!dynamicFieldDetails.plotArea}>
         <FieldLabel label="Plot Area" customClass="pb-2" required={true}/>
         <DynamicInput
            placeHolder='Enter Plot Area'
@@ -1781,7 +1805,7 @@ console.log('renderOtherBhk', renderOtherBhk())
           {errors?.plotArea && <p className="pt-1 text-red-500 text-xs">{errors.plotArea}</p>}
       </div>}
 
-      {renderShowField(FIELD_NAME.LENGTH_WIDTH) && <div className="grid grid-cols-1 2md:grid-cols-2 gap-3">
+      {renderShowField(FIELD_NAME.LENGTH_WIDTH) && <div id='plotLength' className="grid grid-cols-1 2md:grid-cols-2 gap-3">
         <div data-field={'LENGTH'} data-has-value={!!dynamicFieldDetails.plotLength}>
           <FieldLabel
             label="Length"
@@ -1850,7 +1874,7 @@ console.log('renderOtherBhk', renderOtherBhk())
         </div>
       </div>}
 
-      {renderShowField(FIELD_NAME.WIDTH_FACING_ROAD) && <div data-field={FIELD_NAME.WIDTH_FACING_ROAD} data-has-value={!!dynamicFieldDetails.widthOfFacingRoad}>
+      {renderShowField(FIELD_NAME.WIDTH_FACING_ROAD) && <div id='widthOfFacingRoad' data-field={FIELD_NAME.WIDTH_FACING_ROAD} data-has-value={!!dynamicFieldDetails.widthOfFacingRoad}>
           <FieldLabel label="Width of Facing Road" customClass="pb-2" required={true}/>
           <InputBase
             placeholder="Enter Plot Facing Road"
@@ -1879,7 +1903,7 @@ console.log('renderOtherBhk', renderOtherBhk())
       
       {renderShowField('possession_date_section') && <RenderSectionName data={CUSTOM_SECTION_NAME.POSSESSION} customClass="pt-3"/>} 
 
-      {renderShowField(FIELD_NAME.COMMERCIAL_PROPERTY_POSSESSTION_STATUS) && <div data-field={FIELD_NAME.PROPERTY_CONSTRUCTION_STATUS} data-has-value={!!dynamicFieldDetails.propertyConstructionStatus}>
+      {renderShowField(FIELD_NAME.COMMERCIAL_PROPERTY_POSSESSTION_STATUS) && <div id='propertyConstructionStatus' data-field={FIELD_NAME.PROPERTY_CONSTRUCTION_STATUS} data-has-value={!!dynamicFieldDetails.propertyConstructionStatus}>
         <FieldLabel label="Possession status" customClass="pb-2" required={true}/>
         <div className="flex flex-wrap gap-3">
            {
@@ -1905,7 +1929,7 @@ console.log('renderOtherBhk', renderOtherBhk())
 
       {(renderShowField(FIELD_NAME.AVAILABEL_DATE) || renderShowField(FIELD_NAME.COMMERCIAL_AGE_OF_PROPERTY)) && <div className="grid grid-cols-1 2md:grid-cols-2 gap-3">
         {renderShowField(FIELD_NAME.AVAILABEL_DATE) &&
-        <div data-field={FIELD_NAME.AVAILABEL_DATE} data-has-value={!!dynamicFieldDetails.possesionDate}>
+        <div id='possesionDate' data-field={FIELD_NAME.AVAILABEL_DATE} data-has-value={!!dynamicFieldDetails.possesionDate}>
           <FieldLabel label="Available From" customClass="pb-2" required={true}/>
           <div className="w-auto" onClick={() => {availabelDateRef.current?.showPicker()}}>
             <InputBase
@@ -1933,7 +1957,7 @@ console.log('renderOtherBhk', renderOtherBhk())
           </div>
         </div>
         }
-        {renderShowField(FIELD_NAME.COMMERCIAL_AGE_OF_PROPERTY) && <div data-field={FIELD_NAME.AGE_OF_PROPERTY} data-has-value={!!dynamicFieldDetails.propertyAge || dynamicFieldDetails.propertyAge === 0}>
+        {renderShowField(FIELD_NAME.COMMERCIAL_AGE_OF_PROPERTY) && <div id='propertyAge' data-field={FIELD_NAME.AGE_OF_PROPERTY} data-has-value={!!dynamicFieldDetails.propertyAge || dynamicFieldDetails.propertyAge === 0}>
             <FieldLabel label="Age of Property ( in Years)" customClass="pb-2" required={true}/>
             <InputBase
               placeholder="Enter property age"
@@ -1959,7 +1983,7 @@ console.log('renderOtherBhk', renderOtherBhk())
       
       {renderShowField('about_property_section') && <RenderSectionName data={CUSTOM_SECTION_NAME.ABOUT_THE_PROPERTY} customClass="pt-3"/> }
       
-      {renderShowField(FIELD_NAME.PLOT_TYPE) && <div data-field={FIELD_NAME.PLOT_TYPE} data-has-value={!!dynamicFieldDetails.plotType}>
+      {renderShowField(FIELD_NAME.PLOT_TYPE) && <div id='plotType' data-field={FIELD_NAME.PLOT_TYPE} data-has-value={!!dynamicFieldDetails.plotType}>
         <FieldLabel label="Plot/Land Type" customClass="pb-2" required={true}/>
         <div className="flex flex-wrap gap-3">
            {
@@ -1983,7 +2007,7 @@ console.log('renderOtherBhk', renderOtherBhk())
         {errors?.plotType && <p className="pt-1 text-red-500 text-xs">{errors.plotType}</p>}
       </div>}
 
-      {renderShowField(FIELD_NAME.SUITABLE_FOR) && <div data-field={FIELD_NAME.SUITABLE_FOR} data-has-value={!!dynamicFieldDetails.suitableFor}>
+      {renderShowField(FIELD_NAME.SUITABLE_FOR) && <div id='suitableFor' data-field={FIELD_NAME.SUITABLE_FOR} data-has-value={!!dynamicFieldDetails.suitableFor}>
         <FieldLabel label="Suitable For" customClass="pb-2" required={true}/>
         <div className="flex flex-wrap gap-3">
            {
@@ -2014,7 +2038,7 @@ console.log('renderOtherBhk', renderOtherBhk())
         {errors?.suitableFor && <p className="pt-1 text-red-500 text-xs">{errors.suitableFor}</p>}
       </div>}
 
-      {renderShowField(FIELD_NAME.LOCATION_HUB) && <div data-field={FIELD_NAME.PROPERTY_CONSTRUCTION_STATUS} data-has-value={!!dynamicFieldDetails.loactionHub}>
+      {renderShowField(FIELD_NAME.LOCATION_HUB) && <div id='loactionHub' data-field={FIELD_NAME.PROPERTY_CONSTRUCTION_STATUS} data-has-value={!!dynamicFieldDetails.loactionHub}>
         <FieldLabel label="Location Hub" customClass="pb-2" required={true}/>
         <div className="flex flex-wrap gap-3">
            {
@@ -2038,7 +2062,7 @@ console.log('renderOtherBhk', renderOtherBhk())
         {errors?.loactionHub && <p className="pt-1 text-red-500 text-xs">{errors.loactionHub}</p>}
       </div>}
 
-      {renderShowField(FIELD_NAME.OTHER_LOCATION_HUB) && <div data-field={FIELD_NAME.OTHER_LOCATION_HUB} data-has-value={!!dynamicFieldDetails.otherLocationHub}>
+      {renderShowField(FIELD_NAME.OTHER_LOCATION_HUB) && <div id='otherLocationHub' data-field={FIELD_NAME.OTHER_LOCATION_HUB} data-has-value={!!dynamicFieldDetails.otherLocationHub}>
         <FieldLabel label="Other (Location Hub)" required={true} customClass="pb-2"/>
           <InputBase
             placeholder="Enter location hub"
@@ -2058,7 +2082,7 @@ console.log('renderOtherBhk', renderOtherBhk())
         {errors?.otherLocationHub && <p className="pt-1 text-red-500 text-xs">{errors.otherLocationHub}</p>}
       </div>}
 
-      {renderShowField(FIELD_NAME.ZONE_TYPE) && <div data-field={FIELD_NAME.ZONE_TYPE} data-has-value={!!dynamicFieldDetails.zoneType}>
+      {renderShowField(FIELD_NAME.ZONE_TYPE) && <div id='zoneType' data-field={FIELD_NAME.ZONE_TYPE} data-has-value={!!dynamicFieldDetails.zoneType}>
         <FieldLabel label="Zone Type" customClass="pb-2" required={true}/>
         <div className="flex flex-wrap gap-3">
            {
@@ -2082,7 +2106,7 @@ console.log('renderOtherBhk', renderOtherBhk())
         {errors?.zoneType && <p className="pt-1 text-red-500 text-xs">{errors.zoneType}</p>}
       </div>}
 
-      {renderShowField(FIELD_NAME.PROPERTY_CONDITION) && <div data-field={FIELD_NAME.PROPERTY_CONDITION} data-has-value={!!dynamicFieldDetails.propertyCondition}>
+      {renderShowField(FIELD_NAME.PROPERTY_CONDITION) && <div id='propertyCondition' data-field={FIELD_NAME.PROPERTY_CONDITION} data-has-value={!!dynamicFieldDetails.propertyCondition}>
         <FieldLabel label="Property Condition" customClass="pb-2" required={true}/>
         <div className="flex flex-wrap gap-3">
            {
@@ -2106,7 +2130,7 @@ console.log('renderOtherBhk', renderOtherBhk())
         {errors?.propertyCondition && <p className="pt-1 text-red-500 text-xs">{errors.propertyCondition}</p>}
       </div>}
       
-      {renderShowField(FIELD_NAME.COMMERCIAL_PLOT_ARE) && <div data-field={FIELD_NAME.COMMERCIAL_PLOT_ARE} data-has-value={!!dynamicFieldDetails.plotArea}>
+      {renderShowField(FIELD_NAME.COMMERCIAL_PLOT_ARE) && <div id='plotArea' data-field={FIELD_NAME.COMMERCIAL_PLOT_ARE} data-has-value={!!dynamicFieldDetails.plotArea}>
         <FieldLabel label="Plot Area" customClass="pb-2" required={renderOptionalField(FIELD_NAME.COMMERCIAL_PLOT_ARE)}/>
         <DynamicInput
            placeHolder='Enter plot area'
@@ -2125,7 +2149,7 @@ console.log('renderOtherBhk', renderOtherBhk())
       </div>}
 
       {(renderShowField(FIELD_NAME.COMMERCIAL_BUILT_UP_AREA) || renderShowField(FIELD_NAME.COMMERCIAL_CARPET_AREA) )&& <div className="grid grid-cols-1 2md:grid-cols-2 gap-3">
-        {renderShowField(FIELD_NAME.COMMERCIAL_BUILT_UP_AREA) && <div data-field={FIELD_NAME.COMMERCIAL_BUILT_UP_AREA} data-has-value={!!dynamicFieldDetails.builtUpArea}>
+        {renderShowField(FIELD_NAME.COMMERCIAL_BUILT_UP_AREA) && <div id='builtUpArea' data-field={FIELD_NAME.COMMERCIAL_BUILT_UP_AREA} data-has-value={!!dynamicFieldDetails.builtUpArea}>
         <FieldLabel label="Built Up Area" customClass="pb-2" required={renderOptionalField(FIELD_NAME.COMMERCIAL_BUILT_UP_AREA)}/>
         <DynamicInput
            placeHolder='Enter built up area'
@@ -2143,7 +2167,7 @@ console.log('renderOtherBhk', renderOtherBhk())
           {errors?.builtUpArea && <p className="pt-1 text-red-500 text-xs">{errors.builtUpArea}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.COMMERCIAL_CARPET_AREA) && <div data-field={FIELD_NAME.COMMERCIAL_CARPET_AREA} data-has-value={!!dynamicFieldDetails.carpetArea}>
+        {renderShowField(FIELD_NAME.COMMERCIAL_CARPET_AREA) && <div id='carpetArea' data-field={FIELD_NAME.COMMERCIAL_CARPET_AREA} data-has-value={!!dynamicFieldDetails.carpetArea}>
           <FieldLabel label="Carpet Area" customClass="pb-2" required={renderOptionalField(FIELD_NAME.COMMERCIAL_CARPET_AREA)}/>
           <DynamicInput
             placeHolder='Enter carpet area'
@@ -2162,7 +2186,7 @@ console.log('renderOtherBhk', renderOtherBhk())
       </div>}
 
       {(renderShowField(FIELD_NAME.PLOT_LENGTH) || renderShowField(FIELD_NAME.PLOT_BREADTH)) && <div className="grid grid-cols-1 2md:grid-cols-2 gap-3">
-        {renderShowField(FIELD_NAME.PLOT_LENGTH) && <div data-field={FIELD_NAME.PLOT_LENGTH} data-has-value={!!dynamicFieldDetails.plotLength}>
+        {renderShowField(FIELD_NAME.PLOT_LENGTH) && <div id='plotLength' data-field={FIELD_NAME.PLOT_LENGTH} data-has-value={!!dynamicFieldDetails.plotLength}>
         <FieldLabel label="Length of plot/Land" customClass="pb-2"/>
         <DynamicInput
            placeHolder='Enter length of plot/land'
@@ -2179,7 +2203,7 @@ console.log('renderOtherBhk', renderOtherBhk())
            />
           {errors?.plotLength && <p className="pt-1 text-red-500 text-xs">{errors.plotLength}</p>}
         </div>}
-        {renderShowField(FIELD_NAME.PLOT_BREADTH) && <div data-field={FIELD_NAME.PLOT_BREADTH} data-has-value={!!dynamicFieldDetails.plotBreadth}>
+        {renderShowField(FIELD_NAME.PLOT_BREADTH) && <div id='plotBreadth' data-field={FIELD_NAME.PLOT_BREADTH} data-has-value={!!dynamicFieldDetails.plotBreadth}>
           <FieldLabel label="Breadth of Plot/Land" customClass="pb-2"/>
           <DynamicInput
             placeHolder='Enter breadth of plot/land'
@@ -2199,7 +2223,7 @@ console.log('renderOtherBhk', renderOtherBhk())
       </div>}
 
       {(renderShowField(FIELD_NAME.ENTRANCE_WIDTH) || renderShowField(FIELD_NAME.CELLING_HEIGHT)) && <div className="grid grid-cols-1 2md:grid-cols-2 gap-3">
-        {renderShowField(FIELD_NAME.ENTRANCE_WIDTH) && <div data-field={FIELD_NAME.ENTRANCE_WIDTH} data-has-value={!!dynamicFieldDetails.entranceWidth}>
+        {renderShowField(FIELD_NAME.ENTRANCE_WIDTH) && <div id='entranceWidth' data-field={FIELD_NAME.ENTRANCE_WIDTH} data-has-value={!!dynamicFieldDetails.entranceWidth}>
         <FieldLabel label="Entrance Width" customClass="pb-2" required={true}/>
         <DynamicInput
            placeHolder='Enter entrance width'
@@ -2216,7 +2240,7 @@ console.log('renderOtherBhk', renderOtherBhk())
            />
           {errors?.entranceWidth && <p className="pt-1 text-red-500 text-xs">{errors.entranceWidth}</p>}
         </div>}
-        {renderShowField(FIELD_NAME.CELLING_HEIGHT) && <div data-field={FIELD_NAME.CELLING_HEIGHT} data-has-value={!!dynamicFieldDetails.cellingHeight}>
+        {renderShowField(FIELD_NAME.CELLING_HEIGHT) && <div id='cellingHeight' data-field={FIELD_NAME.CELLING_HEIGHT} data-has-value={!!dynamicFieldDetails.cellingHeight}>
           <FieldLabel label="Ceiling Height" customClass="pb-2" required={true}/>
           <DynamicInput
             placeHolder='Enter ceiling height'
@@ -2235,7 +2259,7 @@ console.log('renderOtherBhk', renderOtherBhk())
         </div>}
       </div>}
       
-      {renderShowField(FIELD_NAME.WIDTH_OF_FACING_IN_FEET) && <div data-field={FIELD_NAME.WIDTH_OF_FACING_IN_FEET} data-has-value={!!dynamicFieldDetails.widthOfFacingRoad}>
+      {renderShowField(FIELD_NAME.WIDTH_OF_FACING_IN_FEET) && <div id='widthOfFacingRoad' data-field={FIELD_NAME.WIDTH_OF_FACING_IN_FEET} data-has-value={!!dynamicFieldDetails.widthOfFacingRoad}>
         <FieldLabel label="Width of facing road" customClass="pb-2"  required={true}/>
         <DynamicInput
            placeHolder='Enter width of facing road'
@@ -2253,7 +2277,7 @@ console.log('renderOtherBhk', renderOtherBhk())
           {errors?.widthOfFacingRoad && <p className="pt-1 text-red-500 text-xs">{errors.widthOfFacingRoad}</p>}
       </div>}
 
-      {renderShowField(FIELD_NAME.OPEN_SIDE) && <div data-field={FIELD_NAME.OPEN_SIDE} data-has-value={!!dynamicFieldDetails.openSide}>
+      {renderShowField(FIELD_NAME.OPEN_SIDE) && <div id='openSide' data-field={FIELD_NAME.OPEN_SIDE} data-has-value={!!dynamicFieldDetails.openSide}>
         <FieldLabel label="No. of open sides"/>
         <div className="flex flex-wrap gap-3 pt-2">
           {
@@ -2275,7 +2299,7 @@ console.log('renderOtherBhk', renderOtherBhk())
         </div>
       </div>}
 
-       {renderShowField(FIELD_NAME.CONSTRUCTION_DONE) && <div data-field={FIELD_NAME.CONSTRUCTION_DONE} data-has-value={!!dynamicFieldDetails.constructinoDone}>
+       {renderShowField(FIELD_NAME.CONSTRUCTION_DONE) && <div id='constructinoDone' data-field={FIELD_NAME.CONSTRUCTION_DONE} data-has-value={!!dynamicFieldDetails.constructinoDone}>
         <FieldLabel label="Any Construction Done On This Property?" customClass="pb-2"/>
         <div className="flex flex-wrap gap-3">
            {
@@ -2299,7 +2323,7 @@ console.log('renderOtherBhk', renderOtherBhk())
         {errors?.constructinoDone && <p className="pt-1 text-red-500 text-xs">{errors.constructinoDone}</p>}
       </div>}
 
-      {renderShowField(FIELD_NAME.TYPE_OF_CONSTRUCTION) && <div data-field={FIELD_NAME.TYPE_OF_CONSTRUCTION} data-has-value={!!dynamicFieldDetails.constructionStatus}>
+      {renderShowField(FIELD_NAME.TYPE_OF_CONSTRUCTION) && <div id='typeOfConstructionDone' data-field={FIELD_NAME.TYPE_OF_CONSTRUCTION} data-has-value={!!dynamicFieldDetails.constructionStatus}>
         <FieldLabel label="What Type of Construction Has Been Done?" customClass="pb-2" required={true}/>
         <div className="flex flex-wrap gap-3">
            {
@@ -2330,7 +2354,7 @@ console.log('renderOtherBhk', renderOtherBhk())
         {errors?.typeOfConstructionDone && <p className="pt-1 text-red-500 text-xs">{errors.typeOfConstructionDone}</p>}
       </div>}
 
-      {renderShowField(FIELD_NAME.CONSTRUCTION_STATUS) && <div data-field={FIELD_NAME.PROPERTY_CONSTRUCTION_STATUS} data-has-value={!!dynamicFieldDetails.constructionStatus}>
+      {renderShowField(FIELD_NAME.CONSTRUCTION_STATUS) && <div id='constructionStatus' data-field={FIELD_NAME.PROPERTY_CONSTRUCTION_STATUS} data-has-value={!!dynamicFieldDetails.constructionStatus}>
         <FieldLabel label="Construction Status" customClass="pb-2" required={true}/>
         <div className="flex flex-wrap gap-3">
            {
@@ -2354,7 +2378,7 @@ console.log('renderOtherBhk', renderOtherBhk())
         {errors?.constructionStatus && <p className="pt-1 text-red-500 text-xs">{errors.constructionStatus}</p>}
       </div>}
 
-      {renderShowField(FIELD_NAME.LOCATED_NEAR) && <div data-field={FIELD_NAME.LOCATED_NEAR} data-has-value={!!dynamicFieldDetails.locatedNear}>
+      {renderShowField(FIELD_NAME.LOCATED_NEAR) && <div id='locatedNear' data-field={FIELD_NAME.LOCATED_NEAR} data-has-value={!!dynamicFieldDetails.locatedNear}>
         <FieldLabel label="Located Near" customClass="pb-2"/>
         <div className="flex flex-wrap gap-3">
            {
@@ -2385,7 +2409,7 @@ console.log('renderOtherBhk', renderOtherBhk())
         {errors?.locatedNear && <p className="pt-1 text-red-500 text-xs">{errors.locatedNear}</p>}
       </div>}
 
-      {renderShowField(FIELD_NAME.OWNERSHIP) && <div data-field={FIELD_NAME.OWNERSHIP} data-has-value={!!dynamicFieldDetails.ownership}>
+      {renderShowField(FIELD_NAME.OWNERSHIP) && <div id='ownership' data-field={FIELD_NAME.OWNERSHIP} data-has-value={!!dynamicFieldDetails.ownership}>
         <FieldLabel label="OwnerShip" required={true}/>
         <div className="flex flex-wrap gap-3 pt-2">
           {
@@ -2409,7 +2433,7 @@ console.log('renderOtherBhk', renderOtherBhk())
         {errors?.ownership && <p className="pt-1 text-red-500 text-xs">{errors.ownership}</p>}
       </div>}
 
-      {renderShowField(FIELD_NAME.COMMERCIAL_FACING) && <div data-field={FIELD_NAME.COMMERCIAL_FACING} data-has-value={!!dynamicFieldDetails.facing}>
+      {renderShowField(FIELD_NAME.COMMERCIAL_FACING) && <div id='facing' data-field={FIELD_NAME.COMMERCIAL_FACING} data-has-value={!!dynamicFieldDetails.facing}>
         <FieldLabel label="Property Facing" />
         <div className="flex flex-wrap gap-3 pt-2">
           {
@@ -2437,7 +2461,7 @@ console.log('renderOtherBhk', renderOtherBhk())
       <CustomOptionField open={openCustomFieldPopup} onClose={() => handleOpenAddCustomLocation('')} label={customFieldLabel} onSubmit={handleAddCustomLocation}/>
       <div className="flex justify-end w-full">
         <div className="flex flex-wrap justify-start flex-row gap-2 items-center mt-8 sm:mt-10">
-          <button onClick={() => {
+          {activeStep != 1 && <button onClick={() => {
             if(activeStep != 1){
                 dispatch(setActiveStep({step: activeStep - 1}))
             }
@@ -2445,10 +2469,12 @@ console.log('renderOtherBhk', renderOtherBhk())
             <span className="gap-3 relative flex justify-center">
               <p className={`text-nowrap font-medium`}>Back</p>
             </span>
-          </button>
+          </button>}
           <button disabled={step1Loader} onClick={() => {
             if(activeStep != 4){
-              if(validate()){
+              let state = validate()
+              if(state.hasError){
+                scrollToError(state.errorData);
                 return
               }
               let payload = generatePayload()

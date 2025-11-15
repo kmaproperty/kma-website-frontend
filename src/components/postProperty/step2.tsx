@@ -898,8 +898,32 @@ export default function Step2({containerRef}) {
     }
     console.log('step2 validation error', updatedError)
     setErrors(updatedError)
-    return hasError
+    return {hasError: hasError, errorData: updatedError};
   }
+
+    const scrollToError = (errorsObj) => {
+    const fields = Object.keys(errorsObj);
+    if (!fields || fields.length === 0) return;
+
+    const firstErrorField = fields[0];
+    const el = document.getElementById(firstErrorField);
+    const container = document.getElementById("formWrapper");
+    if (el && container) {
+      const containerRect = container.getBoundingClientRect();
+      const elementRect = el.getBoundingClientRect();
+      const offset =
+        elementRect.top - containerRect.top + container.scrollTop - 80;
+
+      container.scrollTo({
+        top: offset,
+        behavior: "smooth",
+      });
+  //     el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // const data = {
+  //   message: `Scrolled to element with id 'builtUpArea'.`
+  // };
+    }
+  };
 
   const generatePayload = ():Step2PostPropertyPayload => { 
     return {
@@ -1109,7 +1133,7 @@ export default function Step2({containerRef}) {
 
         {(renderShowField(FIELD_NAME.TOTAL_FLOOR) || renderShowField(FIELD_NAME.FLOOR_NUMBER)) && <div className="grid grid-cols-1 2md:grid-cols-2 gap-3">
           
-          {renderShowField(FIELD_NAME.TOTAL_FLOOR) && <div data-field={FIELD_NAME.TOTAL_FLOOR} data-has-value={!!dynamicFieldDetails.totalFloor}>
+          {renderShowField(FIELD_NAME.TOTAL_FLOOR) && <div id='totalFloor' data-field={FIELD_NAME.TOTAL_FLOOR} data-has-value={!!dynamicFieldDetails.totalFloor}>
             <FieldLabel label="Total Floor Count" customClass="pb-2" required={true} />
             <InputBase
               placeholder="Enter total floor count"
@@ -1133,7 +1157,7 @@ export default function Step2({containerRef}) {
             {errors?.totalFloor && <p className="pt-1 text-red-500 text-xs">{errors.totalFloor}</p>}
           </div>}
 
-          {renderShowField(FIELD_NAME.FLOOR_NUMBER) && <div data-field={FIELD_NAME.FLOOR_NUMBER} data-has-value={!!dynamicFieldDetails.floorNumber}>
+          {renderShowField(FIELD_NAME.FLOOR_NUMBER) && <div id='floorNumber' data-field={FIELD_NAME.FLOOR_NUMBER} data-has-value={!!dynamicFieldDetails.floorNumber}>
             <FieldLabel
               label="Property on Floor / Floor Number"
               customClass="pb-2"
@@ -1156,7 +1180,7 @@ export default function Step2({containerRef}) {
           </div>}
         </div>}
 
-        {renderShowField(FIELD_NAME.BLOCK_NO) && <div data-field={FIELD_NAME.BLOCK_NO} data-has-value={!!dynamicFieldDetails.towerNumber}>
+        {renderShowField(FIELD_NAME.BLOCK_NO) && <div id='towerNumber' data-field={FIELD_NAME.BLOCK_NO} data-has-value={!!dynamicFieldDetails.towerNumber}>
           <FieldLabel label="Tower / Block No" customClass="pb-2" />
           <InputBase
             placeholder="Enter tower / block no."
@@ -1178,7 +1202,7 @@ export default function Step2({containerRef}) {
           {errors?.towerNumber && <p className="pt-1 text-red-500 text-xs">{errors.towerNumber}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.FLAT_NUMBER) && <div data-field={FIELD_NAME.FLAT_NUMBER} data-has-value={!!dynamicFieldDetails.flatNumber}>
+        {renderShowField(FIELD_NAME.FLAT_NUMBER) && <div id='flatNumber' data-field={FIELD_NAME.FLAT_NUMBER} data-has-value={!!dynamicFieldDetails.flatNumber}>
           <FieldLabel label="Flat Number" customClass="pb-2" />
           <InputBase
             placeholder="Enter flat number"
@@ -1200,7 +1224,7 @@ export default function Step2({containerRef}) {
           {errors?.flatNumber && <p className="pt-1 text-red-500 text-xs">{errors.flatNumber}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.VILLA_NUMBER) && <div data-field={FIELD_NAME.VILLA_NUMBER} data-has-value={!!dynamicFieldDetails.villaNumber}>
+        {renderShowField(FIELD_NAME.VILLA_NUMBER) && <div id='villaNumber' data-field={FIELD_NAME.VILLA_NUMBER} data-has-value={!!dynamicFieldDetails.villaNumber}>
           <FieldLabel label="Villa Number / Plot Number" customClass="pb-2" />
           <InputBase
             placeholder="Enter villa number / plot number"
@@ -1222,7 +1246,7 @@ export default function Step2({containerRef}) {
           {errors?.villaNumber && <p className="pt-1 text-red-500 text-xs">{errors.villaNumber}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.HOUSE_NUMBER) && <div data-field={FIELD_NAME.HOUSE_NUMBER} data-has-value={!!dynamicFieldDetails.houseNumber}>
+        {renderShowField(FIELD_NAME.HOUSE_NUMBER) && <div id='houseNumber' data-field={FIELD_NAME.HOUSE_NUMBER} data-has-value={!!dynamicFieldDetails.houseNumber}>
           <FieldLabel label="House Number / Plot Number" customClass="pb-2" />
           <InputBase
             placeholder="Enter house number / plot number"
@@ -1244,7 +1268,7 @@ export default function Step2({containerRef}) {
           {errors?.houseNumber && <p className="pt-1 text-red-500 text-xs">{errors.houseNumber}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.DUPLEX_NUMBER) && <div data-field={FIELD_NAME.DUPLEX_NUMBER} data-has-value={!!dynamicFieldDetails.houseNumber}>
+        {renderShowField(FIELD_NAME.DUPLEX_NUMBER) && <div id='houseNumber' data-field={FIELD_NAME.DUPLEX_NUMBER} data-has-value={!!dynamicFieldDetails.houseNumber}>
           <FieldLabel label="House Number / Duplex Unit" customClass="pb-2" />
           <InputBase
             placeholder="Enter house number / duplex unit"
@@ -1266,7 +1290,7 @@ export default function Step2({containerRef}) {
           {errors?.houseNumber && <p className="pt-1 text-red-500 text-xs">{errors.houseNumber}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.PROPERTY_AREA) && <div data-field={FIELD_NAME.PROPERTY_AREA} data-has-value={!!dynamicFieldDetails.propertyArea}>
+        {renderShowField(FIELD_NAME.PROPERTY_AREA) && <div id='propertyArea' data-field={FIELD_NAME.PROPERTY_AREA} data-has-value={!!dynamicFieldDetails.propertyArea}>
           <FieldLabel label="Property Area (Acres)" customClass="pb-2" />
           <InputBase
             placeholder="Acres "
@@ -1290,7 +1314,7 @@ export default function Step2({containerRef}) {
           {errors?.propertyArea && <p className="pt-1 text-red-500 text-xs">{errors.propertyArea}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.PLOT_AREA) && <div data-field={FIELD_NAME.PLOT_AREA} data-has-value={!!dynamicFieldDetails.ploatArea}>
+        {renderShowField(FIELD_NAME.PLOT_AREA) && <div id='ploatArea' data-field={FIELD_NAME.PLOT_AREA} data-has-value={!!dynamicFieldDetails.ploatArea}>
           <FieldLabel label="Plot Area (Acres)" customClass="pb-2" />
           <InputBase
             placeholder="Acres "
@@ -1316,7 +1340,7 @@ export default function Step2({containerRef}) {
 
         {/* Seal Plot start*/}
         
-        {renderShowField(FIELD_NAME.FACING) && <div data-field={FIELD_NAME.FACING} data-has-value={!!dynamicFieldDetails.facing}>
+        {renderShowField(FIELD_NAME.FACING) && <div id='facing' data-field={FIELD_NAME.FACING} data-has-value={!!dynamicFieldDetails.facing}>
           <FieldLabel label="Facing" />
           <div className="flex flex-wrap gap-3 pt-2">
             {
@@ -1338,7 +1362,7 @@ export default function Step2({containerRef}) {
           </div>
         </div>}
 
-        {renderShowField(FIELD_NAME.PLOT_NUMBER) && <div data-field={FIELD_NAME.PLOT_NUMBER} data-has-value={!!dynamicFieldDetails.plotNumber}>
+        {renderShowField(FIELD_NAME.PLOT_NUMBER) && <div id='plotNumber' data-field={FIELD_NAME.PLOT_NUMBER} data-has-value={!!dynamicFieldDetails.plotNumber}>
           <FieldLabel label="Plot Number" customClass="pb-2" />
           <InputBase
             placeholder="Enter plot number"
@@ -1359,7 +1383,7 @@ export default function Step2({containerRef}) {
           {errors?.plotNumber && <p className="pt-1 text-red-500 text-xs">{errors.plotNumber}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.IS_BOUNDARY) && <div data-field={FIELD_NAME.IS_BOUNDARY} data-has-value={!!dynamicFieldDetails.isBoundary}>
+        {renderShowField(FIELD_NAME.IS_BOUNDARY) && <div id='isBoundary' data-field={FIELD_NAME.IS_BOUNDARY} data-has-value={!!dynamicFieldDetails.isBoundary}>
           <FieldLabel label="Is There a Boundary Wall Around the Property?" />
           <div className="flex flex-wrap gap-3 pt-2">
             {
@@ -1381,7 +1405,7 @@ export default function Step2({containerRef}) {
           </div>
         </div>}
 
-        {renderShowField(FIELD_NAME.OPEN_SIDE) && <div data-field={FIELD_NAME.OPEN_SIDE} data-has-value={!!dynamicFieldDetails.openSide}>
+        {renderShowField(FIELD_NAME.OPEN_SIDE) && <div id='openSide' data-field={FIELD_NAME.OPEN_SIDE} data-has-value={!!dynamicFieldDetails.openSide}>
           <FieldLabel label="Number Of Open Side" required={true}/>
           <div className="flex flex-wrap gap-3 pt-2">
             {
@@ -1405,7 +1429,7 @@ export default function Step2({containerRef}) {
             {errors?.openSide && <p className="pt-1 text-red-500 text-xs">{errors.openSide}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.FLOOR_CONSTRUCTION) && <div data-field={FIELD_NAME.FLOOR_CONSTRUCTION} data-has-value={!!dynamicFieldDetails.floorConstruction}>
+        {renderShowField(FIELD_NAME.FLOOR_CONSTRUCTION) && <div id='floorConstruction' data-field={FIELD_NAME.FLOOR_CONSTRUCTION} data-has-value={!!dynamicFieldDetails.floorConstruction}>
             <FieldLabel label="Floor Allow for constuction" customClass="pb-2"/>
             <InputBase
               placeholder="No of floor"
@@ -1429,7 +1453,7 @@ export default function Step2({containerRef}) {
             {errors?.floorConstruction && <p className="pt-1 text-red-500 text-xs">{errors.floorConstruction}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.CONSTRUCTION_DONE) && <div data-field={FIELD_NAME.CONSTRUCTION_DONE} data-has-value={!!dynamicFieldDetails.constructionDone}>
+        {renderShowField(FIELD_NAME.CONSTRUCTION_DONE) && <div id='constructionDone' data-field={FIELD_NAME.CONSTRUCTION_DONE} data-has-value={!!dynamicFieldDetails.constructionDone}>
           <FieldLabel label="Any Construction Done On This Property?" />
           <div className="flex flex-wrap gap-3 pt-2">
             {
@@ -1451,7 +1475,7 @@ export default function Step2({containerRef}) {
           </div>
         </div>}
 
-        {renderShowField(FIELD_NAME.TYPE_OF_CONSTRUCTION) && <div data-field={FIELD_NAME.TYPE_OF_CONSTRUCTION} data-has-value={!!dynamicFieldDetails.typeOfConstruction}>
+        {renderShowField(FIELD_NAME.TYPE_OF_CONSTRUCTION) && <div id='typeOfConstruction' data-field={FIELD_NAME.TYPE_OF_CONSTRUCTION} data-has-value={!!dynamicFieldDetails.typeOfConstruction}>
           <FieldLabel label="Any Construction Done On This Property?" required={true}/>
           <div className="flex flex-wrap gap-3 pt-2">
             {
@@ -1474,7 +1498,7 @@ export default function Step2({containerRef}) {
             {errors?.typeOfConstruction && <p className="pt-1 text-red-500 text-xs">{errors.typeOfConstruction}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.CORNER_PROPERTY) && <div data-field={FIELD_NAME.CORNER_PROPERTY} data-has-value={!!dynamicFieldDetails.cornerProperty}>
+        {renderShowField(FIELD_NAME.CORNER_PROPERTY) && <div id='cornerProperty' data-field={FIELD_NAME.CORNER_PROPERTY} data-has-value={!!dynamicFieldDetails.cornerProperty}>
           <FieldLabel label="Corner Property" />
           <div className="flex flex-wrap gap-3 pt-2">
             {
@@ -1496,7 +1520,7 @@ export default function Step2({containerRef}) {
           </div>
         </div>}
 
-        {renderShowField(FIELD_NAME.PROPERTY_DESCRRIPTION) && <div data-field={FIELD_NAME.PROPERTY_DESCRRIPTION} data-has-value={!!dynamicFieldDetails.propertyDescription}>
+        {renderShowField(FIELD_NAME.PROPERTY_DESCRRIPTION) && <div id='propertyDescription' data-field={FIELD_NAME.PROPERTY_DESCRRIPTION} data-has-value={!!dynamicFieldDetails.propertyDescription}>
             <FieldLabel label="Property Description" customClass="pb-2"/>
             <QuillEditor value={dynamicFieldDetails.propertyDescription} 
             onChange={(value) => {
@@ -1511,7 +1535,7 @@ export default function Step2({containerRef}) {
 
         {(renderShowField(FIELD_NAME.COMMERCIAL_TOTAL_FLOOR) || renderShowField(FIELD_NAME.COMMERCIAL_YOUR_FLOOR)) && <div className="grid grid-cols-1 2md:grid-cols-2 gap-3">
           
-          {renderShowField(FIELD_NAME.COMMERCIAL_TOTAL_FLOOR) && <div data-field={FIELD_NAME.COMMERCIAL_TOTAL_FLOOR} data-has-value={!!dynamicFieldDetails.totalFloor}>
+          {renderShowField(FIELD_NAME.COMMERCIAL_TOTAL_FLOOR) && <div id='totalFloor' data-field={FIELD_NAME.COMMERCIAL_TOTAL_FLOOR} data-has-value={!!dynamicFieldDetails.totalFloor}>
             <FieldLabel label="Total Floor Count" customClass="pb-2" required={true} />
             <InputBase
               placeholder="Enter total floor count"
@@ -1535,7 +1559,7 @@ export default function Step2({containerRef}) {
             {errors?.totalFloor && <p className="pt-1 text-red-500 text-xs">{errors.totalFloor}</p>}
           </div>}
 
-          {renderShowField(FIELD_NAME.COMMERCIAL_YOUR_FLOOR) && <div data-field={FIELD_NAME.COMMERCIAL_YOUR_FLOOR} data-has-value={!!dynamicFieldDetails.floorNumber}>
+          {renderShowField(FIELD_NAME.COMMERCIAL_YOUR_FLOOR) && <div id='floorNumber' data-field={FIELD_NAME.COMMERCIAL_YOUR_FLOOR} data-has-value={!!dynamicFieldDetails.floorNumber}>
             <FieldLabel
               label="Your Floor"
               customClass="pb-2"
@@ -1558,7 +1582,7 @@ export default function Step2({containerRef}) {
           </div>}
         </div>}
 
-        {renderShowField(FIELD_NAME.STAIR_CASE) && <div data-field={FIELD_NAME.STAIR_CASE} data-has-value={!!dynamicFieldDetails.noOfStaircases}>
+        {renderShowField(FIELD_NAME.STAIR_CASE) && <div id='noOfStaircases' data-field={FIELD_NAME.STAIR_CASE} data-has-value={!!dynamicFieldDetails.noOfStaircases}>
           <FieldLabel label="No. of Staircases"/>
           <div className="flex flex-wrap gap-3 pt-2">
             <InputBase
@@ -1584,7 +1608,7 @@ export default function Step2({containerRef}) {
             {errors?.noOfStaircases && <p className="pt-1 text-red-500 text-xs">{errors.noOfStaircases}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.LIFTS) && <div data-field={FIELD_NAME.LIFTS} data-has-value={!!dynamicFieldDetails.lifts}>
+        {renderShowField(FIELD_NAME.LIFTS) && <div id='lifts' data-field={FIELD_NAME.LIFTS} data-has-value={!!dynamicFieldDetails.lifts}>
           <FieldLabel label="Lifts" customClass="pb-2"/>
           <div className="flex flex-wrap gap-3">
               {
@@ -1610,7 +1634,7 @@ export default function Step2({containerRef}) {
 
         {renderShowField(FIELD_NAME.PRIVATE_PARKING) && <div className="grid grid-cols-1 2md:grid-cols-2 gap-3 items-end">
           
-          {renderShowField(FIELD_NAME.PRIVATE_PARKING) && <div data-field={FIELD_NAME.PRIVATE_PARKING} data-has-value={!!dynamicFieldDetails.privateParking}>
+          {renderShowField(FIELD_NAME.PRIVATE_PARKING) && <div id='privateParking' data-field={FIELD_NAME.PRIVATE_PARKING} data-has-value={!!dynamicFieldDetails.privateParking}>
             <FieldLabel label="Parking" customClass="pb-2" />
             <InputBase
               placeholder="Enter private parking"
@@ -1634,7 +1658,7 @@ export default function Step2({containerRef}) {
             {errors?.privateParking && <p className="pt-1 text-red-500 text-xs">{errors.privateParking}</p>}
           </div>}
 
-          {renderShowField(FIELD_NAME.PUBLIC_PARKING) && <div data-field={FIELD_NAME.PUBLIC_PARKING} data-has-value={!!dynamicFieldDetails.publicParking}>
+          {renderShowField(FIELD_NAME.PUBLIC_PARKING) && <div id='publicParking' data-field={FIELD_NAME.PUBLIC_PARKING} data-has-value={!!dynamicFieldDetails.publicParking}>
             <FieldLabel
               label=""
               customClass="pb-2"
@@ -1667,7 +1691,7 @@ export default function Step2({containerRef}) {
 
         {renderSecondSectionLabel().name && <RenderSectionName customClass="pt-3" data={renderSecondSectionLabel()}/>}
 
-        {renderShowField(FIELD_NAME.RENT_SUITABLE) && <div data-field={FIELD_NAME.RENT_SUITABLE} data-has-value={dynamicFieldDetails.rentSuitableFor.length > 0}>
+        {renderShowField(FIELD_NAME.RENT_SUITABLE) && <div id='rentSuitableFor' data-field={FIELD_NAME.RENT_SUITABLE} data-has-value={dynamicFieldDetails.rentSuitableFor.length > 0}>
           <FieldLabel label="Rent Suitable For/ Preferred Tenant Type" />
           <div className="flex flex-wrap gap-3 pt-2">
             {
@@ -1704,7 +1728,7 @@ export default function Step2({containerRef}) {
           </div>
         </div>}
 
-        {renderShowField(FIELD_NAME.BECHLOR_PREFERENCE) && <div data-field={FIELD_NAME.BECHLOR_PREFERENCE} data-has-value={!!dynamicFieldDetails.rentPreference}>
+        {renderShowField(FIELD_NAME.BECHLOR_PREFERENCE) && <div id='rentPreference' data-field={FIELD_NAME.BECHLOR_PREFERENCE} data-has-value={!!dynamicFieldDetails.rentPreference}>
           <FieldLabel label="Select your preference for bachelors" required={renderOptionalField(FIELD_NAME.BECHLOR_PREFERENCE)}/>
           <div className="flex flex-wrap gap-3 pt-2">
             {
@@ -1728,7 +1752,7 @@ export default function Step2({containerRef}) {
           {errors?.rentPreference && <p className="pt-1 text-red-500 text-xs">{errors.rentPreference}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.RENT_AVAILABEL_FROM) && <div data-field={FIELD_NAME.RENT_AVAILABEL_FROM} data-has-value={!!dynamicFieldDetails.rentAvailabelFrom}>
+        {renderShowField(FIELD_NAME.RENT_AVAILABEL_FROM) && <div id='rentAvailabelFrom' data-field={FIELD_NAME.RENT_AVAILABEL_FROM} data-has-value={!!dynamicFieldDetails.rentAvailabelFrom}>
           <FieldLabel label="Rent Available From" required={true}/>
           <div className="flex flex-wrap gap-3 pt-2">
             {
@@ -1752,7 +1776,7 @@ export default function Step2({containerRef}) {
           {errors?.rentAvailabelFrom && <p className="pt-1 text-red-500 text-xs">{errors.rentAvailabelFrom}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.RENT_AVAILABEL_DATE) && <div data-field={FIELD_NAME.RENT_AVAILABEL_DATE} data-has-value={!!dynamicFieldDetails.rentAvailableDate}>
+        {renderShowField(FIELD_NAME.RENT_AVAILABEL_DATE) && <div id='rentAvailableDate' data-field={FIELD_NAME.RENT_AVAILABEL_DATE} data-has-value={!!dynamicFieldDetails.rentAvailableDate}>
           <FieldLabel label="Available Date" required={true} />
           <div className="flex gap-3 pt-2" onClick={() => {availabelDateref.current?.showPicker()}}>
             <InputBase
@@ -1775,7 +1799,7 @@ export default function Step2({containerRef}) {
           {errors?.rentAvailableDate && <p className="pt-1 text-red-500 text-xs">{errors.rentAvailableDate}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.RENT) && <div data-field={FIELD_NAME.RENT} data-has-value={!!dynamicFieldDetails.rent}>
+        {renderShowField(FIELD_NAME.RENT) && <div id='rent' data-field={FIELD_NAME.RENT} data-has-value={!!dynamicFieldDetails.rent}>
           <FieldLabel label="Rent" required={true} customClass="pb-2"/>
           <DynamicInput
             placeHolder="Enter monthly rent"
@@ -1796,7 +1820,7 @@ export default function Step2({containerRef}) {
 
         {/* Seal plot start*/}
 
-        {renderShowField(FIELD_NAME.TRANSACTION_TYPE) && <div data-field={FIELD_NAME.TRANSACTION_TYPE} data-has-value={!!dynamicFieldDetails.transactionType}>
+        {renderShowField(FIELD_NAME.TRANSACTION_TYPE) && <div id='transactionType' data-field={FIELD_NAME.TRANSACTION_TYPE} data-has-value={!!dynamicFieldDetails.transactionType}>
           <FieldLabel label="Transaction Type" customClass="pb-2" required={true}/>
           <div className="flex flex-wrap gap-3 pt-2">
               {
@@ -1820,7 +1844,7 @@ export default function Step2({containerRef}) {
           {errors?.transactionType && <p className="pt-1 text-red-500 text-xs">{errors.transactionType}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.PROPERTY_POSSESSTION_STATUS) && <div data-field={FIELD_NAME.PROPERTY_POSSESSTION_STATUS} data-has-value={!!dynamicFieldDetails.propertyPossessionStatus}>
+        {renderShowField(FIELD_NAME.PROPERTY_POSSESSTION_STATUS) && <div id='propertyPossessionStatus' data-field={FIELD_NAME.PROPERTY_POSSESSTION_STATUS} data-has-value={!!dynamicFieldDetails.propertyPossessionStatus}>
           <FieldLabel label="Possession Status" customClass="pb-2" required={true}/>
           <div className="flex flex-wrap gap-3 pt-2">
               {
@@ -1844,7 +1868,7 @@ export default function Step2({containerRef}) {
           {errors?.propertyPossessionStatus && <p className="pt-1 text-red-500 text-xs">{errors.propertyPossessionStatus}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.AGE_OF_PROPERTY) && <div data-field={FIELD_NAME.AGE_OF_PROPERTY} data-has-value={!!dynamicFieldDetails.propertyAge || dynamicFieldDetails.propertyAge === 0}>
+        {renderShowField(FIELD_NAME.AGE_OF_PROPERTY) && <div id='propertyAge' data-field={FIELD_NAME.AGE_OF_PROPERTY} data-has-value={!!dynamicFieldDetails.propertyAge || dynamicFieldDetails.propertyAge === 0}>
           <FieldLabel label="Age of Property ( in Years)" customClass="pb-2" required={true}/>
           <InputBase
             placeholder="Enter property age"
@@ -1868,7 +1892,7 @@ export default function Step2({containerRef}) {
       </div> }
 
         {renderShowField(FIELD_NAME.POSSESION_DATE) &&
-          <div data-field={FIELD_NAME.POSSESION_DATE} data-has-value={!!dynamicFieldDetails.possesionDate}>
+          <div id='possesionDate' data-field={FIELD_NAME.POSSESION_DATE} data-has-value={!!dynamicFieldDetails.possesionDate}>
             <FieldLabel label="Possession Date" customClass="pb-2" required={true}/>
             <div onClick={() => {possessionDateref.current?.showPicker()}}>
               <InputBase
@@ -1897,7 +1921,7 @@ export default function Step2({containerRef}) {
           </div>
         }
 
-        {renderShowField(FIELD_NAME.PLOT_PRICE) && <div data-field={FIELD_NAME.PLOT_PRICE} data-has-value={!!dynamicFieldDetails.plotPrice}>
+        {renderShowField(FIELD_NAME.PLOT_PRICE) && <div id='plotPrice' data-field={FIELD_NAME.PLOT_PRICE} data-has-value={!!dynamicFieldDetails.plotPrice}>
           <FieldLabel label="Plot Price" required={true} customClass="pb-2"/>
            <InputBase
               placeholder="Plot price"
@@ -1922,7 +1946,7 @@ export default function Step2({containerRef}) {
 
         {/* Seal plot end*/}
 
-        {renderShowField(FIELD_NAME.PRICE_COST) && <div data-field={FIELD_NAME.PRICE_COST} data-has-value={!!dynamicFieldDetails.price}>
+        {renderShowField(FIELD_NAME.PRICE_COST) && <div id='price' data-field={FIELD_NAME.PRICE_COST} data-has-value={!!dynamicFieldDetails.price}>
           <FieldLabel label="Price/Cost" required={true} customClass="pb-2"/>
           <DynamicInput
             placeHolder="Enter price / cost"
@@ -1940,7 +1964,7 @@ export default function Step2({containerRef}) {
           {errors?.price && <p className="pt-1 text-red-500 text-xs">{errors.price}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.MAINTENANCE_CHARGE) && <div>
+        {renderShowField(FIELD_NAME.MAINTENANCE_CHARGE) && <div id='maintenanceCharges'>
           <FieldLabel label="Maintenance Charges" required={true}/>
           <div className="flex flex-wrap gap-3 py-2" data-field={FIELD_NAME.MAINTENANCE_CHARGE} data-has-value={!!dynamicFieldDetails.maintenanceCharges}>
             {
@@ -1962,7 +1986,7 @@ export default function Step2({containerRef}) {
             }
           </div>
           {errors?.maintenanceCharges && <p className="pt-1 text-red-500 text-xs">{errors.maintenanceCharges}</p>}
-          {renderShowField(FIELD_NAME.MAINTENANCE_CHARGE_VALUE) && <div data-field={FIELD_NAME.MAINTENANCE_CHARGE_VALUE} data-has-value={!!dynamicFieldDetails.otherMaintenanceCharges}>
+          {renderShowField(FIELD_NAME.MAINTENANCE_CHARGE_VALUE) && <div id='otherMaintenanceCharges' data-field={FIELD_NAME.MAINTENANCE_CHARGE_VALUE} data-has-value={!!dynamicFieldDetails.otherMaintenanceCharges}>
             <DynamicInput 
               placeHolder="Enter Maintenance Charge (Per Month)"
               options={[{label: 'Per month', value: 'Per month'}]}
@@ -1981,7 +2005,7 @@ export default function Step2({containerRef}) {
           </div>}
         </div>}
 
-        {renderShowField(FIELD_NAME.SECURITY_DEPOSITE) && <div>
+        {renderShowField(FIELD_NAME.SECURITY_DEPOSITE) && <div id='securityDeposite'>
           <FieldLabel label="Security Deposit" required={true}/>
           <div className="flex flex-wrap gap-3 py-2" data-field={FIELD_NAME.SECURITY_DEPOSITE} data-has-value={!!dynamicFieldDetails.securityDeposite}>
             {
@@ -2003,7 +2027,7 @@ export default function Step2({containerRef}) {
             }
           </div>
           {errors?.securityDeposite && <p className="pt-1 text-red-500 text-xs">{errors.securityDeposite}</p>}
-        {renderShowField(FIELD_NAME.CUSTOM_SECURITY_DEPOSITE) &&  <div data-field={FIELD_NAME.CUSTOM_SECURITY_DEPOSITE} data-has-value={!!dynamicFieldDetails.otherSecurityDeposite}>
+        {renderShowField(FIELD_NAME.CUSTOM_SECURITY_DEPOSITE) &&  <div id='otherSecurityDeposite' data-field={FIELD_NAME.CUSTOM_SECURITY_DEPOSITE} data-has-value={!!dynamicFieldDetails.otherSecurityDeposite}>
             <DynamicInput 
               placeHolder="Enter Security Deposit (In Ruppes)"
               options={[{label: 'Per month', value: 'Per month'}]}
@@ -2022,7 +2046,7 @@ export default function Step2({containerRef}) {
           </div>}
         </div>}
 
-        {renderShowField(FIELD_NAME.LOCK_IN_PERIOD) && <div >
+        {renderShowField(FIELD_NAME.LOCK_IN_PERIOD) && <div id='lockInPeriod'>
           <FieldLabel label="Lock-in Period" required={true}/>
           <div className="flex flex-wrap gap-3 py-2" data-field={FIELD_NAME.LOCK_IN_PERIOD} data-has-value={!!dynamicFieldDetails.lockInPeriod}>
             {
@@ -2044,7 +2068,7 @@ export default function Step2({containerRef}) {
             }
           </div>
           {errors?.lockInPeriod && <p className="pt-1 text-red-500 text-xs">{errors.lockInPeriod}</p>}
-          {renderShowField(FIELD_NAME.CUSTOM_LOCK_IN_PERIOD) && <div data-field={FIELD_NAME.CUSTOM_LOCK_IN_PERIOD} data-has-value={!!dynamicFieldDetails.otherLockInPeriod}>
+          {renderShowField(FIELD_NAME.CUSTOM_LOCK_IN_PERIOD) && <div id='otherLockInPeriod' data-field={FIELD_NAME.CUSTOM_LOCK_IN_PERIOD} data-has-value={!!dynamicFieldDetails.otherLockInPeriod}>
             <DynamicSelect
               isMulti={false}
               isError={false}
@@ -2063,7 +2087,7 @@ export default function Step2({containerRef}) {
           
         </div>}
 
-        {renderShowField(FIELD_NAME.BROKERAGE_CHARGE) && <div>
+        {renderShowField(FIELD_NAME.BROKERAGE_CHARGE) && <div id='brokerageCharge'>
           <FieldLabel label="Do you charge brokerage?" required={true}/>
           <div className="flex flex-wrap gap-3 py-2" data-field={FIELD_NAME.BROKERAGE_CHARGE} data-has-value={!!dynamicFieldDetails.brokerageCharge}>
             {
@@ -2085,7 +2109,7 @@ export default function Step2({containerRef}) {
             }
           </div>  
           {errors?.brokerageCharge && <p className="pt-1 text-red-500 text-xs">{errors.brokerageCharge}</p>}
-          {renderShowField(FIELD_NAME.BROKERAGE_CHARGE_VALUE) && <div data-field={FIELD_NAME.BROKERAGE_CHARGE_VALUE} data-has-value={!!dynamicFieldDetails.otherBrokerageCharge}>
+          {renderShowField(FIELD_NAME.BROKERAGE_CHARGE_VALUE) && <div id='otherBrokerageCharge' data-field={FIELD_NAME.BROKERAGE_CHARGE_VALUE} data-has-value={!!dynamicFieldDetails.otherBrokerageCharge}>
             <InputBase
               placeholder="Enter brokerage (In Ruppes)"
               fullWidth
@@ -2114,7 +2138,7 @@ export default function Step2({containerRef}) {
           </div>}
         </div>}
 
-        {renderShowField(FIELD_NAME.LOAN_AVAILABLE) && <div data-field={FIELD_NAME.LOAN_AVAILABLE} data-has-value={!!dynamicFieldDetails.loanAvailable}>
+        {renderShowField(FIELD_NAME.LOAN_AVAILABLE) && <div id='loanAvailable' data-field={FIELD_NAME.LOAN_AVAILABLE} data-has-value={!!dynamicFieldDetails.loanAvailable}>
           <FieldLabel label="Lone Available" />
           <div className="flex flex-wrap gap-3 pt-2">
             {
@@ -2140,7 +2164,7 @@ export default function Step2({containerRef}) {
 
         {(renderShowField(FIELD_NAME.COMMERCIAL_RENT) || renderShowField(FIELD_NAME.COMMERCIAL_SECURITY_DEPOSITE)) && <div className="grid grid-cols-1 2md:grid-cols-2 gap-3">
           
-          {renderShowField(FIELD_NAME.COMMERCIAL_RENT) && <div data-field={FIELD_NAME.COMMERCIAL_RENT} data-has-value={!!dynamicFieldDetails.rent}>
+          {renderShowField(FIELD_NAME.COMMERCIAL_RENT) && <div id='rent' data-field={FIELD_NAME.COMMERCIAL_RENT} data-has-value={!!dynamicFieldDetails.rent}>
             <FieldLabel label="Expected Rent" customClass="pb-2" required={true} />
             <InputBase
               placeholder="Enter expected rent"
@@ -2164,7 +2188,7 @@ export default function Step2({containerRef}) {
             {errors?.rent && <p className="pt-1 text-red-500 text-xs">{errors.rent}</p>}
           </div>}
 
-          {renderShowField(FIELD_NAME.COMMERCIAL_SECURITY_DEPOSITE) && <div data-field={FIELD_NAME.COMMERCIAL_SECURITY_DEPOSITE} data-has-value={!!dynamicFieldDetails.securityDeposite}>
+          {renderShowField(FIELD_NAME.COMMERCIAL_SECURITY_DEPOSITE) && <div id='otherSecurityDeposite' data-field={FIELD_NAME.COMMERCIAL_SECURITY_DEPOSITE} data-has-value={!!dynamicFieldDetails.securityDeposite}>
             <FieldLabel
               label="Security Deposit"
               customClass="pb-2"
@@ -2192,7 +2216,7 @@ export default function Step2({containerRef}) {
           </div>}
         </div>}
 
-        {renderShowField(FIELD_NAME.COMMERCIAL_PRICE) && <div data-field={FIELD_NAME.COMMERCIAL_PRICE} data-has-value={!!dynamicFieldDetails.price}>
+        {renderShowField(FIELD_NAME.COMMERCIAL_PRICE) && <div id='price' data-field={FIELD_NAME.COMMERCIAL_PRICE} data-has-value={!!dynamicFieldDetails.price}>
           <FieldLabel label="Price" customClass="pb-2" required={true} />
           <InputBase
             placeholder="Enter price"
@@ -2215,7 +2239,7 @@ export default function Step2({containerRef}) {
           {errors?.price && <p className="pt-1 text-red-500 text-xs">{errors.price}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.NEGOTIABLE) && <div data-field={FIELD_NAME.NEGOTIABLE} data-has-value={!!dynamicFieldDetails.isRentNegotiable}>
+        {renderShowField(FIELD_NAME.NEGOTIABLE) && <div id='isRentNegotiable' data-field={FIELD_NAME.NEGOTIABLE} data-has-value={!!dynamicFieldDetails.isRentNegotiable}>
           <FieldLabel label="Negotiable" />
           <div className="flex flex-wrap gap-3 pt-2">
             {
@@ -2237,7 +2261,7 @@ export default function Step2({containerRef}) {
           </div>
         </div>}
 
-        {renderShowField(FIELD_NAME.DG_UPS_CHARGE) && <div data-field={FIELD_NAME.DG_UPS_CHARGE} data-has-value={!!dynamicFieldDetails.dgUpsChargeIncluded}>
+        {renderShowField(FIELD_NAME.DG_UPS_CHARGE) && <div id='dgUpsChargeIncluded' data-field={FIELD_NAME.DG_UPS_CHARGE} data-has-value={!!dynamicFieldDetails.dgUpsChargeIncluded}>
           <FieldLabel label="DG & UPS Charge included?" />
           <div className="flex flex-wrap gap-3 pt-2">
             {
@@ -2259,7 +2283,7 @@ export default function Step2({containerRef}) {
           </div>
         </div>}
 
-        {renderShowField(FIELD_NAME.GOVT_CHARGES) && <div data-field={FIELD_NAME.DG_UPS_CHARGE} data-has-value={!!dynamicFieldDetails.taxGovtChargeIncluded}>
+        {renderShowField(FIELD_NAME.GOVT_CHARGES) && <div id='taxGovtChargeIncluded' data-field={FIELD_NAME.DG_UPS_CHARGE} data-has-value={!!dynamicFieldDetails.taxGovtChargeIncluded}>
           <FieldLabel label="Tax & Govt. charge included?" />
           <div className="flex flex-wrap gap-3 pt-2">
             {
@@ -2281,7 +2305,7 @@ export default function Step2({containerRef}) {
           </div>
         </div>}
 
-        {renderShowField(FIELD_NAME.ELECTRICITY_CHARGE) && <div data-field={FIELD_NAME.ELECTRICITY_CHARGE} data-has-value={!!dynamicFieldDetails.electricityChargeIncluded}>
+        {renderShowField(FIELD_NAME.ELECTRICITY_CHARGE) && <div id='electricityChargeIncluded' data-field={FIELD_NAME.ELECTRICITY_CHARGE} data-has-value={!!dynamicFieldDetails.electricityChargeIncluded}>
           <FieldLabel label="Electricity charges included?" />
           <div className="flex flex-wrap gap-3 pt-2">
             {
@@ -2303,7 +2327,7 @@ export default function Step2({containerRef}) {
           </div>
         </div>}
 
-        {renderShowField(FIELD_NAME.WATER_CHARGE) && <div data-field={FIELD_NAME.WATER_CHARGE} data-has-value={!!dynamicFieldDetails.waterChargeIncluded}>
+        {renderShowField(FIELD_NAME.WATER_CHARGE) && <div id='waterChargeIncluded' data-field={FIELD_NAME.WATER_CHARGE} data-has-value={!!dynamicFieldDetails.waterChargeIncluded}>
           <FieldLabel label="Water charges included?" />
           <div className="flex flex-wrap gap-3 pt-2">
             {
@@ -2325,7 +2349,7 @@ export default function Step2({containerRef}) {
           </div>
         </div>}
 
-        {renderShowField(FIELD_NAME.EXPECTED_RENT_INCREASE) && <div data-field={FIELD_NAME.EXPECTED_RENT_INCREASE} data-has-value={!!dynamicFieldDetails.expectedRentIncrease}>
+        {renderShowField(FIELD_NAME.EXPECTED_RENT_INCREASE) && <div id='expectedRentIncrease' data-field={FIELD_NAME.EXPECTED_RENT_INCREASE} data-has-value={!!dynamicFieldDetails.expectedRentIncrease}>
           <FieldLabel label="Expected Rent Increase" customClass="pb-2" />
           <InputBase
             placeholder="Enter expected rent increase"
@@ -2349,7 +2373,7 @@ export default function Step2({containerRef}) {
           {errors?.expectedRentIncrease && <p className="pt-1 text-red-500 text-xs">{errors.expectedRentIncrease}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.COMMERCIAL_LOCK_IN_PERIOD) && <div >
+        {renderShowField(FIELD_NAME.COMMERCIAL_LOCK_IN_PERIOD) && <div id='lockInPeriod'>
           <FieldLabel label="Lock-in Period" required={true}/>
           <div className="flex flex-wrap gap-3 py-2" data-field={FIELD_NAME.COMMERCIAL_LOCK_IN_PERIOD} data-has-value={!!dynamicFieldDetails.lockInPeriod}>
             {
@@ -2371,7 +2395,7 @@ export default function Step2({containerRef}) {
             }
           </div>
           {errors?.lockInPeriod && <p className="pt-1 text-red-500 text-xs">{errors.lockInPeriod}</p>}
-          {renderShowField(FIELD_NAME.COMMERCIAL_CUSTOM_LOCK_IN_PERIOD) && <div data-field={FIELD_NAME.COMMERCIAL_CUSTOM_LOCK_IN_PERIOD} data-has-value={!!dynamicFieldDetails.otherLockInPeriod}>
+          {renderShowField(FIELD_NAME.COMMERCIAL_CUSTOM_LOCK_IN_PERIOD) && <div id='otherLockInPeriod' data-field={FIELD_NAME.COMMERCIAL_CUSTOM_LOCK_IN_PERIOD} data-has-value={!!dynamicFieldDetails.otherLockInPeriod}>
             <DynamicSelect
               isMulti={false}
               isError={false}
@@ -2390,7 +2414,7 @@ export default function Step2({containerRef}) {
           
         </div>}
 
-        {renderShowField(FIELD_NAME.COMMERCIAL_BROKERAGE_CHARGE) && <div>
+        {renderShowField(FIELD_NAME.COMMERCIAL_BROKERAGE_CHARGE) && <div id='brokerageCharge'>
           <FieldLabel label="Do you charge brokerage?" required={true}/>
           <div className="flex flex-wrap gap-3 py-2" data-field={FIELD_NAME.COMMERCIAL_BROKERAGE_CHARGE} data-has-value={!!dynamicFieldDetails.brokerageCharge}>
             {
@@ -2412,7 +2436,7 @@ export default function Step2({containerRef}) {
             }
           </div>  
           {errors?.brokerageCharge && <p className="pt-1 text-red-500 text-xs">{errors.brokerageCharge}</p>}
-          {renderShowField(FIELD_NAME.COMMERCIAL_CUSTOM_BROKERAGE_CHARGE) && <div data-field={FIELD_NAME.COMMERCIAL_CUSTOM_BROKERAGE_CHARGE} data-has-value={!!dynamicFieldDetails.otherBrokerageCharge}>
+          {renderShowField(FIELD_NAME.COMMERCIAL_CUSTOM_BROKERAGE_CHARGE) && <div id='otherBrokerageCharge' data-field={FIELD_NAME.COMMERCIAL_CUSTOM_BROKERAGE_CHARGE} data-has-value={!!dynamicFieldDetails.otherBrokerageCharge}>
             <InputBase
               placeholder="Enter brokerage (In Ruppes)"
               fullWidth
@@ -2445,7 +2469,7 @@ export default function Step2({containerRef}) {
 
         {renderThirdSectionLabel().name && <RenderSectionName customClass="pt-3" data={renderThirdSectionLabel()}/>}
 
-        {renderShowField(FIELD_NAME.PRE_LEASED) && <div data-field={FIELD_NAME.ELECTRICITY_CHARGE} data-has-value={!!dynamicFieldDetails.isPreLeasedRented}>
+        {renderShowField(FIELD_NAME.PRE_LEASED) && <div id='isPreLeasedRented' data-field={FIELD_NAME.ELECTRICITY_CHARGE} data-has-value={!!dynamicFieldDetails.isPreLeasedRented}>
           <FieldLabel label="Is it pre-leased/pre-rented?"  required={true}/>
           <div className="flex flex-wrap gap-3 pt-2">
             {
@@ -2469,7 +2493,7 @@ export default function Step2({containerRef}) {
           {errors?.isPreLeasedRented && <p className="pt-1 text-red-500 text-xs">{errors.isPreLeasedRented}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.CURRENT_RENT_PER_MONTH) && <div data-field={FIELD_NAME.CURRENT_RENT_PER_MONTH} data-has-value={!!dynamicFieldDetails.currentRentPerMonth}>
+        {renderShowField(FIELD_NAME.CURRENT_RENT_PER_MONTH) && <div id='currentRentPerMonth' data-field={FIELD_NAME.CURRENT_RENT_PER_MONTH} data-has-value={!!dynamicFieldDetails.currentRentPerMonth}>
           <FieldLabel label="Current Rent per Month" customClass="pb-2" required={true} />
           <InputBase
             placeholder="Enter amount"
@@ -2493,7 +2517,7 @@ export default function Step2({containerRef}) {
           {errors?.currentRentPerMonth && <p className="pt-1 text-red-500 text-xs">{errors.currentRentPerMonth}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.LEASE_YEAR) && <div data-field={FIELD_NAME.LEASE_YEAR} data-has-value={!!dynamicFieldDetails.leaseYears}>
+        {renderShowField(FIELD_NAME.LEASE_YEAR) && <div id='leaseYears' data-field={FIELD_NAME.LEASE_YEAR} data-has-value={!!dynamicFieldDetails.leaseYears}>
           <FieldLabel label="Lease Year" customClass="pb-2" required={true} />
           <InputBase
             placeholder="Enter year"
@@ -2517,7 +2541,7 @@ export default function Step2({containerRef}) {
           {errors?.leaseYears && <p className="pt-1 text-red-500 text-xs">{errors.leaseYears}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.EXPECTED_RETURN) && <div data-field={FIELD_NAME.LEASE_YEAR} data-has-value={!!dynamicFieldDetails.expectedReturnOnInvestment}>
+        {renderShowField(FIELD_NAME.EXPECTED_RETURN) && <div id='expectedReturnOnInvestment' data-field={FIELD_NAME.LEASE_YEAR} data-has-value={!!dynamicFieldDetails.expectedReturnOnInvestment}>
           <FieldLabel label="Expected Return on Investment" customClass="pb-2" required={true} />
           <InputBase
             placeholder="Enter return on investment in percentage"
@@ -2545,7 +2569,7 @@ export default function Step2({containerRef}) {
 
         {(renderShowField(FIELD_NAME.PRIVATE_WASHROOM) || renderShowField(FIELD_NAME.PUBLIC_WASHROOM)) && <div className="grid grid-cols-1 2md:grid-cols-2 gap-3">
           
-          {renderShowField(FIELD_NAME.PRIVATE_WASHROOM) && <div data-field={FIELD_NAME.PRIVATE_WASHROOM} data-has-value={!!dynamicFieldDetails.privateWashroom}>
+          {renderShowField(FIELD_NAME.PRIVATE_WASHROOM) && <div id='privateWashroom' data-field={FIELD_NAME.PRIVATE_WASHROOM} data-has-value={!!dynamicFieldDetails.privateWashroom}>
             <FieldLabel label="Private washrooms" customClass="pb-2" required={true} />
             <InputBase
               placeholder="Enter number"
@@ -2569,7 +2593,7 @@ export default function Step2({containerRef}) {
             {errors?.privateWashroom && <p className="pt-1 text-red-500 text-xs">{errors.privateWashroom}</p>}
           </div>}
 
-          {renderShowField(FIELD_NAME.PUBLIC_WASHROOM) && <div data-field={FIELD_NAME.PUBLIC_WASHROOM} data-has-value={!!dynamicFieldDetails.publicWashroom}>
+          {renderShowField(FIELD_NAME.PUBLIC_WASHROOM) && <div id='publicWashroom' data-field={FIELD_NAME.PUBLIC_WASHROOM} data-has-value={!!dynamicFieldDetails.publicWashroom}>
             <FieldLabel
               label="Public Washrooms"
               customClass="pb-2"
@@ -2621,7 +2645,9 @@ export default function Step2({containerRef}) {
             </button>
             <button disabled={step2Loader} onClick={() => {
               if(activeStep != 4){
-                if(validate()){
+                let state = validate()
+                if(state.hasError){
+                  scrollToError(state.errorData);
                   return
                 }
                 let payload = generatePayload()
