@@ -886,15 +886,15 @@ export default function Step2({containerRef}) {
         hasError = true;
       }
 
-      if(renderShowField(FIELD_NAME.PRIVATE_WASHROOM) && !dynamicFieldDetails?.privateWashroom){
-        updatedError.privateWashroom = 'Please enter private washroom'
-        hasError = true;
-      }
+      // if(renderShowField(FIELD_NAME.PRIVATE_WASHROOM) && !dynamicFieldDetails?.privateWashroom){
+      //   updatedError.privateWashroom = 'Please enter private washroom'
+      //   hasError = true;
+      // }
 
-      if(renderShowField(FIELD_NAME.PUBLIC_WASHROOM) && !dynamicFieldDetails?.publicWashroom){
-        updatedError.publicWashroom = 'Please enter public washroom'
-        hasError = true;
-      }
+      // if(renderShowField(FIELD_NAME.PUBLIC_WASHROOM) && !dynamicFieldDetails?.publicWashroom){
+      //   updatedError.publicWashroom = 'Please enter public washroom'
+      //   hasError = true;
+      // }
     }
     console.log('step2 validation error', updatedError)
     setErrors(updatedError)
@@ -2571,7 +2571,7 @@ export default function Step2({containerRef}) {
         {(renderShowField(FIELD_NAME.PRIVATE_WASHROOM) || renderShowField(FIELD_NAME.PUBLIC_WASHROOM)) && <div className="grid grid-cols-1 2md:grid-cols-2 gap-3">
           
           {renderShowField(FIELD_NAME.PRIVATE_WASHROOM) && <div id='privateWashroom' data-field={FIELD_NAME.PRIVATE_WASHROOM} data-has-value={!!dynamicFieldDetails.privateWashroom}>
-            <FieldLabel label="Private washrooms" customClass="pb-2" required={true} />
+            <FieldLabel label="Private washrooms" customClass="pb-2" />
             <InputBase
               placeholder="Enter number"
               fullWidth
@@ -2598,7 +2598,6 @@ export default function Step2({containerRef}) {
             <FieldLabel
               label="Public Washrooms"
               customClass="pb-2"
-              required={true}
             />
             <InputBase
               placeholder="Enter number"

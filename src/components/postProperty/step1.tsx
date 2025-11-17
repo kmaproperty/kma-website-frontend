@@ -295,13 +295,19 @@ console.log('renderOtherBhk', renderOtherBhk())
         return false
       }
 
+      // if(fieldName == FIELD_NAME.CARPET_AREA){
+      //   if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && (dynamicFieldDetails.bhk?.isCustom || dynamicFieldDetails.otherBhk || (dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails))){
+      //     return true
+      //   }
+      //   return false
+      // }
+
       if(fieldName == FIELD_NAME.CARPET_AREA){
-        if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && (dynamicFieldDetails.bhk?.isCustom || dynamicFieldDetails.otherBhk || (dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails))){
+        if(basicStaticDetails.propertyType && (basicStaticDetails.propertyType?.code != 'res-sale-plot' && basicStaticDetails.propertyType?.code != 'res-sale-agri-land') && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && ((dynamicFieldDetails.bhk && dynamicFieldDetails.bhk?.code != 'other') || dynamicFieldDetails.otherBhk)){
           return true
         }
         return false
       }
-
       if(fieldName == FIELD_NAME.TRANSACTION_TYPE){
         if(basicStaticDetails.propertyListFor?.name == 'Sale' && basicStaticDetails.propertyType && (!renderOptionalField(FIELD_NAME.SOCIETY) || basicStaticDetails.society) && (dynamicFieldDetails.bhk || dynamicFieldDetails.otherBhk || (dynamicFieldDetails.isStaticBhkDetails && !dynamicFieldDetails.staticBhKDetails))){
           return true

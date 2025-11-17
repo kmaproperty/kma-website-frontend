@@ -366,15 +366,15 @@ export default function Step3({containerRef}) {
         hasError = true;
       }
 
-      if(renderShowField(FIELD_NAME.PRIVATE_WASHROOM) && !dynamicFieldDetails.privateWashrooms){
-        updatedError.privateWashrooms = 'washrooms should be between 0 and 200'
-        hasError = true;
-      }
+      // if(renderShowField(FIELD_NAME.PRIVATE_WASHROOM) && !dynamicFieldDetails.privateWashrooms){
+      //   updatedError.privateWashrooms = 'washrooms should be between 0 and 200'
+      //   hasError = true;
+      // }
 
-      if(renderShowField(FIELD_NAME.PUBLIC_WASHROOM) && !dynamicFieldDetails.publicWashrooms){
-        updatedError.publicWashrooms = 'washrooms should be between 0 and 200'
-        hasError = true;
-      }
+      // if(renderShowField(FIELD_NAME.PUBLIC_WASHROOM) && !dynamicFieldDetails.publicWashrooms){
+      //   updatedError.publicWashrooms = 'washrooms should be between 0 and 200'
+      //   hasError = true;
+      // }
 
       if(renderShowField(FIELD_NAME.FURNISH_TYPE) && !dynamicFieldDetails.furnishType){
         updatedError.furnishType = 'Please select the furnish type'
@@ -683,7 +683,7 @@ export default function Step3({containerRef}) {
         {(renderShowField(FIELD_NAME.PRIVATE_WASHROOM) || renderShowField(FIELD_NAME.PUBLIC_WASHROOM)) && <div className="grid grid-cols-1 2md:grid-cols-2 gap-3">
                   
         {renderShowField(FIELD_NAME.PRIVATE_WASHROOM) && <div id='privateWashrooms' data-field={FIELD_NAME.PRIVATE_WASHROOM} data-has-value={!!dynamicFieldDetails.privateWashrooms}>
-          <FieldLabel label="Private washrooms" customClass="pb-2" required={true} />
+          <FieldLabel label="Private washrooms" customClass="pb-2"/>
           <InputBase
             placeholder="Enter number"
             fullWidth
@@ -710,7 +710,6 @@ export default function Step3({containerRef}) {
           <FieldLabel
             label="Public Washrooms"
             customClass="pb-2"
-            required={true}
           />
           <InputBase
             placeholder="Enter number"

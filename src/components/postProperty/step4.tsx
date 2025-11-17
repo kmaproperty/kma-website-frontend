@@ -378,7 +378,7 @@ const handleUploadFileToS3 = async (files: File[], type: string) => {
               type='photo'
               accept={"image/jpeg, image/jpg, image/png, image/gif, image/webp"}
               label="Drag and drop file here"
-              subLabel="Upto 50 photos • Max. size 10 MB • Formats: PNG, JPG, JPEG, GIF, WEBP"
+              subLabel="Upto 50 photos • Max. size 20 MB • Formats: PNG, JPG, JPEG, GIF, WEBP"
             />
           </div>
           {photoList.map((item, index) => {
@@ -428,7 +428,7 @@ const handleUploadFileToS3 = async (files: File[], type: string) => {
               type='video'
               accept={"video/mp4,video/mov,video/avi,video/mkv,video/webm"}
               label="Drag and drop file here"
-              subLabel="Upto 5 video • Max. size 30 MB • Formats: MP4, MOV, AVI, MKV"
+              subLabel="Upto 5 video • Max. size 50 MB • Formats: MP4, MOV, AVI, MKV"
             />
           </div>
           {videoList.map((item, index) => {
