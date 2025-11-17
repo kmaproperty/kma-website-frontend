@@ -1,10 +1,38 @@
 'use client'
 import Image from "next/image";
-import DynamicSelect from "../common/select";
-import { PROPERTY_IMAGE_TYPE } from "@/lib/enums";
+import DynamicSelect, { OptionType } from "../common/select";
+import { USER_DASHBOARD_PROPERTY_FILTER, USER_TYPE } from "@/lib/enums";
+import { useQuery } from "@tanstack/react-query";
+import { UserDashboardDetailsApiHandler, UserDashboardDetailsResponse } from "@/services/userService";
+import { useState } from "react";
 
 export default function UserDashboard() {
-  const progressPercent = Math.min((3 / 5) * 100, 100);
+  const max_property = process.env.NEXT_PUBLIC_OWNER_MAX_PROPERTY_CREATE;
+
+  const [filterValue, setFilterValue] = useState(USER_DASHBOARD_PROPERTY_FILTER[1])
+
+  const { data: userDashboardDetails } = useQuery({
+      queryKey: ["user-dashboard-details"],
+      queryFn: async (): Promise<UserDashboardDetailsResponse> => {
+        return UserDashboardDetailsApiHandler();
+      },
+      select: (resposne: UserDashboardDetailsResponse) => {
+        return resposne;
+      },
+      staleTime: 0,
+      refetchOnMount: true,
+    });
+
+  const progressPercent = userDashboardDetails ? Math.min((userDashboardDetails?.freeListings?.used / userDashboardDetails?.freeListings?.total) * 100, 100) : 0;
+  
+  const renderPropertyCount = () => {
+    if(userDashboardDetails){
+      const data = userDashboardDetails['leadsSummary']
+      return data[filterValue.value]
+    }
+    return null
+  }
+
   return (
     <div className="w-full bg-white rounded-xl">
       <div className="flex flex-col gap-4 p-3">
@@ -22,30 +50,23 @@ export default function UserDashboard() {
 
               <div className="flex flex-col gap-1">
                 <p className="font-semibold text-lg text-text-black">
-                  Hi, Raaja.2x
-                  <span className="ml-3 px-4 py-1 text-sm sm:text-base rounded-md font-normal text-white bg-gradient-to-r from-[#A43918] to-[#CE8B2D]">
+                  Hi, {userDashboardDetails?.name}
+                  {userDashboardDetails?.role == USER_TYPE.CHANNEL_PARTNER && <span className="ml-3 px-4 py-1 text-sm sm:text-base rounded-md font-normal text-white bg-gradient-to-r from-[#A43918] to-[#CE8B2D]">
                     KMA Expert <span className="font-semibold">Pro</span>
-                  </span>
+                  </span>}
                 </p>
                 <p className="text-base text-text-gray">
                   May your day be filled with progress and good energy!
                 </p>
               </div>
+              {userDashboardDetails?.role == USER_TYPE.CHANNEL_PARTNER && 
               <div className="min-w-[143px] flex justify-start items-center gap-1">
                 <div className="w-fit flex p-2 rounded-full bg-white ">
                     <Image src='/assets/doller.svg' width={20} height={20} alt="doller" />
                     <p className="text-text-black underline text-sm pl-2">400 Credits</p>
                 </div>
                     <Image src='/assets/info-blue.svg' width={20} height={20} alt="info" />
-                </div>
-            {/* </div> */}
-            {/* <div className="min-w-[143px] flex justify-start items-center gap-1">
-                <div className="w-fit flex p-2 rounded-full bg-white ">
-                    <Image src='/assets/doller.svg' width={20} height={20} alt="doller" />
-                    <p className="text-text-black underline text-sm pl-2">400 Credits</p>
-                </div>
-                    <Image src='/assets/info-blue.svg' width={20} height={20} alt="info" />
-            </div> */}
+              </div>}
           </div>
 
 
@@ -58,8 +79,12 @@ export default function UserDashboard() {
               <DynamicSelect
                 placeholder="Select filter"
                 minHeight="35px"
-                options={PROPERTY_IMAGE_TYPE}
-                value={null}
+                options={USER_DASHBOARD_PROPERTY_FILTER}
+                value={filterValue}
+                onChange={(value: OptionType) => {
+                  setFilterValue(value)
+                }}
+                fontwidth="14px"
               />
               </div>
             </div>
@@ -85,7 +110,7 @@ export default function UserDashboard() {
                   className="min-w-[40px] flex-shrink-0 font-semibold text-base
                                     border-l border-[#E7E7E7] text-center p-2"
                 >
-                  00
+                  {renderPropertyCount() ? renderPropertyCount().residential : '00'}
                 </div>
               </div>
               <div className="flex flex-row items-center rounded-xl bg-white flex-1">
@@ -109,18 +134,18 @@ export default function UserDashboard() {
                   className="min-w-[40px] flex-shrink-0 font-semibold text-base
                                     border-l border-[#E7E7E7] text-center p-2"
                 >
-                  00
+                  {renderPropertyCount() ? renderPropertyCount().commercial : '00'}
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col 2md:flex-row border justify-between border-[#E7E7E7] rounded-[10px] px-4 py-3">
+        {userDashboardDetails?.role == USER_TYPE.OWNER && <div className="flex flex-col 2md:flex-row border justify-between border-[#E7E7E7] rounded-[10px] px-4 py-3">
           <div className="flex flex-1 flex-col gap-4">
             <div>
               <p className="font-semibold text-text-black text-lg">
-                You've used 1 out of 5 listing on your{" "}
+                {`You've used ${userDashboardDetails?.freeListings?.used ?? 0} out of ${userDashboardDetails?.freeListings?.total ?? max_property} listing on your ${" "}`}
                 <span className="text-accent"> Free Plan.</span>
               </p>
               <p className="text-text-gray text-base">
@@ -130,7 +155,7 @@ export default function UserDashboard() {
             <p className="text-base">
               Free Listing:{" "}
               <span className="bg-[#E7E7E7] p-1 rounded-[5px] px-2 text-sm">
-                5
+                {userDashboardDetails?.freeListings?.total ?? max_property}
               </span>
             </p>
             <div className={`w-full`}>
@@ -143,7 +168,7 @@ export default function UserDashboard() {
                 {/* Center Text */}
                 <div className="absolute inset-0 flex items-center justify-center">
                   <span className="text-white text-sm font-semibold tracking-wide">
-                    {String(3).padStart(2, "0")}/{String(5).padStart(2, "0")}*
+                    {String(userDashboardDetails?.freeListings?.used ?? 0).padStart(2, "0")}/{String(userDashboardDetails?.freeListings?.total ?? max_property).padStart(2, "0")}*
                   </span>
                 </div>
               </div>
@@ -159,7 +184,7 @@ export default function UserDashboard() {
               <li className="flex items-start gap-2">
                 <span className="mt-2 w-2 h-2 rounded-full bg-text-black"></span>
                 <span className="flex-1 text-text-gray text-base">
-                  Free Plan: Post up to 5 listings
+                  {`Free Plan: Post up to ${userDashboardDetails?.freeListings?.total ?? max_property} listings`}
                 </span>
               </li>
 
@@ -179,9 +204,9 @@ export default function UserDashboard() {
               </span>
             </button>
           </div>
-        </div>
+        </div>}
 
-        <div className="flex flex-col 2md:flex-row border justify-between border-[#E7E7E7] rounded-[10px] px-4 py-3">
+        {userDashboardDetails?.role == USER_TYPE.CHANNEL_PARTNER && <div className="flex flex-col 2md:flex-row border justify-between border-[#E7E7E7] rounded-[10px] px-4 py-3">
           <div className="relative flex flex-1 flex-col gap-4 pb-0 sm:pb-10">
             <div>
               <p className="font-semibold text-text-black text-lg">
@@ -241,14 +266,14 @@ export default function UserDashboard() {
                   className="min-w-[40px] flex-shrink-0 font-semibold text-base
                                     border-l border-text-black text-center p-2"
                 >
-                  00
+                  {userDashboardDetails?.freeListings?.used}
                 </div>
             </div>
             <div>
                 <p className="text-base text-text-black ">Unlimited Quota: 🔓 No limits!</p>
             </div>
           </div>
-        </div>
+        </div>}
 
         <div className="flex rounded-xl flex-col sm:flex-row gap-3 justify-start items-start sm:items-center bg-[#F2F2F2] p-3">
           <div className="flex flex-1 flex-col ">

@@ -445,7 +445,9 @@ export interface Step4PostPropertyPayload {
 }
 
 export interface Step4PostPropertyResponse {
-  message: string
+  completionStep: number,
+  progressPercentage: number,
+  status: string
 }
 
 export const step4PostPropertyCreateApiHandler = async (paylaod: Step4PostPropertyPayload) : Promise<Step4PostPropertyResponse> => {

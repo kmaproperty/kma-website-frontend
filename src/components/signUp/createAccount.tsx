@@ -22,6 +22,7 @@ import { resetForm, setFormField } from "@/store/createAccountSlice";
 import { RootState } from "@/store/store";
 import { createURLSearchParam } from "@/lib/helper";
 import { toast } from "react-toastify";
+import { ValidateChannelPartnerCodeApiHandler, ValidateChannelPartnerCodePayload, ValidateChannelPartnerCodeResponse } from "@/services/userService";
 
 interface FormData {
   fullName: string;
@@ -50,6 +51,7 @@ export default function CreateAccount({ step }: { step: number }) {
   const formData = useSelector((state: RootState) => state.form);
   const dispatch = useDispatch();
   const [formErrors, setFormErrors] = useState<FormErrors>({});
+  const [codeError, setCodeError] = useState(false)
   // const [step, setStep] = useState<number>(1); // 1 = initial, 2 = extended
   console.log("data", formData);
   const { data } = useQuery<CitiesResponse, Error, string[]>({
@@ -62,11 +64,14 @@ export default function CreateAccount({ step }: { step: number }) {
 
   const handleChange = useCallback((field: keyof FormData, value: string) => {
     dispatch(setFormField({ key: field, value }));
-    setFormErrors((prev) => ({
-      ...prev,
-      [field]: "",
-    }));
+    if(field != 'partnerCode'){
+      setFormErrors((prev) => ({
+        ...prev,
+        [field]: "",
+      }));
+    }
   }, []);
+
   const validateStep = useCallback(() => {
     const errors: FormErrors = {};
     
@@ -89,7 +94,10 @@ export default function CreateAccount({ step }: { step: number }) {
       if (userData?.role == USER_TYPE.CHANNEL_PARTNER) {
         if (!formData.partnerCode.trim())
           errors.partnerCode = "Partner code is required";
-      }
+        }
+        if (formData.partnerCode.trim() && formData.partnerCode.length < 3){
+          errors.partnerCode = "Partner code must be between 3 and 50 characters";
+        }
     }
 
     if (step === 2) {
@@ -168,6 +176,29 @@ export default function CreateAccount({ step }: { step: number }) {
     },
   });
 
+  const {
+    mutate: validateChannelParnterCode,
+  } = useMutation({
+    mutationFn: async (
+      payload: ValidateChannelPartnerCodePayload
+    ): Promise<ValidateChannelPartnerCodeResponse> => {
+      return await ValidateChannelPartnerCodeApiHandler(payload);
+    },
+    onSuccess: (response: ValidateChannelPartnerCodeResponse) => {
+      console.log("channel partner response", response);
+      if(response?.valid){
+        setFormErrors((pre) => ({...pre, partnerCode: ''}))
+        setCodeError(false)
+      }else{
+        setFormErrors((pre) => ({...pre, partnerCode: response.message}))
+        setCodeError(true)
+      }
+    },
+    onError: (error: any) => {
+      console.log("channel partner error", error);
+    },
+  });
+
   const handleSubmit = () => {
     if (userData?.role == USER_TYPE.OWNER) {
       if (validateStep()) {
@@ -181,6 +212,11 @@ export default function CreateAccount({ step }: { step: number }) {
       }
     } else {
       if (step == 1) {
+        if(codeError){
+          validateChannelParnterCode({code: formData.partnerCode})
+          return
+        }
+
         handleNextStep();
       } else if (validateStep()) {
         const payload = {
@@ -343,8 +379,13 @@ export default function CreateAccount({ step }: { step: number }) {
                         placeholder="Enter code"
                         fullWidth
                         value={formData.partnerCode}
-                        onChange={(e) =>
+                        onChange={(e) => {
+                          if(e.target.value && e.target.value.length > 50) return
                           handleChange("partnerCode", e.target.value)
+                          if(e.target.value && e.target.value.length >= 3){
+                            validateChannelParnterCode({code: e.target.value})
+                          }
+                        }
                         }
                         className={dynamicClass(formErrors.partnerCode)}
                         inputProps={{

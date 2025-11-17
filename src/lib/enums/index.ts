@@ -1057,3 +1057,18 @@ export const RECEPTION_AREA = [
     value: 'no',
   }
 ]
+
+export const USER_DASHBOARD_PROPERTY_FILTER = [
+  {
+     value: 'lastDay',
+     label: 'Last Day',
+  },
+  {
+     value: 'lastWeek',
+     label: 'Last Week',
+  },
+  {
+     value: 'lastMonth',
+     label: 'Last Month',
+  }
+]

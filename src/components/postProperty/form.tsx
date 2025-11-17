@@ -7,16 +7,41 @@ import Step4 from "./step4";
 import { useSelector } from "react-redux";
 import { getActiveStep } from "@/store/postPropertyProgress";
 import { useEffect, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { UserDashboardDetailsApiHandler, UserDashboardDetailsResponse } from "@/services/userService";
+import { useRouter } from "next/navigation";
 
 export default function PostPropertyForm() {
 const activeStep = useSelector(getActiveStep);
   const containerRef = useRef(null);
+  const router = useRouter()
+
+  const { data: userDashboardDetails } = useQuery({
+    queryKey: ["user-dashboard-details-to-verify-count"],
+    queryFn: async (): Promise<UserDashboardDetailsResponse> => {
+      return UserDashboardDetailsApiHandler();
+    },
+    select: (resposne: UserDashboardDetailsResponse) => {
+      return resposne;
+    },
+    staleTime: 0,
+    refetchOnMount: true,
+  });
 
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTo({ top: 0, behavior: "smooth" });
     }
   }, [activeStep, containerRef]);
+
+  useEffect(() => {
+    if(userDashboardDetails){
+      if(userDashboardDetails.freeListings.remaining == 0){
+        router.replace('/user-dashboard')
+      }
+    }
+  },[userDashboardDetails])
+
   return (
     <div>
       {activeStep == 1 && <Step1 containerRef={containerRef}/>}
