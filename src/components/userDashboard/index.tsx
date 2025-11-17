@@ -1,0 +1,274 @@
+'use client'
+import Image from "next/image";
+import DynamicSelect from "../common/select";
+import { PROPERTY_IMAGE_TYPE } from "@/lib/enums";
+
+export default function UserDashboard() {
+  const progressPercent = Math.min((3 / 5) * 100, 100);
+  return (
+    <div className="w-full bg-white rounded-xl">
+      <div className="flex flex-col gap-4 p-3">
+        <div className="flex flex-col 2md:flex-row gap-3">
+
+          <div className="flex flex-1.2 rounded-xl flex-col lg:flex-row justify-between lg:items-center bg-[#F2F2F2] p-3 gap-2">
+            {/* <div className="flex flex-col gap-3 sm:flex-row justify-start items-center"> */}
+              <Image
+                src="/assets/profile.png"
+                height={40}
+                width={40}
+                className="w-[55px] h-[55px] rounded-[50%] object-cover"
+                alt="profile"
+              />
+
+              <div className="flex flex-col gap-1">
+                <p className="font-semibold text-lg text-text-black">
+                  Hi, Raaja.2x
+                  <span className="ml-3 px-4 py-1 text-sm sm:text-base rounded-md font-normal text-white bg-gradient-to-r from-[#A43918] to-[#CE8B2D]">
+                    KMA Expert <span className="font-semibold">Pro</span>
+                  </span>
+                </p>
+                <p className="text-base text-text-gray">
+                  May your day be filled with progress and good energy!
+                </p>
+              </div>
+              <div className="min-w-[143px] flex justify-start items-center gap-1">
+                <div className="w-fit flex p-2 rounded-full bg-white ">
+                    <Image src='/assets/doller.svg' width={20} height={20} alt="doller" />
+                    <p className="text-text-black underline text-sm pl-2">400 Credits</p>
+                </div>
+                    <Image src='/assets/info-blue.svg' width={20} height={20} alt="info" />
+                </div>
+            {/* </div> */}
+            {/* <div className="min-w-[143px] flex justify-start items-center gap-1">
+                <div className="w-fit flex p-2 rounded-full bg-white ">
+                    <Image src='/assets/doller.svg' width={20} height={20} alt="doller" />
+                    <p className="text-text-black underline text-sm pl-2">400 Credits</p>
+                </div>
+                    <Image src='/assets/info-blue.svg' width={20} height={20} alt="info" />
+            </div> */}
+          </div>
+
+
+          <div className="flex flex-1 rounded-xl flex-col justify-between bg-[#F2F2F2] p-3 gap-3">
+            <div className="flex flex-col gap-2 2md:flex-row justify-between 2md:items-center">
+              <p className="font-semibold text-base text-text-black">
+                Leads Summary{" "}
+              </p>
+              <div className="w-full 2md:w-[150px]">
+              <DynamicSelect
+                placeholder="Select filter"
+                minHeight="35px"
+                options={PROPERTY_IMAGE_TYPE}
+                value={null}
+              />
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row 2md:flex-col xl:flex-row gap-3 justify-start">
+              <div className="flex flex-row items-center rounded-xl bg-white flex-1">
+                <div className="flex items-center gap-2 p-2.5 flex-1 min-w-0">
+                  <Image
+                    src="/assets/residential-blue-dashboard.svg"
+                    height={25}
+                    width={25}
+                    alt="residential"
+                    className="w-[25px] h-[25px]"
+                  />
+                  <p
+                    className="font-medium text-text-black truncate"
+                    title="Residential"
+                  >
+                    Residential
+                  </p>
+                </div>
+
+                <div
+                  className="min-w-[40px] flex-shrink-0 font-semibold text-base
+                                    border-l border-[#E7E7E7] text-center p-2"
+                >
+                  00
+                </div>
+              </div>
+              <div className="flex flex-row items-center rounded-xl bg-white flex-1">
+                <div className="flex items-center gap-2 p-2.5 flex-1 min-w-0">
+                  <Image
+                    src="/assets/commercial-red-dashboard.svg"
+                    height={25}
+                    width={25}
+                    alt="residential"
+                    className="w-[25px] h-[25px]"
+                  />
+                  <p
+                    className="font-medium text-text-black truncate"
+                    title="Residential"
+                  >
+                    Commercial
+                  </p>
+                </div>
+
+                <div
+                  className="min-w-[40px] flex-shrink-0 font-semibold text-base
+                                    border-l border-[#E7E7E7] text-center p-2"
+                >
+                  00
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col 2md:flex-row border justify-between border-[#E7E7E7] rounded-[10px] px-4 py-3">
+          <div className="flex flex-1 flex-col gap-4">
+            <div>
+              <p className="font-semibold text-text-black text-lg">
+                You've used 1 out of 5 listing on your{" "}
+                <span className="text-accent"> Free Plan.</span>
+              </p>
+              <p className="text-text-gray text-base">
+                Short, clear, and easy to understand
+              </p>
+            </div>
+            <p className="text-base">
+              Free Listing:{" "}
+              <span className="bg-[#E7E7E7] p-1 rounded-[5px] px-2 text-sm">
+                5
+              </span>
+            </p>
+            <div className={`w-full`}>
+              <div className="relative w-full sm:w-[250px] h-10 bg-[#01004826] rounded-[5px] overflow-hidden flex items-center">
+                <div
+                  className="absolute top-0 left-0 h-full bg-[#0A0A4A] rounded-[5px] transition-all duration-500 ease-linear"
+                  style={{ width: `${progressPercent}%` }}
+                ></div>
+
+                {/* Center Text */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-white text-sm font-semibold tracking-wide">
+                    {String(3).padStart(2, "0")}/{String(5).padStart(2, "0")}*
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="h-[1px] 2md:h-auto 2md:mx-5 my-4 2md:my-0 2md:py-8 border  border-[#E7E7E7]"></div>
+          <div className="flex flex-1 flex-col gap-4 justify-start">
+            <p className="font-semibold text-text-black text-lg">
+              Want to post more listing?
+            </p>
+
+            <ul className="">
+              <li className="flex items-start gap-2">
+                <span className="mt-2 w-2 h-2 rounded-full bg-text-black"></span>
+                <span className="flex-1 text-text-gray text-base">
+                  Free Plan: Post up to 5 listings
+                </span>
+              </li>
+
+              <li className="flex items-start gap-2">
+                <span className="mt-2 w-2 h-2 rounded-full bg-text-black"></span>
+                <span className="flex-1 text-text-gray text-base">
+                  Channel Partner: Post Unlimited Listings after quick
+                  registration
+                </span>
+              </li>
+            </ul>
+            <button className="w-full sm:w-fit text-sm sm:text-base animated-button px-5 sm:px-12 py-3 border border-blue text-center cursor-pointer">
+              <span className="gap-3 relative flex justify-center">
+                <p className={`text-nowrap font-medium`}>
+                  Register as Channel Partner
+                </p>
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <div className="flex flex-col 2md:flex-row border justify-between border-[#E7E7E7] rounded-[10px] px-4 py-3">
+          <div className="relative flex flex-1 flex-col gap-4 pb-0 sm:pb-10">
+            <div>
+              <p className="font-semibold text-text-black text-lg">
+                Channel Partner {' '}
+                <span className="text-[#1B8836]"> Activated</span>
+              </p>
+              <p className="text-text-gray text-base">
+                Now you can post unlimited properties and unlock premium benefits.
+              </p>
+            </div>
+            <ul className="">
+                <p className="font-semibold text-text-black text-lg">
+               Benefits for Channel Partners:
+              </p>
+              <li className="flex items-start gap-2">
+                <span className="mt-2 w-2 h-2 rounded-full bg-text-black"></span>
+                <span className="flex-1 text-text-gray text-base">
+                  Unlimited property listings
+                </span>
+              </li>
+
+              <li className="flex items-start gap-2">
+                <span className="mt-2 w-2 h-2 rounded-full bg-text-black"></span>
+                <span className="flex-1 text-text-gray text-base">
+                  Verified Partner Badge for higher trust
+                </span>
+              </li>
+            </ul>
+            <div className="hidden sm:flex absolute -bottom-[13px] right-0">
+                <Image src='/assets/channerl-parter-dashboard.svg' width={100} height={100} alt='' />
+            </div>
+          </div>
+          <div className="h-[1px] 2md:h-auto 2md:mx-5 my-4 2md:my-0 2md:py-8 border  border-[#E7E7E7]"></div>
+          <div className="flex flex-1 flex-col gap-4 justify-start">
+            <p className="font-semibold text-text-black text-lg">
+              Your Channel Partner Status <span className="text-[#1B8836]"> Activated</span>
+            </p>
+
+            <div className="w-full sm:w-fit flex flex-row items-center rounded-xl bg-[#F2F2F2]">
+                <div className="flex items-center gap-2 p-2.5 flex-1 min-w-0">
+                  <Image
+                    src="/assets/property-posted-blue.svg"
+                    height={25}
+                    width={25}
+                    alt="residential"
+                    className="w-[25px] h-[25px]"
+                  />
+                  <p
+                    className="font-medium text-text-black truncate"
+                    title="Residential"
+                  >
+                    Properties Posted
+                  </p>
+                </div>
+
+                <div
+                  className="min-w-[40px] flex-shrink-0 font-semibold text-base
+                                    border-l border-text-black text-center p-2"
+                >
+                  00
+                </div>
+            </div>
+            <div>
+                <p className="text-base text-text-black ">Unlimited Quota: 🔓 No limits!</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex rounded-xl flex-col sm:flex-row gap-3 justify-start items-start sm:items-center bg-[#F2F2F2] p-3">
+          <div className="flex flex-1 flex-col ">
+            <p className="font-semibold text-lg text-text-black">
+              We’re Here for You!
+            </p>
+            <p className="text-base text-text-gray">
+              Stuck somewhere or need quick answers? Explore our Help Center for
+              guides, FAQs, and instant support.
+            </p>
+          </div>
+          <div>
+            <button className="w-full md:w-[130px] text-sm 1xl:text-base px-12 py-3 border border-[#E7E7E7] text-center cursor-pointer rounded-[5px] bg-light-purple">
+              <span className="gap-3 relative flex justify-center">
+                <p className={`text-nowrap font-medium`}>Go to Help Center</p>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

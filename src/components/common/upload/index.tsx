@@ -22,7 +22,7 @@ export default function ImageUpload({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
-  const maxSizeMB = type == 'photo' ? 10 : 30;
+  const maxSizeMB = type == 'photo' ? 20 : 50;
   const maxSizeBytes = maxSizeMB * 1024 * 1024;
   const validTypes = accept.split(",").map(item => item.trim());
 
