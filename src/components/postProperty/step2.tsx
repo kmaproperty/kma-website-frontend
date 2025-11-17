@@ -670,6 +670,17 @@ export default function Step2({containerRef}) {
     return true
   }
 
+  const renderBrokerageLabel = () => {
+    const isRent = basicStaticDetail.propertyListFor?.code == 'rent'
+    const isSell = basicStaticDetail.propertyListFor?.code == 'sale'
+
+    if(isSell){
+      return {type: 'sell', text: 'Enter brokerage (In Percentage)'}
+    }else{
+      return {type: 'rent', text: 'Enter brokerage (In Ruppes)'}
+    }
+  }
+
   //Validation
   const validate = () => {
     const isResidential = basicStaticDetail.propertyCategory?.code == 'residential'
@@ -2112,14 +2123,18 @@ export default function Step2({containerRef}) {
           {errors?.brokerageCharge && <p className="pt-1 text-red-500 text-xs">{errors.brokerageCharge}</p>}
           {renderShowField(FIELD_NAME.BROKERAGE_CHARGE_VALUE) && <div id='otherBrokerageCharge' data-field={FIELD_NAME.BROKERAGE_CHARGE_VALUE} data-has-value={!!dynamicFieldDetails.otherBrokerageCharge}>
             <InputBase
-              placeholder="Enter brokerage (In Ruppes)"
+              placeholder={renderBrokerageLabel().text}
               fullWidth
               value={dynamicFieldDetails.otherBrokerageCharge ?? ''}
               onChange={(e) => {
                 const input = e.target.value;
                 const isOnlyDigits = /^\d*$/.test(input);
                 if (!isOnlyDigits) return;
-                if(Number(input) > 99999) return
+                if(renderBrokerageLabel().type == 'sell'){
+                  if(Number(input) > 20) return
+                }else{
+                  if(Number(input) > 99999) return
+                }
                 setDynamicFieldDetails((pre) => ({...pre, otherBrokerageCharge: input}))
                 setErrors((pre) => ({...pre, otherBrokerageCharge: ''}))
               }}
@@ -2351,9 +2366,9 @@ export default function Step2({containerRef}) {
         </div>}
 
         {renderShowField(FIELD_NAME.EXPECTED_RENT_INCREASE) && <div id='expectedRentIncrease' data-field={FIELD_NAME.EXPECTED_RENT_INCREASE} data-has-value={!!dynamicFieldDetails.expectedRentIncrease}>
-          <FieldLabel label="Expected Rent Increase" customClass="pb-2" />
+          <FieldLabel label="Expected Rent Increase (%)" customClass="pb-2" />
           <InputBase
-            placeholder="Enter expected rent increase"
+            placeholder="Enter expected rent increase (In Percentage)"
             fullWidth
             value={dynamicFieldDetails.expectedRentIncrease ?? ''}
             onChange={(e) => {
@@ -2439,14 +2454,18 @@ export default function Step2({containerRef}) {
           {errors?.brokerageCharge && <p className="pt-1 text-red-500 text-xs">{errors.brokerageCharge}</p>}
           {renderShowField(FIELD_NAME.COMMERCIAL_CUSTOM_BROKERAGE_CHARGE) && <div id='otherBrokerageCharge' data-field={FIELD_NAME.COMMERCIAL_CUSTOM_BROKERAGE_CHARGE} data-has-value={!!dynamicFieldDetails.otherBrokerageCharge}>
             <InputBase
-              placeholder="Enter brokerage (In Ruppes)"
+              placeholder={renderBrokerageLabel().text}
               fullWidth
               value={dynamicFieldDetails.otherBrokerageCharge ?? ''}
               onChange={(e) => {
                 const input = e.target.value;
                 const isOnlyDigits = /^\d*$/.test(input);
                 if (!isOnlyDigits) return;
-                if(Number(input) > 99999) return
+                if(renderBrokerageLabel().type == 'sell'){
+                  if(Number(input) > 20) return
+                }else{
+                  if(Number(input) > 99999) return
+                }
                 setDynamicFieldDetails((pre) => ({...pre, otherBrokerageCharge: input}))
                 setErrors((pre) => ({...pre, otherBrokerageCharge: ''}))
               }}
@@ -2543,9 +2562,9 @@ export default function Step2({containerRef}) {
         </div>}
 
         {renderShowField(FIELD_NAME.EXPECTED_RETURN) && <div id='expectedReturnOnInvestment' data-field={FIELD_NAME.LEASE_YEAR} data-has-value={!!dynamicFieldDetails.expectedReturnOnInvestment}>
-          <FieldLabel label="Expected Return on Investment" customClass="pb-2" required={true} />
+          <FieldLabel label="Expected Return on Investment (%)" customClass="pb-2" required={true} />
           <InputBase
-            placeholder="Enter return on investment in percentage"
+            placeholder="Enter return on investment (In Percentage)"
             fullWidth
             value={dynamicFieldDetails.expectedReturnOnInvestment ?? ''}
             onChange={(e) => {

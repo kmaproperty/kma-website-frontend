@@ -1,7 +1,8 @@
 "use client";
 import { useStepProgress } from "@/hooks/useStepProgress";
 import { Step1DetailsResponse, step1PostPropertyDetailsApiHandler } from "@/services/postProperty";
-import { getActiveStep, getStepList, setActiveStep, step } from "@/store/postPropertyProgress";
+import { getActiveStep, getStepList, setActiveStep, step, updateStepProgress } from "@/store/postPropertyProgress";
+import { step1Data } from "@/store/postPropertySlice";
 import {
   Accordion,
   AccordionDetails,
@@ -86,18 +87,27 @@ const CleanAccordion = styled(Accordion)(() => ({
   },
 }));
 
-function Stepper({activeStep, stepList, basicDetails, totalProgress}: {activeStep: number, stepList: step[], basicDetails: any, totalProgress: number}) {
-  // const isResidential = basicDetails.propertyCategory?.code == 'residential'
-  // const isRent = basicDetails.propertyListFor?.code == 'rent'
-  // const isSell = basicDetails.propertyListFor?.code == 'sale'
+function Stepper({activeStep, stepList, basicDetails, totalProgress, step1FormData}: {activeStep: number, stepList: step[], basicDetails: any, totalProgress: number, step1FormData: any}) {
   const dispatch = useDispatch()
-  const propertyType = basicDetails.propertyType?.code
-
+  const propertyType = step1FormData?.propertyType?.code ?? basicDetails?.propertyType?.code
   const isStep3Skipped = ['res-sale-plot', 'res-sale-agri-land', 'com-rent-warehouse', 'com-sale-warehouse', 'com-rent-plot', 'com-sale-plot'].includes(propertyType ?? '')
   
+  let renderList = () => {
+    if(isStep3Skipped){
+      let updatedList = stepList.map(item => {
+        if(item.number == 4){
+          return {...item, number: 3}
+        }
+        return item
+      })
+      return updatedList
+    }
+    return stepList
+  }
+
   return (
     <StepContainer className="flex-col">
-      {stepList.map((step, index) => {
+      {renderList().map((step, index) => {
         const getActive = () => {
           if(index == 0 && (totalProgress >= 25 || (isStep3Skipped && totalProgress >= 33))){
             return true
@@ -117,7 +127,7 @@ function Stepper({activeStep, stepList, basicDetails, totalProgress}: {activeSte
         const isLast = index === stepList.length - 1;
 
         const renderStatus = () => {
-          if(isStep3Skipped && index == 2){
+          if(false && index == 2){
             return 'Skipped'
           }else if(isCurrent){
             return 'In Progress'
@@ -136,7 +146,7 @@ function Stepper({activeStep, stepList, basicDetails, totalProgress}: {activeSte
         }
 
         const renderStatusColor = () => {
-          if(isStep3Skipped && index == 2){
+          if(false && index == 2){
             return 'text-[#FF901E]'
           }else if(isCurrent){
             return 'text-[#FF901D]'
@@ -151,8 +161,12 @@ function Stepper({activeStep, stepList, basicDetails, totalProgress}: {activeSte
           }else {
             return 'text-[#8090FF]'
           }
-
         }
+
+        if(isStep3Skipped && index == 2){
+          return ''
+        }
+
         return (
           <StepItem active={active} onClick={() => {
             if(active){
@@ -205,8 +219,8 @@ export default function StepperCustom() {
   const activeStep = useSelector(getActiveStep);
   const stepList = useSelector(getStepList)
   const params = useParams()
-
-  const [basicStaticDetail, setBasicStaticDetail] = useState({})
+  const step1FormData = useSelector(step1Data)
+  const [basicStaticDetail, setBasicStaticDetail] = useState<any>({})
   
   const { data: step1Details } = useQuery({
     queryKey: ["step1-in-stepper-details", params?.propertyId],
@@ -254,12 +268,12 @@ export default function StepperCustom() {
             </p>
           </AccordionSummary>
           <AccordionDetails>
-            <Stepper activeStep={activeStep} stepList={stepList} basicDetails={basicStaticDetail} totalProgress={totalProgress}/>
+            <Stepper activeStep={activeStep} step1FormData={step1FormData} stepList={stepList} basicDetails={basicStaticDetail} totalProgress={totalProgress}/>
           </AccordionDetails>
         </CleanAccordion>
       </div>
       <div className="hidden 2md:flex">
-        <Stepper activeStep={activeStep} stepList={stepList} basicDetails={basicStaticDetail} totalProgress={totalProgress}/>
+        <Stepper activeStep={activeStep} step1FormData={step1FormData} stepList={stepList} basicDetails={basicStaticDetail} totalProgress={totalProgress}/>
       </div>
     </div>
   );
