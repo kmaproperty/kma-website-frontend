@@ -4,12 +4,18 @@ import ProfileMenu from "../common/profileMenu";
 import { useEffect, useState } from "react";
 import PositionMenu from "../common/menu";
 import MenuList from "../common/MenuList";
+import { usePathname, useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { UserDashboardDetailsApiHandler, UserDashboardDetailsResponse } from "@/services/userService";
 
 export default function UserHeader() {
+    const router = useRouter()
+    const pathName = usePathname()
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [openMenuList, setOpenMenuList] = useState(false)
     const [isLoggedUser, setIsLoggedUser] = useState(false)
+
 
      useEffect(() => {
     if (isDrawerOpen || openMenuList) {
@@ -34,6 +40,40 @@ export default function UserHeader() {
   };
 
   const open = Boolean(anchorEl);
+
+  const handleRedirect = (routeName: string) => {
+    router.push(routeName)
+  }
+
+  const isActiveRoute =(routeName: string) => {
+    const cleaned = pathName.startsWith("/") ? pathName.slice(1) : pathName;
+    if(routeName == cleaned){
+      return true
+    }else{
+      return false
+    }
+  }
+
+  const { data: userDashboardDetails } = useQuery({
+    queryKey: ["user-dashboard-details-to-verify-count"],
+    queryFn: async (): Promise<UserDashboardDetailsResponse> => {
+      return UserDashboardDetailsApiHandler();
+    },
+    select: (resposne: UserDashboardDetailsResponse) => {
+      return resposne;
+    },
+    staleTime: 0,
+    refetchOnMount: true,
+  });
+
+  const disablePostProperty = () => {
+    if(userDashboardDetails){
+      if(userDashboardDetails?.freeListings?.remaining == 0){
+        return true
+      }
+    }   
+    return false
+  }
 
   return (
     <>
@@ -61,8 +101,8 @@ export default function UserHeader() {
         </div>
 
         {isLoggedUser && <div className="hidden 2md:flex gap-4 justify-end w-full">
-          <div className="flex items-center gap-3">
-            <p className="text-white font-medium text-sm lg:text-base">Dashboard</p>
+          <div onClick={() => handleRedirect('/user-dashboard')} className="cursor-pointer flex items-center gap-3">
+            <p className="text-white font-medium text-sm lg:text-base" style={{borderBottom: isActiveRoute('user-dashboard') ? '2px solid white' : ''}}>Dashboard</p>
           </div>
           <div className="flex items-center gap-3">
             <p className="text-white font-medium text-sm lg:text-base">Listing</p>
@@ -71,7 +111,7 @@ export default function UserHeader() {
             <p className="text-white font-medium text-sm lg:text-base">Leads</p>
           </div>
           <div className="">
-            <button className="w-min text-sm lg:text-base animated-button px-7 lg:px-10 py-3 border border-blue text-center cursor-pointer">
+            <button disabled={disablePostProperty()} onClick={() => handleRedirect('/post-property')} className="w-min text-sm lg:text-base animated-button px-7 lg:px-10 py-3 border border-blue text-center cursor-pointer">
                 <span className="gap-3 relative flex justify-center">
                   <img src='/assets/plus-sign.svg'/>
                   <p className={`text-nowrap font-medium`}>Post Property</p>

@@ -4,7 +4,7 @@ import ImageUpload from "../common/upload";
 import FieldLabel from "./fieldLabel";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { getActiveStep, setActiveStep, setTotalProgress } from "@/store/postPropertyProgress";
+import { getActiveStep, resetProgress, setActiveStep, setTotalProgress } from "@/store/postPropertyProgress";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
@@ -33,6 +33,7 @@ export default function Step4({containerRef}) {
   const { calculateProgress } = useStepProgress();
   const params = useParams();
   const toastRef = useRef(null);
+  const router = useRouter()
 
   const activeStep = useSelector(getActiveStep);
   const dispatch = useDispatch();
@@ -290,7 +291,9 @@ const handleUploadFileToS3 = async (files: File[], type: string) => {
       console.log("step4 success response", response);
       // dispatch(setActiveStep({ step: activeStep + 1 }));
       toast.success('Post Property created successfully')
-      dispatch(setTotalProgress({progress: 100}))
+      dispatch(resetProgress())
+      dispatch(setActiveStep({step: 1}))
+      router.replace('/user-dashboard')
     },
     onError: (error: any) => {
       console.log("step4 error response", error);
