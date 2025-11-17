@@ -36,6 +36,7 @@ import { InputBase } from "@mui/material";
 import RenderSectionName from "./renderSecitonName";
 import { useLocalitySearch } from "@/hooks/useLocalitySearch";
 import ConfirmationDailog from "../common/confirmationDailog";
+import { setStep1Data } from "@/store/postPropertySlice";
 
 const initialState = {
     bhk: null,
@@ -96,7 +97,7 @@ export default function Step1({containerRef}) {
   const { loadBuildings } = useBuildingSearch();
   const { loadLocalities } = useLocalitySearch();
 
-  const { calculateProgress } = useStepProgress()
+  const { calculateProgress, totalProgress } = useStepProgress()
   const possessionDateRef = useRef<HTMLInputElement | null>(null);
   const availabelDateRef = useRef<HTMLInputElement | null>(null);
 
@@ -1239,9 +1240,10 @@ console.log('renderOtherBhk', renderOtherBhk())
                       setBasicStaticDetails((pre) => ({...pre, propertyListFor: item, propertyType: null, city: null, locality: null, society: null}))
                       setDynamicFieldDetails(initialState)
                       setErrors((pre) => ({...pre, propertyListFor: ''}))
+                      dispatch(setStep1Data({propertyType: null}))
                     }
 
-                    if(params?.propertyId){
+                    if(params?.propertyId && totalProgress != 0){
                       setConfirmationPopup(true)
                       setStoreUserAction(() => initialFn)
                     }else{
@@ -1275,8 +1277,9 @@ console.log('renderOtherBhk', renderOtherBhk())
                       setBasicStaticDetails((pre) => ({...pre, propertyCategory: item, propertyType: null, city: null, locality: null, society: null}))
                       setDynamicFieldDetails(initialState)
                       setErrors((pre) => ({...pre, propertyCategory: ''}))
+                      dispatch(setStep1Data({propertyType: null}))
                     }
-                    if(params?.propertyId){
+                    if(params?.propertyId && totalProgress != 0){
                       setConfirmationPopup(true)
                       setStoreUserAction(() => initialFn)
                     }else{
@@ -1310,14 +1313,14 @@ console.log('renderOtherBhk', renderOtherBhk())
                       setBasicStaticDetails((pre) => ({...pre, propertyType: item, city: null, locality: null, society: null}))
                       setDynamicFieldDetails(initialState)
                       setErrors((pre) => ({...pre, propertyType: ''}))
+                      dispatch(setStep1Data({propertyType: item}))
                     }
-                    if(params?.propertyId){
+                    if(params?.propertyId && totalProgress != 0){
                       setConfirmationPopup(true)
                       setStoreUserAction(() => initialFn)
                     }else{
                       initialFn()
                     }
-                  
                 }}
                 key={item.id}
               >

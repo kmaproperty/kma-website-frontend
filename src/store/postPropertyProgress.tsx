@@ -105,7 +105,7 @@ const postPropertyProgressSlice = createSlice({
     setTotalProgress: ( state,
       action: PayloadAction<{progress: number }>) => {
         state.totalProgress = action.payload.progress
-    }
+    },
   },
 });
 
@@ -114,7 +114,7 @@ export const {
   calculateTotalProgress,
   resetProgress,
   setActiveStep,
-  setTotalProgress
+  setTotalProgress,
 } = postPropertyProgressSlice.actions;
 
 export default postPropertyProgressSlice.reducer;
