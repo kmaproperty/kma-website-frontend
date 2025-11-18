@@ -7,7 +7,7 @@ import { useTheme } from "@mui/material/styles";
 import Image from "next/image";
 import { InputBase } from "@mui/material";
 
-export default function CustomOptionField({open, onClose, label, onSubmit} : {open: boolean,onClose: () => void, label: string, onSubmit: (value:string, label: string) => void}) {
+export default function CustomOptionField({open, onClose, label, onSubmit, isCloseNotRequired = false} : {open: boolean,onClose: () => void, label: string, onSubmit: (value:string, label: string) => void, isCloseNotRequired?: boolean}) {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -27,8 +27,9 @@ export default function CustomOptionField({open, onClose, label, onSubmit} : {op
         }
         if(onSubmit){
             onSubmit(fieldValue, label)
-            setFieldValue('')
-            onClose()
+            if(!isCloseNotRequired){
+              onClose()
+            }
         }
     }
 
@@ -44,6 +45,12 @@ export default function CustomOptionField({open, onClose, label, onSubmit} : {op
                   text-text-gray
                 `;
   };
+
+  React.useEffect(() => {
+    if(open){
+      setFieldValue('')
+    }
+  },[open])
 
   return (
     <React.Fragment>

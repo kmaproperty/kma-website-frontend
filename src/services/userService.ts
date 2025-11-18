@@ -85,3 +85,37 @@ export const UserDashboardDetailsApiHandler = async () : Promise<UserDashboardDe
         throw error.response?.data ?? error;
     }
 }
+
+export interface UpgreadOwnerToChannelPartnerPayload {
+  channelPartnerCode: string;
+}
+export interface UpgreadOwnerToChannelPartnerResponse {
+  message: string
+}
+
+export const UpgreadOwnerToChannelPartnerApiHandler = async (paylaod: UpgreadOwnerToChannelPartnerPayload) : Promise<UpgreadOwnerToChannelPartnerResponse> => {
+    try{
+        const response = await axiosInstance.post<UpgreadOwnerToChannelPartnerResponse>(
+      "users/upgrade-channel-partner", paylaod);
+
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}
+
+export interface UserLogoutResponse {
+  message: string;
+  success: boolean
+}
+
+export const UserLogoutApiHandler = async () : Promise<UserLogoutResponse> => {
+    try{
+        const response = await axiosInstance.post<UserLogoutResponse>(
+      "users/logout");
+
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}

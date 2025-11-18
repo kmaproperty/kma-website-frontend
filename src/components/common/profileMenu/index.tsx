@@ -1,12 +1,38 @@
+import { UserLogoutApiHandler, UserLogoutResponse } from "@/services/userService";
+import { useMutation } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 export default function ProfileMenu(){
     const router = useRouter()
 
-    const handleLogout = () => {
+    const {
+      mutate: handleLogoutApi,
+      isPending,
+    } = useMutation({
+      mutationFn: async (): Promise<UserLogoutResponse> => {
+        return await UserLogoutApiHandler();
+      },
+      onSuccess: (response: UserLogoutResponse) => {
+        console.log('response', response)
         localStorage.clear()
-        router.replace('/signup')    
+        router.replace('/signup')   
+      },
+      onError: (error: any) => {
+        console.log('error', error)
+        if(Array.isArray(error.message)){
+        error.message.map((item: string) => {
+          toast.error(item)
+        })
+      }else{
+        toast.error(error.message)
+      }
+      },
+    });
+
+    const handleLogout = () => {
+        handleLogoutApi()  
     }
 
     return(
