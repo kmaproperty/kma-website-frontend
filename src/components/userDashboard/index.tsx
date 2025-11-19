@@ -2,16 +2,19 @@
 import Image from "next/image";
 import DynamicSelect, { OptionType } from "../common/select";
 import { USER_DASHBOARD_PROPERTY_FILTER, USER_TYPE } from "@/lib/enums";
-import { useQuery } from "@tanstack/react-query";
-import { UserDashboardDetailsApiHandler, UserDashboardDetailsResponse } from "@/services/userService";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { UpgreadOwnerToChannelPartnerApiHandler, UpgreadOwnerToChannelPartnerPayload, UpgreadOwnerToChannelPartnerResponse, UserDashboardDetailsApiHandler, UserDashboardDetailsResponse } from "@/services/userService";
 import { useState } from "react";
+import { toast } from "react-toastify";
+import CustomOptionField from "../common/addCustomOption";
 
 export default function UserDashboard() {
   const max_property = process.env.NEXT_PUBLIC_OWNER_MAX_PROPERTY_CREATE;
 
   const [filterValue, setFilterValue] = useState(USER_DASHBOARD_PROPERTY_FILTER[1])
+  const [openCodePopup, setOpenCodePopup] = useState<boolean>(false)
 
-  const { data: userDashboardDetails } = useQuery({
+  const { data: userDashboardDetails, refetch: getUpdatedDashboardDetails } = useQuery({
       queryKey: ["user-dashboard-details"],
       queryFn: async (): Promise<UserDashboardDetailsResponse> => {
         return UserDashboardDetailsApiHandler();
@@ -21,7 +24,42 @@ export default function UserDashboard() {
       },
       staleTime: 0,
       refetchOnMount: true,
+  });
+
+  const {
+      mutate: handleUpgradUser,
+      isPending,
+    } = useMutation({
+      mutationFn: async (payload: UpgreadOwnerToChannelPartnerPayload): Promise<UpgreadOwnerToChannelPartnerResponse> => {
+        return await UpgreadOwnerToChannelPartnerApiHandler(payload);
+      },
+      onSuccess: (response: UpgreadOwnerToChannelPartnerResponse) => {
+        console.log('response', response)
+        setOpenCodePopup(false)
+        toast.success('Upgraded to Channel Partner successfully')
+        getUpdatedDashboardDetails()
+      },
+      onError: (error: any) => {
+        console.log('error', error)
+        if(Array.isArray(error.message)){
+        error.message.map((item: string) => {
+          toast.error(item)
+        })
+      }else{
+        toast.error(error.message)
+      }
+      },
     });
+
+    const handleCloseCodePopup = () => {
+      setOpenCodePopup(false)
+    }
+
+    const handleCode = (value: string) => {
+      if(!isPending){
+        handleUpgradUser({channelPartnerCode: value})
+      }
+    }
 
   const progressPercent = userDashboardDetails ? Math.min((userDashboardDetails?.freeListings?.used / userDashboardDetails?.freeListings?.total) * 100, 100) : 0;
   
@@ -196,7 +234,9 @@ export default function UserDashboard() {
                 </span>
               </li>
             </ul>
-            <button className="w-full sm:w-fit text-sm sm:text-base animated-button px-5 sm:px-12 py-3 border border-blue text-center cursor-pointer">
+            <button onClick={() => {
+              setOpenCodePopup(true)
+            }} className="w-full sm:w-fit text-sm sm:text-base animated-button px-5 sm:px-12 py-3 border border-blue text-center cursor-pointer">
               <span className="gap-3 relative flex justify-center">
                 <p className={`text-nowrap font-medium`}>
                   Register as Channel Partner
@@ -294,6 +334,7 @@ export default function UserDashboard() {
           </div>
         </div>
       </div>
+            <CustomOptionField isCloseNotRequired={true} open={openCodePopup} onClose={() => handleCloseCodePopup()} label={'Channel Partner Code'} onSubmit={handleCode}/>
     </div>
   );
 }
