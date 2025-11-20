@@ -1085,7 +1085,7 @@ console.log('renderOtherBhk', renderOtherBhk())
       propertyCondition: dynamicFieldDetails?.propertyCondition,
       builtUpArea: dynamicFieldDetails?.builtUpArea,
       builtUpAreaUnit: dynamicFieldDetails.builtUpAreaUnit, //sq_ft, sq_yd, sq_m, acres, hectares
-      carpetArea: dynamicFieldDetails?.carpetArea,
+      carpetArea: dynamicFieldDetails?.carpetArea ?? 0,
       carpetAreaUnit: dynamicFieldDetails.carpetAreaUnit, //sq_ft, sq_yd, sq_m, acres, hectares
       wallConstructionStatus: dynamicFieldDetails?.constructionStatus,
       ownership: dynamicFieldDetails?.ownership,
@@ -1531,7 +1531,7 @@ console.log('renderOtherBhk', renderOtherBhk())
                 }} className={`flex flex-1 min-w-[240px] justify-between cursor-pointer ${(dynamicFieldDetails.isStaticBhkDetails && (dynamicFieldDetails.staticBhKDetails?.id == item?.id)) ? 'bg-light-purple' : ''} p-3 border border-border border-1 rounded-[10px] gap-5`}>
                   <div className="flex flex-col justify-between">
                       <p className="font-medium text-sm text-text-black">{item.superBuiltUpArea} Sq Ft</p>
-                      <p className="text-sm text-text-gray">Super Builtup Area</p>
+                      <p className="text-sm text-text-gray">Builtup Area</p>
                       <p className="text-sm text-text-black">{item.noOfBathrooms} Bathrooms</p>
                   </div>
                   <Image alt="home" src='assets/squre-home.svg' width={75} height={75} />
