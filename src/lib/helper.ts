@@ -1,4 +1,5 @@
 import { OptionType } from "@/components/common/select";
+import { PROPERTY_STATUS } from "./enums";
 
 type ParamValue = string | number | boolean;
 type ParamObject = Record<string, ParamValue | undefined | null>;
@@ -130,3 +131,18 @@ export const generateLockInPeriod = (count: number): OptionType[] => {
   upperFloors = upperFloors.map(item => ({label: item + ' month', value: item}))
   return upperFloors
 };
+
+
+export const encodeFilters = (obj: any) => btoa(JSON.stringify(obj));
+
+export const decodeFilters = (str: string) => {
+    try { return JSON.parse(atob(str)); } 
+    catch { return null }
+};
+
+export const getStatusLabel = (value: string) => {
+  if(value){
+    return PROPERTY_STATUS.find(item => item.value == value)?.name
+  }
+  return ''
+}
