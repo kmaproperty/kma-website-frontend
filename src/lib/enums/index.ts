@@ -409,6 +409,41 @@ export const FURNISH_TYPE = [
   },
 ]
 
+export const PROPERTY_STATUS = [
+  {
+    name: 'Draft',
+    value: 'draft'
+  },
+  {
+    name: 'Pending Review',
+    value: 'pending_review'
+  },
+  {
+    name: 'Active',
+    value: 'active'
+  },
+  {
+    name: 'In Active',
+    value: 'inactive'
+  },
+  {
+    name: 'Sold',
+    value: 'sold'
+  },  
+  { 
+    name: 'Rented',
+    value: 'rented'
+  },
+  { 
+    name: 'Approved',
+    value: 'approved'
+  },
+  { 
+    name: 'Rejected',
+    value: 'rejected'
+  },
+]
+
 export const CONSTRUCTION_TYPE = [
   {
     name: 'Shed',

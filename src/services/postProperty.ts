@@ -508,3 +508,155 @@ export const resetPostPropertyApiHandler = async (paylaod: resetAPIPayload) : Pr
         throw error.response?.data ?? error;
     }
 }
+
+
+export interface ProeprtyListApiPayload {
+page: number,
+limit: number,
+categoryIds?: string | null,
+propertyTypeIds?: string | null,
+listingTypeIds?: string | null,
+furnishingTypes?: string | null,
+projectStatuses?: string | null,
+statuses?: string | null,
+minPrice?: string | null,
+maxPrice?: string | null,
+search?: string,
+sortBy?: string,
+sortOrder?: string,
+}
+
+export interface ListingItem {
+  id: string;
+  title: string;
+  status: string;
+
+  listingType: {
+    id: string;
+    name: string;
+    code: string;
+  };
+
+  category: {
+    id: string;
+    name: string;
+    code: string;
+  };
+
+  propertyType: {
+    id: string;
+    name: string;
+    code: string;
+  };
+
+  bhkTypeName: string | null;
+  furnishingType: string | null;
+  constructionStatus: string | null;
+
+  price: number | null;
+  monthlyRent: number | null;
+
+  priceSource: string;
+
+  mediaCounts: {
+    photos: number;
+    videos: number;
+  };
+
+  coverPhotoKey: string;
+  address: string;
+
+  area: number | null;
+  areaUnit: string;
+
+  completionStep: number;
+  progressPercentage: number;
+
+  createdAt: string;  // ISO Date
+  updatedAt: string;  // ISO Date
+}
+
+export interface PropertyListApiResponse {
+  items: ListingItem[],
+  pagination: {
+    page: number,
+    limit: number,
+    total: number,
+    totalPage: number,
+  },
+  summary: {
+    total: number,
+    byStatus: {
+      draft: number,
+      pending_review: number,
+      approved: number,
+      rejected: number,
+      active: number,
+      inactive: number,
+      sold: number,
+      rented: number
+    }
+  }
+}
+
+export const propertyListApiPayload = async (paylaod: ProeprtyListApiPayload) : Promise<PropertyListApiResponse> => {
+    try{
+        const response = await axiosInstance.get<PropertyListApiResponse>(
+      "property/listings",{
+        params: paylaod
+      });
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}
+
+
+export interface GetPropertyDetailsResponse {
+  id: string;
+  title: string;
+
+  status: "pending_review" | "active" | "inactive" | string;
+
+  area: number | null;
+  areaUnit: "sq_ft" | "sq_yd" | "sq_m" | string;
+
+  category: string;
+
+  constructionStatus: string | null;
+  furnishingType: string | null;
+
+  photos: {
+    fileKey: string;
+    view: string | null;
+    isCoverImage: boolean;
+  }[];
+
+  videos: {
+    fileKey?: string;
+    url?: string;
+    view?: string;
+  }[];
+
+  price: number | null;
+  monthlyRent: number | null;
+
+  possessionDate: string | null;
+
+  createdOn: string;      // YYYY-MM-DD
+  lastAddedOn: string;    // YYYY-MM-DD
+
+  completionStep: number;
+  progressPercentage: number;
+
+}
+
+export const getPropertyDetailsApiHandler = async (id: string) : Promise<GetPropertyDetailsResponse> => {
+    try{
+        const response = await axiosInstance.get<GetPropertyDetailsResponse>(
+      "property/" + id);
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}

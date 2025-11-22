@@ -104,8 +104,8 @@ export default function UserHeader() {
           <div onClick={() => handleRedirect('/user-dashboard')} className="cursor-pointer flex items-center gap-3">
             <p className="text-white font-medium text-sm lg:text-base" style={{borderBottom: isActiveRoute('user-dashboard') ? '2px solid white' : ''}}>Dashboard</p>
           </div>
-          <div className="flex items-center gap-3">
-            <p className="text-white font-medium text-sm lg:text-base">Listing</p>
+          <div onClick={() => handleRedirect('/my-listing')} className="cursor-pointer flex items-center gap-3">
+            <p className="text-white font-medium text-sm lg:text-base" style={{borderBottom: isActiveRoute('my-listing') ? '2px solid white' : ''}}>Listing</p>
           </div>
           <div className="flex items-center gap-3">
             <p className="text-white font-medium text-sm lg:text-base">Leads</p>
