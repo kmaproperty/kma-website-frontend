@@ -20,7 +20,7 @@ import { PropertyType } from "@/types/user";
 import { useDispatch, useSelector } from "react-redux";
 import { resetForm, setFormField } from "@/store/createAccountSlice";
 import { RootState } from "@/store/store";
-import { createURLSearchParam } from "@/lib/helper";
+import { clearAuthCookies, createURLSearchParam } from "@/lib/helper";
 import { toast } from "react-toastify";
 
 interface FormData {
@@ -226,6 +226,7 @@ export default function CreateAccount({ step }: { step: number }) {
     let user = localStorage.getItem("user");
     const userData: User = user ? JSON.parse(user) : null;
     if (!userData) {
+      clearAuthCookies()
       router.push("/signup");
       return;
     }

@@ -29,3 +29,30 @@ export function createURLSearchParam(
   const query = params.toString();
   return query ? `?${query}` : "";
 }
+
+export const setAuthCookies = async (accessToken: string, refreshToken: string) => {
+  try{
+    await fetch("/api/set-token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+      }),
+    });
+  }catch(error){
+    console.error("Failed to set auth cookies:", error);
+  }
+}
+
+export const clearAuthCookies = async () => {
+  try {
+    await fetch("/api/clear-token", {
+      method: "POST",
+    });
+  } catch (error) {
+    console.error("Failed to clear cookies:", error);
+  }
+};
