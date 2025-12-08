@@ -7,7 +7,7 @@ import { OTP_RESEND_TIME, USER_TYPE } from "@/lib/enums";
 import { OtpPayload, resendOtpApiHandler, SendOtpResponse, validateOtpApiHandler, ValidateOtpPayload, ValidateOtpResponse } from "@/services/authService";
 import { useMutation } from "@tanstack/react-query";
 import { UserType } from "@/types/user";
-import { createURLSearchParam } from "@/lib/helper";
+import { createURLSearchParam, setAuthCookies } from "@/lib/helper";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { resetForm } from "@/store/createAccountSlice";
@@ -41,10 +41,11 @@ export default function CreateAccountOtp() {
     mutationFn: async (payload: ValidateOtpPayload): Promise<ValidateOtpResponse> => {
       return await validateOtpApiHandler(payload);
     },
-    onSuccess: (response: ValidateOtpResponse) => {
+    onSuccess:async (response: ValidateOtpResponse) => {
       console.log('Otp response', response)
-      localStorage.setItem('refreshToken', response.refreshToken)
-      localStorage.setItem('accessToken', response.accessToken)
+      await setAuthCookies(response.accessToken,response.refreshToken)
+      // localStorage.setItem('refreshToken', response.refreshToken)
+      // localStorage.setItem('accessToken', response.accessToken)
       localStorage.setItem('user',JSON.stringify(response.user))
       const params = createURLSearchParam({
         ...(ownerType == USER_TYPE.OWNER ? {propertyIntent: propertyIntent,} : '')

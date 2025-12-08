@@ -22,7 +22,7 @@ import {
 
 import { OTP_RESEND_TIME } from "@/lib/enums";
 import { matchIsNumeric } from "@/lib/commonValidator";
-import { createURLSearchParam } from "@/lib/helper";
+import { createURLSearchParam, setAuthCookies } from "@/lib/helper";
 import { toast } from "react-toastify";
 
 export default function Otp() {
@@ -81,9 +81,10 @@ export default function Otp() {
   const { mutate: handleVerifyOtp, isPending: isVerifying } = useMutation({
     mutationFn: (payload: ValidateOtpPayload): Promise<ValidateOtpResponse> =>
       validateOtpApiHandler(payload),
-    onSuccess: (res) => {
-      localStorage.setItem("accessToken", res.accessToken);
-      localStorage.setItem("refreshToken", res.refreshToken);
+    onSuccess: async (res) => {
+      setAuthCookies(res.accessToken, res.refreshToken)
+      // localStorage.setItem("accessToken", res.accessToken);
+      // localStorage.setItem("refreshToken", res.refreshToken);
       localStorage.setItem("user", JSON.stringify(res.user));
       setOtp('')
       router.replace("/post-property");

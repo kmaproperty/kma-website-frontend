@@ -15,7 +15,7 @@ import {
 } from "@/services/authService";
 import { mobileNumberValidator } from "@/lib/commonValidator";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { createURLSearchParam } from "@/lib/helper";
+import { clearAuthCookies, createURLSearchParam } from "@/lib/helper";
 import { useMediaQuery, useTheme } from "@mui/material";
 import { toast } from "react-toastify";
 
@@ -150,6 +150,7 @@ export default function SignUp() {
       setPropertyIntent(intent as ListType)
     }
     localStorage.clear()
+    clearAuthCookies()
   }, [mobileNumber, code, owner, intent]) 
 
   return (
