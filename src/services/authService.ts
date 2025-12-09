@@ -4,6 +4,7 @@ import { ListType, UserType } from "@/types/user";
 
 export interface OtpPayload {
     phone: string;
+    role: string;
 }
 
 export interface SendOtpResponse {

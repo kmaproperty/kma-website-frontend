@@ -440,6 +440,7 @@ export default function CreateAccount({ step }: { step: number }) {
                         className={dynamicClass(formErrors.businessSince)}
                         inputProps={{
                           className: "placeholder-gray",
+                          max: new Date().toISOString().split('T')[0],
                         }}
                       />
                       {formErrors.businessSince && (
