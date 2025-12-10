@@ -17,7 +17,7 @@ export interface DynamicAsyncAutocompleteProps {
   isError?: boolean;
   placeholder?: string | React.ReactNode;
   onChange?: (value: OptionType | OptionType[] | null) => void;
-  value?: OptionType | null;
+  value?: OptionType | null | OptionType[];
   minHeight?: string | number;
   enableAddManually?: boolean;
   menualAddItem?: OptionType;

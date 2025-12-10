@@ -6,7 +6,7 @@ interface FormData {
   fullName: string;
   email: string;
   partnerCode: string;
-  city: OptionType | MultiValue<OptionType> | null;
+  city: OptionType | null;
   businessSince: string;
   firmName: string;
   about: string;
@@ -16,7 +16,7 @@ const initialState: FormData = {
   fullName: '',
   email: '',
   partnerCode: '',
-  city: [],
+  city: null,
   businessSince: '',
   firmName: '',
   about: '',

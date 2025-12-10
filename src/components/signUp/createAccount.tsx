@@ -23,6 +23,8 @@ import { RootState } from "@/store/store";
 import { clearAuthCookies, createURLSearchParam } from "@/lib/helper";
 import { toast } from "react-toastify";
 import { ValidateChannelPartnerCodeApiHandler, ValidateChannelPartnerCodePayload, ValidateChannelPartnerCodeResponse } from "@/services/userService";
+import DynamicAsyncAutocomplete from "../common/dynamicAsyncSelectMui";
+import { useCitySearch } from "@/hooks/useCitySearch";
 
 interface FormData {
   fullName: string;
@@ -40,6 +42,7 @@ interface FormErrors {
 
 
 export default function CreateAccount({ step }: { step: number }) {
+  const { loadCities  } = useCitySearch();
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -84,10 +87,7 @@ export default function CreateAccount({ step }: { step: number }) {
       }
       
       if (userData?.role == USER_TYPE.OWNER) {
-        if (
-          (Array.isArray(formData.city) && formData.city.length == 0) ||
-          !formData.city
-        ) {
+        if (!formData.city) {
           errors.city = "City is required";
         }
       }
@@ -207,6 +207,7 @@ export default function CreateAccount({ step }: { step: number }) {
           email: formData.email,
           intent: (propertyIntent ?? LIST_TYPE.SELL) as ListType,
           phone: userData.phone,
+          city: formData.city?.label ?? ''
         };
         handleOwnerCreate(payload);
       }
@@ -226,7 +227,7 @@ export default function CreateAccount({ step }: { step: number }) {
           firmName: formData.firmName,
           businessSince: formData.businessSince,
           cities: Array.isArray(formData.city)
-            ? formData.city.map((item) => item.value).join("")
+            ? formData.city.map((item) => item.label).join("")
             : "",
           aboutYourSelf: formData.about,
           intent: (propertyIntent ?? LIST_TYPE.SELL) as ListType,
@@ -237,11 +238,11 @@ export default function CreateAccount({ step }: { step: number }) {
     }
   };
 
-  const loadCities = async (input: string) => {
-    let filteredData = data ? data.filter((opt) => opt.toLowerCase().includes(input.toLowerCase())) : []
-    let updatedOptions = filteredData.map(item => ({label: item, value: item}))
-    return updatedOptions
-  };
+  // const loadCities = async (input: string) => {
+  //   let filteredData = data ? data.filter((opt) => opt.toLowerCase().includes(input.toLowerCase())) : []
+  //   let updatedOptions = filteredData.map(item => ({label: item, value: item}))
+  //   return updatedOptions
+  // };
 
   const handleRedirectToLogin = () => {
       const params = createURLSearchParam({
@@ -346,7 +347,7 @@ export default function CreateAccount({ step }: { step: number }) {
                       City
                     </p>
                     <div>
-                      <AsyncSelectDropdown
+                      {/* <AsyncSelectDropdown
                         isMulti={false}
                         isError={Boolean(formErrors.city)}
                         placeholder="Start Typing..."
@@ -357,7 +358,19 @@ export default function CreateAccount({ step }: { step: number }) {
                         }}
                         loadOptions={loadCities}
                         value={formData.city}
-                      />
+                      /> */}
+                      <DynamicAsyncAutocomplete
+                          isMulti={false}
+                          isError={false}
+                          placeholder={'Search city'}
+                          onChange={(value: OptionType) => {
+                            dispatch(setFormField({ key: "city", value }));
+                            setFormErrors({ ...formErrors, city: "" });
+                          }}
+                          loadOptions={loadCities}
+                          value={formData.city}
+                          minHeight={"47px"}
+                        />
                       {formErrors.city && (
                         <p className="pt-1 text-red-500 text-xs">
                           {formErrors.city}
@@ -407,7 +420,7 @@ export default function CreateAccount({ step }: { step: number }) {
                       City
                     </p>
                     <div>
-                      <AsyncSelectDropdown
+                      {/* <AsyncSelectDropdown
                         isMulti={true}
                         isError={Boolean(formErrors.city)}
                         placeholder="Start Typing..."
@@ -417,6 +430,18 @@ export default function CreateAccount({ step }: { step: number }) {
                         }}
                         value={formData.city}
                         loadOptions={loadCities}
+                      /> */}
+                      <DynamicAsyncAutocomplete
+                        isMulti={true}
+                        isError={false}
+                        placeholder={'Search city'}
+                        onChange={(value: OptionType) => {
+                          dispatch(setFormField({ key: "city", value }));
+                          setFormErrors({ ...formErrors, city: "" });
+                        }}
+                        loadOptions={loadCities}
+                        value={formData.city ?? []}
+                        minHeight={"47px"}
                       />
                       {formErrors.city && (
                         <p className="pt-1 text-red-500 text-xs">
