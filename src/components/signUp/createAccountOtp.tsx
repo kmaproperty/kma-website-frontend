@@ -51,7 +51,9 @@ export default function CreateAccountOtp() {
         ...(ownerType == USER_TYPE.OWNER ? {propertyIntent: propertyIntent,} : '')
       })
       dispatch(resetForm())
-      router.replace(`/create-account${params}`)
+      setTimeout(() => {
+        router.replace(`/create-account${params}`)
+      }, 300);
     },
     onError: (error: any) => {
       console.log('otp error', error)

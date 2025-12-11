@@ -87,8 +87,10 @@ export default function Otp() {
       // localStorage.setItem("refreshToken", res.refreshToken);
       localStorage.setItem("user", JSON.stringify(res.user));
       setOtp('')
-      router.replace("/post-property");
       toast.success(res.message)
+      setTimeout(() => {
+        router.replace("/post-property");
+      }, 300);
     },
     onError: (err: any) => {
       console.error("OTP Verify Error:", err);
