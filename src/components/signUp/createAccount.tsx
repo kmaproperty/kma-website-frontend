@@ -22,7 +22,7 @@ import { resetForm, setFormField } from "@/store/createAccountSlice";
 import { RootState } from "@/store/store";
 import { clearAuthCookies, createURLSearchParam } from "@/lib/helper";
 import { toast } from "react-toastify";
-import { ValidateChannelPartnerCodeApiHandler, ValidateChannelPartnerCodePayload, ValidateChannelPartnerCodeResponse } from "@/services/userService";
+import { ChannelPartnerAgreementApiHandler, ChannelPartnerAgreementResponse, ValidateChannelPartnerCodeApiHandler, ValidateChannelPartnerCodePayload, ValidateChannelPartnerCodeResponse } from "@/services/userService";
 import DynamicAsyncAutocomplete from "../common/dynamicAsyncSelectMui";
 import { useCitySearch } from "@/hooks/useCitySearch";
 
@@ -149,6 +149,32 @@ export default function CreateAccount({ step }: { step: number }) {
   });
 
   const {
+    mutate: handleSignChannelPartnerAgreement,
+    isPending: docuemntLoader
+  } = useMutation({
+    mutationFn: async (url: string): Promise<ChannelPartnerAgreementResponse> => {
+      return await ChannelPartnerAgreementApiHandler(url);
+    },
+    onSuccess: (response: ChannelPartnerAgreementResponse) => {
+      console.log("agreement response", response);
+      if (response.url) {
+        window.open(response.url, "_blank");
+      }
+
+    },
+    onError: (error: any) => {
+      console.log("owner create error", error);
+      if(Array.isArray(error.message)){
+        error.message.map((item: string) => {
+          toast.error(item)
+        })
+      }else{
+        toast.error(error.message)
+      }
+    },
+  });
+
+  const {
     mutate: handleChannelPartnerCreate,
     isPending: channelPartnerLoader,
   } = useMutation({
@@ -161,8 +187,11 @@ export default function CreateAccount({ step }: { step: number }) {
       console.log("create owner response", response);
       localStorage.setItem("user", JSON.stringify(response.user));
       dispatch(resetForm())
+      router.push('/create-account')
       toast.success(response.message)
-      router.push('/post-property')
+      const domainUrl = `${window.location.origin}/document-signed-success`;
+      handleSignChannelPartnerAgreement(domainUrl)
+      // router.push('/post-property')
     },
     onError: (error: any) => {
       console.log("owner create error", error);
@@ -264,10 +293,14 @@ export default function CreateAccount({ step }: { step: number }) {
     const userData: User = user ? JSON.parse(user) : null;
     if (!userData) {
       clearAuthCookies()
+      localStorage.clear()
       router.push("/signup");
       return;
     }
     setUserData(userData);
+    if(!formData.partnerCode){
+      router.replace('/create-account')
+    }
   }, []);
 
   const dynamicClass = (flag: string) => {
@@ -530,7 +563,7 @@ export default function CreateAccount({ step }: { step: number }) {
 
           <div className="flex justify-start flex-col md:flex-row gap-4 items-center">
             <button
-              disabled={ownerLoader || channelPartnerLoader}
+              disabled={ownerLoader || channelPartnerLoader || docuemntLoader}
               onClick={handleSubmit}
               className="w-full md:w-auto text-sm 1xl:text-base animated-button px-12 py-3 border border-blue text-center cursor-pointer"
             >

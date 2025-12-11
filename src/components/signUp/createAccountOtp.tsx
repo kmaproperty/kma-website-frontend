@@ -106,7 +106,8 @@ export default function CreateAccountOtp() {
       setIsEnableOtpResend(false)
       if(mobileNumber){
         const payload = {
-          phone: mobileNumber || ''
+          phone: mobileNumber || '',
+          role: '' 
         }
         handleResendOtp(payload)
       }

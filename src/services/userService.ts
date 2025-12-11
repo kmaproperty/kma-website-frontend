@@ -119,3 +119,21 @@ export const UserLogoutApiHandler = async () : Promise<UserLogoutResponse> => {
         throw error.response?.data ?? error;
     }
 }
+
+export interface ChannelPartnerAgreementResponse {
+  message: string;
+  success: boolean;
+  envelopeId: string;
+  url: string;
+}
+
+export const ChannelPartnerAgreementApiHandler = async (returnUrl: string) : Promise<ChannelPartnerAgreementResponse> => {
+    try{
+        const response = await axiosInstance.post<ChannelPartnerAgreementResponse>(
+      "users/docusign/channel-partner-agreement", {returnUrl});
+
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}
