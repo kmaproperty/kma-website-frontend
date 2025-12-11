@@ -660,3 +660,27 @@ export const getPropertyDetailsApiHandler = async (id: string) : Promise<GetProp
         throw error.response?.data ?? error;
     }
 }
+
+
+export interface GetUserCurrentCityPayload {
+  latitude: string,
+  longitude: string
+}
+
+export interface GetUserCurrentCityResponse {
+  message: string,
+  data: City[],
+  success: boolean
+}
+
+export const gerUserCurrentCityApiHandler = async (latitude: string,longitude: string) : Promise<GetUserCurrentCityResponse> => {
+    try{
+        const response = await axiosInstance.get<GetUserCurrentCityResponse>(
+      "users/auto-detect-city", {
+        params: {latitude, longitude}
+      });
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}

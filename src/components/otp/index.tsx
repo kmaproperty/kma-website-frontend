@@ -71,7 +71,7 @@ export default function Otp() {
     if (!isEnableOtpResend || isResending) return;
 
     if (mobileNumber) {
-      resendOtp({ phone: mobileNumber });
+      resendOtp({ phone: mobileNumber, role: '' });
       setOtpTimer(OTP_RESEND_TIME);
       setIsEnableOtpResend(false);
     }
@@ -82,7 +82,7 @@ export default function Otp() {
     mutationFn: (payload: ValidateOtpPayload): Promise<ValidateOtpResponse> =>
       validateOtpApiHandler(payload),
     onSuccess: async (res) => {
-      setAuthCookies(res.accessToken, res.refreshToken)
+      await setAuthCookies(res.accessToken, res.refreshToken)
       // localStorage.setItem("accessToken", res.accessToken);
       // localStorage.setItem("refreshToken", res.refreshToken);
       localStorage.setItem("user", JSON.stringify(res.user));
