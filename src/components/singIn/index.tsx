@@ -75,7 +75,7 @@ export default function SignIn() {
       setMobileInput({...mobileInput, validationMessage: msg})
       return
     }
-    const paylaod = { phone: mobileInput.value, role: ''}
+    const paylaod = { phone: mobileInput.value}
     handleSendOtp(paylaod)
   }
 
