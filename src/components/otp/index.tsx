@@ -71,7 +71,7 @@ export default function Otp() {
     if (!isEnableOtpResend || isResending) return;
 
     if (mobileNumber) {
-      resendOtp({ phone: mobileNumber, role: '' });
+      resendOtp({ phone: mobileNumber});
       setOtpTimer(OTP_RESEND_TIME);
       setIsEnableOtpResend(false);
     }
