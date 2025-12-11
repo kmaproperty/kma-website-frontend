@@ -7,15 +7,15 @@ export async function POST(req) {
 
   response.cookies.set("accessToken", accessToken, {
     httpOnly: true,
-    secure: true,
+    secure: false,
     sameSite: "strict",
     path: "/",
-    maxAge: 60 * 60, // 1 hour
+    maxAge: 60 * 60,
   });
 
   response.cookies.set("refreshToken", refreshToken, {
     httpOnly: true,
-    secure: true,
+    secure: false,
     sameSite: "strict",
     path: "/",
     maxAge: 60 * 60 * 24 * 7, // 7 days

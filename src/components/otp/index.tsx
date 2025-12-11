@@ -20,10 +20,12 @@ import {
   ValidateOtpResponse
 } from "@/services/authService";
 
-import { OTP_RESEND_TIME } from "@/lib/enums";
+import { OTP_RESEND_TIME, USER_TYPE } from "@/lib/enums";
 import { matchIsNumeric } from "@/lib/commonValidator";
 import { createURLSearchParam, setAuthCookies } from "@/lib/helper";
 import { toast } from "react-toastify";
+import { getUserAggrementApiHandler, GetUserAggrementResponse } from "@/services/postProperty";
+import { ChannelPartnerAgreementApiHandler, ChannelPartnerAgreementResponse } from "@/services/userService";
 
 export default function Otp() {
   // Router & Params
@@ -77,6 +79,54 @@ export default function Otp() {
     }
   };
 
+  const {
+    mutate: handleSignChannelPartnerAgreement,
+    isPending: docuemntLoader
+  } = useMutation({
+    mutationFn: async (url: string): Promise<ChannelPartnerAgreementResponse> => {
+      return await ChannelPartnerAgreementApiHandler(url);
+    },
+    onSuccess: (response: ChannelPartnerAgreementResponse) => {
+      console.log("agreement response", response);
+      if (response.url) {
+        window.open(response.url, "_blank");
+      }
+
+    },
+    onError: (error: any) => {
+      console.log("owner create error", error);
+      if(Array.isArray(error.message)){
+        error.message.map((item: string) => {
+          toast.error(item)
+        })
+      }else{
+        toast.error(error.message)
+      }
+    },
+  });
+
+  const { mutate: handleCheckAgreementSigned, isPending: documentLoader } = useMutation({
+    mutationFn: (): Promise<GetUserAggrementResponse> =>
+      getUserAggrementApiHandler(),
+    onSuccess: async (res) => {
+      if(res.data && Array.isArray(res.data) && res.data.length > 0){
+        const item = res.data[0]
+        if(item.status == 'completed'){
+          router.replace("/post-property");
+        }else{
+          const domainUrl = `${window.location.origin}/document-signed-success`;
+          handleSignChannelPartnerAgreement(domainUrl)
+        }
+      }else{
+        const domainUrl = `${window.location.origin}/document-signed-success`;
+        handleSignChannelPartnerAgreement(domainUrl)
+      }
+    },
+    onError: (err: any) => {
+      console.error("OTP Verify Error:", err);
+    },
+  });
+
   // OTP Verify
   const { mutate: handleVerifyOtp, isPending: isVerifying } = useMutation({
     mutationFn: (payload: ValidateOtpPayload): Promise<ValidateOtpResponse> =>
@@ -88,9 +138,13 @@ export default function Otp() {
       localStorage.setItem("user", JSON.stringify(res.user));
       setOtp('')
       toast.success(res.message)
-      setTimeout(() => {
-        router.replace("/post-property");
-      }, 300);
+      if(res.user.role == USER_TYPE.CHANNEL_PARTNER){
+        handleCheckAgreementSigned()
+      }else{
+        setTimeout(() => {
+          router.replace("/post-property");
+        }, 300);
+      }
     },
     onError: (err: any) => {
       console.error("OTP Verify Error:", err);
@@ -225,7 +279,7 @@ const verifyOtp = (val: string) => {
 
           <div className="flex justify-start flex-col md:flex-row gap-4 items-center">
             <button
-              disabled={isVerifying}
+              disabled={isVerifying || documentLoader}
               onClick={() => verifyOtp(otp)}
               className="w-full md:w-auto animated-button px-12 py-3 border border-blue text-center cursor-pointer"
             >

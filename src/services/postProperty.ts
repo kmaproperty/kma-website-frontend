@@ -684,3 +684,28 @@ export const gerUserCurrentCityApiHandler = async (latitude: string,longitude: s
         throw error.response?.data ?? error;
     }
 }
+
+interface aggrement {
+  id: string;
+  userId: string;
+  envelopeId: string;
+  status: string;
+  completedAt: string;
+  returnUrl: string;
+}
+
+export interface GetUserAggrementResponse {
+  success: boolean;
+  message: string;
+  data: aggrement[]
+}
+
+export const getUserAggrementApiHandler = async () : Promise<GetUserAggrementResponse> => {
+    try{
+        const response = await axiosInstance.get<GetUserAggrementResponse>(
+      "users/agreements");
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}
