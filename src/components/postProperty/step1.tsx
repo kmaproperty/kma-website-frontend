@@ -16,7 +16,7 @@ import Agriculture from "@/assets/agriculture-transparent.svg";
 import PlotCommercial from "@/assets/plot-commercial-transparent.svg";
 import DynamicInput from "../common/dynamicInput";
 import { useCitySearch } from "@/hooks/useCitySearch";
-import { act, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useBuildingSearch } from "@/hooks/useBuildingSearch";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { BhkResponse, getBhkApiHandler, getPropertyCategoryApiHandler, getPropertyListApiHandler, getPropertyTypeApiHandler, PropertyCategoryResponse, PropertyListResponse, PropertyTypePayload, PropertyTypeResponse } from "@/services/masterService";
@@ -27,7 +27,7 @@ import DynamicSelect from "../common/select";
 import { AREA_UNIT_LIST, CONSTRUCTION_STATUS, CONSTRUCTION_TYPE, CUSTOM_SECTION_NAME, FACING_LIST, FIELD_NAME, LOCATED_NEAR, LOCATION_HUB, OWNERSHIP_LIST, PLOT_LAND_TYPE, PLOT_UNIT_LIST, PROPERTY_CONDITION, PROPERTY_CONSTRUCTION_STATUS, PROPERTY_POSSESSION_STATUS, SUITABLE_FOR, TRANSACTION_TYPE_LIST, TRUTY_LIST, ZONE_TYPE } from "@/lib/enums";
 import { useDispatch, useSelector } from "react-redux";
 import { getActiveStep, setActiveStep, setTotalProgress } from "@/store/postPropertyProgress";
-import { resetAPIPayload, resetAPIResponse, resetPostPropertyApiHandler, Step1DetailsResponse, step1PostPropertyCreateApiHandler, step1PostPropertyDetailsApiHandler, Step1PostPropertyPayload, Step1PostPropertyResponse } from "@/services/postProperty";
+import { gerUserCurrentCityApiHandler, GetUserCurrentCityPayload, GetUserCurrentCityResponse, resetAPIPayload, resetAPIResponse, resetPostPropertyApiHandler, Step1DetailsResponse, step1PostPropertyCreateApiHandler, step1PostPropertyDetailsApiHandler, Step1PostPropertyPayload, Step1PostPropertyResponse } from "@/services/postProperty";
 import { toast } from "react-toastify";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useStepProgress } from "@/hooks/useStepProgress";
@@ -37,6 +37,7 @@ import RenderSectionName from "./renderSecitonName";
 import { useLocalitySearch } from "@/hooks/useLocalitySearch";
 import ConfirmationDailog from "../common/confirmationDailog";
 import { setStep1Data } from "@/store/postPropertySlice";
+import { getUserCoordinates } from "@/hooks/useGeoloaction";
 
 const initialState = {
     bhk: null,
@@ -1216,6 +1217,39 @@ console.log('renderOtherBhk', renderOtherBhk())
       }))
     }
   },[propertyTypeList])
+
+  const { mutate: getUserCurrentCity } = useMutation({
+    mutationFn: async (
+      payload: GetUserCurrentCityPayload
+    ): Promise<GetUserCurrentCityResponse> => {
+      return await gerUserCurrentCityApiHandler(payload.latitude, payload.longitude);
+    },
+    onSuccess: (response: GetUserCurrentCityResponse) => {
+        const data = response.data
+        if(Array.isArray(data) && data.length > 0){
+          const item = data[0]
+          setBasicStaticDetails((pre) => ({...pre, city: {label: item.name, value: item.id || item.name, ...item}}))
+          setErrors((pre) => ({...pre, city: ''}))
+        }
+    },
+    onError: (error: any) => {
+      console.log("location detect error", error);
+    },
+  });
+
+  useEffect(() => {
+    const fetchLocation = async () => {
+      const location = await getUserCoordinates();
+      console.log('location', location)
+      if (location) {
+        getUserCurrentCity({latitude: String(location?.lat ?? ''),longitude: String(location?.lng ?? '')})
+      } else {
+        console.log("Permission denied or unavailable");
+      }
+    };
+
+    fetchLocation();
+  },[])
 
 
   return (
