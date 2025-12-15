@@ -7,8 +7,10 @@ import { UpgreadOwnerToChannelPartnerApiHandler, UpgreadOwnerToChannelPartnerPay
 import { useState } from "react";
 import { toast } from "react-toastify";
 import CustomOptionField from "../common/addCustomOption";
+import { useRouter } from "next/navigation";
 
 export default function UserDashboard() {
+  const router = useRouter()
   const max_property = process.env.NEXT_PUBLIC_OWNER_MAX_PROPERTY_CREATE;
 
   const [filterValue, setFilterValue] = useState(USER_DASHBOARD_PROPERTY_FILTER[1])
@@ -37,7 +39,8 @@ export default function UserDashboard() {
         console.log('response', response)
         setOpenCodePopup(false)
         toast.success('Upgraded to Channel Partner successfully')
-        getUpdatedDashboardDetails()
+        router.replace('/sign-document')
+        // getUpdatedDashboardDetails()
       },
       onError: (error: any) => {
         console.log('error', error)

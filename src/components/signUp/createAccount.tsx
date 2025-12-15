@@ -12,7 +12,6 @@ import {
   CreateOwnerResponse,
   User,
 } from "@/services/authService";
-import AsyncSelectDropdown from "../common/asyncSelect";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { CitiesResponse, getCityApiHandler } from "@/services/masterService";
 import { MultiValue } from "react-select";
@@ -187,10 +186,11 @@ export default function CreateAccount({ step }: { step: number }) {
       console.log("create owner response", response);
       localStorage.setItem("user", JSON.stringify(response.user));
       dispatch(resetForm())
-      router.push('/create-account')
+      // router.push('/create-account')
       toast.success(response.message)
-      const domainUrl = `${window.location.origin}/document-signed-success`;
-      handleSignChannelPartnerAgreement(domainUrl)
+      // const domainUrl = `${window.location.origin}/document-signed-success`;
+      // handleSignChannelPartnerAgreement(domainUrl)
+      router.replace('/sign-document')
       // router.push('/post-property')
     },
     onError: (error: any) => {

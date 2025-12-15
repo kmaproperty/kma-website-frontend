@@ -114,12 +114,14 @@ export default function Otp() {
         if(item.status == 'completed'){
           router.replace("/post-property");
         }else{
-          const domainUrl = `${window.location.origin}/document-signed-success`;
-          handleSignChannelPartnerAgreement(domainUrl)
+          // const domainUrl = `${window.location.origin}/document-signed-success`;
+          // handleSignChannelPartnerAgreement(domainUrl)
+          router.replace('/sign-document')
         }
       }else{
-        const domainUrl = `${window.location.origin}/document-signed-success`;
-        handleSignChannelPartnerAgreement(domainUrl)
+        // const domainUrl = `${window.location.origin}/document-signed-success`;
+        // handleSignChannelPartnerAgreement(domainUrl)
+        router.replace('/sign-document')
       }
     },
     onError: (err: any) => {
