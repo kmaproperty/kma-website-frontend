@@ -10,8 +10,9 @@ import { useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { UserDashboardDetailsApiHandler, UserDashboardDetailsResponse } from "@/services/userService";
 import { useRouter } from "next/navigation";
+import { PROPERTY_FORM_MODE } from "@/lib/enums";
 
-export default function PostPropertyForm() {
+export default function PostPropertyForm({mode}: {mode: string}) {
 const activeStep = useSelector(getActiveStep);
   const containerRef = useRef(null);
   const router = useRouter()
@@ -35,7 +36,7 @@ const activeStep = useSelector(getActiveStep);
   }, [activeStep, containerRef]);
 
   useEffect(() => {
-    if(userDashboardDetails){
+    if(userDashboardDetails && mode != PROPERTY_FORM_MODE.EDIT){
       if(userDashboardDetails.freeListings.remaining == 0){
         router.replace('/user-dashboard')
       }

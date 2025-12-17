@@ -79,6 +79,21 @@ const DynamicAsyncAutocomplete: React.FC<DynamicAsyncAutocompleteProps> = ({
       inputValue={inputValue}
       onInputChange={(e, val) => setInputValue(val)}
       getOptionLabel={(option: OptionType) => option?.label ?? ""}
+      renderOption={(props, option: OptionType) => {
+        if (option.value === "__add_manually__") {
+          return (
+            <li {...props} className="bg-light-purple px-3 py-2 cursor-pointer">
+              {option.label}
+            </li>
+          );
+        }
+
+        return (
+          <li {...props}>
+            {option.label}
+          </li>
+        );
+      }}
       isOptionEqualToValue={(opt:OptionType, val: OptionType) => opt.value === val.value}
       loading={loading}
       filterOptions={(x) => x}

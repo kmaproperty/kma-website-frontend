@@ -1,8 +1,21 @@
+'use client'
+import { useEffect, useState } from "react";
 import StepperCustom from "./customStepper";
 import PostPropertyForm from "./form";
 import Progress from "./porgress";
+import { User } from "@/services/authService";
 
 export default function ContentLayout({mode}: {mode: string}) {
+  const [userName, setUserName] = useState<string>('')
+
+  useEffect(() => {
+    const userRaw = localStorage.getItem("user");
+
+    if (userRaw) {
+      const userData: User = JSON.parse(userRaw);
+      setUserName(userData?.name ?? "");
+    }
+  },[])
   return (
     <>
       <div
@@ -13,7 +26,7 @@ export default function ContentLayout({mode}: {mode: string}) {
         <div className="pt-4 px-5">
           <div className="relative flex flex-wrap w-[65%] -top-[32px] text-sm gap-4 bg-white rounded-full">
             <p className="text-text-black font-semibold text-base lg:text-lg 1xl:text-xl">
-            Welcome Channel Partner – Start Listing Properties for Your Clients
+            {`Welcome ${userName} – Start Listing Properties for Your Clients`}
             </p>
         </div>
          <div className="relative -top-[32px] flex flex-col gap-6 md:gap-6 w-full">
@@ -32,7 +45,7 @@ export default function ContentLayout({mode}: {mode: string}) {
                         <StepperCustom />
                     </div>
                     <div id='formWrapper' className="max-h-[calc(100vh-150px)] overflow-y-auto pr-2">
-                      <PostPropertyForm />
+                      <PostPropertyForm mode={mode}/>
                     </div>
                 </div>
 

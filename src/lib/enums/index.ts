@@ -518,7 +518,7 @@ export const RENT_SUITABLE_FOR = [
     value: 'bachelors'
   },
   {
-    name: 'Comapny',
+    name: 'Company',
     value: 'company'
   },
 ]
@@ -705,7 +705,7 @@ export  const FURNISHING_LIST = [
         label: 'Curtains'
     },
     {
-        icon: 'chimeny.png',
+        icon: 'kitchen.png',
         label: 'Modular Kitchen'
     },
     {
@@ -733,7 +733,7 @@ export  const FURNISHING_LIST = [
         label: 'Sofa'
     },
     {
-        icon: 'bed.png',
+        icon: 'washing-machine.png',
         label: 'Washing Machine'
     },
     {
