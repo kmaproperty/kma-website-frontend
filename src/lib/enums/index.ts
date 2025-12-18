@@ -884,7 +884,6 @@ export  const AMENITISE_LIST = [
   "Tiles",
   "Broadband Internet",
   "Satellite/Cable TV",
-  "Conference Room",
   "Intercom",
   "Jacuzzi",
   "Kids Play Area",
