@@ -10,7 +10,7 @@ export default function RenderSectionName({data, customClass}: {data: {name: str
         </div>
 
         {data?.subName && <p className="text-sm text-text-gray pt-1">
-          {data?.subName ?? ''}
+          {data?.subName ?? ''} 
         </p>}
       </div>
   )
