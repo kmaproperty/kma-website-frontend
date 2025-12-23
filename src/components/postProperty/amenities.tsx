@@ -5,18 +5,14 @@ import DialogContent from "@mui/material/DialogContent";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import Image from "next/image";
-import { usePathname, } from "next/navigation";
-import { useRouter } from "next/navigation";
-import AmenitiesCard from "../common/amenities";
 import CustomCheckbox from "../common/checkbox";
-import { AMENITISE_LIST, FURNISHING_LIST } from "@/lib/enums";
 
 export interface Amenities {
   name: string,
   count: number
 }
 
-export default function AmenitiesList({open, onHide, dynamicFieldDetails, handleUpdateFurnishedCount, handleAddFurnished, handleAddRemoveAmenitise} : {open: boolean, onHide: () => void, setDynamicFieldDetails: (value: any) => void, dynamicFieldDetails: any, handleUpdateFurnishedCount: (name:string, value: number) => void, handleAddFurnished: (name: string) => void, handleAddRemoveAmenitise: (value: string) => void}) {
+export default function AmenitiesList({open, onHide, dynamicFieldDetails, handleUpdateFurnishedCount, handleAddFurnished, handleAddRemoveAmenitise, amenitiesList} : {open: boolean, onHide: () => void, setDynamicFieldDetails: (value: any) => void, dynamicFieldDetails: any, handleUpdateFurnishedCount: (name:string, value: number) => void, handleAddFurnished: (name: string) => void, handleAddRemoveAmenitise: (value: string) => void, amenitiesList: string[]}) {
   const theme = useTheme()
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -57,7 +53,7 @@ export default function AmenitiesList({open, onHide, dynamicFieldDetails, handle
               <p className="text-lg text-text-black font-medium pb-3">Amenities</p>
               <div className="grid grid-cols-[1fr_1fr] 2md:grid-cols-[1fr_1fr_1fr] xl:grid-cols-[1fr_1fr_1fr_1fr] gap-3 flex-wrap">
               {
-                AMENITISE_LIST.map((item, index) => {
+                amenitiesList.map((item, index) => {
                   const isIncluded = dynamicFieldDetails.amenities.includes(item)
                     return (
                         <CustomCheckbox onClick={handleAddRemoveAmenitise} label={item} value={item} checked={isIncluded}/>

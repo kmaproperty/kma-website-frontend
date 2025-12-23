@@ -12,6 +12,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { getActiveStep, setActiveStep, setTotalProgress } from "@/store/postPropertyProgress";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
+  getAmenitiesList,
+  GetAmenitiesResponse,
+  getFurnishingList,
+  GetFurnishingResponse,
   Step1DetailsResponse,
   step1PostPropertyDetailsApiHandler,
   Step3DetailsResponse,
@@ -39,10 +43,7 @@ import AmenitiesList from "./amenities";
 
 export default function Step3({containerRef}) {
   const { calculateProgress } = useStepProgress();
-
-  const router = useRouter();
   const params = useParams();
-  const searchParams = useSearchParams();
 
   const activeStep = useSelector(getActiveStep);
   const dispatch = useDispatch();
@@ -454,6 +455,38 @@ export default function Step3({containerRef}) {
   refetchOnMount: true
 });
 
+const { data: furnishingList } = useQuery({
+  queryKey: ["furnishing"],
+  queryFn: async (): Promise<GetFurnishingResponse[]> => {
+    return getFurnishingList();
+  },
+  select: (resposne: GetFurnishingResponse[]) => {
+    let imageBaseUrl = process.env.NEXT_PUBLIC_AWS_URL
+    let updatedData = resposne?.map(item => {
+      return {icon: imageBaseUrl + item.icon, label: item.name}
+    }) ?? []
+    return updatedData
+  },
+  staleTime: 0,
+  refetchOnMount: true
+});
+
+const { data: amenitiesList } = useQuery({
+  queryKey: ["amenities"],
+  queryFn: async (): Promise<GetAmenitiesResponse[]> => {
+    return getAmenitiesList();
+  },
+  select: (resposne: GetAmenitiesResponse[]) => {
+    let updatedData = resposne?.map(item => {
+      return item.name
+    }) ?? []
+    console.log('amenities list',updatedData)
+    return updatedData
+  },
+  staleTime: 0,
+  refetchOnMount: true
+});
+
   const generatePayload = () => {
     let furnishingsCounts = dynamicFieldDetails.furnishingsCounts.map(item => ({item: item.name, count: item.count}))
     return {
@@ -548,15 +581,7 @@ export default function Step3({containerRef}) {
   // }, [dynamicFieldDetails, basicStaticDetail]);
 
   const renderFurnishing = () => {
-    const isResidential = basicStaticDetail.propertyCategory?.code == 'residential'
-    const isCommercial = basicStaticDetail.propertyCategory?.code == 'commercial'
-    if(isResidential){
-      return FURNISHING_LIST
-    }
-    if(isCommercial){
-      return COMMERCIAL_FURNISHING_LIST
-    }
-    return []
+    return furnishingList ?? []
   }
 
   return (
@@ -1175,6 +1200,7 @@ export default function Step3({containerRef}) {
       />
 
       <AmenitiesList
+        amenitiesList={amenitiesList ?? []}
         open={openAmenitiesPopup}
         onHide={() => setOpenAmenitiesPopup(!openAmenitiesPopup)}
         setDynamicFieldDetails={setDynamicFieldDetails}

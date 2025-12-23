@@ -27,7 +27,7 @@ export default function AmenitiesCard({icon, label, checked, count,  handleUpdat
       handleAddFurnished(label)
     }} className={`cursor-pointer min-w-[220px] sm:max-w-[220px] flex flex-1 justify-between border ${checked ? 'border-text-black bg-light-purple' : 'border-border'} rounded-[10px]`}>
       <div  className="  flex gap-3 items-center p-3">
-        <Image alt="" src={`/assets/${icon}`} width={24} height={24}/>
+        <Image alt="" src={icon} width={24} height={24}/>
         <p className="text-base text-text-black">{label}</p>
       </div>
       <div className={`bg-white rounded-r-[10px] flex flex-col items-center justify-center py-1 gap-1 px-2 border-l ${checked ? 'border-text-black' : 'border-border'}`}>

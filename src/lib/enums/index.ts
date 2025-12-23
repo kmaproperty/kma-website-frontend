@@ -826,7 +826,6 @@ export const COMMERCIAL_FURNISHING_LIST =[
     }
 ]
 
-
 export  const AMENITISE_LIST = [
   "Gymnasium",
   "Swimming Pool",
@@ -898,7 +897,6 @@ export  const AMENITISE_LIST = [
   "24 Hours Concierge",
   "Balcony or Terrace"
 ]
-
 
 export const LOCATION_HUB = {
   'RENT_OFFICE': [

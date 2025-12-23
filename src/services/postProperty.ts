@@ -709,3 +709,34 @@ export const getUserAggrementApiHandler = async () : Promise<GetUserAggrementRes
         throw error.response?.data ?? error;
     }
 }
+
+
+export interface GetFurnishingResponse {
+  icon: string,
+  name: string
+}
+
+export const getFurnishingList = async () : Promise<GetFurnishingResponse[]> => {
+    try{
+        const response = await axiosInstance.get<GetFurnishingResponse[]>(
+      "property/furnishings");
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}
+
+export interface GetAmenitiesResponse {
+  icon: string,
+  name: string
+}
+
+export const getAmenitiesList = async () : Promise<GetAmenitiesResponse[]> => {
+    try{
+        const response = await axiosInstance.get<GetAmenitiesResponse[]>(
+      "property/amenities");
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}
