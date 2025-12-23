@@ -725,7 +725,7 @@ export default function Step2({containerRef}) {
       }
 
       if(renderShowField(FIELD_NAME.PRICE_COST) && (!dynamicFieldDetails.price || (Number(dynamicFieldDetails.price) < 100000) || (Number(dynamicFieldDetails.price) > 2000000000))){
-        updatedError.rent = 'Price should be between 1 Lakh and 200 Crore'
+        updatedError.price = 'Price should be between 1 Lakh and 200 Crore'
         hasError = true;
       }
 
@@ -1970,7 +1970,7 @@ export default function Step2({containerRef}) {
             setErrors((pre) => ({...pre, price: ''}))
             }}
             value={dynamicFieldDetails.price ?? ''}
-            dropdownValue={'Per month'}
+            dropdownValue={'Per month'} 
             disabled={true}
            />
           {errors?.price && <p className="pt-1 text-red-500 text-xs">{errors.price}</p>}
