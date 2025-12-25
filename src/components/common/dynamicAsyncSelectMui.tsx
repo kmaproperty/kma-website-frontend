@@ -4,6 +4,7 @@ import {
   CircularProgress,
   TextField,
 } from "@mui/material";
+import Image from "next/image";
 
 export type OptionType = {
   value: string;
@@ -82,8 +83,14 @@ const DynamicAsyncAutocomplete: React.FC<DynamicAsyncAutocompleteProps> = ({
       renderOption={(props, option: OptionType) => {
         if (option.value === "__add_manually__") {
           return (
-            <li {...props} className="bg-light-purple px-3 py-2 cursor-pointer">
-              {option.label}
+            <li {...props} className="flex items-center gap-2 px-3 py-2 bg-red-50 text-gray-700 cursor-pointer border-t border-red-200">
+              <Image src='/assets/error.svg' alt='error' width={15} height={15} />
+              <span className="text-sm">
+                {option.label}
+                <span className="ml-1 text-purple-600 font-medium underline">
+                  Add Manually
+                </span>
+              </span>
             </li>
           );
         }

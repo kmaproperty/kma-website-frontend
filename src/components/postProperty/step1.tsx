@@ -29,7 +29,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { getActiveStep, setActiveStep, setTotalProgress } from "@/store/postPropertyProgress";
 import { gerUserCurrentCityApiHandler, GetUserCurrentCityPayload, GetUserCurrentCityResponse, resetAPIPayload, resetAPIResponse, resetPostPropertyApiHandler, Step1DetailsResponse, step1PostPropertyCreateApiHandler, step1PostPropertyDetailsApiHandler, Step1PostPropertyPayload, Step1PostPropertyResponse } from "@/services/postProperty";
 import { toast } from "react-toastify";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
+import { useRouter } from 'nextjs-toploader/app';
 import { useStepProgress } from "@/hooks/useStepProgress";
 import DynamicAsyncAutocomplete from "../common/dynamicAsyncSelectMui";
 import { InputBase } from "@mui/material";
@@ -38,6 +39,8 @@ import { useLocalitySearch } from "@/hooks/useLocalitySearch";
 import ConfirmationDailog from "../common/confirmationDailog";
 import { setStep1Data } from "@/store/postPropertySlice";
 import { getUserCoordinates } from "@/hooks/useGeoloaction";
+import FullscreenSpinner from "../common/spinner/fullScreenSpinner";
+import Spinner from "../common/spinner";
 
 const initialState = {
     bhk: null,
@@ -1127,7 +1130,7 @@ console.log('renderOtherBhk', renderOtherBhk())
     },
   });
 
-  const { data: step1Details } = useQuery({
+  const { data: step1Details, isPending: step1DetailsLoader } = useQuery({
     queryKey: ["step1-details", params?.propertyId],
     queryFn: async (): Promise<Step1DetailsResponse> => {
       return step1PostPropertyDetailsApiHandler(String(params?.propertyId ?? ''));
@@ -1140,7 +1143,7 @@ console.log('renderOtherBhk', renderOtherBhk())
     staleTime: 0,
     refetchOnMount: true
   });
-
+console.log('step1DetailsLoader',step1DetailsLoader)
   useEffect(() => {
     if(step1Details){
       setBasicStaticDetails((pre) => ({
@@ -1253,6 +1256,9 @@ console.log('renderOtherBhk', renderOtherBhk())
 
 
   return (
+    <>
+    {(step1DetailsLoader && params?.propertyId) ? <FullscreenSpinner/> :
+    
     <>
     <div className="flex flex-col gap-4" ref={containerRef}>
       <p className="text-text-black font-semibold text-lg 2md:text-xl pb-2">
@@ -1446,7 +1452,7 @@ console.log('renderOtherBhk', renderOtherBhk())
           minHeight={"40px"}
           enableAddManually={true}
           menualAddItem={{ value: "__add_manually__",
-          label: `Can't find your Building / Apartment / Society? Add Manually`,}}
+          label: `Can't find your Building / Apartment / Society?`,}}
         />
         {renderOptionalField(FIELD_NAME.SOCIETY) && errors?.society && <p className="pt-1 text-red-500 text-xs">{errors.society}</p>}
       </div>
@@ -1499,7 +1505,7 @@ console.log('renderOtherBhk', renderOtherBhk())
           minHeight={"40px"}
           enableAddManually={true}
           menualAddItem={{ value: "__add_manually__",
-          label: `Can't find your Locality / Sector? Add Manually`,}}
+          label: `Can't find your Locality / Sector?`,}}
         />
         {errors?.locality && <p className="pt-1 text-red-500 text-xs">{errors.locality}</p>}
       </div>
@@ -1586,6 +1592,7 @@ console.log('renderOtherBhk', renderOtherBhk())
         <FieldLabel label="Built Up Area" customClass="pb-2" required={true}/>
         <DynamicInput
            placeHolder='Enter built up area'
+           type='number'
            options={AREA_UNIT_LIST}
            onChange={(value: string, dropdownValue: string) => {
             const isOnlyDigits = /^\d*$/.test(value);
@@ -1604,6 +1611,7 @@ console.log('renderOtherBhk', renderOtherBhk())
         <FieldLabel label="Carpet Area" customClass="pb-2"/>
         <DynamicInput
            placeHolder='Enter carpet area'
+            type="number"
            options={AREA_UNIT_LIST}
             onChange={(value: string, dropdownValue: string) => {
             const isOnlyDigits = /^\d*$/.test(value);
@@ -1672,7 +1680,7 @@ console.log('renderOtherBhk', renderOtherBhk())
             placeholder="Enter property age"
             fullWidth
             type="number"
-            value={dynamicFieldDetails.propertyAge}
+            value={dynamicFieldDetails.propertyAge ?? ''}
             onChange={(event) => {
               const input = event.target.value;
               const isOnlyDigits = /^\d*$/.test(input);
@@ -1828,6 +1836,7 @@ console.log('renderOtherBhk', renderOtherBhk())
         <FieldLabel label="Plot Area" customClass="pb-2" required={true}/>
         <DynamicInput
            placeHolder='Enter Plot Area'
+           type="number"
            options={AREA_UNIT_LIST}
            onChange={(value: string, dropdownValue: string) => {
             const isOnlyDigits = /^\d*$/.test(value);
@@ -1857,6 +1866,7 @@ console.log('renderOtherBhk', renderOtherBhk())
           />
           <InputBase
             placeholder="Enter Plot Length"
+            type="number"
             fullWidth
             value={dynamicFieldDetails.plotLength ?? ''}
             onChange={(e) => {
@@ -1890,6 +1900,7 @@ console.log('renderOtherBhk', renderOtherBhk())
           <InputBase
             placeholder="Enter Plot Width"
             fullWidth
+            type="number"
             value={dynamicFieldDetails.plotWidth ?? ''}
             onChange={(e) => {
               const input = e.target.value;
@@ -2006,7 +2017,7 @@ console.log('renderOtherBhk', renderOtherBhk())
               placeholder="Enter property age"
               fullWidth
               type="number"
-              value={dynamicFieldDetails.propertyAge}
+              value={dynamicFieldDetails.propertyAge ?? ''}
               onChange={(event) => {
                 const input = event.target.value;
                 const isOnlyDigits = /^\d*$/.test(input);
@@ -2177,6 +2188,7 @@ console.log('renderOtherBhk', renderOtherBhk())
         <FieldLabel label="Plot Area" customClass="pb-2" required={renderOptionalField(FIELD_NAME.COMMERCIAL_PLOT_ARE)}/>
         <DynamicInput
            placeHolder='Enter plot area'
+           type="number"
            options={AREA_UNIT_LIST}
            onChange={(value: string, dropdownValue: string) => {
             const isOnlyDigits = /^\d*$/.test(value);
@@ -2196,6 +2208,7 @@ console.log('renderOtherBhk', renderOtherBhk())
         <FieldLabel label="Built Up Area" customClass="pb-2" required={renderOptionalField(FIELD_NAME.COMMERCIAL_BUILT_UP_AREA)}/>
         <DynamicInput
            placeHolder='Enter built up area'
+           type='number'
            options={AREA_UNIT_LIST}
            onChange={(value: string, dropdownValue: string) => {
             const isOnlyDigits = /^\d*$/.test(value);
@@ -2214,6 +2227,7 @@ console.log('renderOtherBhk', renderOtherBhk())
           <FieldLabel label="Carpet Area" customClass="pb-2" required={renderOptionalField(FIELD_NAME.COMMERCIAL_CARPET_AREA)}/>
           <DynamicInput
             placeHolder='Enter carpet area'
+            type="number"
             options={AREA_UNIT_LIST}
             onChange={(value: string, dropdownValue: string) => {
               const isOnlyDigits = /^\d*$/.test(value);
@@ -2526,12 +2540,17 @@ console.log('renderOtherBhk', renderOtherBhk())
             }
           }} className="w-full md:w-[130px] text-sm 1xl:text-base animated-button px-12 py-3 border border-blue text-center cursor-pointer">
             <span className="gap-3 relative flex justify-center">
-              <p className={`text-nowrap font-medium`}>{activeStep == 4 ? 'Submit' : 'Next'}</p>
+              {!step1Loader ? (
+                    <p className={`text-nowrap`}>Next</p>
+                  ) : (
+                    <Spinner size={20} className="h-[24px]"/>
+                  )}
             </span>
           </button>
         </div>
     </div>
     <ConfirmationDailog open={openConfirmationPopup} onClose={(isYes) => handleCloseConfirmationDailog(isYes)}/>
+      </>}
       </>
   );
 } 

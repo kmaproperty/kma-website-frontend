@@ -5,6 +5,7 @@ import QueryProvider from "@/providers/QueryProvider";
 import StoreProvider from "@/providers/StoreProvider";
 import ToasterProvider from "@/providers/ToastProvider";
 import { Suspense } from "react";
+import TopLoaderProvider from "@/providers/TopLoaderProvider";
 
 const ibmPlexSans = IBM_Plex_Sans({
   subsets: ["latin"],
@@ -32,6 +33,7 @@ export default function RootLayout({
           <QueryProvider>
           {children}
           <ToasterProvider />
+          <TopLoaderProvider/>
           </QueryProvider>
         </StoreProvider>
         </Suspense>

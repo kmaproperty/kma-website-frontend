@@ -14,7 +14,8 @@ import {
   SendOtpResponse,
 } from "@/services/authService";
 import { mobileNumberValidator } from "@/lib/commonValidator";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useRouter } from 'nextjs-toploader/app';
 import { clearAuthCookies, createURLSearchParam } from "@/lib/helper";
 import { useMediaQuery, useTheme } from "@mui/material";
 import { toast } from "react-toastify";

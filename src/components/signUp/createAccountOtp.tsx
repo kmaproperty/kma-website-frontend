@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from "react";
 import OtpInput from "../common/optInput";
 import { matchIsNumeric, validateAndRedirect } from "@/lib/commonValidator";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from 'nextjs-toploader/app';
 import { OTP_RESEND_TIME, USER_TYPE } from "@/lib/enums";
 import { OtpPayload, resendOtpApiHandler, SendOtpResponse, validateOtpApiHandler, ValidateOtpPayload, ValidateOtpResponse } from "@/services/authService";
 import { useMutation } from "@tanstack/react-query";
@@ -11,6 +12,7 @@ import { createURLSearchParam, setAuthCookies } from "@/lib/helper";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { resetForm } from "@/store/createAccountSlice";
+import Spinner from "../common/spinner";
 
 export default function CreateAccountOtp() {
   const searchParams = useSearchParams()
@@ -184,7 +186,11 @@ export default function CreateAccountOtp() {
           <div className="flex flex-col justify-center gap-4 items-start">
               <button disabled={isPending} onClick={() => verifyOtp(otp)} className={`animated-button px-12 py-3 border border-blue text-center text-sm 1xl:text-base cursor-pointer`}>
                 <span className="gap-3 relative">
-                  <p className="text-nowrap">Verify OTP</p>
+                   {!isPending ? (
+                    <p className={`text-nowrap`}>Verify OTP</p>
+                  ) : (
+                    <Spinner size={20} className="h-[24px]"/>
+                  )}
                 </span>
               </button>
               <p className="text-sm lg:text-base 2xl:text-lg text-text-gray">

@@ -40,6 +40,8 @@ import { toast } from "react-toastify";
 import RenderSectionName from "./renderSecitonName";
 import { InputBase } from "@mui/material";
 import AmenitiesList from "./amenities";
+import Spinner from "../common/spinner";
+import FullscreenSpinner from "../common/spinner/fullScreenSpinner";
 
 export default function Step3({containerRef}) {
   const { calculateProgress } = useStepProgress();
@@ -426,7 +428,7 @@ export default function Step3({containerRef}) {
     }
   };
 
-  const { data: step1Details } = useQuery({
+  const { data: step1Details, isPending: step1DetailsLoader } = useQuery({
     queryKey: ["step1-in-3-details", params?.propertyId],
     queryFn: async (): Promise<Step1DetailsResponse> => {
       return step1PostPropertyDetailsApiHandler(
@@ -441,7 +443,7 @@ export default function Step3({containerRef}) {
     refetchOnMount: true,
   });
 
-  const { data: step3Details } = useQuery({
+  const { data: step3Details, isPending:  step3DetailsLoader } = useQuery({
   queryKey: ["step3-details", params?.propertyId],
   queryFn: async (): Promise<Step3DetailsResponse> => {
     return step3PostPropertyDetailsApiHandler(String(params?.propertyId ?? ''));
@@ -586,6 +588,7 @@ const { data: amenitiesList } = useQuery({
 
   return (
     <>
+    {((step1DetailsLoader || step3DetailsLoader) && params?.propertyId) ? <FullscreenSpinner/> : <>
       <div className="flex flex-col gap-4" ref={containerRef}>
         <p className="text-text-black font-semibold text-lg 2md:text-xl pb-2">
           Amenities & Description
@@ -1182,7 +1185,11 @@ const { data: amenitiesList } = useQuery({
             }
           }} className="w-full md:w-[130px] text-sm 1xl:text-base animated-button px-12 py-3 border border-blue text-center cursor-pointer">
             <span className="gap-3 relative flex justify-center">
-              <p className={`text-nowrap font-medium`}>{activeStep == 4 ? 'Submit' : 'Next'}</p>
+              {!step3Loader ? (
+                <p className={`text-nowrap`}>{activeStep == 4 ? 'Submit' : 'Next'}</p>
+              ) : (
+                <Spinner size={20} className="h-[24px]"/>
+              )}
             </span>
           </button>
         </div>
@@ -1209,6 +1216,7 @@ const { data: amenitiesList } = useQuery({
         handleUpdateFurnishedCount={handleUpdateFurnishedCount}
         handleAddRemoveAmenitise={handleAddRemoveAmenitise}
       />
+    </>}
     </>
   );
 }

@@ -19,7 +19,8 @@ interface MobileInputProps {
   validationMessage?: string;
   dropdownValue?: string;
   disabled?: boolean;
-  options: OptionType[]
+  options: OptionType[];
+  type?: string;
 }
 
 const customSelectStyles: StylesConfig<OptionType, false> = {
@@ -89,7 +90,8 @@ export default function DynamicInput({
   required = false,
   dropdownValue = '',
   disabled = false,
-  options = []
+  options = [],
+  type
 }: MobileInputProps) {
     const fieldValue = useMemo(() => {
     return value
@@ -146,6 +148,7 @@ export default function DynamicInput({
           inputProps={{
             className: 'placeholder-gray outline-none font-ibm-plex-sans!',
           }}
+          type={type}
         />
       </div>
       {validationMessage && required && (

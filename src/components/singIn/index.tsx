@@ -7,12 +7,13 @@ import { useTheme } from "@mui/material/styles";
 import Image from "next/image";
 import MobileInput from "../common/mobileInput";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useRouter } from "next/navigation";
+import { useRouter } from 'nextjs-toploader/app';
 import { mobileNumberValidator } from "@/lib/commonValidator";
 import { useMutation } from "@tanstack/react-query";
 import { OtpPayload, sendSignInOtpApiHandler, SendOtpResponse } from "@/services/authService";
 import { createURLSearchParam } from "@/lib/helper";
 import { toast } from "react-toastify";
+import Spinner from "../common/spinner";
 
 interface MobileInput {
   value: string,
@@ -25,7 +26,7 @@ export default function SignIn() {
   const pathname = usePathname();
   const router = useRouter()
   const isLogin = searchParams.get('isLogin')
-  const mobileNumber = searchParams.get('mobileNumber')
+  const mobileNumber = searchParams.get('mobile')
   const code = searchParams.get('code')
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -164,7 +165,11 @@ export default function SignIn() {
               <div className="flex justify-start flex-col md:flex-row gap-4 items-center">
                 <button disabled={isPending} onClick={handleLogin} className="w-full md:w-auto animated-button px-12 py-3 border border-blue text-center cursor-pointer">
                   <span className="gap-3 relative">
-                    <p className="text-nowrap">Continue</p>
+                    {!isPending ? (
+                    <p className={`text-nowrap`}>Continue</p>
+                  ) : (
+                    <Spinner size={20} className="h-[24px]"/>
+                  )}
                   </span>
                 </button>
                 <p className="text-sm lg:text-sm 2xl:text-lg text-text-gray">

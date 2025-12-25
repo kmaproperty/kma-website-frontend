@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useRouter } from 'nextjs-toploader/app';
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Dialog, { DialogProps } from "@mui/material/Dialog";
@@ -26,6 +27,7 @@ import { createURLSearchParam, setAuthCookies } from "@/lib/helper";
 import { toast } from "react-toastify";
 import { getUserAggrementApiHandler, GetUserAggrementResponse } from "@/services/postProperty";
 import { ChannelPartnerAgreementApiHandler, ChannelPartnerAgreementResponse } from "@/services/userService";
+import Spinner from "../common/spinner";
 
 export default function Otp() {
   // Router & Params
@@ -173,6 +175,8 @@ const verifyOtp = (val: string) => {
     }
     setOtpError("");
     handleVerifyOtp(payload);
+  }else{
+    setOtpError('Enter otp')
   }
 }
   const handleChangeNumber = () => {
@@ -286,7 +290,11 @@ const verifyOtp = (val: string) => {
               className="w-full md:w-auto animated-button px-12 py-3 border border-blue text-center cursor-pointer"
             >
               <span className="gap-3 relative">
-                <p className="text-nowrap">Continue</p>
+                {!(isVerifying || documentLoader) ? (
+                    <p className={`text-nowrap`}>Continue</p>
+                  ) : (
+                    <Spinner size={20} className="h-[24px]"/>
+                  )}
               </span>
             </button>
           </div>

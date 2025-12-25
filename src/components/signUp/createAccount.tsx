@@ -2,7 +2,8 @@
 import { InputBase } from "@mui/material";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { OptionType } from "../common/asyncSelect";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useRouter } from 'nextjs-toploader/app';
 import { LIST_TYPE, USER_TYPE } from "@/lib/enums";
 import {
   createChannelPartnerApiHandler,
@@ -24,6 +25,7 @@ import { toast } from "react-toastify";
 import { ChannelPartnerAgreementApiHandler, ChannelPartnerAgreementResponse, ValidateChannelPartnerCodeApiHandler, ValidateChannelPartnerCodePayload, ValidateChannelPartnerCodeResponse } from "@/services/userService";
 import DynamicAsyncAutocomplete from "../common/dynamicAsyncSelectMui";
 import { useCitySearch } from "@/hooks/useCitySearch";
+import Spinner from "../common/spinner";
 
 interface FormData {
   fullName: string;
@@ -568,13 +570,18 @@ export default function CreateAccount({ step }: { step: number }) {
               className="w-full md:w-auto text-sm 1xl:text-base animated-button px-12 py-3 border border-blue text-center cursor-pointer"
             >
               <span className="gap-3 relative">
-                <p className="text-nowrap">
-                  {USER_TYPE.CHANNEL_PARTNER == userData?.role
-                    ? step == 1
-                      ? "Next"
-                      : "Create Account"
-                    : "Create Account"}
-                </p>
+                {!(ownerLoader || channelPartnerLoader || docuemntLoader) ? (
+                    <p className="text-nowrap">
+                    {USER_TYPE.CHANNEL_PARTNER == userData?.role
+                      ? step == 1
+                        ? "Next"
+                        : "Create Account"
+                      : "Create Account"}
+                  </p>
+                  ) : (
+                    <Spinner size={20} className="h-[24px]"/>
+                  )}
+                
               </span>
             </button>
             {/* <p className="flex-1 text-sm lg:text-sm 2xl:text-lg text-text-gray">

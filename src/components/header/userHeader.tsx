@@ -4,7 +4,8 @@ import ProfileMenu from "../common/profileMenu";
 import { useEffect, useState } from "react";
 import PositionMenu from "../common/menu";
 import MenuList from "../common/MenuList";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { useRouter } from 'nextjs-toploader/app';
 import { useQuery } from "@tanstack/react-query";
 import { UserDashboardDetailsApiHandler, UserDashboardDetailsResponse } from "@/services/userService";
 

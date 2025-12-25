@@ -16,6 +16,8 @@ import DynamicInput from "../common/dynamicInputLeft";
 import dynamic from "next/dynamic";
 import { toast } from "react-toastify";
 import RenderSectionName from "./renderSecitonName";
+import Spinner from "../common/spinner";
+import FullscreenSpinner from "../common/spinner/fullScreenSpinner";
 const QuillEditor = dynamic(() => import("../common/editor"), { ssr: false });
 
 export default function Step2({containerRef}) {
@@ -427,7 +429,7 @@ export default function Step2({containerRef}) {
       }
 
       if(fieldName == FIELD_NAME.NEGOTIABLE_BROKERAGE){
-        if(isResidential && (isRent || isSell) && ['res-rent-flat', 'res-rent-villa', 'res-rent-house', 'res-rent-duplex', 'res-rent-builder-floor', 'res-rent-penthouse', 'res-rent-studio', 'res-rent-farmhouse', 'res-sale-flat', 'res-sale-villa', 'res-sale-house', 'res-sale-duplex', 'res-sale-builder-floor', 'res-sale-penthouse', 'res-sale-studio', 'res-sale-farmhouse', 'res-sale-plot', 'res-sale-agri-land'].includes(basicStaticDetail.propertyType?.code ?? '')){
+        if(isResidential && (isRent || isSell) && ['res-rent-flat', 'res-rent-villa', 'res-rent-house', 'res-rent-duplex', 'res-rent-builder-floor', 'res-rent-penthouse', 'res-rent-studio', 'res-rent-farmhouse', 'res-sale-flat', 'res-sale-villa', 'res-sale-house', 'res-sale-duplex', 'res-sale-builder-floor', 'res-sale-penthouse', 'res-sale-studio', 'res-sale-farmhouse', 'res-sale-plot', 'res-sale-agri-land'].includes(basicStaticDetail.propertyType?.code ?? '') && dynamicFieldDetails.brokerageCharge != 'none'){
           return true
         }
         return false
@@ -604,7 +606,7 @@ export default function Step2({containerRef}) {
       }
 
        if(fieldName == FIELD_NAME.NEGOTIABLE_BROKERAGE){
-        if((isRent || isSell) && ['com-rent-office', 'com-sale-office', 'com-rent-retail-shop', 'com-sale-retail-shop', 'com-rent-showroom', 'com-sale-showroom', 'com-rent-warehouse', 'com-sale-warehouse'].includes(basicStaticDetail.propertyType?.code ?? '')){
+        if((isRent || isSell) && ['com-rent-office', 'com-sale-office', 'com-rent-retail-shop', 'com-sale-retail-shop', 'com-rent-showroom', 'com-sale-showroom', 'com-rent-warehouse', 'com-sale-warehouse'].includes(basicStaticDetail.propertyType?.code ?? '') && dynamicFieldDetails.brokerageCharge != 'none'){
           return true
         }
         return false
@@ -1026,7 +1028,7 @@ export default function Step2({containerRef}) {
     },
   });
 
-  const { data: step1Details } = useQuery({
+  const { data: step1Details, isPending: step1DetailsLoader } = useQuery({
     queryKey: ["step1-in-2-details", params?.propertyId],
     queryFn: async (): Promise<Step1DetailsResponse> => {
       return step1PostPropertyDetailsApiHandler(String(params?.propertyId ?? ''));
@@ -1040,7 +1042,7 @@ export default function Step2({containerRef}) {
     refetchOnMount: true
   });
 
-  const { data: step2Details } = useQuery({
+  const { data: step2Details, isPending: step2DetailsLoader } = useQuery({
     queryKey: ["step2-details", params?.propertyId],
     queryFn: async (): Promise<Step2DetailsResponse> => {
       return step2PostPropertyDetailsApiHandler(String(params?.propertyId ?? ''));
@@ -1135,6 +1137,8 @@ export default function Step2({containerRef}) {
     //   }, [dynamicFieldDetails])
 
   return (
+    <>
+    {((step2DetailsLoader || step1DetailsLoader) && params?.propertyId) ? <FullscreenSpinner/> :
     <>
       <div className="flex flex-col gap-4" ref={containerRef}>
         <p className="text-text-black font-semibold text-lg 2md:text-xl pb-2">
@@ -1327,16 +1331,15 @@ export default function Step2({containerRef}) {
         </div>}
 
         {renderShowField(FIELD_NAME.PLOT_AREA) && <div id='ploatArea' data-field={FIELD_NAME.PLOT_AREA} data-has-value={!!dynamicFieldDetails.ploatArea}>
-          <FieldLabel label="Plot Area (Acres)" customClass="pb-2" />
+          <FieldLabel label="Plot Area (Sq. Ft.)" customClass="pb-2" />
           <InputBase
-            placeholder="Acres "
+            placeholder="In Sq. Ft. "
             fullWidth
             value={dynamicFieldDetails.ploatArea ?? ''}
             onChange={(e) => {
               const input = e.target.value;
               const isOnlyDigits = /^\d*$/.test(input);
               if (!isOnlyDigits) return;
-              if(Number(input) > 99999) return
               setDynamicFieldDetails((pre) => ({...pre, ploatArea: input}))
               setErrors((pre) => ({...pre, ploatArea: ''}))
             }}
@@ -1922,7 +1925,7 @@ export default function Step2({containerRef}) {
                 inputProps={{
                   className: "placeholder-gray",
                   min: new Date().toISOString().split('T')[0],
-                }}
+                }}  
               />
               {errors.possesionDate && (
                 <p className="pt-1 text-red-500 text-xs">
@@ -1960,18 +1963,22 @@ export default function Step2({containerRef}) {
 
         {renderShowField(FIELD_NAME.PRICE_COST) && <div id='price' data-field={FIELD_NAME.PRICE_COST} data-has-value={!!dynamicFieldDetails.price}>
           <FieldLabel label="Price/Cost" required={true} customClass="pb-2"/>
-          <DynamicInput
-            placeHolder="Enter price / cost"
-            options={[{label: 'Per month', value: 'Per month'}]}
-            onChange={(value: string, dropdownValue: string) => {
+          <InputBase
+            placeholder="Enter price / cost"
+            onChange={(event) => {
+              const value = event.target.value
               const isOnlyDigits = /^\d*$/.test(value);
               if(!isOnlyDigits) return
             setDynamicFieldDetails((pre) => ({...pre, price: value,}))
             setErrors((pre) => ({...pre, price: ''}))
             }}
             value={dynamicFieldDetails.price ?? ''}
-            dropdownValue={'Per month'} 
-            disabled={true}
+            className={
+              "w-full box-border px-4 py-2 text-sm rounded-full border focus:outline-none border-border text-text-gray h-[40px]"
+            }
+            inputProps={{
+              className: "placeholder-gray",
+            }}
            />
           {errors?.price && <p className="pt-1 text-red-500 text-xs">{errors.price}</p>}
         </div>}
@@ -2109,7 +2116,7 @@ export default function Step2({containerRef}) {
                     checked={item.value == dynamicFieldDetails.brokerageCharge}
                     label={item.name}
                     onChagne={() => {
-                      setDynamicFieldDetails((pre) => ({...pre, brokerageCharge: item.value, otherBrokerageCharge: null,}))
+                      setDynamicFieldDetails((pre) => ({...pre, brokerageCharge: item.value, otherBrokerageCharge: null, isBrokerageNegotiable: false }))
                       setErrors((pre) => ({...pre, brokerageCharge: ''}))
                     }}
                     value={dynamicFieldDetails.brokerageCharge}
@@ -2440,7 +2447,7 @@ export default function Step2({containerRef}) {
                     checked={item.value == dynamicFieldDetails.brokerageCharge}
                     label={item.name}
                     onChagne={() => {
-                      setDynamicFieldDetails((pre) => ({...pre, brokerageCharge: item.value, otherBrokerageCharge: null,}))
+                      setDynamicFieldDetails((pre) => ({...pre, brokerageCharge: item.value, otherBrokerageCharge: null, isBrokerageNegotiable: false}))
                       setErrors((pre) => ({...pre, brokerageCharge: ''}))
                     }}
                     value={dynamicFieldDetails.brokerageCharge}
@@ -2674,11 +2681,16 @@ export default function Step2({containerRef}) {
               }
             }} className="w-full md:w-[130px] text-sm 1xl:text-base animated-button px-12 py-3 border border-blue text-center cursor-pointer">
               <span className="gap-3 relative flex justify-center">
-                <p className={`text-nowrap font-medium`}>{activeStep == 4 ? 'Submit' : 'Next'}</p>
+                  {!step2Loader ? (
+                    <p className={`text-nowrap`}>Next</p>
+                  ) : (
+                    <Spinner size={20} className="h-[24px]"/>
+                  )}
               </span>
             </button>
           </div>
       </div>
+    </>}
     </>
   );
 }
