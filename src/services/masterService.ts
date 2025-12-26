@@ -105,7 +105,7 @@ export const getCitySearchApiHandler = async (q: string) : Promise<City[]> => {
 
 export interface BuildingSearchPayload {
   query: string,
-  cityId: string,
+  cityId?: string,
   cityName: string
 }
 export interface BuildingSearchResponse {

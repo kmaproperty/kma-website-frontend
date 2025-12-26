@@ -1969,8 +1969,9 @@ export default function Step2({containerRef}) {
               const value = event.target.value
               const isOnlyDigits = /^\d*$/.test(value);
               if(!isOnlyDigits) return
-            setDynamicFieldDetails((pre) => ({...pre, price: value,}))
-            setErrors((pre) => ({...pre, price: ''}))
+              if(Number(value) > 2000000000) return 
+              setDynamicFieldDetails((pre) => ({...pre, price: value,}))
+              setErrors((pre) => ({...pre, price: ''}))
             }}
             value={dynamicFieldDetails.price ?? ''}
             className={

@@ -19,7 +19,7 @@ export const useBuildingSearch = () => {
 
       debounceRef.current = setTimeout(async () => {
         try {
-          const cities = await getBuildingSearchApiHandler({query, cityId, cityName});
+          const cities = await getBuildingSearchApiHandler({query, cityName});
           if(Array.isArray(cities)){
             const modifiedData = cities.map(item => {
                 return {label: item.name, value: item.id || item.name, ...item}

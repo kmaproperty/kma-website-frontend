@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
+  reactStrictMode: false,
   transpilePackages: ['mui-one-time-password-input'],
   eslint: {
     ignoreDuringBuilds: true,

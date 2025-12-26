@@ -1221,7 +1221,7 @@ console.log('step1DetailsLoader',step1DetailsLoader)
     }
   },[propertyTypeList])
 
-  const { mutate: getUserCurrentCity } = useMutation({
+  const { mutate: getUserCurrentCity, isPending: autoDetectLoader } = useMutation({
     mutationFn: async (
       payload: GetUserCurrentCityPayload
     ): Promise<GetUserCurrentCityResponse> => {
@@ -1240,8 +1240,7 @@ console.log('step1DetailsLoader',step1DetailsLoader)
     },
   });
 
-  useEffect(() => {
-    const fetchLocation = async () => {
+  const fetchLocation = async () => {
       const location = await getUserCoordinates();
       console.log('location', location)
       if (location) {
@@ -1249,10 +1248,15 @@ console.log('step1DetailsLoader',step1DetailsLoader)
       } else {
         console.log("Permission denied or unavailable");
       }
-    };
+  };
 
-    fetchLocation();
-  },[])
+  // useEffect(() => {
+    
+
+  //   if(!params?.propertyId){
+  //     fetchLocation();
+  //   }
+  // },[params?.propertyId])
 
 
   return (
@@ -1351,6 +1355,7 @@ console.log('step1DetailsLoader',step1DetailsLoader)
                   if(basicStaticDetails?.propertyType?.code == item.code) return
                   const initialFn = () => {
                       setBasicStaticDetails((pre) => ({...pre, propertyType: item, city: null, locality: null, society: null}))
+                      fetchLocation()
                       setDynamicFieldDetails(initialState)
                       setErrors((pre) => ({...pre, propertyType: ''}))
                       dispatch(setStep1Data({propertyType: item}))
@@ -1404,6 +1409,7 @@ console.log('step1DetailsLoader',step1DetailsLoader)
           minHeight={"40px"}
         />
         {errors?.city && <p className="pt-1 text-red-500 text-xs">{errors.city}</p>}
+        {autoDetectLoader ? <p className="text-blue text-xs">Auto Detecting City...</p> : ''}
       </div>
 
       <div id='society' data-field={FIELD_NAME.SOCIETY} data-has-value={!!basicStaticDetails.society}>

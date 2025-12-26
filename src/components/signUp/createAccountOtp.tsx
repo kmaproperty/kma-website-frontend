@@ -111,7 +111,7 @@ export default function CreateAccountOtp() {
       if(mobileNumber){
         const payload = {
           phone: mobileNumber || '',
-          role: '' 
+          // role: ownerType
         }
         handleResendOtp(payload)
       }
