@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import ListCard from "./listCard";
 import CustomPagination from "../common/pagination";
 import PropertyView from "./propertyProfile";
+import FullscreenSpinner from "../common/spinner/fullScreenSpinner";
 
 const sortField = {
     price: 'Price',
@@ -10,23 +11,24 @@ const sortField = {
     updatedAt: 'Updated At'
 }
 
-export default function Listing({propertyList = [], fetchPropertyList,setPagination, pagination, propertyData, setSearch, search, sorting, setSorting}) {
+export default function Listing({propertyList = [], fetchPropertyList,setPagination, pagination, propertyData, setSearch, search, sorting, setSorting, propertyListLoader}) {
   const [anchorElOrder, setAnchorElOrder] = useState(null);
   const [anchorElSort, setAnchorElSort] = useState(null);
-
   const [openPropertyDetails, setOpenPropertyDetails] = useState(false)
   const [propertyId, setPropertyId] = useState(null)
   const searchRef = useRef(null)
+  const [tempSearch, setTempSearch] = useState('')
 
   const openOrder = Boolean(anchorElOrder);
   const openSort = Boolean(anchorElSort);
 
   const handleSearch = (value: string) => {
+    setTempSearch(value)
     setSearch(value)
     clearTimeout(searchRef.current)
-    setTimeout(() => {
-        fetchPropertyList()
-    }, 300);
+    searchRef.current = setTimeout(() => {
+      fetchPropertyList()
+    }, 500);
   }
 
   const handleSorting = (order: string) => {
@@ -73,7 +75,7 @@ export default function Listing({propertyList = [], fetchPropertyList,setPaginat
           <InputBase
             placeholder="Search by ID..."
             type="text"
-            value={search}
+            value={tempSearch}
             onChange={(e) => {
                 handleSearch(e.target.value)
             }}
@@ -89,14 +91,16 @@ export default function Listing({propertyList = [], fetchPropertyList,setPaginat
       </div>
 
     <div className="flex flex-col sm:flex-row justify-start sm:justify-between items-start gap-2 sm:items-center mt-4">
-        <p className="text-sm text-text-gray">Showing <span className="font-medium text-blue">1-10 Out</span> of <span className="font-medium text-blue">100</span> Properties</p>
+      <div>
+        {pagination?.total ? <p className="text-sm text-text-gray">Showing <span className="font-medium text-blue">{(pagination?.page * pagination?.limit) - pagination.limit + 1}-{pagination?.page * pagination?.limit} Out</span> of <span className="font-medium text-blue">{pagination?.total}</span> Properties</p> : ''}
+      </div>
       <div className="flex items-center gap-5">
         
         <div
           onClick={(e) => setAnchorElOrder(e.currentTarget)}
           className="text-sm cursor-pointer flex justify-start items-center gap-2"
         >
-          <button>{sorting.order ? sorting.order : `Sort By`}</button>
+          <button className="cursor-pointer">{sorting.order ? sorting.order : `Sort By`}</button>
           <img src={"/assets/down-arrow-outline-black.svg"}></img>
         </div>
         <Menu
@@ -123,7 +127,7 @@ export default function Listing({propertyList = [], fetchPropertyList,setPaginat
         </Menu>
 
         <div onClick={(e) => setAnchorElSort(e.currentTarget)} className="text-sm cursor-pointer flex items-center gap-2 cursor-pointer">
-          <button>
+          <button className="cursor-pointer">
             {sorting?.fieldName ? sortField[sorting?.fieldName] : "Select filter"}
           </button>
           <img src="/assets/fitler-line.svg" className="w-5 h-5"></img>
@@ -160,7 +164,9 @@ export default function Listing({propertyList = [], fetchPropertyList,setPaginat
         </Menu>
       </div>
     </div>
-
+            <div>
+              {propertyListLoader && <FullscreenSpinner/>}
+            </div>
             <div className="flex gap-3 flex-col">
                 {Array.isArray(propertyList) && propertyList.map(item => {
 
@@ -169,10 +175,18 @@ export default function Listing({propertyList = [], fetchPropertyList,setPaginat
                     )
                 })}
             </div>
+           {Array.isArray(propertyList) && propertyList.length == 0 && <div className="flex justify-center flex-col items-center">
+               <p className="text-sm font-medium text-gray-700">
+                  No properties found
+                </p>
+                <p className="mt-1 text-xs text-gray-500">
+                  Try changing filters or search criteria
+                </p>
+            </div>}
 
-            <div>
+            {Array.isArray(propertyList) &&  propertyList.length != 0 && <div>
                 <CustomPagination page={pagination.page} totalPages={pagination.totalPage} onChange={(value) => handlePagination(value)}/>
-            </div>
+            </div>}
             <PropertyView open={openPropertyDetails} onClose={() => handleClose()} propertyId={propertyId}/>
     </div>
   );

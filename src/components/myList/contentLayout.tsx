@@ -29,7 +29,8 @@ export default function ContentLayout() {
   const [pagination, setPagination] = useState({
     limit: 10,
     page: 1,
-    totalPage: 1
+    totalPage: 1,
+    total: 0
   })
   const [sorting, setSorting] = useState({
     order: 'ASC',
@@ -39,7 +40,7 @@ export default function ContentLayout() {
 
   console.log('filters', filters, sorting, search, pagination)
  
-  const { data: propertyList,  refetch: fetchPropertyList } = useQuery({
+  const { data: propertyList,  refetch: fetchPropertyList, isLoading: propertyListLoader } = useQuery({
       queryKey: ["property-list", filters, pagination, sorting],
       queryFn: () => {
         let payload: ProeprtyListApiPayload = {
@@ -71,6 +72,7 @@ export default function ContentLayout() {
       const query = params.get("filters");
       if (query) {
           const parsed = decodeFilters(query);
+          console.log('parsed', parsed)
           if (parsed) setFilters(parsed);
       }
       setEnable(true)
@@ -96,7 +98,7 @@ export default function ContentLayout() {
          <div className="flex flex-col gap-6 md:gap-6 w-full">
             <div className="grid grid-cols-1 2md:grid-cols-[1.3fr_3fr] gap-4">
                 <ListFilter statusData={propertyList?.summary ?? {}} filters={filters} setFilters={setFilters}/>
-                <Listing propertyList={propertyList?.items ?? []} fetchPropertyList={fetchPropertyList} setSearch={setSearch} setSorting={setSorting} sorting={sorting} search={search} propertyData={propertyList} setPagination={setPagination} pagination={pagination}/>
+                <Listing propertyList={propertyList?.items ?? []} propertyListLoader={propertyListLoader} fetchPropertyList={fetchPropertyList} setSearch={setSearch} setSorting={setSorting} sorting={sorting} search={search} propertyData={propertyList} setPagination={setPagination} pagination={pagination}/>
             </div>
          </div>
         </div>

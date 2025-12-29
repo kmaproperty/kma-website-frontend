@@ -9,16 +9,18 @@ import {
   PropertyListResponse,
   PropertyTypeResponse,
 } from "@/services/masterService";
-import { useState, useEffect } from "react";
+import {  useRef, useState } from "react";
 import { FURNISH_TYPE, PROPERTY_STATUS } from "@/lib/enums";
 import { InputBase, Slider } from "@mui/material";
 import Image from "next/image";
 import { encodeFilters } from "@/lib/helper";
 import { defaultFilters } from "./contentLayout";
 
-export default function ListFilter({ filters, setFilters, statusData }) {
+export default function ListFilter({ filters: stableFilter, setFilters, statusData }) {
   const router = useRouter();
   const params = useSearchParams();
+  const filterRef = useRef(null)
+  const [filters, setCurrentFilters] = useState(stableFilter)
 
   // ---------- Default Filters ----------
 
@@ -26,14 +28,25 @@ export default function ListFilter({ filters, setFilters, statusData }) {
 
   const updateFilter = (field: string, value: any) => {
     const newFilters = { ...filters, [field]: value };
-    setFilters(newFilters);
+    setCurrentFilters(newFilters)
 
-    const encoded = encodeFilters(newFilters);
-    router.replace(`?filters=${encoded}`, { scroll: false });
+    if(field == 'maxPrice' || field == 'minPrice'){
+      clearTimeout(filterRef?.current)
+      filterRef.current = setTimeout(() => {
+        const encoded = encodeFilters(newFilters);
+        setFilters(newFilters);
+        router.replace(`?filters=${encoded}`, { scroll: false });
+      }, 500);
+    }else{
+      setFilters(newFilters);
+      const encoded = encodeFilters(newFilters);
+      router.replace(`?filters=${encoded}`, { scroll: false });
+    }
   };
 
   const resetFilters = () => {
     setFilters(defaultFilters);
+    setCurrentFilters(defaultFilters)
     router.replace("/my-listing");
   };
 
@@ -51,13 +64,13 @@ export default function ListFilter({ filters, setFilters, statusData }) {
       data.map((i) => ({ id: i.id, name: i.name })),
   });
 
-  const { data: propertyList } = useQuery({
-    queryKey: ["propertyTypes"],
-    queryFn: () =>
-      getPropertyTypeApiHandler({ propertyListType: "", propertyCategory: "" }),
-    select: (data: PropertyTypeResponse) =>
-      data.propertyTypes.map((i) => ({ id: i.id, name: i.name })),
-  });
+  // const { data: propertyList } = useQuery({
+  //   queryKey: ["propertyTypes"],
+  //   queryFn: () =>
+  //     getPropertyTypeApiHandler({ propertyListType: "", propertyCategory: "" }),
+  //   select: (data: PropertyTypeResponse) =>
+  //     data.propertyTypes.map((i) => ({ id: i.id, name: i.name })),
+  // });
 
   // ---------- Toggle Chip Helper ----------
   const toggleFilterArray = (key: string, id: any) => {
@@ -86,11 +99,11 @@ export default function ListFilter({ filters, setFilters, statusData }) {
     });
 
     // Property Type / listingTypeIds
-    propertyList?.forEach((item) => {
-      if (filters.listingTypeIds.includes(item.id)) {
-        tags.push({ key: "listingTypeIds", id: item.id, label: item.name });
-      }
-    });
+    // propertyList?.forEach((item) => {
+    //   if (filters.listingTypeIds.includes(item.id)) {
+    //     tags.push({ key: "listingTypeIds", id: item.id, label: item.name });
+    //   }
+    // });
 
     // Furnishing Types
     FURNISH_TYPE.forEach((item) => {
@@ -228,7 +241,7 @@ export default function ListFilter({ filters, setFilters, statusData }) {
       )}
 
       {/* PROPERTY TYPE */}
-      {Array.isArray(propertyList) && (
+      {/* {Array.isArray(propertyList) && (
         <div className="text-text-gray">
           <p className="font-medium text-base text-text-black">Property Type</p>
           <div className="flex flex-wrap gap-1 mt-1">
@@ -254,7 +267,7 @@ export default function ListFilter({ filters, setFilters, statusData }) {
             })}
           </div>
         </div>
-      )}
+      )} */}
 
       {/* FURNISHING TYPE */}
       <div className="text-text-gray">
@@ -287,7 +300,7 @@ export default function ListFilter({ filters, setFilters, statusData }) {
 
       {/* PROPERTY STATUS */}
       <div className="text-text-gray">
-        <p className="font-medium text-base text-text-black">Property Status</p>
+        {PROPERTY_STATUS.some(item => statusCount[item.value]) && <p className="font-medium text-base text-text-black">Property Status</p>}
         <div className="flex flex-wrap gap-1 mt-1">
           {PROPERTY_STATUS.map((item) => {
             const checked = filters.statuses.includes(item.value);
@@ -344,7 +357,10 @@ export default function ListFilter({ filters, setFilters, statusData }) {
             <InputBase
               type="number"
               value={filters.minPrice}
-              onChange={(e) => updateFilter("minPrice", Number(e.target.value))}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+                if (value < 0) return;
+                updateFilter("minPrice", Number(value))}}
               className="box-border h-[40px] px-4 py-2 text-sm rounded-full border border-border"
             />
           </div>
