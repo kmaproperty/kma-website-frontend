@@ -73,3 +73,25 @@ body {
 .ql-container.ql-snow {
   border-radius: 0 0 10px 10px;
 }
+
+.gradient-mask {
+  -webkit-mask-image: url("/assets/backgroundSlider/blur.png");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: cover;
+  -webkit-mask-position: center;
+  mask-image: url("/assets/backgroundSlider/blur.png");
+  mask-repeat: no-repeat;
+  mask-size: 100% 100%;
+  mask-position: center;
+}
+
+.gradient-overlay {
+  position: absolute;
+  inset: 0; 
+  background: linear-gradient(
+    to left,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.7) 100%
+  );
+  pointer-events: none; 
+}

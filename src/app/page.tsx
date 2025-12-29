@@ -1,7 +1,7 @@
-export default function Home() {
+import Home from "@/components/home";
+
+export default function HomeDashboard() {
   return (
-    <>
-      Welcome to Dashboard KMA Property Dashboard 👋
-    </>
+    <Home/>
   );
 }
