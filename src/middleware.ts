@@ -5,7 +5,7 @@ export default function middleware(req: NextRequest) {
   const accessToken = req.cookies.get("accessToken")?.value;
   console.log('accesstoken', accessToken, path)
   
-  const publicPaths = ["/signup", "/verify-otp", "/document-signed-success"];
+  const publicPaths = ["/signup", "/verify-otp", "/kyc"];
   if ( publicPaths.includes(path)) {
     return NextResponse.next();
   }

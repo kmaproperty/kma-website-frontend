@@ -67,6 +67,9 @@ export interface ValidateOtpResponse {
   accessToken: string;
   refreshToken: string;
   user: User;
+  propertyCount: number;
+  kycCompleted: boolean;
+  hasReachedListingLimit: boolean
 }
 
 export const validateOtpApiHandler = async (payload: ValidateOtpPayload) : Promise<ValidateOtpResponse> => {

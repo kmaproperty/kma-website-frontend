@@ -137,3 +137,23 @@ export const ChannelPartnerAgreementApiHandler = async (returnUrl: string) : Pro
         throw error.response?.data ?? error;
     }
 }
+
+export interface ValidateEmailPayload {
+  email: string
+}
+
+export interface ValidateEmailResponse {
+  message: string;
+  success: boolean;
+}
+
+export const validateEmailApiHandler = async (paylaod: ValidateEmailPayload) : Promise<ValidateEmailResponse> => {
+    try{
+        const response = await axiosInstance.post<ValidateEmailResponse>(
+      "users/check-duplicate-email", paylaod);
+
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}

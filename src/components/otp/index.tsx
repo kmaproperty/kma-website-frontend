@@ -81,56 +81,6 @@ export default function Otp() {
     }
   };
 
-  const {
-    mutate: handleSignChannelPartnerAgreement,
-    isPending: docuemntLoader
-  } = useMutation({
-    mutationFn: async (url: string): Promise<ChannelPartnerAgreementResponse> => {
-      return await ChannelPartnerAgreementApiHandler(url);
-    },
-    onSuccess: (response: ChannelPartnerAgreementResponse) => {
-      console.log("agreement response", response);
-      if (response.url) {
-        window.open(response.url, "_blank");
-      }
-
-    },
-    onError: (error: any) => {
-      console.log("owner create error", error);
-      if(Array.isArray(error.message)){
-        error.message.map((item: string) => {
-          toast.error(item)
-        })
-      }else{
-        toast.error(error.message)
-      }
-    },
-  });
-
-  const { mutate: handleCheckAgreementSigned, isPending: documentLoader } = useMutation({
-    mutationFn: (): Promise<GetUserAggrementResponse> =>
-      getUserAggrementApiHandler(),
-    onSuccess: async (res) => {
-      if(res.data && Array.isArray(res.data) && res.data.length > 0){
-        const item = res.data[0]
-        if(item.status == 'completed'){
-          router.replace("/post-property");
-        }else{
-          // const domainUrl = `${window.location.origin}/document-signed-success`;
-          // handleSignChannelPartnerAgreement(domainUrl)
-          router.replace('/sign-document')
-        }
-      }else{
-        // const domainUrl = `${window.location.origin}/document-signed-success`;
-        // handleSignChannelPartnerAgreement(domainUrl)
-        router.replace('/sign-document')
-      }
-    },
-    onError: (err: any) => {
-      console.error("OTP Verify Error:", err);
-    },
-  });
-
   // OTP Verify
   const { mutate: handleVerifyOtp, isPending: isVerifying } = useMutation({
     mutationFn: (payload: ValidateOtpPayload): Promise<ValidateOtpResponse> =>
@@ -142,12 +92,14 @@ export default function Otp() {
       localStorage.setItem("user", JSON.stringify(res.user));
       setOtp('')
       toast.success(res.message)
-      if(res.user.role == USER_TYPE.CHANNEL_PARTNER){
-        handleCheckAgreementSigned()
+      if(res.user.role == 'CHANNEL_PARTNER' && !res.kycCompleted){
+        router.replace('/profile')
       }else{
-        setTimeout(() => {
+        if(res.propertyCount == 0){
           router.replace("/post-property");
-        }, 300);
+        }else{
+          router.replace('/user-dashboard');
+        }
       }
     },
     onError: (err: any) => {
@@ -285,12 +237,12 @@ const verifyOtp = (val: string) => {
 
           <div className="flex justify-start flex-col md:flex-row gap-4 items-center">
             <button
-              disabled={isVerifying || documentLoader}
+              disabled={isVerifying}
               onClick={() => verifyOtp(otp)}
               className="w-full md:w-auto animated-button px-12 py-3 border border-blue text-center cursor-pointer"
             >
               <span className="gap-3 relative">
-                {!(isVerifying || documentLoader) ? (
+                {!(isVerifying) ? (
                     <p className={`text-nowrap`}>Continue</p>
                   ) : (
                     <Spinner size={20} className="h-[24px]"/>

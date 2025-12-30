@@ -22,7 +22,7 @@ import { resetForm, setFormField } from "@/store/createAccountSlice";
 import { RootState } from "@/store/store";
 import { clearAuthCookies, createURLSearchParam } from "@/lib/helper";
 import { toast } from "react-toastify";
-import { ChannelPartnerAgreementApiHandler, ChannelPartnerAgreementResponse, ValidateChannelPartnerCodeApiHandler, ValidateChannelPartnerCodePayload, ValidateChannelPartnerCodeResponse } from "@/services/userService";
+import { ValidateChannelPartnerCodeApiHandler, ValidateChannelPartnerCodePayload, ValidateChannelPartnerCodeResponse, validateEmailApiHandler, ValidateEmailPayload, ValidateEmailResponse } from "@/services/userService";
 import DynamicAsyncAutocomplete from "../common/dynamicAsyncSelectMui";
 import { useCitySearch } from "@/hooks/useCitySearch";
 import Spinner from "../common/spinner";
@@ -48,6 +48,7 @@ export default function CreateAccount({ step }: { step: number }) {
   const router = useRouter();
   const pathname = usePathname();
   const dateRef = useRef<HTMLInputElement | null>(null)
+  const searchRef = useRef(null)
   // const ownerType = searchParams.get('ownerType')
   const propertyIntent = searchParams.get("propertyIntent");
   const [userData, setUserData] = useState<User | null>(null);
@@ -56,6 +57,7 @@ export default function CreateAccount({ step }: { step: number }) {
   const dispatch = useDispatch();
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [codeError, setCodeError] = useState(false)
+  const [emailError, setEmailError] = useState(false)
   // const [step, setStep] = useState<number>(1); // 1 = initial, 2 = extended
   console.log("data", formData);
   const { data } = useQuery<CitiesResponse, Error, string[]>({
@@ -150,18 +152,20 @@ export default function CreateAccount({ step }: { step: number }) {
   });
 
   const {
-    mutate: handleSignChannelPartnerAgreement,
-    isPending: docuemntLoader
+    mutate: handleChannelPartnerCreate,
+    isPending: channelPartnerLoader,
   } = useMutation({
-    mutationFn: async (url: string): Promise<ChannelPartnerAgreementResponse> => {
-      return await ChannelPartnerAgreementApiHandler(url);
+    mutationFn: async (
+      payload: CreateChannelPartnerPayload
+    ): Promise<CreateOwnerResponse> => {
+      return await createChannelPartnerApiHandler(payload);
     },
-    onSuccess: (response: ChannelPartnerAgreementResponse) => {
-      console.log("agreement response", response);
-      if (response.url) {
-        window.open(response.url, "_blank");
-      }
-
+    onSuccess: (response: CreateOwnerResponse) => {
+      console.log("create owner response", response);
+      localStorage.setItem("user", JSON.stringify(response.user));
+      dispatch(resetForm())
+      toast.success(response.message)
+      router.push('/profile')
     },
     onError: (error: any) => {
       console.log("owner create error", error);
@@ -176,33 +180,31 @@ export default function CreateAccount({ step }: { step: number }) {
   });
 
   const {
-    mutate: handleChannelPartnerCreate,
-    isPending: channelPartnerLoader,
+    mutate: validateEmailAddress,
   } = useMutation({
     mutationFn: async (
-      payload: CreateChannelPartnerPayload
-    ): Promise<CreateOwnerResponse> => {
-      return await createChannelPartnerApiHandler(payload);
+      payload: ValidateEmailPayload
+    ): Promise<ValidateEmailResponse> => {
+      return await validateEmailApiHandler(payload);
     },
-    onSuccess: (response: CreateOwnerResponse) => {
-      console.log("create owner response", response);
-      localStorage.setItem("user", JSON.stringify(response.user));
-      dispatch(resetForm())
-      // router.push('/create-account')
-      toast.success(response.message)
-      // const domainUrl = `${window.location.origin}/document-signed-success`;
-      // handleSignChannelPartnerAgreement(domainUrl)
-      router.replace('/sign-document')
-      // router.push('/post-property')
+    onSuccess: (response: ValidateEmailResponse) => {
+      console.log("email duplicate response", response);
+      if(response?.success){
+        setFormErrors((pre) => ({...pre, email: ''}))
+        setEmailError(false)
+      }else{
+        setFormErrors((pre) => ({...pre, email: response.message}))
+        setEmailError(true)
+      }
     },
     onError: (error: any) => {
-      console.log("owner create error", error);
-      if(Array.isArray(error.message)){
-        error.message.map((item: string) => {
-          toast.error(item)
-        })
+      console.log("channel partner error", error);
+      if(error?.success){
+        setFormErrors((pre) => ({...pre, email: ''}))
+        setEmailError(false)
       }else{
-        toast.error(error.message)
+        setFormErrors((pre) => ({...pre, email: error.message}))
+        setEmailError(true)
       }
     },
   });
@@ -233,6 +235,10 @@ export default function CreateAccount({ step }: { step: number }) {
   const handleSubmit = () => {
     if (userData?.role == USER_TYPE.OWNER) {
       if (validateStep()) {
+
+        if(emailError){
+          return
+        }
         const payload = {
           name: formData.fullName,
           email: formData.email,
@@ -246,6 +252,10 @@ export default function CreateAccount({ step }: { step: number }) {
       if (step == 1) {
         if(codeError){
           validateChannelParnterCode({code: formData.partnerCode})
+          return
+        }
+
+        if(emailError){
           return
         }
 
@@ -268,20 +278,6 @@ export default function CreateAccount({ step }: { step: number }) {
       }
     }
   };
-
-  // const loadCities = async (input: string) => {
-  //   let filteredData = data ? data.filter((opt) => opt.toLowerCase().includes(input.toLowerCase())) : []
-  //   let updatedOptions = filteredData.map(item => ({label: item, value: item}))
-  //   return updatedOptions
-  // };
-
-  const handleRedirectToLogin = () => {
-      const params = createURLSearchParam({
-        isLogin: true
-      })
-      router.push(`${pathname}${params}`);
-    }
-
     
   const handleRedirectCode = () => {
     const params = createURLSearchParam({
@@ -307,16 +303,17 @@ export default function CreateAccount({ step }: { step: number }) {
 
   const dynamicClass = (flag: string) => {
     return `
-                  box-border h-[47.81px] px-4 py-2 text-sm rounded-full 
-                  border focus:outline-none
-                  ${
-                    Boolean(flag)
-                      ? "border-red-500 focus:border-red-500"
-                      : "border-border focus:border-blue"
-                  }
-                  text-text-gray
-                `;
+      box-border h-[47.81px] px-4 py-2 text-sm rounded-full 
+      border focus:outline-none
+      ${
+        Boolean(flag)
+          ? "border-red-500 focus:border-red-500"
+          : "border-border focus:border-blue"
+      }
+      text-text-gray
+    `;
   };
+
   return (
     <div
       className="bg-white relative w-full md:min-w-96 h-auto rounded-b-xl rounded-tr-xl"
@@ -364,7 +361,13 @@ export default function CreateAccount({ step }: { step: number }) {
                     placeholder="Enter your email"
                     fullWidth
                     value={formData.email}
-                    onChange={(e) => handleChange("email", e.target.value)}
+                    onChange={(e) => {
+                      handleChange("email", e.target.value)
+                      clearTimeout(searchRef.current)
+                      searchRef.current = setTimeout(() => {
+                        validateEmailAddress({email: e.target.value})
+                      }, 300);
+                    }}
                     className={dynamicClass(formErrors.email)}
                     inputProps={{
                       className: "placeholder-gray",
@@ -382,18 +385,6 @@ export default function CreateAccount({ step }: { step: number }) {
                       City
                     </p>
                     <div>
-                      {/* <AsyncSelectDropdown
-                        isMulti={false}
-                        isError={Boolean(formErrors.city)}
-                        placeholder="Start Typing..."
-                        onChange={(value) => {
-                          dispatch(setFormField({ key: "city", value }));
-
-                          setFormErrors({ ...formErrors, city: "" });
-                        }}
-                        loadOptions={loadCities}
-                        value={formData.city}
-                      /> */}
                       <DynamicAsyncAutocomplete
                           isMulti={false}
                           isError={false}
@@ -565,12 +556,12 @@ export default function CreateAccount({ step }: { step: number }) {
 
           <div className="flex justify-start flex-col md:flex-row gap-4 items-center">
             <button
-              disabled={ownerLoader || channelPartnerLoader || docuemntLoader}
+              disabled={ownerLoader || channelPartnerLoader}
               onClick={handleSubmit}
               className="w-full md:w-auto text-sm 1xl:text-base animated-button px-12 py-3 border border-blue text-center cursor-pointer"
             >
               <span className="gap-3 relative">
-                {!(ownerLoader || channelPartnerLoader || docuemntLoader) ? (
+                {!(ownerLoader || channelPartnerLoader) ? (
                     <p className="text-nowrap">
                     {USER_TYPE.CHANNEL_PARTNER == userData?.role
                       ? step == 1
