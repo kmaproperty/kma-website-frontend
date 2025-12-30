@@ -1,154 +1,95 @@
-import { UserLogoutApiHandler, UserLogoutResponse } from "@/services/userService";
+import { clearAuthCookies } from "@/lib/helper";
+import {
+  UserLogoutApiHandler,
+  UserLogoutResponse,
+} from "@/services/userService";
+import { Divider, Menu, MenuItem } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { toast } from "react-toastify";
 
-export default function ProfileMenu(){
-    const router = useRouter()
+export default function ProfileMenu({ anchorEl, open, handleClose }) {
+  const router = useRouter();
 
-    const {
-      mutate: handleLogoutApi,
-      isPending,
-    } = useMutation({
-      mutationFn: async (): Promise<UserLogoutResponse> => {
-        return await UserLogoutApiHandler();
-      },
-      onSuccess: (response: UserLogoutResponse) => {
-        console.log('response', response)
-        localStorage.clear()
-        router.replace('/signup')   
-      },
-      onError: (error: any) => {
-        console.log('error', error)
-        if(Array.isArray(error.message)){
+  const handleRedirect = (routeName: string) => {
+    router.push(routeName);
+  };
+
+  const { mutate: handleLogoutApi, isPending } = useMutation({
+    mutationFn: async (): Promise<UserLogoutResponse> => {
+      return await UserLogoutApiHandler();
+    },
+    onSuccess: async (response: UserLogoutResponse) => {
+      console.log("response", response);
+      localStorage.clear();
+      await clearAuthCookies();
+      router.replace("/signup");
+    },
+    onError: (error: any) => {
+      console.log("error", error);
+      if (Array.isArray(error.message)) {
         error.message.map((item: string) => {
-          toast.error(item)
-        })
-      }else{
-        toast.error(error.message)
+          toast.error(item);
+        });
+      } else {
+        toast.error(error.message);
       }
-      },
-    });
+    },
+  });
 
-    const handleLogout = () => {
-        handleLogoutApi()  
-    }
+  const handleLogout = () => {
+    handleLogoutApi();
+  };
 
-    return(
-        <div className="w-[100%] flex flex-col items-between bg-white px-6 2md:px-5 py-6 2md:py-2  gap-8">
-            <div  className="grid grid-cols-[auto_3fr_1fr] gap-3 items-center">
-                    <Image
-                        src="/assets/profile.png"
-                        height={40}
-                        width={40}
-                        className="w-[45px] h-[45px] rounded-[50%] object-cover"
-                        alt="profile"
-                    />
-                    <div>
-                        <p className="text-base text-text-black font-medium">Rock Oberoi</p>
-                        <p className="text-xs text-text-gray">+91- 7425030808</p>
-                    </div>
-                    <div className="flex gap-1 items-center justify-end">
-                        <Image
-                            src="/assets/edit-pen-blue.svg"
-                            height={5}
-                            width={5}
-                            className="w-[15px] h-[15px] sm:w-[10px] sm:h-[10px]"
-                            alt="edit"
-                        />
-                        <p className="text-blue text-sm">Edit</p>
-                    </div>
-            </div>
-            <div className="flex flex-col w-full gap-3">
-                <div className="flex justify-start items-center gap-2" >
-                        <Image
-                            src="/assets/home-search-blue.svg"
-                            height={18}
-                            width={18}
-                            className="w-[20px] h-[20px]"
-                            alt="edit"
-                        />
-                        <p className="text-text-black text-lg 2md:text-base menu-item" data-count="6">Recently Search</p>
-                </div>
-                <div className="flex justify-start items-center gap-2">
-                        <Image
-                            src="/assets/home-search-blue.svg"
-                            height={18}
-                            width={18}
-                            className="w-[20px] h-[20px]"
-                            alt="edit"
-                        />
-                        <p className="text-text-black text-lg 2md:text-base">Recently Viewed</p>
-                </div>
-                <div className="flex justify-start items-center gap-2">
-                        <Image
-                            src="/assets/home-search-blue.svg"
-                            height={18}
-                            width={18}
-                            className="w-[20px] h-[20px]"
-                            alt="edit"
-                        />
-                        <p className="text-text-black text-lg 2md:text-base">Saved Properties</p>
-                </div>
-                <div className="flex justify-start items-center gap-2">
-                        <Image
-                            src="/assets/home-search-blue.svg"
-                            height={18}
-                            width={18}
-                            className="w-[20px] h-[20px]"
-                            alt="edit"
-                        />
-                        <p className="text-text-black text-lg 2md:text-base">Contacted Properties</p>
-                </div>
-                <div className="flex justify-start items-center gap-2">
-                        <Image
-                            src="/assets/home-search-blue.svg"
-                            height={18}
-                            width={18}
-                            className="w-[20px] h-[20px]"
-                            alt="edit"
-                        />
-                        <p className="text-text-black text-lg 2md:text-base">My Reviews (New)</p>
-                </div>
-                <div className="flex justify-start items-center gap-2">
-                        <Image
-                            src="/assets/home-search-blue.svg"
-                            height={18}
-                            width={18}
-                            className="w-[20px] h-[20px]"
-                            alt="edit"
-                        />
-                        <p className="text-text-black text-lg 2md:text-base">My Services</p>
-                </div>
-                <div className="flex justify-start items-center gap-2">
-                        <Image
-                            src="/assets/home-search-blue.svg"
-                            height={18}
-                            width={18}
-                            className="w-[20px] h-[20px]"
-                            alt="edit"
-                        />
-                        <p className="text-text-black text-lg 2md:text-base">Refer And Earn</p>
-                </div>
-                <div className="flex justify-start items-center gap-2">
-                        <Image
-                            src="/assets/home-search-blue.svg"
-                            height={18}
-                            width={18}
-                            className="w-[20px] h-[20px]"
-                            alt="edit"
-                        />
-                        <p className="text-text-black text-lg 2md:text-base">Help</p>
-                </div>
-            </div>
-        <div className="flex justify-end flex-col md:flex-row gap-4 items-center w-full">
-                <button onClick={handleLogout} className="w-full animated-button px-12 py-3 border border-blue text-center cursor-pointer">
-                  <span className="gap-3 relative">
-                    <p className="text-nowrap">Logout</p>
-                  </span>
-                </button>
-              </div>
-        </div>
-    )
+  return (
+    <Menu
+      id="basic-menu"
+      anchorEl={anchorEl}
+      open={open}
+      onClose={handleClose}
+      sx={{
+        mt: "20px",
+      }}
+    >
+      <MenuItem
+        onClick={() => handleRedirect("/profile")}
+        className="text-sm! py-3! px-6!"
+        sx={{
+          "&.MuiMenuItem-root:hover": {
+            backgroundColor: "#0000000a",
+          },
+        }}
+      >
+        My Profile
+      </MenuItem>
+
+      <Divider className="m-0!" />
+
+      <MenuItem
+        onClick={() => {}}
+        className="text-sm! py-3! px-6!"
+        sx={{
+          "&.MuiMenuItem-root:hover": {
+            backgroundColor: "#0000000a",
+          },
+        }}
+      >
+        Go to Kma.com
+      </MenuItem>
+
+      <Divider className="m-0!" />
+
+      <MenuItem
+        onClick={handleLogout}
+        className="text-sm! py-3! px-6! text-[#ea4738]! font-medium! flex justify-between items-center"
+        sx={{
+          "&.MuiMenuItem-root:hover": {
+            backgroundColor: "#ea47381a",
+          },
+        }}
+      >
+        Logout
+      </MenuItem>
+    </Menu>
+  );
 }

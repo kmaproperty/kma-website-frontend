@@ -42,7 +42,7 @@ export default function AggrementVerification({event}) {
   });
 
   const handleSignDocument = () => {
-    const domainUrl = `${window.location.origin}/kyc?documentVerify=true`;
+    const domainUrl = `${window.location.origin}/kyc?tabName=Agreement Signature`;
     handleSignChannelPartnerAgreement(domainUrl);
   };
 
