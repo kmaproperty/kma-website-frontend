@@ -9,7 +9,7 @@ export default function middleware(req: NextRequest) {
   const isVerifyOtpPage = pathname === '/verify-otp';
   const event = searchParams.get('event')
   if (accessToken && (isSignupPage || isVerifyOtpPage)) {
-    return NextResponse.redirect(new URL('/profile', req.url));
+    return NextResponse.redirect(new URL('/user-dashboard', req.url));
   }
 
   if (!accessToken && !isSignupPage && !isVerifyOtpPage && !event) {
