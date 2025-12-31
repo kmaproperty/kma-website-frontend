@@ -4,6 +4,9 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import ProfileMenu from "../common/profileMenu";
 import { useRouter } from "nextjs-toploader/app";
+import { useQuery } from "@tanstack/react-query";
+import { UserDashboardDetailsApiHandler, UserDashboardDetailsResponse } from "@/services/userService";
+import { toast } from "react-toastify";
 
 
 export default function UserHeader() {
@@ -32,6 +35,26 @@ export default function UserHeader() {
     router.push(routeName);
   };
 
+  const { data: userDashboardDetails } = useQuery({
+    queryKey: ["user-dashboard-details-to-verify-count"],
+    queryFn: async (): Promise<UserDashboardDetailsResponse> => {
+      return UserDashboardDetailsApiHandler();
+    },
+    select: (resposne: UserDashboardDetailsResponse) => {
+      return resposne;
+    },
+    staleTime: 0,
+    refetchOnMount: true,
+  });
+
+  const handleRedirectPostProperty = () => {
+    if(userDashboardDetails?.kycStatus?.kyc_completed){
+      router.push('/post-property')
+    }else{
+      toast.info('Complete E-KYC to Post Property')
+    }
+  }
+
   return (
     <div className="bg-white/10 rounded-[200px] bg-clip-padding backdrop-filter w-[80%]  backdrop-blur-[20px] h-[63px] px-7 pt-[4px] flex justify-between items-center border border-1 border-[#FFFFFF33] z-3">
       <div className="flex items-center px-1.5 shrink-0 cursor-pointer">
@@ -50,7 +73,7 @@ export default function UserHeader() {
             key={item.name}
             onClick={() => handleRedirect(`/${item.route}`)}
             style={{borderBottom: isActiveRoute(item.route) ? '2px solid white' : ''}}
-            className="mt-2 text-gray-100 break-word text-xs w-max border-b-2 border-transparent hover:border-white transition-colors duration-200 cursor-pointer px-1.5  pb-1"
+            className="mt-2 text-gray-100 break-word text-sm w-max border-b-2 border-transparent hover:border-white transition-colors duration-200 cursor-pointer px-1.5  pb-1"
           >
             {item.name}
           </p>
@@ -64,7 +87,7 @@ export default function UserHeader() {
           onClick={handleClick}
           className="cursor-pointer flex justify-start items-center gap-2"
         >
-          <p className="mt-2 text-gray-100 break-word text-xs w-max border-b-2 border-transparent cursor-pointer px-1.5  pb-1">
+          <p className="mt-2 text-gray-100 break-word text-sm w-max border-b-2 border-transparent cursor-pointer px-1.5  pb-1">
             More
           </p>
           <Image
@@ -77,7 +100,7 @@ export default function UserHeader() {
         </div>
       </div>
       <div className="flex items-center justify-start gap-[7px] shrink-0">
-        <button onClick={() => handleRedirect('/post-property')} className="animated-button px-[20px] py-[9px] cursor-pointer">
+        <button onClick={() => handleRedirectPostProperty()} className="animated-button px-[20px] py-[9px] cursor-pointer">
           <span className="flex items-center justify-between gap-[6px] relative z-11">
             <Image
               src="/assets/plus-sign.svg"

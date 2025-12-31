@@ -161,21 +161,21 @@ export const docuSingStatusApiHanlder = async (): Promise<DocusignResponse> => {
   }
 };
 
-interface step1_live_photo {
+export interface step1_live_photo {
   live_photo_url: string,
   live_photo_approved: boolean,
 }
 
-interface step2_aadhaar {
+export interface step2_aadhaar {
   aadhaar_number: string,
   aadhaar_verified: boolean
 }
 
-interface step3_bank_details {
+export interface step3_bank_details {
   bank_details_filled: boolean
 }
 
-interface step4_docusign_agreement {
+export interface step4_docusign_agreement {
   docusign_agreement_signed: boolean
 }
 

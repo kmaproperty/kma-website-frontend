@@ -1,17 +1,19 @@
 import { NextResponse, NextRequest } from "next/server";
 
 export default function middleware(req: NextRequest) {
-  const path = req.nextUrl.pathname;
+  const { pathname, searchParams } = req.nextUrl;
   const accessToken = req.cookies.get("accessToken")?.value;
-  console.log('accesstoken', accessToken, path)
-  
-  const publicPaths = ["/signup", "/verify-otp", "/kyc"];
-  if ( publicPaths.includes(path)) {
-    return NextResponse.next();
+  console.log('accesstoken', accessToken, pathname, searchParams.get('event'))
+
+  const isSignupPage = pathname === '/signup';
+  const isVerifyOtpPage = pathname === '/verify-otp';
+  const event = searchParams.get('event')
+  if (accessToken && (isSignupPage || isVerifyOtpPage)) {
+    return NextResponse.redirect(new URL('/profile', req.url));
   }
 
-  if(!accessToken){
-    return NextResponse.redirect(new URL("/signup", req.url));
+  if (!accessToken && !isSignupPage && !isVerifyOtpPage && !event) {
+    return NextResponse.redirect(new URL('/signup', req.url));
   }
   return NextResponse.next();
 } 

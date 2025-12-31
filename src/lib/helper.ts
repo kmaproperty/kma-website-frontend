@@ -116,7 +116,7 @@ export const generateFloors = (count: number): OptionType[] => {
     },
     {
       label: 'Ground',
-      value: 'Ground',
+      value: '0',
     }
   ]
 

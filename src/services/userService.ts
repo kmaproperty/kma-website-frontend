@@ -1,5 +1,6 @@
 import { UserType } from "@/types/user";
 import { axiosInstance } from "./axiosService";
+import { step1_live_photo, step2_aadhaar, step3_bank_details, step4_docusign_agreement } from "./kycService";
 
 export interface ContactDetailsPayload {
     firstName: string;
@@ -49,10 +50,18 @@ export const ValidateChannelPartnerCodeApiHandler = async (paylaod: ValidateChan
     }
 }
 
+interface kycstatus {
+  kyc_completed: boolean
+   step1_live_photo: step1_live_photo,
+   step2_aadhaar: step2_aadhaar,
+   step3_bank_details: step3_bank_details,
+   step4_docusign_agreement: step4_docusign_agreement,
+}
 export interface UserDashboardDetailsResponse {
   name: string;
   role: UserType;
   plan: "FREE" | "PRO" | "ENTERPRISE";
+  kycStatus: kycstatus,
   freeListings: {
     used: number;
     total: number;

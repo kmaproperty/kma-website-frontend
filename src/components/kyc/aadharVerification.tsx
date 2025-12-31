@@ -144,9 +144,9 @@ export default function AadharVerification(){
                    </span>
                </button>
        
-               <button
-                 disabled={loader || isVerified}
-                 className="w-full md:w-[130px] px-12 py-3 animated-button border border-blue"
+               {!isVerified && <button
+                 disabled={loader}
+                 className="cursor-pointer w-full md:w-[130px] px-12 py-3 animated-button border border-blue"
                  onClick={() => {
                   let hasError = false
                   if(!aadharNumber){
@@ -173,7 +173,7 @@ export default function AadharVerification(){
                  <span className="gap-3 relative flex justify-center">
                        <p className={`text-nowrap`}>Submit</p>
                    </span>
-               </button>
+               </button>}
              </div>
            </div>
        

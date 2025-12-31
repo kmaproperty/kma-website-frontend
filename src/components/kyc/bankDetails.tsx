@@ -239,7 +239,7 @@ export default function BankDetails() {
             </button>
 
             <button
-              className="w-full md:w-[130px] px-12 py-3 animated-button border border-blue"
+              className="cursor-pointer w-full md:w-[130px] px-12 py-3 animated-button border border-blue"
               onClick={() => {
                 handleSubmit();
               }}

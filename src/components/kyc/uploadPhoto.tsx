@@ -148,6 +148,9 @@ export default function UploadPhoto() {
 
 
   const uploadFileHanlder = () => {
+    if(!file){
+      return
+    }
     handleGetFileUrl(
         {
           contentType: file.type,
@@ -282,17 +285,17 @@ export default function UploadPhoto() {
             </span>
         </button>
 
-        <button
-          className="w-full md:w-[130px] px-12 py-3 animated-button border border-blue"
+        {!isPhotoApproved && <button
+          className="cursor-pointer w-full md:w-[130px] px-12 py-3 animated-button border border-blue"
           onClick={() => {
             uploadFileHanlder()
           }}
-          disabled={ownerLoader || uploadLoader || isPhotoApproved}
+          disabled={ownerLoader || uploadLoader}
         >
           <span className="gap-3 relative flex justify-center">
                 <p className={`text-nowrap`}>Submit</p>
             </span>
-        </button>
+        </button>}
       </div>
     </div>
 

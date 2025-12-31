@@ -150,8 +150,8 @@ export default function SignUp() {
     if(owner == USER_TYPE.OWNER){
       setPropertyIntent(intent as ListType)
     }
-    localStorage.clear()
-    clearAuthCookies()
+    // localStorage.clear()
+    // clearAuthCookies()
   }, [mobileNumber, code, owner, intent]) 
 
   return (
