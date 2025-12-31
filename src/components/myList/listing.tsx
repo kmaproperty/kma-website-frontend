@@ -41,6 +41,9 @@ export default function Listing({propertyList = [], fetchPropertyList,setPaginat
 
   const handlePagination = (value:string) => {
     setPagination((pre) => ({...pre, page: value}))
+    setTimeout(() => {
+      fetchPropertyList()
+    }, 300);
   }
 
   const handleManage = (id) => {

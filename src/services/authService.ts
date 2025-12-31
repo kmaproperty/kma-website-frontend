@@ -150,8 +150,9 @@ export const createChannelPartnerApiHandler = async (payload: CreateChannelPartn
     }
 }
 export const handleRefreshToken = async (): Promise<string | null> => {
-  const refreshToken = localStorage.getItem("refreshToken");
-
+  // const refreshToken = localStorage.getItem("refreshToken");
+   const res = await fetch("/api/get-token");
+    const { refreshToken } = await res.json();
   if (!refreshToken) return null;
 
   try {

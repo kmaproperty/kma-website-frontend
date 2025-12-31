@@ -37,6 +37,8 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     const refreshToken = localStorage.getItem("refreshToken");
+    // const res = await fetch("/api/get-token");
+    // const { refreshToken } = await res.json();
 
     // Prevent infinite retry loop
     console.log('error',error)

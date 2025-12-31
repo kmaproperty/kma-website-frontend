@@ -9,7 +9,7 @@ import {
   PropertyListResponse,
   PropertyTypeResponse,
 } from "@/services/masterService";
-import {  useRef, useState } from "react";
+import {  useEffect, useRef, useState } from "react";
 import { FURNISH_TYPE, PROPERTY_STATUS } from "@/lib/enums";
 import { InputBase, Slider } from "@mui/material";
 import Image from "next/image";
@@ -20,11 +20,9 @@ export default function ListFilter({ filters: stableFilter, setFilters, statusDa
   const router = useRouter();
   const params = useSearchParams();
   const filterRef = useRef(null)
-  const [filters, setCurrentFilters] = useState(stableFilter)
+  const [filters,setCurrentFilters] = useState(stableFilter)
 
-  // ---------- Default Filters ----------
-
-  console.log("filters", filters);
+  // console.log("filters", stableFilter);
 
   const updateFilter = (field: string, value: any) => {
     const newFilters = { ...filters, [field]: value };
@@ -84,10 +82,10 @@ export default function ListFilter({ filters: stableFilter, setFilters, statusDa
   const generateActiveTags = () => {
     const tags: { key: string; id: any; label: string }[] = [];
 
-    // Service / propertyTypeIds
+    // Service / listingTypeIds
     propertyTypeList?.forEach((item) => {
-      if (filters.propertyTypeIds.includes(item.id)) {
-        tags.push({ key: "propertyTypeIds", id: item.id, label: item.name });
+      if (filters.listingTypeIds.includes(item.id)) {
+        tags.push({ key: "listingTypeIds", id: item.id, label: item.name });
       }
     });
 
@@ -98,10 +96,10 @@ export default function ListFilter({ filters: stableFilter, setFilters, statusDa
       }
     });
 
-    // Property Type / listingTypeIds
+    // Property Type / propertyTypeIds
     // propertyList?.forEach((item) => {
-    //   if (filters.listingTypeIds.includes(item.id)) {
-    //     tags.push({ key: "listingTypeIds", id: item.id, label: item.name });
+    //   if (filters.propertyTypeIds.includes(item.id)) {
+    //     tags.push({ key: "propertyTypeIds", id: item.id, label: item.name });
     //   }
     // });
 
@@ -141,6 +139,11 @@ export default function ListFilter({ filters: stableFilter, setFilters, statusDa
     const updatedArray = filters[tag.key].filter((val: any) => val !== tag.id);
     updateFilter(tag.key, updatedArray);
   };
+
+  useEffect(() => {
+    if(JSON.stringify(stableFilter) != JSON.stringify(filters))
+      setCurrentFilters(stableFilter)
+  }, [stableFilter])
 
   const statusCount = statusData?.byStatus ?? {}
   return (
@@ -188,7 +191,7 @@ export default function ListFilter({ filters: stableFilter, setFilters, statusDa
           <p className="font-medium text-base text-text-black">Service</p>
           <div className="flex flex-wrap gap-1 mt-1">
             {propertyTypeList.map((item) => {
-              let checked = filters.propertyTypeIds.includes(item.id);
+              let checked = filters.listingTypeIds.includes(item.id);
               return (
                 <FilterChipTag
                   key={item.id}
@@ -200,7 +203,7 @@ export default function ListFilter({ filters: stableFilter, setFilters, statusDa
                       : "/assets/check-arrow-transparent.svg"
                   }
                   checked={checked}
-                  onChagne={() => toggleFilterArray("propertyTypeIds", item.id)}
+                  onChagne={() => toggleFilterArray("listingTypeIds", item.id)}
                   value={item.name}
                   iconStyle="w-[16px] h-[16px]"
                   containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[80px]"
@@ -246,7 +249,7 @@ export default function ListFilter({ filters: stableFilter, setFilters, statusDa
           <p className="font-medium text-base text-text-black">Property Type</p>
           <div className="flex flex-wrap gap-1 mt-1">
             {propertyList.map((item) => {
-              const checked = filters.listingTypeIds.includes(item.id);
+              const checked = filters.propertyTypeIds.includes(item.id);
               return (
                 <FilterChipTag
                   key={item.id}
@@ -258,7 +261,7 @@ export default function ListFilter({ filters: stableFilter, setFilters, statusDa
                       : "/assets/check-arrow-transparent.svg"
                   }
                   checked={checked}
-                  onChagne={() => toggleFilterArray("listingTypeIds", item.id)}
+                  onChagne={() => toggleFilterArray("propertyTypeIds", item.id)}
                   value={item.name}
                   iconStyle="w-[16px] h-[16px]"
                   containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[90px]"

@@ -108,7 +108,7 @@ export default function UserHeader() {
               height={14}
               alt="home"
             />
-            <p className="text-nowrap text-[11px]">Post Property</p>
+            <p className="text-nowrap text-sm">Post Property</p>
           </span>
         </button>
       </div>

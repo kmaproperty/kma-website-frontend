@@ -582,7 +582,7 @@ export interface PropertyListApiResponse {
     page: number,
     limit: number,
     total: number,
-    totalPage: number,
+    totalPages: number,
   },
   summary: {
     total: number,

@@ -126,7 +126,7 @@ const PropertyView = ({ open, onClose, propertyId }) => {
             </p>
           </div>
           <div className="flex gap-2 items-center">
-            <button onClick={handleEdit} className="bg-[#01004833] text-sm py-2 text-blue flex items-center gap-2 px-4 py-1 rounded-[5px] font-medium">
+            <button onClick={handleEdit} className="cursor-pointer  bg-[#01004833] hover:bg-light-purple text-sm py-2 text-blue flex items-center gap-2 px-4 py-1 rounded-[5px] font-medium">
               <img src="/assets/edit-blue.svg"></img> Edit Listing
             </button>
             <button className="bg-[#01004833] text-sm text-blue py-2 flex items-center gap-2 px-4 py-1 rounded-[5px] font-medium">

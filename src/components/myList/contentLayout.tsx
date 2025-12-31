@@ -41,12 +41,12 @@ export default function ContentLayout() {
   console.log('filters', filters, sorting, search, pagination)
  
   const { data: propertyList,  refetch: fetchPropertyList, isLoading: propertyListLoader } = useQuery({
-      queryKey: ["property-list", filters, pagination, sorting],
+      queryKey: ["property-list", filters, sorting],
       queryFn: () => {
         let payload: ProeprtyListApiPayload = {
           page: pagination.page,
           limit: pagination.limit,
-          ...({categoryIds: '',}),
+          ...(filters.categoryIds.length > 0 ? {categoryIds: filters.categoryIds.join(',')} : {}),
           ...(filters.propertyTypeIds.length > 0 ? {propertyTypeIds: filters.propertyTypeIds.join(','),} : {}),
           ...(filters.listingTypeIds.length > 0 ? {listingTypeIds: filters.listingTypeIds.join(','),} : {}),
           ...(filters.furnishingTypes.length > 0 ? {furnishingTypes: filters.furnishingTypes.join(','),} : {}),
@@ -82,7 +82,7 @@ export default function ContentLayout() {
     if(propertyList){
       const paginationData = propertyList?.pagination
       if(paginationData){
-        setPagination((pre) => ({...pre, limit: paginationData.limit, page: paginationData.page, totalPage: paginationData.totalPage}))
+        setPagination((pre) => ({...pre, limit: paginationData.limit, page: paginationData.page, totalPage: paginationData.totalPages}))
       }
     }
   },[propertyList])
