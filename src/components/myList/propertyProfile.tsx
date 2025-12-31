@@ -121,9 +121,6 @@ const PropertyView = ({ open, onClose, propertyId }) => {
             <p className="font-semibold text-base text-blue">
               {propertyDetails?.title}
             </p>
-            <p className="text-text-gray text-sm font-normal">
-              United States of America
-            </p>
           </div>
           <div className="flex gap-2 items-center">
             <button onClick={handleEdit} className="cursor-pointer  bg-[#01004833] hover:bg-light-purple text-sm py-2 text-blue flex items-center gap-2 px-4 py-1 rounded-[5px] font-medium">
