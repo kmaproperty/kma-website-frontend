@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./button.scss";
+@import "./white-button.scss";
 
 @theme {
 
@@ -19,6 +20,7 @@
   --color-border: #D9D9D9;
   --color-text-red: #FF4C4C;
   --color-list-background: #F2F2F2;
+  --color-yellow: #F7BB06;
 
   /* Custom Breakpoints */
 
@@ -94,4 +96,23 @@ body {
     rgba(0, 0, 0, 0.7) 100%
   );
   pointer-events: none; 
+}
+
+.app-background {
+  position: relative;
+  width: 100%;
+  min-height: 400px;
+
+  background-image: url("/assets/app/background.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.app-background::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7); /* adjust opacity here */
+  z-index: 1;
 }

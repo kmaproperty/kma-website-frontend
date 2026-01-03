@@ -3,8 +3,8 @@ export default function BannerText(){
         <div className="flex flex-col">
 
             <div style={{width: 'max-content'}} className="bg-white/10 rounded-[5px] bg-clip-padding backdrop-filter flex gap-3 items-center backdrop-blur-[20px] px-[8px] py-[4px]">
-                <button className="rounded-[5px] bg-[#ffbb55] px-[4px] py-[2px] text-xs text-white">New</button>
-                <p className="text-xs text-white">No 1 Best Selling Realstate Website</p>
+                <button className="rounded-[5px] bg-[#ffbb55] px-[4px] py-[2px] text-xs xl:text-sm text-white">New</button>
+                <p className="text-xs xl:text-sm text-white">No 1 Best Selling Realstate Website</p>
             </div>
 
             <div className="text-white mt-5">
@@ -12,10 +12,10 @@ export default function BannerText(){
                 <p className="text-4xl font-bold">Rent & Sell Property</p>
             </div>
 
-            <p className="text-xs text-white mt-2">Properties for buy / rent in your location. We have more than 3000+ listings</p>
+            <p className="text-xs xl:text-sm text-white mt-2">Properties for buy / rent in your location. We have more than 3000+ listings</p>
 
             <button className="border border-1 rounded-full px-7.5 text-xs py-2 w-max cursor-pointer mt-5 text-white">
-                <p className="text-nowrap">More Details</p>
+                <p className="text-nowrap xl:text-sm">More Details</p>
             </button>
             
         </div>

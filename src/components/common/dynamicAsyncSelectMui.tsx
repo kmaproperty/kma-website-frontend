@@ -22,7 +22,7 @@ export interface DynamicAsyncAutocompleteProps {
   minHeight?: string | number;
   enableAddManually?: boolean;
   menualAddItem?: OptionType;
-  styles?: React.CSSProperties;
+  styles?: any;
 }
 
 const DynamicAsyncAutocomplete: React.FC<DynamicAsyncAutocompleteProps> = ({
@@ -128,8 +128,11 @@ const DynamicAsyncAutocomplete: React.FC<DynamicAsyncAutocompleteProps> = ({
     "&.Mui-focused fieldset": {
       borderColor: 'var(--color-border)',
       boxShadow: "none",
+      borderWidth: '1px'
+
     },
     "&.MuiOutlinedInput-root.Mui-focused": {
+      borderColor: 'var(--color-border)',
       boxShadow: "none",
     },
   },

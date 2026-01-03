@@ -9,13 +9,13 @@ export default function middleware(req: NextRequest) {
   const isSignupPage = pathname === '/signup';
   const isVerifyOtpPage = pathname === '/verify-otp';
   const event = searchParams.get('event')
-  if (accessToken && (isSignupPage || isVerifyOtpPage)) {
-    return NextResponse.redirect(new URL('/user-dashboard', req.url));
-  }
+  // if (accessToken && (isSignupPage || isVerifyOtpPage)) {
+  //   return NextResponse.redirect(new URL('/user-dashboard', req.url));
+  // }
 
-  if (!accessToken && !isSignupPage && !isVerifyOtpPage && !event) {
-    return NextResponse.redirect(new URL('/signup', req.url));
-  }
+  // if (!accessToken && !isSignupPage && !isVerifyOtpPage && !event) {
+  //   return NextResponse.redirect(new URL('/signup', req.url));
+  // }
   return NextResponse.next();
 } 
 

@@ -16,6 +16,11 @@ const nextConfig: NextConfig = {
         hostname: "kma-property.s3.ap-south-1.amazonaws.com",
         pathname: '**'
       },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        pathname: '**'
+      }
     ]
   },
    turbopack: {
