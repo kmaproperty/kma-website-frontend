@@ -74,6 +74,7 @@ export default function BankDetails() {
     },
     onSuccess: (response: BankDetailsResponse) => {
       toast.success(response.message);
+      router.push('/kyc?tabName=Agreement Signature')
     },
     onError: (error: any) => {
       if (Array.isArray(error.message)) {

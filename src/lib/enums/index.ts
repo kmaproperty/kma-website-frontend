@@ -13,6 +13,11 @@ export const USER_TYPE = {
   ADMIN: "ADMIN",
 } as const
 
+export const userType = {
+   OWNER: "Owner",
+  CHANNEL_PARTNER: "Channel Partner",
+  ADMIN: "Admin",
+}
 export const LIST_TYPE = {
     SELL: 'SELL',
     RENT: 'RENT'
@@ -1102,5 +1107,18 @@ export const USER_DASHBOARD_PROPERTY_FILTER = [
   {
      value: 'lastMonth',
      label: 'Last Month',
+  }
+]
+
+export const propertyStatusColor = [
+  {
+    color: '#ff7e00',
+    name: 'Deactivated',
+    status: ''
+  },
+  {
+    color: '#9f9f9f',
+    status: 'pending_review',
+    name: 'Under Review',
   }
 ]

@@ -35,6 +35,7 @@ export default function AadharVerification(){
     },
     onSuccess: (response: AadharVerifyResponse) => {
         toast.success(response.message)
+        router.push('/kyc?tabName=Bank Details')
     },
     onError: (error: any) => {
       if (Array.isArray(error.message)) {

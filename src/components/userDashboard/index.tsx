@@ -1,7 +1,7 @@
 'use client'
 import Image from "next/image";
 import DynamicSelect, { OptionType } from "../common/select";
-import { USER_DASHBOARD_PROPERTY_FILTER, USER_TYPE } from "@/lib/enums";
+import { USER_DASHBOARD_PROPERTY_FILTER, USER_TYPE, userType } from "@/lib/enums";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { UpgreadOwnerToChannelPartnerApiHandler, UpgreadOwnerToChannelPartnerPayload, UpgreadOwnerToChannelPartnerResponse, UserDashboardDetailsApiHandler, UserDashboardDetailsResponse } from "@/services/userService";
 import { useState } from "react";
@@ -25,6 +25,7 @@ export default function UserDashboard() {
         return resposne;
       },
       staleTime: 0,
+      placeholderData: null,
       refetchOnMount: true,
   });
 
@@ -39,8 +40,8 @@ export default function UserDashboard() {
         console.log('response', response)
         setOpenCodePopup(false)
         toast.success('Upgraded to Channel Partner successfully')
-        router.replace('/sign-document')
-        // getUpdatedDashboardDetails()
+        getUpdatedDashboardDetails()
+        router.push('/user-dashboard')
       },
       onError: (error: any) => {
         console.log('error', error)
@@ -91,7 +92,7 @@ export default function UserDashboard() {
 
               <div className="flex flex-col gap-1">
                 <p className="font-semibold text-lg text-text-black">
-                  Hi, {userDashboardDetails?.name}
+                  Hi, {userDashboardDetails?.name}  {'(' + (userType[userDashboardDetails?.role] ?? '') + ')'}
                   {userDashboardDetails?.role == USER_TYPE.CHANNEL_PARTNER && <span className="ml-3 px-4 py-1 text-sm sm:text-base rounded-md font-normal text-white bg-gradient-to-r from-[#A43918] to-[#CE8B2D]">
                     KMA Expert <span className="font-semibold">Pro</span>
                   </span>}

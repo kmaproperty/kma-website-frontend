@@ -4,12 +4,13 @@ import {
   UserLogoutResponse,
 } from "@/services/userService";
 import { Divider, Menu, MenuItem } from "@mui/material";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "nextjs-toploader/app";
 import { toast } from "react-toastify";
 
 export default function ProfileMenu({ anchorEl, open, handleClose }) {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const handleRedirect = (routeName: string) => {
     router.push(routeName);
@@ -39,6 +40,7 @@ export default function ProfileMenu({ anchorEl, open, handleClose }) {
 
   const handleLogout = () => {
     handleLogoutApi();
+    queryClient.clear();
   };
 
   return (

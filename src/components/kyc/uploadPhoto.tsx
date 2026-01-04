@@ -121,6 +121,7 @@ export default function UploadPhoto() {
     },
     onSuccess: (response: LivePhotoResponse) => {
         toast.success(response.message)
+        router.push('/kyc?tabName=Aadhar Verification')
     },
     onError: (error: any) => {
       if (Array.isArray(error.message)) {

@@ -21,9 +21,9 @@ export const defaultFilters = {
 
   
 export default function ContentLayout() {
-  const router = useRouter();
   const params = useSearchParams();
 
+  const [listLoader, setListLoader] = useState(true)
   const [enable, setEnable] = useState(false)
   const [filters, setFilters] = useState(defaultFilters);
   const [pagination, setPagination] = useState({
@@ -84,6 +84,7 @@ export default function ContentLayout() {
       if(paginationData){
         setPagination((pre) => ({...pre, limit: paginationData.limit, page: paginationData.page, totalPage: paginationData.totalPages}))
       }
+      setListLoader(false)
     }
   },[propertyList])
 
@@ -98,7 +99,7 @@ export default function ContentLayout() {
          <div className="flex flex-col gap-6 md:gap-6 w-full">
             <div className="grid grid-cols-1 2md:grid-cols-[1.3fr_3fr] gap-4">
                 <ListFilter statusData={propertyList?.summary ?? {}} filters={filters} setFilters={setFilters}/>
-                <Listing propertyList={propertyList?.items ?? []} propertyListLoader={propertyListLoader} fetchPropertyList={fetchPropertyList} setSearch={setSearch} setSorting={setSorting} sorting={sorting} search={search} propertyData={propertyList} setPagination={setPagination} pagination={pagination}/>
+                <Listing propertyList={propertyList?.items ?? []} propertyListLoader={propertyListLoader} listLoader={listLoader} fetchPropertyList={fetchPropertyList} setSearch={setSearch} setSorting={setSorting} sorting={sorting} search={search} propertyData={propertyList} setPagination={setPagination} pagination={pagination}/>
             </div>
          </div>
         </div>

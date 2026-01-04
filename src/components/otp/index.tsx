@@ -8,7 +8,7 @@ import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Dialog, { DialogProps } from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import OtpInput from "../common/optInput";
 
@@ -21,16 +21,15 @@ import {
   ValidateOtpResponse
 } from "@/services/authService";
 
-import { OTP_RESEND_TIME, USER_TYPE } from "@/lib/enums";
+import { OTP_RESEND_TIME } from "@/lib/enums";
 import { matchIsNumeric } from "@/lib/commonValidator";
 import { createURLSearchParam, setAuthCookies } from "@/lib/helper";
 import { toast } from "react-toastify";
-import { getUserAggrementApiHandler, GetUserAggrementResponse } from "@/services/postProperty";
-import { ChannelPartnerAgreementApiHandler, ChannelPartnerAgreementResponse } from "@/services/userService";
 import Spinner from "../common/spinner";
 
 export default function Otp() {
   // Router & Params
+  const queryClient = useQueryClient()
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -92,6 +91,7 @@ export default function Otp() {
       localStorage.setItem("user", JSON.stringify(res.user));
       setOtp('')
       toast.success(res.message)
+      queryClient.clear();
       if(res.user.role == 'CHANNEL_PARTNER' && !res.kycCompleted){
         router.replace('/profile')
       }else{

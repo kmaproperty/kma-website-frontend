@@ -67,6 +67,7 @@ axiosInstance.interceptors.response.use(
       }
     }else if(error.response?.status === 401){
       localStorage.clear();
+      clearAuthCookies()
       window.location.href = "/signup"
     }
     console.log('error in reject', error)

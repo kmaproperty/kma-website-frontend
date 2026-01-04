@@ -1,4 +1,4 @@
-import { AREA_UNIT_LIST, PROPERTY_STATUS } from "@/lib/enums";
+import { AREA_UNIT_LIST, PROPERTY_STATUS, propertyStatusColor } from "@/lib/enums";
 import { getStatusLabel } from "@/lib/helper";
 import { ListingItem } from "@/services/postProperty";
 import moment from "moment";
@@ -6,6 +6,11 @@ import Image from "next/image";
 
 export default function ListCard({data, handleManage}: {data: ListingItem, handleManage: (id) => void}) {
     let imgBaseUrl = process.env.NEXT_PUBLIC_AWS_URL
+
+    const getStatusColor = (status) => {
+      return propertyStatusColor.find(item => item.status == status) ?? null
+    }
+
   return (
     <div className="flex flex-col lg:flex-row items-center bg-[#F2F2F2] rounded-[10px] px-2 gap-5 py-2">
       <div className="relative lg:h-full">
@@ -16,8 +21,8 @@ export default function ListCard({data, handleManage}: {data: ListingItem, handl
           height={600}
           className="w-full lg:w-[260px] lg:h-full object-cover aspect-video rounded-[10px]"
         />
-        <div className="absolute top-[5px] right-[5px] px-3 py-1 text-xs font-bold text-white rounded-[5px] bg-black">
-            <p>{getStatusLabel(data.status)}</p>
+        <div className="absolute top-[5px] right-[5px] px-3 py-1 text-xs font-bold text-white rounded-[5px]" style={{background: getStatusColor(data.status)?.color}}>
+            <p>{getStatusColor(data.status)?.name}</p>
         </div>
       </div>
       <div className="w-full flex flex-1 flex-col justify-start gap-4 bg-[#F2F2F2]">

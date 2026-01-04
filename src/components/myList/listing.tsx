@@ -11,7 +11,7 @@ const sortField = {
     updatedAt: 'Updated At'
 }
 
-export default function Listing({propertyList = [], fetchPropertyList,setPagination, pagination, propertyData, setSearch, search, sorting, setSorting, propertyListLoader}) {
+export default function Listing({propertyList = [],listLoader, fetchPropertyList,setPagination, pagination, propertyData, setSearch, search, sorting, setSorting, propertyListLoader}) {
   const [anchorElOrder, setAnchorElOrder] = useState(null);
   const [anchorElSort, setAnchorElSort] = useState(null);
   const [openPropertyDetails, setOpenPropertyDetails] = useState(false)
@@ -168,7 +168,7 @@ export default function Listing({propertyList = [], fetchPropertyList,setPaginat
       </div>
     </div>
             <div>
-              {propertyListLoader && <FullscreenSpinner/>}
+              {(propertyListLoader || listLoader) && <FullscreenSpinner/>}
             </div>
             <div className="flex gap-3 flex-col">
                 {Array.isArray(propertyList) && propertyList.map(item => {
@@ -178,7 +178,7 @@ export default function Listing({propertyList = [], fetchPropertyList,setPaginat
                     )
                 })}
             </div>
-           {Array.isArray(propertyList) && propertyList.length == 0 && <div className="flex justify-center flex-col items-center">
+           {!listLoader && Array.isArray(propertyList) && propertyList.length == 0 && <div className="flex justify-center flex-col items-center">
                <p className="text-sm font-medium text-gray-700">
                   No properties found
                 </p>

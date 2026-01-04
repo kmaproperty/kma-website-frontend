@@ -63,6 +63,14 @@ export default function UserKyc({tabName, event}) {
     }
   },[kycDetails])
 
+  useEffect(() => {
+    if(tabName){
+      setActiveStep(tabName)
+    }else{
+      setActiveStep('Photo Upload')
+    }
+  },[tabName])
+
   return (
     <div className="bg-white rounded-xl p-10 w-full">
       {!isKycComplete && <div className="flex items-center justify-between h-[100px]">

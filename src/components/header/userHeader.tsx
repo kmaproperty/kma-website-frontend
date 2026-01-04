@@ -7,6 +7,7 @@ import { useRouter } from "nextjs-toploader/app";
 import { useQuery } from "@tanstack/react-query";
 import { UserDashboardDetailsApiHandler, UserDashboardDetailsResponse } from "@/services/userService";
 import { toast } from "react-toastify";
+import { USER_TYPE } from "@/lib/enums";
 
 
 export default function UserHeader() {
@@ -48,11 +49,22 @@ export default function UserHeader() {
   });
 
   const handleRedirectPostProperty = () => {
-    if(userDashboardDetails?.kycStatus?.kyc_completed){
-      router.push('/post-property')
+    if(userDashboardDetails?.role == USER_TYPE.CHANNEL_PARTNER){
+      if(userDashboardDetails?.kycStatus?.kyc_completed){
+        router.push('/post-property')
+      }else{
+        const isCompletedFromUser = userDashboardDetails?.kycStatus?.step1_live_photo?.live_photo_url && userDashboardDetails?.kycStatus?.step2_aadhaar?.aadhaar_verified && userDashboardDetails?.kycStatus?.step3_bank_details?.bank_details_filled && userDashboardDetails?.kycStatus?.step4_docusign_agreement?.docusign_agreement_signed
+        if(isCompletedFromUser){
+          toast.info('Your KYC is under review. You can post property once it is approved.')
+        }else{
+          // toast.info('Complete E-KYC to Post Property')
+          router.push('/profile')
+        }
+      }
     }else{
-      toast.info('Complete E-KYC to Post Property')
+      router.push('/post-property')
     }
+    
   }
 
   return (
