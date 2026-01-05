@@ -531,6 +531,12 @@ export interface ListingItem {
   title: string;
   status: string;
 
+  photos: {
+    fileKey: string,
+    isCoverImage: boolean,
+    view: string;
+  }[]
+
   listingType: {
     id: string;
     name: string;

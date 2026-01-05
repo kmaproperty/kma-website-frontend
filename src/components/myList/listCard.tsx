@@ -79,10 +79,10 @@ export default function ListCard({data, handleManage}: {data: ListingItem, handl
           className="w-full lg:w-[260px] lg:h-full object-cover aspect-video rounded-[10px]"
         /> */}
         <Slider {...settings}>
-          {[1,2,3].map((img, index) => (
+          {data?.photos?.map((img, index) => (
             <div key={index} className="relative h-full w-full">
               <Image
-                src={imgBaseUrl + data.coverPhotoKey}
+                src={imgBaseUrl + img.fileKey}
                 alt="property image"
                 width={600}
                 height={400}
