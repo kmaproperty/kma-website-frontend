@@ -14,7 +14,7 @@ import {
   User,
 } from "@/services/authService";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { CitiesResponse, getCityApiHandler } from "@/services/masterService";
+import { CitiesResponse, getCityApiHandler, getFileUploadUrlApiHandler, GetFileUploadUrlPayload, GetFileUploadUrlResponse, uploadFileToS3ApiHandler, UploadFileToS3Payload, UploadFileToS3Response } from "@/services/masterService";
 import { MultiValue } from "react-select";
 import { ListType } from "@/types/user";
 import { useDispatch, useSelector } from "react-redux";
@@ -26,6 +26,7 @@ import { ValidateChannelPartnerCodeApiHandler, ValidateChannelPartnerCodePayload
 import DynamicAsyncAutocomplete from "../common/dynamicAsyncSelectMui";
 import { useCitySearch } from "@/hooks/useCitySearch";
 import Spinner from "../common/spinner";
+import ImageUpload from "../common/upload";
 
 interface FormData {
   fullName: string;
@@ -77,6 +78,11 @@ export default function CreateAccount({ step }: { step: number }) {
       }));
     }
   }, []);
+
+  const handleUpload = (uploadedFile) => {
+    dispatch(setFormField({key: 'profilePhoto', value: uploadedFile}));
+    dispatch(setFormField({key: 'profilePreview', value: URL.createObjectURL(uploadedFile)}));
+  };
 
   const validateStep = useCallback(() => {
     const errors: FormErrors = {};
@@ -232,6 +238,42 @@ export default function CreateAccount({ step }: { step: number }) {
     },
   });
 
+  const { mutate: handleFileUpload, isPending: fileUrlLoader } = useMutation({
+      mutationFn: async (
+        payload: UploadFileToS3Payload
+      ): Promise<UploadFileToS3Response> => {
+        return await uploadFileToS3ApiHandler(payload);
+      },
+      onError: (error: any) => {
+        console.log("file upload s3 api", error);
+        if (Array.isArray(error.message)) {
+          error.message.map((item: string) => {
+            toast.error(item);
+          });
+        } else {
+          toast.error(error.message);
+        }
+      },
+    });
+  
+    const { mutate: handleGetFileUrl, isPending: fileLoader } = useMutation({
+      mutationFn: async (
+        payload: GetFileUploadUrlPayload
+      ): Promise<GetFileUploadUrlResponse> => {
+        return await getFileUploadUrlApiHandler(payload);
+      },
+      onError: (error: any) => {
+        console.log("get file url api", error);
+        if (Array.isArray(error.message)) {
+          error.message.map((item: string) => {
+            toast.error(item);
+          });
+        } else {
+          toast.error(error.message);
+        }
+      },
+    });
+
   const handleSubmit = () => {
     if (userData?.role == USER_TYPE.OWNER) {
       if (validateStep()) {
@@ -239,14 +281,43 @@ export default function CreateAccount({ step }: { step: number }) {
         if(emailError){
           return
         }
-        const payload = {
+        let payload: any = {
           name: formData.fullName,
           email: formData.email,
           intent: (propertyIntent ?? LIST_TYPE.SELL) as ListType,
           phone: userData.phone,
           city: formData.city?.label ?? ''
         };
-        handleOwnerCreate(payload);
+
+        if(formData.profilePhoto){
+          handleGetFileUrl(
+        {
+          contentType: formData.profilePhoto.type,
+          filename: formData.profilePhoto.name,
+          expiresIn: 3600,
+          folder: process.env.NEXT_PUBLIC_AWS_FOLDER,
+        },
+        {
+          onSuccess: (response: GetFileUploadUrlResponse) => {
+            if (response.success) {
+              handleFileUpload(
+                { url: response.data.url, file: formData.profilePhoto },
+                {
+                  onSuccess: () => {
+                    payload = {...payload, profilePhotoUrl: response.data.key}
+                   handleOwnerCreate(payload)
+                  },
+                }
+              );
+            } else {
+              toast.error(`Failed to get upload URL for ${formData.profilePhoto.name}`);
+            }
+          },
+        }
+      );
+        }else{
+          handleOwnerCreate(payload);
+        }
       }
     } else {
       if (step == 1) {
@@ -261,7 +332,7 @@ export default function CreateAccount({ step }: { step: number }) {
 
         handleNextStep();
       } else if (validateStep()) {
-        const payload = {
+        let payload: any = {
           name: formData.fullName,
           email: formData.email,
           channelPartnerCode: formData.partnerCode,
@@ -274,7 +345,36 @@ export default function CreateAccount({ step }: { step: number }) {
           intent: (propertyIntent ?? LIST_TYPE.SELL) as ListType,
           phone: userData?.phone ?? "",
         };
-        handleChannelPartnerCreate(payload);
+
+        if(formData.profilePhoto){
+          handleGetFileUrl(
+        {
+          contentType: formData.profilePhoto.type,
+          filename: formData.profilePhoto.name,
+          expiresIn: 3600,
+          folder: process.env.NEXT_PUBLIC_AWS_FOLDER,
+        },
+        {
+          onSuccess: (response: GetFileUploadUrlResponse) => {
+            if (response.success) {
+              handleFileUpload(
+                { url: response.data.url, file: formData.profilePhoto },
+                {
+                  onSuccess: () => {
+                    payload = {...payload, profilePhotoUrl: response.data.key}
+                   handleChannelPartnerCreate(payload)
+                  },
+                }
+              );
+            } else {
+              toast.error(`Failed to get upload URL for ${formData.profilePhoto.name}`);
+            }
+          },
+        }
+      );
+        }else{
+          handleChannelPartnerCreate(payload);
+        }
       }
     }
   };
@@ -405,6 +505,29 @@ export default function CreateAccount({ step }: { step: number }) {
                     </div>
                   </>
                 )}
+                <div>
+                  <p className="text-sm 1xl:text-base text-text-black">
+                      Profile Photo
+                  </p>
+                  <div className="pt-2">
+                    <ImageUpload
+                      onUpload={(file) => {
+                        handleUpload(file[0]);
+                      }}
+                      type='photo'
+                      accept={"image/jpeg, image/jpg, image/png"}
+                      label="Drag and drop file here"
+                      subLabel="Max. size 20 MB • Formats: PNG, JPG, JPEG"
+                    />
+                  </div>
+                  {formData.profilePreview && <div className="mt-2">
+                    <img
+                      src={formData.profilePreview ?? ''}
+                      alt="Preview"
+                      className="w-30 h-30 object-cover rounded-xl border"
+                    />
+                  </div>}
+                </div>
               </>
             )}
             {userData?.role == USER_TYPE.CHANNEL_PARTNER && (
@@ -556,12 +679,12 @@ export default function CreateAccount({ step }: { step: number }) {
 
           <div className="flex justify-start flex-col md:flex-row gap-4 items-center">
             <button
-              disabled={ownerLoader || channelPartnerLoader}
+              disabled={ownerLoader || channelPartnerLoader || fileLoader || fileUrlLoader}
               onClick={handleSubmit}
               className="w-full md:w-auto text-sm 1xl:text-base animated-button px-12 py-3 border border-blue text-center cursor-pointer"
             >
               <span className="gap-3 relative">
-                {!(ownerLoader || channelPartnerLoader) ? (
+                {!(ownerLoader || channelPartnerLoader || fileLoader || fileUrlLoader) ? (
                     <p className="text-nowrap">
                     {USER_TYPE.CHANNEL_PARTNER == userData?.role
                       ? step == 1

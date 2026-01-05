@@ -102,7 +102,8 @@ export interface CreateOwnerPayload {
     name: string;
     email: string;
     phone: string;
-    intent: ListType
+    intent: ListType;
+    profilePhotoUrl?: string;
 }
 
 export interface CreateOwnerResponse {
@@ -134,7 +135,8 @@ export interface CreateChannelPartnerPayload {
     businessSince: string;
     cities: string;
     aboutYourSelf: string;
-    intent: ListType
+    intent: ListType;
+    profilePhotoUrl?: string;
 }
 
 export const createChannelPartnerApiHandler = async (payload: CreateChannelPartnerPayload) : Promise<CreateOwnerResponse> => {

@@ -10,6 +10,8 @@ interface FormData {
   businessSince: string;
   firmName: string;
   about: string;
+  profilePreview: string;
+  profilePhoto: File | null;
 }
 
 const initialState: FormData = {
@@ -20,6 +22,8 @@ const initialState: FormData = {
   businessSince: '',
   firmName: '',
   about: '',
+  profilePreview: '',
+  profilePhoto: null,
 };
 
 const createAccountSlice = createSlice({
