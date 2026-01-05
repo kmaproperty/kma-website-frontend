@@ -1,4 +1,6 @@
 import { InputBase, Menu, MenuItem } from "@mui/material";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import { useRef, useState } from "react";
 import ListCard from "./listCard";
 import CustomPagination from "../common/pagination";

@@ -3,24 +3,94 @@ import { getStatusLabel } from "@/lib/helper";
 import { ListingItem } from "@/services/postProperty";
 import moment from "moment";
 import Image from "next/image";
+import { useState } from "react";
+import Slider from "react-slick";
+interface ArrowProps {
+  className?: string;
+  style?: React.CSSProperties;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  disabled?: boolean;
+  direction: "left" | "right";
+}
+
+const Arrow: React.FC<ArrowProps> = ({ onClick, disabled, direction }) => {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`cursor-pointer absolute top-1/2 -translate-y-1/2 z-10 
+        ${direction === "left" ? "left-2" : "right-2"}
+        bg-black/60 text-white p-2 rounded-full
+        ${disabled ? "opacity-30 cursor-not-allowed" : "hover:bg-black"}
+      `}
+    >
+      {direction === "left" ? <Image
+                    src="/assets/explore/left-arrow.svg"
+                    alt="left-arrow"
+                    width={15}
+                    height={15}
+                  /> : <Image
+                                src="/assets/explore/right-arrow.svg"
+                                alt="left-arrow"
+                                width={15}
+                                height={15}
+                              />}
+    </button>
+  );
+};
+
 
 export default function ListCard({data, handleManage}: {data: ListingItem, handleManage: (id) => void}) {
     let imgBaseUrl = process.env.NEXT_PUBLIC_AWS_URL
-
+  const [currentSlide, setCurrentSlide] = useState(0);
     const getStatusColor = (status) => {
       return propertyStatusColor.find(item => item.status == status) ?? null
     }
 
+    const settings = {
+    dots: false,
+    infinite: false,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    beforeChange: (_, next) => setCurrentSlide(next),
+    prevArrow: (
+      <Arrow
+        direction="left"
+        disabled={currentSlide === 0}
+      />
+    ),
+    nextArrow: (
+      <Arrow
+        direction="right"
+        disabled={currentSlide === 3 - 1}
+      />
+    )
+  };
+
   return (
     <div className="flex flex-col lg:flex-row items-center bg-[#F2F2F2] rounded-[10px] px-2 gap-5 py-2">
-      <div className="relative lg:h-full">
-        <Image
+      <div className="relative w-[260px] lg:h-full rounded-[5px] overflow-hidden property-slider">
+        {/* <Image
           src={imgBaseUrl + data.coverPhotoKey}
           alt="image"
           width={600}
           height={600}
           className="w-full lg:w-[260px] lg:h-full object-cover aspect-video rounded-[10px]"
-        />
+        /> */}
+        <Slider {...settings}>
+          {[1,2,3].map((img, index) => (
+            <div key={index} className="relative h-full w-full">
+              <Image
+                src={imgBaseUrl + data.coverPhotoKey}
+                alt="property image"
+                width={600}
+                height={400}
+                className="object-cover h-full"
+              />
+            </div>
+          ))}
+        </Slider>
         <div className="absolute top-[5px] right-[5px] px-3 py-1 text-xs font-bold text-white rounded-[5px]" style={{background: getStatusColor(data.status)?.color}}>
             <p>{getStatusColor(data.status)?.name}</p>
         </div>

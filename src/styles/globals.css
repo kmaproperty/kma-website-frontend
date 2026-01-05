@@ -116,3 +116,10 @@ body {
   background: rgba(0, 0, 0, 0.7); /* adjust opacity here */
   z-index: 1;
 }
+.property-slider .slick-slider,
+.property-slider .slick-list,
+.property-slider .slick-track,
+.property-slider .slick-slide > div {
+  height: 100%;
+}
+
