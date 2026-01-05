@@ -11,7 +11,8 @@ import { useSearchParams } from "next/navigation";
 const sortField = {
     price: 'Price',
     createdAt: 'Created At',
-    updatedAt: 'Updated At'
+    updatedAt: 'Updated At',
+    expiresAt: 'Expiring On'
 }
 
 export default function Listing({propertyList = [],listLoader, fetchPropertyList,setPagination, pagination, propertyData, setSearch, search, sorting, setSorting, propertyListLoader}) {
@@ -127,19 +128,19 @@ export default function Listing({propertyList = [],listLoader, fetchPropertyList
         >
           <MenuItem
             onClick={() => {
-             handleSorting('ASC')
+             handleSorting('Low to High')
               setAnchorElOrder(null);
             }}
           >
-            Asc
+            Low to High
           </MenuItem>
           <MenuItem
             onClick={() => {
-                handleSorting('DESC')
+                handleSorting('High to Low')
               setAnchorElOrder(null);
             }}
           >
-            Desc
+            High to Low
           </MenuItem>
         </Menu>
 
@@ -177,6 +178,14 @@ export default function Listing({propertyList = [],listLoader, fetchPropertyList
             }}
           >
             Updated At
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+             handleSortField('expiresAt')
+              setAnchorElSort(null);
+            }}
+          >
+            Expiring On
           </MenuItem>
         </Menu>
       </div>

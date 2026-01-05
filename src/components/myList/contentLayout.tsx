@@ -33,7 +33,7 @@ export default function ContentLayout() {
     total: 0
   })
   const [sorting, setSorting] = useState({
-    order: 'ASC',
+    order: 'High to Low',
     fieldName: 'createdAt'
   })
   const [search, setSearch] = useState('')
@@ -55,7 +55,7 @@ export default function ContentLayout() {
           minPrice: String(filters.minPrice),
           maxPrice: String(filters.maxPrice),
           search: search,
-          sortOrder: sorting.order,
+          sortOrder: sorting.order == 'High to Low'? 'DESC' : 'ASC',
           sortBy: sorting.fieldName,
         }
         return propertyListApiPayload(payload)
