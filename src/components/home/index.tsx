@@ -17,6 +17,7 @@ import SuccessStoriesSection from "./successStoriesSection";
 import WorkingSection from "./workingSection";
 import ChannelPartnerSection from "./channelPartnerSection";
 import AppDownloadSection from "./appDownloadSection";
+import HomeFooter from "../footer/homeFooter";
 
 export default function Home() {
   return (
@@ -214,20 +215,37 @@ export default function Home() {
                 </div>
               </div>
               <div className="absolute right-0 top-13 h-[400px]">
-                  <Image
-                    src={"/assets/app/mobile.svg"}
-                    width={800}
-                    height={500}
-                    alt="mobile"
-                    className="w-fit h-[400px]"
-                  />
-                </div>
+                <Image
+                  src={"/assets/app/mobile.svg"}
+                  width={800}
+                  height={500}
+                  alt="mobile"
+                  className="w-fit h-[400px]"
+                />
+              </div>
             </div>
           </div>
         </div>
         <div className="flex justify-center mb-5">
           <AppDownloadSection />
         </div>
+      </div>
+      <div className="">
+        <div className="bg-[#121D2B] h-[40px] w-full flex justify-center">
+          <div className="w-[75%] flex justify-between items-center">
+            <div className="flex border-b-2 border-white w-full justify-center items-center text-center h-full">
+              <p className="text-white text-sm">Tab List 1</p>
+            </div>
+            <div className="flex w-full justify-center items-center text-center h-full">
+              <p className="text-white text-sm">Tab List 1</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-text-black flex justify-center">
+            <div className="my-13 w-[75%]">
+                <HomeFooter tab={2}/>
+            </div>
+          </div>
       </div>
     </div>
   );
