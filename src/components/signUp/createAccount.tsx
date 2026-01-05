@@ -339,7 +339,7 @@ export default function CreateAccount({ step }: { step: number }) {
           firmName: formData.firmName,
           businessSince: formData.businessSince,
           cities: Array.isArray(formData.city)
-            ? formData.city.map((item) => item.label).join("")
+            ? formData.city.map((item) => item.label).join(",")
             : "",
           aboutYourSelf: formData.about,
           intent: (propertyIntent ?? LIST_TYPE.SELL) as ListType,

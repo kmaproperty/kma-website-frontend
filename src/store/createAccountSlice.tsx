@@ -34,7 +34,7 @@ const createAccountSlice = createSlice({
       state[action.payload.key] = action.payload.value;
     },
     setFormData(state, action: PayloadAction<FormData>) {
-      return action.payload;
+      return action.payload
     },
     resetForm() {
       return initialState;

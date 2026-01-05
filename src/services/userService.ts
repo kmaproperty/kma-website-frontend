@@ -166,3 +166,63 @@ export const validateEmailApiHandler = async (paylaod: ValidateEmailPayload) : P
         throw error.response?.data ?? error;
     }
 }
+
+export interface user {
+  "id": string,
+  "name": string,
+  "email": string,
+  "phone": string,
+  "role": string,
+  "isActive": boolean,
+  "phoneVerified": boolean,
+  "city": string | null,
+  "channelPartnerCode": string,
+  "firmName": string | null,
+  "businessSince": string | null,
+  "cities": string,
+  "aboutYourSelf": string | null,
+  "profileImage": string
+}
+export interface UserProfileResponse {
+  success: boolean;
+  user: user
+}
+
+export const userProfileApiHandler = async () : Promise<UserProfileResponse> => {
+    try{
+        const response = await axiosInstance.get<UserProfileResponse>(
+      "users/profile");
+
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}
+
+export interface UserProfileUpdatePayload {
+  "name"?: string,
+  "email"?: string,
+  "city"?: string,
+  "channelPartnerCode"?: string,
+  "firmName"?: string,
+  "businessSince"?: string,
+  "cities"?: string,
+  "aboutYourSelf"?: string,
+  "profileImage"?: string
+}
+
+export interface UserProfileUpdateResponse {
+  success: boolean,
+  message: string
+}
+
+export const userProfileUpdateApiHandler = async (payload: UserProfileUpdatePayload) : Promise<UserProfileUpdateResponse> => {
+    try{
+        const response = await axiosInstance.put<UserProfileUpdateResponse>(
+      "users/profile", payload);
+
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}
