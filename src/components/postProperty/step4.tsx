@@ -61,7 +61,7 @@ export default function Step4({containerRef}) {
     let updatedErrors: any = {};
 
     if (photoList.length < 2) {
-      updatedErrors.photo = "Minimun 2 photos requried";
+      updatedErrors.photo = "Minimun 2 photos required";
       hasError = true;
     }
 
