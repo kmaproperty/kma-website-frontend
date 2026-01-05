@@ -1,11 +1,12 @@
 import { InputBase, Menu, MenuItem } from "@mui/material";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ListCard from "./listCard";
 import CustomPagination from "../common/pagination";
 import PropertyView from "./propertyProfile";
 import FullscreenSpinner from "../common/spinner/fullScreenSpinner";
+import { useSearchParams } from "next/navigation";
 
 const sortField = {
     price: 'Price',
@@ -14,6 +15,9 @@ const sortField = {
 }
 
 export default function Listing({propertyList = [],listLoader, fetchPropertyList,setPagination, pagination, propertyData, setSearch, search, sorting, setSorting, propertyListLoader}) {
+  const searchParams = useSearchParams();
+  const redirectPropertyId = searchParams.get('propertyId');
+
   const [anchorElOrder, setAnchorElOrder] = useState(null);
   const [anchorElSort, setAnchorElSort] = useState(null);
   const [openPropertyDetails, setOpenPropertyDetails] = useState(false)
@@ -57,6 +61,14 @@ export default function Listing({propertyList = [],listLoader, fetchPropertyList
     setPropertyId(null)
     setOpenPropertyDetails(false)
   }
+
+  useEffect(() => {
+    if(redirectPropertyId){
+      setOpenPropertyDetails(true)
+      setPropertyId(redirectPropertyId)
+    }
+  },[])
+  
   return (
     <div className="flex flex-col px-2 py-5 gap-3">
       <p className="text-lg font-medium text-text-black">Property Listing</p>

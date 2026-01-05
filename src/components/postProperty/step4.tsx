@@ -36,6 +36,8 @@ export default function Step4({containerRef}) {
   const params = useParams();
   const toastRef = useRef(null);
   const router = useRouter()
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('redirectTo');
 
   const activeStep = useSelector(getActiveStep);
   const dispatch = useDispatch();
@@ -295,7 +297,11 @@ const handleUploadFileToS3 = async (files: File[], type: string) => {
       toast.success('Post Property created successfully')
       dispatch(resetProgress())
       dispatch(setActiveStep({step: 1}))
-      router.replace('/user-dashboard')
+      if(redirectTo == 'true'){
+        router.replace(`/my-listing?propertyId=${params?.propertyId}`)
+      }else{
+        router.replace('/user-dashboard')
+      }
     },
     onError: (error: any) => {
       console.log("step4 error response", error);

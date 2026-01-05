@@ -11,7 +11,9 @@ import { getPropertyDetailsApiHandler, GetPropertyDetailsResponse } from "@/serv
 import { useQuery } from "@tanstack/react-query";
 import VideoPreviewDialog from "../common/videoPreview";
 import { getStatusLabel } from "@/lib/helper";
-import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { setActiveStep } from "@/store/postPropertyProgress";
+import { useRouter } from "nextjs-toploader/app";
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 8,
@@ -27,6 +29,7 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
 
 const PropertyView = ({ open, onClose, propertyId }) => {
   const imageBaseUrl = process.env.NEXT_PUBLIC_AWS_URL
+  const dispatch = useDispatch()
   const theme = useTheme();
   const router = useRouter()
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
@@ -64,6 +67,11 @@ const PropertyView = ({ open, onClose, propertyId }) => {
 
     const handleEdit = () => {
         router.push(`/post-property/${propertyDetails.id}`)
+    }
+
+    const handleUploadPhoto = () => {
+      dispatch(setActiveStep({step: 4}))
+      router.push(`/post-property/${propertyDetails.id}?redirectTo=true`)
     }
 
   return (
@@ -166,7 +174,16 @@ const PropertyView = ({ open, onClose, propertyId }) => {
                     )
                 })
             }
+            <div onClick={handleUploadPhoto} className="cursor-pointer relative aspect-video border border-dashed border-gray-300 rounded-[5px] flex items-center justify-center">
+              <Image
+                src="/assets/upload-photo.svg"
+                alt="upload photo"
+                width={80}
+                height={80}
+              />
+            </div>
           </div>
+          
           <div className="grid grid-cols-[1fr] lg:grid-cols-[1fr_1fr] xl:grid-cols-[1fr_1fr_1fr] gap-3 items-stretch">
             {
                 Array.isArray(propertyDetails?.videos) && propertyDetails.videos.map((item) => {
