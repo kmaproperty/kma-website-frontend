@@ -138,14 +138,14 @@ export default function UserProfile() {
           <p className="text-text-gray text-base">{userProfile.aboutYourSelf}</p>
         </div> </>}
    </div>}
-   <ProfileUpdate open={openProfileUpdate} onClose={(isUpdate) => {
+   {openProfileUpdate && <ProfileUpdate open={openProfileUpdate} onClose={(isUpdate) => {
     if(isUpdate){
         refreshUserProfileData()
     }
     setOpenProfileUpdate(false)
     dispatch(resetForm())
     
-   }}/>
+   }}/>}
    </>
   );
 }

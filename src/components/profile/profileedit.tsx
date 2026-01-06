@@ -39,6 +39,7 @@ import DynamicAsyncAutocomplete from "../common/dynamicAsyncSelectMui";
 import ImageUpload from "../common/upload";
 import { USER_TYPE } from "@/lib/enums";
 import Spinner from "../common/spinner";
+import FullscreenSpinner from "../common/spinner/fullScreenSpinner";
 
 interface FormData {
   fullName: string;
@@ -211,7 +212,6 @@ export default function ProfileUpdate({ open, onClose }) {
       console.log("profile", resposne);
       return resposne.user;
     },
-    enabled: open,
     staleTime: 0,
     refetchOnMount: true,
   });
@@ -422,6 +422,8 @@ export default function ProfileUpdate({ open, onClose }) {
         }}
       >
         <DialogContent>
+          {profielLoader ? <FullscreenSpinner /> : <>
+          
           <div>
             <div className="flex justify-end w-full">
               <Image
@@ -653,12 +655,12 @@ export default function ProfileUpdate({ open, onClose }) {
             </div>
             <div className="w-full flex justify-end">
              <button
-              disabled={userloader}
+              disabled={userloader || fileLoader || fileUrlLoader}
               onClick={handleSubmit}
               className="w-full mt-3 md:w-auto text-sm 1xl:text-base animated-button px-12 py-3 border border-blue text-center cursor-pointer"
             >
               <span className="gap-3 relative">
-                {!(userloader) ? (
+                {!(userloader || fileLoader || fileUrlLoader) ? (
                     <p className="text-nowrap">
                     Update
                   </p>
@@ -670,6 +672,7 @@ export default function ProfileUpdate({ open, onClose }) {
             </button>
             </div>
           </div>
+          </>}
         </DialogContent>
       </Dialog>
     </React.Fragment>
