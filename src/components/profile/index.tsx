@@ -1,6 +1,6 @@
 'use client'
 
-import { USER_TYPE, userType } from "@/lib/enums";
+import { KYC_STATUS, USER_TYPE, userType } from "@/lib/enums";
 import { getKycStatusApiHandler, KycStatusResponse } from "@/services/kycService";
 import { UserDashboardDetailsApiHandler, UserDashboardDetailsResponse, userProfileApiHandler, UserProfileResponse } from "@/services/userService";
 import { useQuery } from "@tanstack/react-query";
@@ -65,6 +65,15 @@ export default function UserProfile() {
     }
   },[kycDetails])
 
+  const renderTitle = (status) => {
+    if(status == 'in_progress'){
+      return 'KYC is In Progress'
+    }
+    if(status == 'not_started'){
+      return 'Your E-KYC is remaning'
+    }
+  }
+
   return (
     <>
     {profielLoader && <FullscreenSpinner />}
@@ -89,9 +98,9 @@ export default function UserProfile() {
             </div>
             
             <div className="flex-1">
-                 {userDashboardDetails && userDashboardDetails?.role == USER_TYPE.CHANNEL_PARTNER &&<div className="bg-light-purple w-[200px] h-auto p-3 flex flex-col justify-center items-center gap-1 border border-[#757BEE] rounded-xl">
+                 {userDashboardDetails && userDashboardDetails?.role == USER_TYPE.CHANNEL_PARTNER && userDashboardDetails?.kycStatus?.kyc_status != 'completed' &&  userDashboardDetails?.kycStatus?.kyc_status !='under_review' && <div className="bg-light-purple w-[200px] h-auto p-3 flex flex-col justify-center items-center gap-1 border border-[#757BEE] rounded-xl">
             <Image src='/assets/kyc-info.svg' width={35} height={35} alt='kyc-info' />
-            <p className="font-medium text-text-black text-sm">{!kycVerificationPending ? 'Your E-KYC is remaning' : 'E-KYC Done'}</p>
+            <p className="font-medium text-text-black text-sm">{renderTitle(userDashboardDetails?.kycStatus?.kyc_status)}</p>
             {!kycVerificationPending && <button
                 onClick={() => {
                     router.push('/kyc')
@@ -107,35 +116,42 @@ export default function UserProfile() {
         </div>}
             </div>
         </div>
+        {userProfile.role == USER_TYPE.CHANNEL_PARTNER && <>
+          <hr className="border-border w-full "/>
+        <div className="flex gap-4">
+          <p className="text-text-black text-base w-[85px]">Kyc Status</p>
+          <p className="text-text-gray text-base">{KYC_STATUS[userDashboardDetails?.kycStatus?.kyc_status]}</p>
+        </div>
+        </>}
         <hr className="border-border w-full "/>
         <div className="flex gap-4">
           <p className="text-text-black text-base w-[85px]">Role</p>
-          <p className="text-text-gray text-base">{userType[userProfile.role]}</p>
+          <p className="text-text-gray text-base">{userType[userProfile?.role]}</p>
         </div>
         <hr className="border-border w-full "/>
         <div className="flex gap-4">
           <p className="text-text-black text-base w-[85px]">City</p>
-          <p className="text-text-gray text-base">{userProfile.role == USER_TYPE.CHANNEL_PARTNER ?  userProfile.cities : userProfile.city}</p>
+          <p className="text-text-gray text-base">{userProfile?.role == USER_TYPE.CHANNEL_PARTNER ?  userProfile?.cities : userProfile?.city}</p>
         </div>
-        {userProfile.role == USER_TYPE.CHANNEL_PARTNER && <><hr className="border-border w-full "/>
+        {userProfile?.role == USER_TYPE.CHANNEL_PARTNER && <><hr className="border-border w-full "/>
         <div className="flex gap-4">
           <p className="text-text-black text-base w-[85px]">Experience</p>
-          <p className="text-text-gray text-base">{userProfile.businessSince}</p>
+          <p className="text-text-gray text-base">{userProfile?.businessSince}</p>
         </div></>}
-        {userProfile.role == USER_TYPE.CHANNEL_PARTNER && <><hr className="border-border w-full "/>
+        {userProfile?.role == USER_TYPE.CHANNEL_PARTNER && <><hr className="border-border w-full "/>
         <div className="flex gap-4">
           <p className="text-text-black text-base w-[85px]">Firm Name</p>
-          <p className="text-text-gray text-base">{userProfile.firmName}</p>
+          <p className="text-text-gray text-base">{userProfile?.firmName}</p>
         </div> </>}
-       {userProfile.role == USER_TYPE.CHANNEL_PARTNER && <><hr className="border-border w-full "/>
+       {userProfile?.role == USER_TYPE.CHANNEL_PARTNER && <><hr className="border-border w-full "/>
         <div className="flex gap-4">
           <p className="text-text-black text-base w-[85px]">Partner code</p>
-          <p className="text-text-gray text-base">{userProfile.channelPartnerCode}</p>
+          <p className="text-text-gray text-base">{userProfile?.channelPartnerCode}</p>
         </div></>}
-       {userProfile.role == USER_TYPE.CHANNEL_PARTNER && <> <hr className="border-border w-full "/>
+       {userProfile?.role == USER_TYPE.CHANNEL_PARTNER && <> <hr className="border-border w-full "/>
         <div className="flex gap-4">
           <p className="text-text-black text-base w-[85px]">Description</p>
-          <p className="text-text-gray text-base">{userProfile.aboutYourSelf}</p>
+          <p className="text-text-gray text-base">{userProfile?.aboutYourSelf}</p>
         </div> </>}
    </div>}
    {openProfileUpdate && <ProfileUpdate open={openProfileUpdate} onClose={(isUpdate) => {

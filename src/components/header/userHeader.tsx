@@ -53,11 +53,9 @@ export default function UserHeader() {
       if(userDashboardDetails?.kycStatus?.kyc_completed){
         router.push('/post-property')
       }else{
-        const isCompletedFromUser = userDashboardDetails?.kycStatus?.step1_live_photo?.live_photo_url && userDashboardDetails?.kycStatus?.step2_aadhaar?.aadhaar_verified && userDashboardDetails?.kycStatus?.step3_bank_details?.bank_details_filled && userDashboardDetails?.kycStatus?.step4_docusign_agreement?.docusign_agreement_signed
-        if(isCompletedFromUser){
+        if(userDashboardDetails?.kycStatus?.kyc_status == 'under_review'){
           toast.info('Your KYC is under review. You can post property once it is approved.')
         }else{
-          // toast.info('Complete E-KYC to Post Property')
           router.push('/profile')
         }
       }

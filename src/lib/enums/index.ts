@@ -13,6 +13,13 @@ export const USER_TYPE = {
   ADMIN: "ADMIN",
 } as const
 
+export const KYC_STATUS = {
+  'not_started': 'Not Started',
+  'in_progress': 'In Progress',
+  'under_review': 'Under Review',
+  'completed': 'Completed'
+}
+
 export const userType = {
    OWNER: "Owner",
   CHANNEL_PARTNER: "Channel Partner",
