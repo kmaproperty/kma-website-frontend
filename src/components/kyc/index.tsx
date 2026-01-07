@@ -28,12 +28,9 @@ export default function UserKyc({tabName, event}) {
     { icon: AgreementIcon, name: "Agreement Signature" },
   ];
 
-  const handleActiveTab = (tabName) => {
-    setActiveStep(tabName)
-    router.replace(`/kyc?tabName=${tabName}`)
-  }
 
-  const { data: kycDetails, isLoading: detailsLoader } = useQuery({
+
+  const { data: kycDetails, refetch: refreshKyc, isLoading: detailsLoader } = useQuery({
     queryKey: ["kyc"],
     queryFn: async (): Promise<KycStatusResponse> => {
       return getKycStatusApiHandler();
@@ -45,6 +42,14 @@ export default function UserKyc({tabName, event}) {
     staleTime: 0,
     refetchOnMount: true,
   });
+
+  const handleActiveTab = (tabName, index) => {
+    if( index> kycDetails?.kyc_steps_completed){
+      return
+    }
+    setActiveStep(tabName)
+    router.replace(`/kyc?tabName=${tabName}`)
+  }
 
   const renderTitle = () => {
     const titleList = {
@@ -69,6 +74,7 @@ export default function UserKyc({tabName, event}) {
     }else{
       setActiveStep('Photo Upload')
     }
+    refreshKyc()
   },[tabName])
 
   return (
@@ -79,7 +85,7 @@ export default function UserKyc({tabName, event}) {
 
           return (
             <>
-            <div onClick={() => handleActiveTab(item.name)} className={`cursor-pointer flex justify-between items-center flex-col ${activeStep == item.name ? 'text-blue' : 'text-[#888888]'}`}>
+            <div onClick={() => handleActiveTab(item.name, index)} className={`flex justify-between items-center flex-col ${activeStep == item.name ? 'text-blue' : 'text-[#888888]'} ${index > kycDetails?.kyc_steps_completed ? 'cursor-no-drop' : 'cursor-pointer'}`}>
               <div className="flex justify-between items-center flex-col gap-2  p-2">
                 <div
                   key={item.name}
