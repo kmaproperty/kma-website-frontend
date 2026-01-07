@@ -1,12 +1,13 @@
-import { InputBase, Menu, MenuItem } from "@mui/material";
+import { Menu, MenuItem } from "@mui/material";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import ListCard from "./listCard";
 import CustomPagination from "../common/pagination";
 import PropertyView from "./propertyProfile";
 import FullscreenSpinner from "../common/spinner/fullScreenSpinner";
 import { useSearchParams } from "next/navigation";
+import { FILTER_STATUS, PROPERTY_STATUS } from "@/lib/enums";
 
 const sortField = {
     price: 'Price',
@@ -15,7 +16,7 @@ const sortField = {
     expiresAt: 'Expiring On'
 }
 
-export default function Listing({propertyList = [],listLoader, fetchPropertyList,setPagination, pagination, propertyData, setSearch, search, sorting, setSorting, propertyListLoader}) {
+export default function Listing({propertyList = [],listLoader, fetchPropertyList,setPagination, pagination, topStatusFilter, setTopStatusFilter, sorting, setSorting, propertyListLoader}) {
   const searchParams = useSearchParams();
   const redirectPropertyId = searchParams.get('propertyId');
 
@@ -23,20 +24,10 @@ export default function Listing({propertyList = [],listLoader, fetchPropertyList
   const [anchorElSort, setAnchorElSort] = useState(null);
   const [openPropertyDetails, setOpenPropertyDetails] = useState(false)
   const [propertyId, setPropertyId] = useState(null)
-  const searchRef = useRef(null)
-  const [tempSearch, setTempSearch] = useState('')
+  
 
   const openOrder = Boolean(anchorElOrder);
   const openSort = Boolean(anchorElSort);
-
-  const handleSearch = (value: string) => {
-    setTempSearch(value)
-    setSearch(value)
-    clearTimeout(searchRef.current)
-    searchRef.current = setTimeout(() => {
-      fetchPropertyList()
-    }, 500);
-  }
 
   const handleSorting = (order: string) => {
     setSorting((pre) => ({...pre, order: order}))
@@ -48,6 +39,17 @@ export default function Listing({propertyList = [],listLoader, fetchPropertyList
 
   const handlePagination = (value:string) => {
     setPagination((pre) => ({...pre, page: value}))
+    setTimeout(() => {
+      fetchPropertyList()
+    }, 300);
+  }
+
+  const handleTopFilter = (value:string) => {
+    if(topStatusFilter == value){
+      setTopStatusFilter('')
+    }else{
+      setTopStatusFilter(value)
+    }
     setTimeout(() => {
       fetchPropertyList()
     }, 300);
@@ -75,39 +77,22 @@ export default function Listing({propertyList = [],listLoader, fetchPropertyList
       <p className="text-lg font-medium text-text-black">Property Listing</p>
 
       <div className="flex flex-col lg:flex-row gap-3 items-start justify-end">
-        {/* <div className="flex flex-wrap flex-1 gap-2">
+        <div className="flex flex-wrap flex-1 gap-2">
             {
-                PROPERTY_STATUS.map(item => {
+                FILTER_STATUS.map(item => {
+                  const checked = topStatusFilter == item.value
                     return(
-                        <div className="flex items-center border border-border rounded-[5px]">
-                            <p className={`text-text-gray px-3`}>{item.name}</p>
-                            <p className="border-l h-full leading-[38px] text-blue font-medium px-2 bg-[#0100481A]">
+                        <div onClick={() => handleTopFilter(item.value)} className={`cursor-pointer flex items-center rounded-[5px] py-1 ${checked ? 'border border-blue bg-light-purple text-text-black': 'border border-border text-text-gray'}`}>
+                            <p className={` px-3 text-sm`}>{item.name}</p>
+                            {/* <p className="border-l h-full py-1 text-blue text-sm font-medium px-2 bg-[#0100481A]">
                             30
-                            </p>
+                            </p> */}
                         </div>
                     )
                 })
             }
-        </div> */}
-        <div className="relative max-w-sm w-full 2md:w-auto">
-          <InputBase
-            placeholder="Search by ID..."
-            type="text"
-            value={tempSearch}
-            onChange={(e) => {
-                handleSearch(e.target.value)
-            }}
-            className="box-border h-[40px] w-full pl-4 pr-10 py-2 text-sm rounded-full border border-border"
-            inputProps={{ className: "placeholder-gray" }}
-          />
-          <img
-            src="/assets/search.svg"
-            alt="search"
-            className="w-5 h-5 absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer opacity-70"
-          />
         </div>
       </div>
-
     <div className="flex flex-col sm:flex-row justify-start sm:justify-between items-start gap-2 sm:items-center mt-4">
       <div>
         {pagination?.total ? <p className="text-sm text-text-gray">Showing <span className="font-medium text-blue">{(pagination?.page * pagination?.limit) - pagination.limit + 1}-{pagination?.page * pagination?.limit} Out</span> of <span className="font-medium text-blue">{pagination?.total}</span> Properties</p> : ''}

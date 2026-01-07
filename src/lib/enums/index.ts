@@ -421,6 +421,51 @@ export const FURNISH_TYPE = [
   },
 ]
 
+export const LISTING_STATUS = [
+  {
+    name: 'Active',
+    value: 'active'
+  },
+  {
+    name: 'Expired',
+    value: 'expired'
+  },
+  {
+    name: 'Deactivated',
+    value: 'deactivated'
+  },
+]
+
+export const FILTER_STATUS = [
+  {
+    name: 'All Listing',
+    value: 'all'
+  },
+  {
+    name: 'Pending',
+    value: 'pending'
+  },
+  {
+    name: 'Under Review',
+    value: 'under_review'
+  },
+  {
+    name: 'Recently Expired',
+    value: 'recently_expired'
+  }
+]
+
+export const VERIFICATION_STATUS = [
+  {
+    name: 'Verified',
+    value: 'verified'
+  },
+  {
+    name: 'Unverified',
+    value: 'unverified'
+  }
+]
+
 export const PROPERTY_STATUS = [
   {
     name: 'Draft',

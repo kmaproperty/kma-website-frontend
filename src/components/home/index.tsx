@@ -243,7 +243,7 @@ export default function Home() {
         </div>
         <div className="bg-text-black flex justify-center">
             <div className="my-13 w-[75%]">
-                <HomeFooter tab={2}/>
+                <HomeFooter tab={1}/>
             </div>
           </div>
       </div>

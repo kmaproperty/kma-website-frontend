@@ -14,6 +14,7 @@ import { getStatusLabel } from "@/lib/helper";
 import { useDispatch } from "react-redux";
 import { setActiveStep } from "@/store/postPropertyProgress";
 import { useRouter } from "nextjs-toploader/app";
+import { propertyStatusColor } from "@/lib/enums";
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 8,
@@ -74,6 +75,10 @@ const PropertyView = ({ open, onClose, propertyId }) => {
       router.push(`/post-property/${propertyDetails.id}?redirectTo=true`)
     }
 
+    const getStatusColor = (status) => {
+      return propertyStatusColor.find(item => item.status == status) ?? null
+    }
+
   return (
     <Dialog
       fullScreen={fullScreen}
@@ -107,10 +112,11 @@ const PropertyView = ({ open, onClose, propertyId }) => {
           />
         </div>
         <hr className="border-border"></hr>
-        <div className="flex flex-col 2md:flex-row flex-wrap justify-between items-start 2md:items-center gap-3">
-          <p className="text-text-blue flex-1 font-medium break-all">
-            ID: <span className="text-text-gray">{propertyDetails?.id}</span>
-          </p>
+        <div className="flex flex-col 2md:flex-row flex-wrap justify-between items-start  gap-3">
+          <div className="flex text-text-blue flex-1 font-medium break-all">
+            <p className="w-[30px]">ID:</p>
+            <span className="text-text-gray text-sm">{propertyDetails?.id}</span>
+          </div>
           <div className="flex flex-1 felx-start w-full 2md:w-[40%] flex-col gap-[2px]">
             <div className="flex justify-between">
             <p className="text-xs lg:text-sm text-text-gray">
@@ -120,8 +126,8 @@ const PropertyView = ({ open, onClose, propertyId }) => {
             </div>
             <BorderLinearProgress variant="determinate" value={propertyDetails?.progressPercentage} />
           </div>
-          <button className="bg-[#F32B2B1A] text-sm text-[#F32B2B] flex items-center gap-2 px-4 py-2 rounded-[5px] font-medium">
-            <img src="/assets/deactivate-eye.svg"></img> Deactivate
+          <button className="cursor-pointer bg-[#F32B2B1A] text-sm text-[#F32B2B] flex items-center gap-2 px-3 py-1.5 rounded-[5px] font-medium border border-[#F32B2B1A] hover:border-[#F32B2B]">
+            <img src="/assets/deactivate-eye.svg" className="w-4 h-4"></img> Deactivate
           </button>
         </div>
         <div className="flex flex-col 2md:flex-row justify-between items-start 2md:items-center gap-3">
@@ -131,30 +137,30 @@ const PropertyView = ({ open, onClose, propertyId }) => {
             </p>
           </div>
           <div className="flex gap-2 items-center">
-            <button onClick={handleEdit} className="cursor-pointer  bg-[#01004833] hover:bg-light-purple text-sm py-2 text-blue flex items-center gap-2 px-4 py-1 rounded-[5px] font-medium">
-              <img src="/assets/edit-blue.svg"></img> Edit Listing
+            <button onClick={handleEdit} className="cursor-pointer  bg-[#01004833] hover:bg-light-purple text-sm py-1.5 text-blue flex items-center gap-2 px-4 py-1 rounded-[5px] font-medium">
+              <img src="/assets/edit-blue.svg" className="w-4 h-4"></img> Edit Listing
             </button>
-            <button className="bg-[#01004833] text-sm text-blue py-2 flex items-center gap-2 px-4 py-1 rounded-[5px] font-medium">
-              <img src="/assets/share-blue.svg"></img> Share
+            <button className="bg-[#01004833] text-sm text-blue flex items-center gap-2 px-4 py-1.5 rounded-[5px] font-medium">
+              <img src="/assets/share-blue.svg" className="w-4 h-4"></img> Share
             </button>
-            <button className="bg-[#01004833] text-sm text-blue py-2 flex items-center gap-2 px-4 py-1 rounded-[5px] font-medium">
-              <img src="/assets/more-blue.svg"></img>
+            <button className="bg-[#01004833] text-sm text-blue flex items-center gap-2 px-4 py-2 rounded-[5px] font-medium">
+              <img src="/assets/more-blue.svg" className="w-4 h-4"></img>
             </button>
           </div>
         </div>
         <div className="flex flex-row flex-wrap gap-3">
-            <button className="bg-[#4CAF50] text-sm text-white py-2 flex items-center gap-2 px-4 py-1 rounded-[5px] font-medium">
-              {getStatusLabel(propertyDetails?.status)}
+            <button style={{background: getStatusColor(propertyDetails?.status)?.color}} className="cursor-text text-sm text-white py-1 flex items-center gap-2 px-4 py-1 rounded-[5px] font-medium">
+              {getStatusColor(propertyDetails?.status)?.name}
             </button>
-            <button className="border border-border text-sm text-text-gray py-2 flex items-center gap-2 px-4 py-1 rounded-[5px] font-medium">
+            {propertyDetails?.area ? <button className="cursor-text border border-border text-sm text-text-gray py-1 flex items-center gap-2 px-4 py-1 rounded-[5px] font-medium">
               {propertyDetails?.area}
-            </button>
-            <button className="border border-border text-sm text-text-gray py-2 flex items-center gap-2 px-4 py-1 rounded-[5px] font-medium">
+            </button> : ''}
+            {propertyDetails?.category && <button className="cursor-text border border-border text-sm text-text-gray py-1 flex items-center gap-2 px-4 py-1 rounded-[5px] font-medium">
               {propertyDetails?.category}
-            </button>
-             <button className="border border-border text-sm text-text-gray py-2 flex items-center gap-2 px-4 py-1 rounded-[5px] font-medium">
+            </button>}
+             {propertyDetails?.furnishingType && <button className=" cursor-text border border-border text-sm text-text-gray py-1 flex items-center gap-2 px-4 py-1 rounded-[5px] font-medium">
               {propertyDetails?.furnishingType}
-            </button>
+            </button>}
         </div>
         <div className="flex flex-col gap-3">
           <div className="grid grid-cols-[1fr] sm:grid-cols-[1fr_1fr] xl:grid-cols-[1fr_1fr_1fr] gap-3 items-stretch">
@@ -210,23 +216,23 @@ const PropertyView = ({ open, onClose, propertyId }) => {
         </div>
         <div className="flex flex-wrap flex-row gap-10">
           <div>
-            <p className="text-blue font-medium text-lg">{propertyDetails?.price ? 'Price:' : 'Rent:'}</p>
+            <p className="text-blue font-medium text-base">{propertyDetails?.price ? 'Price:' : 'Rent:'}</p>
             <p className="text-text-gray text-base">{propertyDetails?.price ?? propertyDetails?.monthlyRent}</p>
           </div>
           {propertyDetails?.possessionDate && <div>
-            <p className="text-blue font-medium text-lg">Possession Date:</p>
+            <p className="text-blue font-medium text-base">Possession Date:</p>
             <p className="text-text-gray text-base">{propertyDetails?.possessionDate}</p>
           </div>}
           <div>
-            <p className="text-blue font-medium text-lg">Created On:</p>
+            <p className="text-blue font-medium text-base">Created On:</p>
             <p className="text-text-gray text-base">{propertyDetails?.createdOn}</p>
           </div>
           <div>
-            <p className="text-blue font-medium text-lg">Last Added:</p>
+            <p className="text-blue font-medium text-base">Last Added:</p>
             <p className="text-text-gray text-base">{propertyDetails?.lastAddedOn}</p>
           </div>
           <div>
-            <p className="text-blue font-medium text-lg">Leads</p>
+            <p className="text-blue font-medium text-base">Leads</p>
             <p className="text-text-gray text-base">0</p>
           </div>
         </div>

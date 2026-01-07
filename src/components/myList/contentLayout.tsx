@@ -13,6 +13,9 @@ export const defaultFilters = {
       listingTypeIds: [],
       furnishingTypes: [],
       projectStatuses: [],
+      listingStatuses: [],
+      verificationStatuses: [],
+      filter: '',
       statuses: [],
       minPrice: 0,
       maxPrice: 10000000,
@@ -37,11 +40,12 @@ export default function ContentLayout() {
     fieldName: 'createdAt'
   })
   const [search, setSearch] = useState('')
+  const [topStatusFilter, setTopStatusFilter] = useState('')
 
   console.log('filters', filters, sorting, search, pagination)
  
   const { data: propertyList,  refetch: fetchPropertyList, isLoading: propertyListLoader } = useQuery({
-      queryKey: ["property-list", filters, sorting],
+      queryKey: ["property-list", filters, sorting, search],
       queryFn: () => {
         let payload: ProeprtyListApiPayload = {
           page: pagination.page,
@@ -50,8 +54,11 @@ export default function ContentLayout() {
           ...(filters.propertyTypeIds.length > 0 ? {propertyTypeIds: filters.propertyTypeIds.join(','),} : {}),
           ...(filters.listingTypeIds.length > 0 ? {listingTypeIds: filters.listingTypeIds.join(','),} : {}),
           ...(filters.furnishingTypes.length > 0 ? {furnishingTypes: filters.furnishingTypes.join(','),} : {}),
+          ...(filters.listingStatuses.length > 0 ? {listingStatuses: filters.listingStatuses.join(','),} : {}),
+          ...(filters.verificationStatuses.length > 0 ? {verificationStatuses: filters.verificationStatuses.join(','),} : {}),
           ...(filters.projectStatuses.length > 0 ? {projectStatuses: filters.projectStatuses.join(','),} : {}),
           ...(filters.statuses.length < 0 ? {statuses: filters.statuses.join(','),} : {}),
+          ...(topStatusFilter ? {filter: topStatusFilter} : null),
           minPrice: String(filters.minPrice),
           maxPrice: String(filters.maxPrice),
           search: search,
@@ -65,7 +72,8 @@ export default function ContentLayout() {
       },
       enabled: enable,
       staleTime: 0,
-      refetchOnMount: true   
+      refetchOnMount: true,   
+      retry: false
     });
 
   useEffect(() => {
@@ -98,8 +106,8 @@ export default function ContentLayout() {
           
          <div className="flex flex-col gap-6 md:gap-6 w-full">
             <div className="grid grid-cols-1 2md:grid-cols-[1.3fr_3fr] gap-4">
-                <ListFilter statusData={propertyList?.summary ?? {}} filters={filters} setFilters={setFilters}/>
-                <Listing propertyList={propertyList?.items ?? []} propertyListLoader={propertyListLoader} listLoader={listLoader} fetchPropertyList={fetchPropertyList} setSearch={setSearch} setSorting={setSorting} sorting={sorting} search={search} propertyData={propertyList} setPagination={setPagination} pagination={pagination}/>
+                <ListFilter statusData={propertyList?.summary ?? {}} filters={filters} setFilters={setFilters} setSearch={setSearch} search={search}/>
+                <Listing propertyList={propertyList?.items ?? []} propertyListLoader={propertyListLoader} listLoader={listLoader} fetchPropertyList={fetchPropertyList} setTopStatusFilter={setTopStatusFilter} topStatusFilter={topStatusFilter}  setSorting={setSorting} sorting={sorting} setPagination={setPagination} pagination={pagination}/>
             </div>
          </div>
         </div>
