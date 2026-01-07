@@ -12,7 +12,7 @@ import {
 import { toast } from "react-toastify";
 import { useRouter } from "nextjs-toploader/app";
 
-export default function BankDetails() {
+export default function BankDetails({isPopup = false, onClose}) {
   const router = useRouter()
   const [formData, setFormData] = useState({
     holderName: "",
@@ -74,7 +74,11 @@ export default function BankDetails() {
     },
     onSuccess: (response: BankDetailsResponse) => {
       toast.success(response.message);
-      router.push('/kyc?tabName=Agreement Signature')
+      if(isPopup){
+      onClose(true)
+      }else{
+        router.push('/kyc?tabName=Agreement Signature')
+      }
     },
     onError: (error: any) => {
       if (Array.isArray(error.message)) {
@@ -130,7 +134,11 @@ export default function BankDetails() {
   }, [bankDetails]);
 
   const handleCancel = () => {
-    router.push('/profile')
+    if(isPopup){
+      onClose(false)
+    }else{
+      router.push('/profile')
+    }
   }
 
   return (
@@ -138,7 +146,7 @@ export default function BankDetails() {
       {detailsLoader ? (
         <FullscreenSpinner />
       ) : (
-        <div className="w-[50%]">
+        <div className={isPopup ? '' : "w-[50%]"}>
           <p className="required-label text-sm 1xl:text-base text-text-black py-2">
             Bank account holder name
           </p>
