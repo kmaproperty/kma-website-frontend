@@ -746,3 +746,47 @@ export const getAmenitiesList = async () : Promise<GetAmenitiesResponse[]> => {
         throw error.response?.data ?? error;
     }
 }
+
+export interface DeactivatePropertyPaylaod {
+  propertyId: string;
+  deactivationReason: string;
+}
+export interface DeactivatePropertyResponse {
+  "success": boolean,
+  "message": string,
+  "propertyId": string,
+  "status": string,
+  "deactivationReason": string,
+  "deactivatedOn": string
+}
+
+export const deActivatePropertyApiHandler = async (paylaod: DeactivatePropertyPaylaod) : Promise<DeactivatePropertyResponse> => {
+    try{
+        const response = await axiosInstance.post<DeactivatePropertyResponse>(
+      "property/deactivate", paylaod);
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}
+
+export interface RepostPropertyPaylaod {
+  propertyId: string;
+}
+
+export interface RepostPropertyResponse {
+  "success": boolean,
+  "message": string,
+  "propertyId": string,
+  "status": string,
+}
+
+export const repostPropertyApiHandler = async (paylaod: RepostPropertyPaylaod) : Promise<RepostPropertyResponse> => {
+    try{
+        const response = await axiosInstance.post<RepostPropertyResponse>(
+      "property/repost", paylaod);
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}

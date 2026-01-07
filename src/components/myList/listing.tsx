@@ -60,7 +60,10 @@ export default function Listing({propertyList = [],listLoader, fetchPropertyList
       setPropertyId(id)
   }
 
-  const handleClose = () => {
+  const handleClose = (isUpdate) => {
+    if(isUpdate){
+      fetchPropertyList()
+    }
     setPropertyId(null)
     setOpenPropertyDetails(false)
   }
@@ -198,7 +201,7 @@ export default function Listing({propertyList = [],listLoader, fetchPropertyList
             {Array.isArray(propertyList) &&  propertyList.length != 0 && <div>
                 <CustomPagination page={pagination.page} totalPages={pagination.totalPage} onChange={(value) => handlePagination(value)}/>
             </div>}
-            <PropertyView open={openPropertyDetails} onClose={() => handleClose()} propertyId={propertyId}/>
+            <PropertyView open={openPropertyDetails} onClose={(isUpdate) => handleClose(isUpdate)} propertyId={propertyId}/>
     </div>
   );
 }

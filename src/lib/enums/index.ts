@@ -1165,8 +1165,8 @@ export const USER_DASHBOARD_PROPERTY_FILTER = [
 export const propertyStatusColor = [
   {
     color: '#ff7e00',
+    status: 'deactivated',
     name: 'Deactivated',
-    status: ''
   },
   {
     color: '#9f9f9f',

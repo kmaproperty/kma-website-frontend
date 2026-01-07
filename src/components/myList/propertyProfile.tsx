@@ -7,14 +7,16 @@ import { useTheme } from "@mui/material/styles";
 import Image from "next/image";
 import { LinearProgress, linearProgressClasses } from "@mui/material";
 import styled from "@emotion/styled";
-import { getPropertyDetailsApiHandler, GetPropertyDetailsResponse } from "@/services/postProperty";
-import { useQuery } from "@tanstack/react-query";
+import { getPropertyDetailsApiHandler, GetPropertyDetailsResponse, repostPropertyApiHandler, RepostPropertyResponse } from "@/services/postProperty";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import VideoPreviewDialog from "../common/videoPreview";
 import { getStatusLabel } from "@/lib/helper";
 import { useDispatch } from "react-redux";
 import { setActiveStep } from "@/store/postPropertyProgress";
 import { useRouter } from "nextjs-toploader/app";
 import { propertyStatusColor } from "@/lib/enums";
+import DeactivateProperty from "./deactivateProperty";
+import { toast } from "react-toastify";
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 8,
@@ -37,10 +39,11 @@ const PropertyView = ({ open, onClose, propertyId }) => {
 
   const [openVideoPreview, setOpenVideoPreview] = React.useState(false)
   const [videoPreviewUrl, setVideoPreviewUrl] = React.useState(null)
+  const [openDeactivePopup, setOpenDeactivePopup] = React.useState(false)
 
   const handleClose: DialogProps["onClose"] = (_, reason) => {
     if (reason === "backdropClick" || reason === "escapeKeyDown") return;
-    onClose();
+    onClose(false);
   };
 
   const { data: propertyDetails } = useQuery({
@@ -55,6 +58,23 @@ const PropertyView = ({ open, onClose, propertyId }) => {
       staleTime: 0,
       refetchOnMount: true   
     });
+
+    const { mutate: handleRepost, isPending: repostLoader } = useMutation({
+    mutationFn: repostPropertyApiHandler,
+    onSuccess: (response: RepostPropertyResponse) => {
+      toast.success(response?.message)
+      onClose(true)
+    },
+    onError: (error) => {
+      if (Array.isArray(error.message)) {
+        error.message.map((item: string) => {
+          toast.error(item);
+        });
+      } else {
+        toast.error(error.message);
+      }
+    },
+  });
 
     const handleOpenVideoPreview = (url) => {
         setOpenVideoPreview(true)
@@ -101,7 +121,7 @@ const PropertyView = ({ open, onClose, propertyId }) => {
           <Image
             onClick={() => {
               if (onClose) {
-                onClose();
+                onClose(false);
               }
             }}
             src="/assets/close-icon.svg"
@@ -126,9 +146,18 @@ const PropertyView = ({ open, onClose, propertyId }) => {
             </div>
             <BorderLinearProgress variant="determinate" value={propertyDetails?.progressPercentage} />
           </div>
-          <button className="cursor-pointer bg-[#F32B2B1A] text-sm text-[#F32B2B] flex items-center gap-2 px-3 py-1.5 rounded-[5px] font-medium border border-[#F32B2B1A] hover:border-[#F32B2B]">
+          {propertyDetails?.status != 'deactivated' && <button onClick={() => {
+            setOpenDeactivePopup(true)
+          }} className="cursor-pointer bg-[#F32B2B1A] text-sm text-[#F32B2B] flex items-center gap-2 px-3 py-1.5 rounded-[5px] font-medium border border-[#F32B2B1A] hover:border-[#F32B2B]">
             <img src="/assets/deactivate-eye.svg" className="w-4 h-4"></img> Deactivate
-          </button>
+          </button>}
+          {
+            propertyDetails?.status == 'deactivated' && <button onClick={() => {
+            handleRepost({propertyId: propertyId})
+          }} disabled={repostLoader} className="cursor-pointer bg-[#5e23dc] text-sm text-white flex items-center gap-2 px-3 py-1.5 rounded-[5px] font-medium border border-[#5e23dc]">
+            <img src="/assets/repost.svg" className="w-4 h-4"></img> Repost
+          </button>}
+          
         </div>
         <div className="flex flex-col 2md:flex-row justify-between items-start 2md:items-center gap-3">
           <div className="flex flex-col gap-1">
@@ -162,56 +191,65 @@ const PropertyView = ({ open, onClose, propertyId }) => {
               {propertyDetails?.furnishingType}
             </button>}
         </div>
-        <div className="flex flex-col gap-3">
-          <div className="grid grid-cols-[1fr] sm:grid-cols-[1fr_1fr] xl:grid-cols-[1fr_1fr_1fr] gap-3 items-stretch">
-            {
-                Array.isArray(propertyDetails?.photos) && propertyDetails?.photos.map(item => {
-                    return(
-                        <div className="relative">
-                            <Image
-                            src={imageBaseUrl + item.fileKey}
-                            alt="property photo"
-                            width={600}
-                            height={600}
-                            className="aspect-video rounded-[5px]"
-                            />
-                            <p className="bg-[#00000099] text-white text-sm rounded-full absolute bottom-2 px-2 py-0.5 left-2">{item.view}</p>
-                        </div>
-                    )
-                })
-            }
-            <div onClick={handleUploadPhoto} className="cursor-pointer relative aspect-video border border-dashed border-gray-300 rounded-[5px] flex items-center justify-center">
-              <Image
-                src="/assets/upload-photo.svg"
-                alt="upload photo"
-                width={80}
-                height={80}
-              />
+        <div className="flex gap-3 justify-between">
+          <div className="w-[80%] flex flex-col gap-3 flex-wrap">
+            <div className="grid grid-cols-[1fr] sm:grid-cols-[1fr_1fr] xl:grid-cols-[1fr_1fr_1fr] gap-3 items-stretch">
+              {
+                  Array.isArray(propertyDetails?.photos) && propertyDetails?.photos.map(item => {
+                      return(
+                          <div className="relative">
+                              <Image
+                              src={imageBaseUrl + item.fileKey}
+                              alt="property photo"
+                              width={600}
+                              height={600}
+                              className="aspect-video rounded-[5px]"
+                              />
+                              <p className="bg-[#00000099] text-white text-sm rounded-full absolute bottom-2 px-2 py-0.5 left-2">{item.view}</p>
+                          </div>
+                      )
+                  })
+              }
+              <div onClick={handleUploadPhoto} className="cursor-pointer relative aspect-video border border-dashed border-gray-300 rounded-[5px] flex items-center justify-center">
+                <Image
+                  src="/assets/upload-photo.svg"
+                  alt="upload photo"
+                  width={80}
+                  height={80}
+                />
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-[1fr] lg:grid-cols-[1fr_1fr] xl:grid-cols-[1fr_1fr_1fr] gap-3 items-stretch">
+              {
+                  Array.isArray(propertyDetails?.videos) && propertyDetails.videos.map((item) => {
+                      return(
+                          <div className="relative">
+                              <video
+                                  src={imageBaseUrl + item.fileKey + '?t=5'}
+                                  className="rounded-[10px] w-full aspect-video"
+                              />
+                              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                                  <div className="flex cursor-pointer items-center justify-center rounded-full w-12 h-12 bg-[#01004866]">
+                                      <div onClick={() => {
+                                          handleOpenVideoPreview(imageBaseUrl + item.fileKey)
+                                      }} className="flex items-center justify-center rounded-full w-10 h-10 bg-blue">
+                                      <Image alt="play" src="/assets/play-white.svg" width={16} height={16} />
+                                      </div>
+                                  </div>
+                                  </div>
+                          </div>
+                      )
+                  })
+              }
             </div>
           </div>
-          
-          <div className="grid grid-cols-[1fr] lg:grid-cols-[1fr_1fr] xl:grid-cols-[1fr_1fr_1fr] gap-3 items-stretch">
-            {
-                Array.isArray(propertyDetails?.videos) && propertyDetails.videos.map((item) => {
-                    return(
-                        <div className="relative">
-                            <video
-                                src={imageBaseUrl + item.fileKey + '?t=5'}
-                                className="rounded-[10px] w-full aspect-video"
-                            />
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                                <div className="flex cursor-pointer items-center justify-center rounded-full w-12 h-12 bg-[#01004866]">
-                                    <div onClick={() => {
-                                        handleOpenVideoPreview(imageBaseUrl + item.fileKey)
-                                    }} className="flex items-center justify-center rounded-full w-10 h-10 bg-blue">
-                                    <Image alt="play" src="/assets/play-white.svg" width={16} height={16} />
-                                    </div>
-                                </div>
-                                </div>
-                        </div>
-                    )
-                })
-            }
+          <div className="flex flex-col gap-3">
+              <button onClick={() => {
+                  setOpenDeactivePopup(true)
+                }} className="w-fit cursor-pointer bg-[#d5f3e8] text-sm text-[#008f4b] flex items-center gap-2 px-3 py-1.5 rounded-[5px] font-medium border border-[#d5f3e8] hover:border-[#008f4b]">
+                  <img src="/assets/verify.svg" className="w-4 h-4"></img> Verify
+                </button>
           </div>
         </div>
         <div className="flex flex-wrap flex-row gap-10">
@@ -242,6 +280,13 @@ const PropertyView = ({ open, onClose, propertyId }) => {
         videoUrl={videoPreviewUrl}
         onClose={handleClosePreview}
         />
+
+        {
+          openDeactivePopup && <DeactivateProperty open={openDeactivePopup} propertyId={propertyId} onClose={(isUpdate) => {
+            setOpenDeactivePopup(false)
+            onClose(isUpdate)
+          }}/>
+        }
     </Dialog>
   );
 };

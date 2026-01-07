@@ -132,7 +132,6 @@ export default function ListCard({data, handleManage}: {data: ListingItem, handl
           </button>
         </div>
       </div>
-      
     </div>
   );
 }
