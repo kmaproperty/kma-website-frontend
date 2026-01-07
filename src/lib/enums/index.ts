@@ -1172,5 +1172,15 @@ export const propertyStatusColor = [
     color: '#9f9f9f',
     status: 'pending_review',
     name: 'Under Review',
+  },
+  {
+    color: '#00bd79',
+    status: 'active',
+    name: 'Active'
+  },
+  {
+    color: '#ea2424ff',
+    status: 'rejected',
+    name: 'Rejected'
   }
 ]

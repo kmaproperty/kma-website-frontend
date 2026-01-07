@@ -17,6 +17,7 @@ import { useRouter } from "nextjs-toploader/app";
 import { propertyStatusColor } from "@/lib/enums";
 import DeactivateProperty from "./deactivateProperty";
 import { toast } from "react-toastify";
+import moment from "moment";
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 8,
@@ -190,6 +191,10 @@ const PropertyView = ({ open, onClose, propertyId }) => {
              {propertyDetails?.furnishingType && <button className=" cursor-text border border-border text-sm text-text-gray py-1 flex items-center gap-2 px-4 py-1 rounded-[5px] font-medium">
               {propertyDetails?.furnishingType}
             </button>}
+
+            {propertyDetails?.isVerified == 'verified' && <button className=" cursor-text border border-border text-sm text-text-gray py-1 flex items-center gap-2 px-4 py-1 rounded-[5px] font-medium">
+              {'Property Verified'}
+            </button>}
         </div>
         <div className="flex gap-3 justify-between">
           <div className="w-[80%] flex flex-col gap-3 flex-wrap">
@@ -245,11 +250,11 @@ const PropertyView = ({ open, onClose, propertyId }) => {
             </div>
           </div>
           <div className="flex flex-col gap-3">
-              <button onClick={() => {
+              {propertyDetails?.isVerified == 'unverified' && <button onClick={() => {
                   setOpenDeactivePopup(true)
                 }} className="w-fit cursor-pointer bg-[#d5f3e8] text-sm text-[#008f4b] flex items-center gap-2 px-3 py-1.5 rounded-[5px] font-medium border border-[#d5f3e8] hover:border-[#008f4b]">
                   <img src="/assets/verify.svg" className="w-4 h-4"></img> Verify
-                </button>
+                </button>}
           </div>
         </div>
         <div className="flex flex-wrap flex-row gap-10">
@@ -263,16 +268,27 @@ const PropertyView = ({ open, onClose, propertyId }) => {
           </div>}
           <div>
             <p className="text-blue font-medium text-base">Created On:</p>
-            <p className="text-text-gray text-base">{propertyDetails?.createdOn}</p>
+            <p className="text-text-gray text-base">{moment(propertyDetails?.createdOn).format('DD MMM YYYY')}</p>
           </div>
           <div>
             <p className="text-blue font-medium text-base">Last Added:</p>
-            <p className="text-text-gray text-base">{propertyDetails?.lastAddedOn}</p>
+            <p className="text-text-gray text-base">{moment(propertyDetails?.lastAddedOn).format('DD MMM YYYY')}</p>
           </div>
           <div>
             <p className="text-blue font-medium text-base">Leads</p>
             <p className="text-text-gray text-base">0</p>
           </div>
+          <div>
+            <p className="text-blue font-medium text-base">Expiring On</p>
+            <p className="text-text-gray text-base">{moment(propertyDetails?.expiresAt).format('DD MMM YYYY')}</p>
+          </div>
+        </div>
+        <div>
+
+          {propertyDetails?.status == 'rejected' && <div className="flex flex-col">
+            <p className="text-text-black text-base">Reject Reason:</p>
+            <p className="text-text-gray text-base">{propertyDetails?.rejectionReason}</p>
+          </div>}
         </div>
       </DialogContent>
       <VideoPreviewDialog

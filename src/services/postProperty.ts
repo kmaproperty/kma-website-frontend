@@ -628,6 +628,9 @@ export interface GetPropertyDetailsResponse {
   areaUnit: "sq_ft" | "sq_yd" | "sq_m" | string;
 
   category: string;
+  isVerified: string;
+  expiresAt: string;
+  rejectionReason: string;
 
   constructionStatus: string | null;
   furnishingType: string | null;
