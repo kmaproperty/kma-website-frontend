@@ -21,12 +21,7 @@ export default function AboutUsSection() {
             </p>
           </div>
           <div className="flex gap-4 mt-2">
-            <button className="w-fit text-sm 1xl:text-base animated-button-white px-4 py-2 border border-transparent text-center cursor-pointer">
-              <span className="gap-3 relative flex justify-center">
-                <p className={`text-nowrap`}>Post Your Property</p>
-              </span>
-            </button>
-            <button className="w-auto text-sm 1xl:text-base animated-button px-8 py-2 border border-white bg-transparent! text-center cursor-pointer">
+            <button className="w-auto text-sm 1xl:text-base text-white! hover:text-text-black! animated-button-white px-8 py-2 border border-white bg-transparent! text-center cursor-pointer">
               <span className="gap-3 relative flex justify-center">
                 <p className={`text-nowrap`}>Contact Us</p>
               </span>
@@ -37,32 +32,32 @@ export default function AboutUsSection() {
             <AboutUsImage imageUrl={'/assets/aboutUs/about_us_img.png'}/>
         </div>
       </div>
-      <div className="flex justify-between gap-4 mt-15">
-            <div className="flex justify-start gap-4 bg-[#131D2C] px-4 py-6 flex-1 rounded-xl relative">
+      <div className="flex justify-between gap-3 mt-15">
+            <div className="flex justify-start items-center gap-4 bg-[#131D2C] px-5 py-4 flex-1 rounded-xl relative">
                     <Image src='/assets/aboutUs/about_us_1.svg' width={40} height={40} alt="Rent"/>
                     <div className="align-start">
-                        <p className="text-xl text-white font-semibold">8040+</p>
+                        <p className="text-xl text-white font-medium">8040+</p>
                         <p className="text-xs text-white">Rentals Completed</p>
                     </div>
             </div>
-            <div className="flex justify-start gap-4 bg-[#131D2C] px-4 py-6 flex-1 rounded-xl">
+            <div className="flex justify-start items-center gap-4 bg-[#131D2C] px-5 py-5 flex-1 rounded-xl">
                     <Image src='/assets/aboutUs/about_us_2.svg' width={40} height={40} alt="trust"/>
                     <div className="align-start">
-                        <p className="text-xl text-white font-semibold">1014+</p>
+                        <p className="text-xl text-white font-medium">1014+</p>
                         <p className="text-xs text-white">Trusted Owners</p>
                     </div>
             </div>
-            <div className="flex justify-start gap-4 bg-[#131D2C] px-4 py-6 flex-1 rounded-xl">
+            <div className="flex justify-start items-center gap-4 bg-[#131D2C] px-5 py-5 flex-1 rounded-xl">
                     <Image src='/assets/aboutUs/about_us_3.svg' width={40} height={40} alt="happy"/>
                     <div className="align-start">
-                        <p className="text-xl text-white font-semibold">6K+</p>
+                        <p className="text-xl text-white font-medium">6K+</p>
                         <p className="text-xs text-white">Happy Clients</p>
                     </div>
             </div>
-            <div className="flex justify-start gap-4 bg-[#131D2C] px-4 py-6 flex-1 rounded-xl">
+            <div className="flex justify-start items-center gap-4 bg-[#131D2C] px-5 py-5 flex-1 rounded-xl">
                     <Image src='/assets/aboutUs/about_us_4.svg' width={40} height={40} alt="total"/>
                     <div className="align-start">
-                        <p className="text-xl text-white font-semibold">1014+</p>
+                        <p className="text-xl text-white font-medium">1014+</p>
                         <p className="text-xs text-white">Total Bookings</p>
                     </div>
             </div>

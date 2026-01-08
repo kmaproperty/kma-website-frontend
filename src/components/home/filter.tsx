@@ -30,7 +30,7 @@ export default function Filter() {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex justify-center gap-2">
+      <div className="flex justify-center gap-2 font-medium text-blue">
         <button className="w-full md:w-[110px] text-sm 1xl:text-base animated-button-white px-8 py-2 border border-transparent text-center cursor-pointer">
           <span className="gap-3 relative flex justify-center">
             <p className={`text-nowrap`}>For Buy</p>
@@ -57,7 +57,7 @@ export default function Filter() {
           </span>
         </button>
       </div>
-      <div className="flex flex-col rounded-[10px] bg-white mt-1 p-6">
+      <div className="flex flex-col rounded-[10px] bg-white mt-1 p-4">
         <div className="flex h-[40px]">
             <div className="flex-1">
             <DynamicAsyncAutocomplete
@@ -95,6 +95,8 @@ export default function Filter() {
                 "& .MuiInputBase-input::placeholder": {
                     color: "var(--color-text-gray)",
                     opacity: 1,
+                    fontSize: '14px',
+                    fontWeight: '500 !important'
                 },
                 }}
             />
@@ -114,7 +116,7 @@ export default function Filter() {
                 className="w-full h-full px-3 text-xs rounded-full"
                 inputProps={{
                     className:
-                    "font-ibm-plex-sans! text-text-gray placeholder:!text-text-gray placeholder:!opacity-100",
+                    "font-ibm-plex-sans! text-sm text-text-gray placeholder:!text-text-gray placeholder:!text-sm placeholder:!opacity-100",
                 }}
                 />
             </div>
@@ -128,7 +130,7 @@ export default function Filter() {
             </div>
             </div>
             <div className="flex-1">
-            <button className="animated-button px-[20px] py-[9px] cursor-pointer ml-2 h-full w-[calc(100%-0.5rem)]">
+            <button className="animated-button px-[30px] py-[9px] cursor-pointer ml-2 h-full w-[calc(100%-0.5rem)]">
                 <span className="flex items-center justify-center gap-[6px] relative z-11">
                 <Image
                     src="/assets/white-search.svg"
@@ -136,7 +138,7 @@ export default function Filter() {
                     height={16}
                     alt="Search"
                 />
-                <p className="text-nowrap font-semibold text-xs lg:text-sm">
+                <p className="text-nowrap font-medium text-xs lg:text-sm">
                     Search
                 </p>
                 </span>
@@ -144,11 +146,11 @@ export default function Filter() {
             </div>
         </div>
         <div className="flex justify-center gap-3 pt-3">
-            <div onClick={handleBudgetClick} className="rounded-full cursor-pointer min-w-[130px] bg-[#E4E4E4] text-text-black h-[36px] flex justify-center items-center gap-2">
+            <div onClick={handleBudgetClick} className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2">
                 Budget
                 <Image src={'/assets/small-up-arrow-blue.svg'} width={12} height={12} alt="arrow" className="mt-1" />
             </div>
-            <div onClick={handleTypeClick}  className="rounded-full cursor-pointer min-w-[160px] bg-[#E4E4E4] text-text-black h-[36px] flex justify-center items-center gap-2">
+            <div onClick={handleTypeClick}  className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2">
                 Property Type
                 <Image src={'/assets/small-up-arrow-blue.svg'} width={12} height={12} alt="arrow" className="mt-1" />
             </div>

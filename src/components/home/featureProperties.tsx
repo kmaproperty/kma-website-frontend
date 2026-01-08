@@ -102,6 +102,7 @@ export default function FeaturedProperties() {
   return (
     <div className="flex flex-col">
       <SectionHeader
+        hideButton={true}
         sectionName="featureProperties"
         heading="Featured Properties"
         subHeading="Discover Exclusive Listings of Premium Properties Available for Purchase"
@@ -120,7 +121,7 @@ export default function FeaturedProperties() {
                       alt={item.name}
                       width={400}
                       height={400}
-                      className="h-[170px] w-full object-cover rounded-t-[8px]"
+                      className="h-[160px] w-full object-cover rounded-t-[8px]"
                     />
 
                     <span className="absolute top-3 right-3 rounded-[4px] px-3 py-1 text-xs text-white bg-indigo-500">

@@ -35,7 +35,8 @@ export default function NeedSection() {
         {featureDetails.map((item, index) => {
           return (
             <div
-              className="rounded-[8px] p-4 flex-1"
+              className="rounded-[8px] p-5 flex-1 transition-all duration-500 ease-out
+             hover:-translate-y-2 cursor-pointer"
               style={{ background: item.background }}
             >
               <div className="flex gap-4 items-center mb-2">
@@ -48,7 +49,7 @@ export default function NeedSection() {
                   <h2 className="text-base font-semibold text-black">
                     {item.heading}
                   </h2>
-                  <h3 className="text-black  text-xs mb-2">
+                  <h3 className="text-blue  text-xs mb-2">
                     {item.subHeading}
                   </h3>
                 </div>

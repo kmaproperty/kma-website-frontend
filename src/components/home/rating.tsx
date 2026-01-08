@@ -39,7 +39,7 @@ export default function ProfileRating({
            alt={`Client ${i + 1}`}
            width={30}
            height={30}
-           className="h-10 w-10 rounded-full object-cover"
+           className="h-9 w-9 rounded-full object-cover"
          />
        ))}
      </div>

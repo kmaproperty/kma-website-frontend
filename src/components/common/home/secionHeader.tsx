@@ -10,14 +10,14 @@ export default function SectionHeader({ heading='', subHeading='', sectionName =
             </div>
             <div className="flex gap-3">
             {channelPartnerBtn && 
-            <button className="w-auto text-sm 1xl:text-base animated-button px-8 py-2 border border-blue text-blue! hover:text-white! bg-transparent! text-center cursor-pointer">
+            <button className="font-medium w-auto text-sm 1xl:text-base animated-button px-9 py-2 border border-blue text-blue! hover:text-white! bg-transparent! text-center cursor-pointer">
                     <span className="gap-3 relative flex justify-center">
                         <p className={`text-nowrap`}>Contact Us</p>
                     </span>
                  </button>
             }
             {!hideButton && <button
-            className="w-auto text-sm 1xl:text-base animated-button px-8 py-2 border border-blue text-center cursor-pointer"
+            className="font-medium w-auto text-sm 1xl:text-base animated-button px-9 py-2 border border-blue text-center cursor-pointer"
           >
             <span className="gap-3 relative flex justify-center">
                 <p className={`text-nowrap`}>View More</p>
@@ -25,9 +25,18 @@ export default function SectionHeader({ heading='', subHeading='', sectionName =
           </button>}
           {
             sectionName == 'featureProperties' && (
-                 <button className="w-auto text-sm 1xl:text-base animated-button px-8 py-2 border border-blue text-blue! hover:text-white! bg-transparent! text-center cursor-pointer">
+                 <button className="font-medium w-auto text-sm 1xl:text-base animated-button px-9 py-2 border border-blue text-center cursor-pointer">
                     <span className="gap-3 relative flex justify-center">
-                        <p className={`text-nowrap`}>Contact Us</p>
+                        <p className={`text-nowrap`}>For Sale</p>
+                    </span>
+                 </button>  
+            )
+          }
+          {
+            sectionName == 'featureProperties' && (
+                 <button className="font-medium w-auto text-sm 1xl:text-base animated-button px-9 py-1.5 border border-blue text-blue! hover:text-white! bg-transparent! text-center cursor-pointer">
+                    <span className="gap-3 relative flex justify-center">
+                        <p className={`text-nowrap`}>For Rentals</p>
                     </span>
                  </button>
             )

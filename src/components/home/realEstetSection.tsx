@@ -36,7 +36,7 @@ function ExploreCard({ name, properties, image }) {
         alt={name}
         width={300}
         height={400}
-        className="w-full h-46 object-fit transform transition-transform ease-in-out duration-800 group-hover:scale-150"
+        className="w-full h-45 object-fit transform transition-transform ease-in-out duration-800 group-hover:scale-150"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
       <div className="absolute bottom-4 left-4 text-white">

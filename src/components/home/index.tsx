@@ -54,18 +54,18 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="my-13 flex justify-center">
+      <div className="my-16 flex justify-center">
         <div className="w-[75%]">
           <NeedSection />
         </div>
       </div>
       <div className="bg-[#F2F2F2] flex justify-center">
-        <div className="my-13 w-[75%]">
+        <div className="my-16 w-[75%]">
           <RealEstateSection />
         </div>
       </div>
       <div className="relative bg-text-black flex justify-center">
-        <div className="my-13 w-[75%] z-10">
+        <div className="my-16 w-[75%] z-10">
           <AboutUsSection />
         </div>
         <div className="absolute -left-10 bottom-0 z-0">
@@ -93,18 +93,18 @@ export default function Home() {
           />
         </div>
       </div>
-      <div className="my-13 flex justify-center">
+      <div className="my-16 flex justify-center">
         <div className="w-[75%]">
           <ExploreSection />
         </div>
       </div>
       <div className="bg-[#F2F2F2] flex justify-center">
-        <div className="my-13 w-[75%]">
+        <div className="my-16 w-[75%]">
           <FeaturedProperties />
         </div>
       </div>
       <div className="relative bg-text-black flex justify-center">
-        <div className="my-13 w-[75%] z-10">
+        <div className="my-16 w-[75%] z-10">
           <WorkingSection />
         </div>
         <div className="absolute -right-0 bottom-0 z-0">
@@ -133,7 +133,7 @@ export default function Home() {
         </div>
       </div>
       <div className="relative bg-[#F2F2F2] flex justify-center">
-        <div className="my-13 w-[75%] z-10">
+        <div className="my-16 w-[75%] z-10">
           <SuccessStoriesSection />
         </div>
         <div className="absolute bottom-0 left-0">
@@ -162,18 +162,18 @@ export default function Home() {
         </div>
       </div>
       <div className="flex justify-center">
-        <div className="my-13 w-[75%]">
+        <div className="my-16 w-[75%]">
           <BlogSection />
         </div>
       </div>
       <div className="bg-[#F2F2F2] flex justify-center">
-        <div className="my-13 w-[75%]">
+        <div className="my-16 w-[75%]">
           <ChannelPartnerSection />
         </div>
       </div>
       <div className="">
         <div className="app-background">
-          <div className="z-2 h-full relative py-13 flex justify-center w-full">
+          <div className="z-2 h-full relative py-16 flex justify-center w-full">
             <div className="w-[75%] relative h-full flex flex-col gap-20">
               <div className="flex w-[40%] h-full gap-20 flex-col justify-between items-start">
                 <div>
@@ -226,7 +226,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="flex justify-center mb-5">
+        <div className="flex justify-center mb-16">
           <AppDownloadSection />
         </div>
       </div>
@@ -242,8 +242,8 @@ export default function Home() {
           </div>
         </div>
         <div className="bg-text-black flex justify-center">
-            <div className="my-13 w-[75%]">
-                <HomeFooter tab={1}/>
+            <div className="my-10 w-[75%]">
+                <HomeFooter tab={2}/>
             </div>
           </div>
       </div>
