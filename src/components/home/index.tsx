@@ -1,15 +1,9 @@
+"use client";
 import Image from "next/image";
-import HomdeHeader from "../header/homeHeader";
 import AboutUsSection from "./aboutUsSection";
 import BannerSlider from "./bannerSlider";
-import BannerText from "./bannertext";
-import ContactUs from "./contactus";
-import Filter from "./filter";
 import NeedSection from "./needSection";
-import ProfileRating from "./rating";
 import RealEstateSection from "./realEstetSection";
-import Social from "./social";
-import TopProperties from "./topProperties";
 import ExploreSection from "./exploreSection";
 import BlogSection from "./blogSection";
 import FeaturedProperties from "./featureProperties";
@@ -18,80 +12,27 @@ import WorkingSection from "./workingSection";
 import ChannelPartnerSection from "./channelPartnerSection";
 import AppDownloadSection from "./appDownloadSection";
 import HomeFooter from "../footer/homeFooter";
+import MainHome from "./home";
 
 export default function Home() {
   return (
-    <div>
+    <div className="overflow-hidden">
       <div className="relative ">
         <BannerSlider />
-
-        <div className="absolute w-[100%] h-[88vh] top-0">
-          <div>
-            <Social />
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="w-[75%] mt-[25px]">
-              <HomdeHeader />
-            </div>
-
-            <div className="w-[75%] mt-[45px] flex justify-between gap-5">
-              <div className="w-[50%]">
-                <BannerText />
-              </div>
-              <div className="w-[40%]">
-                <TopProperties />
-                <ProfileRating />
-              </div>
-            </div>
-          </div>
-          <div className="flex justify-center mt-10">
-            <div className="w-[55%]">
-              <Filter />
-            </div>
-          </div>
-          <div>
-            <ContactUs />
-          </div>
-        </div>
+        <MainHome />
       </div>
-      <div className="my-16 flex justify-center">
+      <div className="my-16 flex justify-center overflow-hidden">
         <div className="w-[75%]">
           <NeedSection />
         </div>
       </div>
-      <div className="bg-[#F2F2F2] flex justify-center">
+      <div className="bg-[#F2F2F2] flex justify-center overflow-hidden">
         <div className="my-16 w-[75%]">
           <RealEstateSection />
         </div>
       </div>
-      <div className="relative bg-text-black flex justify-center">
-        <div className="my-16 w-[75%] z-10">
+      <div className="relative bg-text-black flex justify-center overflow-hidden">
           <AboutUsSection />
-        </div>
-        <div className="absolute -left-10 bottom-0 z-0">
-          <Image
-            alt="background"
-            src="/assets/aboutUs/about_us_back.svg"
-            width={400}
-            height={400}
-          />
-        </div>
-        <div className="absolute right-30 bottom-0 z-0">
-          <Image
-            alt="background"
-            src="/assets/aboutUs/box-below.svg"
-            width={300}
-            height={300}
-          />
-        </div>
-        <div className="absolute right-10 top-0 z-0">
-          <Image
-            alt="background"
-            src="/assets/aboutUs/box-up.svg"
-            width={300}
-            height={300}
-          />
-        </div>
       </div>
       <div className="my-16 flex justify-center">
         <div className="w-[75%]">
@@ -103,70 +44,18 @@ export default function Home() {
           <FeaturedProperties />
         </div>
       </div>
-      <div className="relative bg-text-black flex justify-center">
-        <div className="my-16 w-[75%] z-10">
+      <div className="relative bg-text-black flex justify-center overflow-hidden">
           <WorkingSection />
-        </div>
-        <div className="absolute -right-0 bottom-0 z-0">
-          <Image
-            alt="background"
-            src="/assets/working/back.svg"
-            width={300}
-            height={300}
-          />
-        </div>
-        <div className="absolute left-20 top-0 z-0">
-          <Image
-            alt="background"
-            src="/assets/working/top-arrow.svg"
-            width={300}
-            height={300}
-          />
-        </div>
-        <div className="absolute left-20 bottom-0 z-0">
-          <Image
-            alt="background"
-            src="/assets/working/bottom-arrow.svg"
-            width={300}
-            height={300}
-          />
-        </div>
       </div>
-      <div className="relative bg-[#F2F2F2] flex justify-center">
-        <div className="my-16 w-[75%] z-10">
+      <div className="relative bg-[#F2F2F2] flex justify-center overflow-hidden">
           <SuccessStoriesSection />
-        </div>
-        <div className="absolute bottom-0 left-0">
-          <Image
-            src={"/assets/stories/building.svg"}
-            width={200}
-            height={200}
-            alt="building"
-          />
-        </div>
-        <div className="absolute top-0 right-10">
-          <Image
-            src={"/assets/stories/top-square.svg"}
-            width={200}
-            height={200}
-            alt="building"
-          />
-        </div>
-        <div className="absolute right-0 bottom-2">
-          <Image
-            src={"/assets/stories/bottom-square.svg"}
-            width={140}
-            height={100}
-            alt="building"
-          />
-        </div>
       </div>
-      <div className="flex justify-center">
+      <div className="flex justify-center overflow-hidden">
         <div className="my-16 w-[75%]">
           <BlogSection />
         </div>
       </div>
-      <div className="bg-[#F2F2F2] flex justify-center">
+      <div className="bg-[#F2F2F2] flex justify-center overflow-hidden">
         <div className="my-16 w-[75%]">
           <ChannelPartnerSection />
         </div>
@@ -242,10 +131,10 @@ export default function Home() {
           </div>
         </div>
         <div className="bg-text-black flex justify-center">
-            <div className="my-10 w-[75%]">
-                <HomeFooter tab={2}/>
-            </div>
+          <div className="my-10 w-[75%]">
+            <HomeFooter tab={2} />
           </div>
+        </div>
       </div>
     </div>
   );

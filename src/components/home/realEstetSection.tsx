@@ -1,5 +1,7 @@
 import Image from "next/image";
 import SectionHeader from "../common/home/secionHeader";
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
 
 const exploreDetails = [
   {
@@ -57,25 +59,60 @@ function ExploreCard({ name, properties, image }) {
 }
 
 export default function RealEstateSection() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: false });
+  const leftRowVariant = {
+    hidden: { x: "-100%", opacity: 1 },
+    visible: {
+      x: 0,
+      opacity: 1,
+      transition: {
+        duration: 1,
+        ease: "easeOut" as const,
+      },
+    },
+  };
+
+  const rightRowVariant = {
+    hidden: { x: "100%", opacity: 1 },
+    visible: {
+      x: 0,
+      opacity: 1,
+      transition: {
+        duration: 1,
+        ease: "easeOut" as const,
+      },
+    },
+  };
+
   return (
-    <div>
+    <div >
       <SectionHeader
+        isInView={isInView}
         heading="Explore Top Real Estate Opportunities Across India"
         subHeading="Smart property choices in India's leading cities."
       />
-      <div className="mt-10">
+      <div className="mt-10" ref={ref}>
         {/* First Row */}
-        <div className="flex gap-4">
+        <motion.div
+          className="flex gap-4 will-change-transform"
+          variants={leftRowVariant}
+          animate={isInView ? "visible" : "hidden"}
+        >
           {exploreDetails.slice(0, 3).map((exploreDetail, index) => (
             <ExploreCard key={exploreDetail.name} {...exploreDetail} />
           ))}
-        </div>
+        </motion.div>
         {/* Second Row */}
-        <div className="flex mt-4 gap-4">
+        <motion.div
+          className="flex mt-4 gap-4 will-change-transform"
+          variants={rightRowVariant}
+          animate={isInView ? "visible" : "hidden"}
+        >
           {exploreDetails.slice(3).map((exploreDetail, index) => (
             <ExploreCard key={exploreDetail.name} {...exploreDetail} />
           ))}
-        </div>
+        </motion.div>
       </div>
     </div>
   );

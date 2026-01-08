@@ -1,15 +1,62 @@
 import Image from "next/image";
 import SectionHeader from "../common/home/secionHeader";
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
+
+const leftVariant = {
+  hidden: { x: '-100%', opacity: 0 },
+  visible: {
+    x: 0,
+    opacity: 1,
+    transition: { duration: 1, ease: "easeOut" as const },
+  },
+};
+
+const rightVariant = {
+  hidden: { x: '100%', opacity: 0 },
+  visible: {
+    x: 0,
+    opacity: 1,
+    transition: { duration: 1, ease: "easeOut" as const },
+  },
+};
+
+const bottomVariant = {
+  hidden: { y: 120, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: { duration: 1, ease: "easeOut" as const },
+  },
+};
+
+const topVariant = {
+  hidden: { y: '-100%', opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: { duration: 1, ease: "easeOut" as const },
+  },
+};
 
 export default function BlogSection() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: false });
+
   return (
-    <div className="">
+    <div ref={ref} className="">
       <SectionHeader
+        isInView={isInView}
         heading="Latest Blogs"
         subHeading="Explore our featured blog posts on premium properties for sales & rents"
       />
       <div className="grid grid-cols-2 gap-4 mt-10">
-        <div className="relative bg-white rounded-[8px]">
+        <motion.div
+            className="relative bg-white rounded-[8px]"
+            ref={ref}
+            variants={leftVariant}
+            animate={isInView ? 'visible' : 'hidden'}
+          >
           <Image
             src="/assets/blogs/blog-img-1.png"
             width={600}
@@ -38,9 +85,14 @@ export default function BlogSection() {
           <div className="absolute top-[10px] left-[10px] bg-[#8A73DB] py-1 px-2 rounded-[4px]">
             <p className="text-xs text-white">Booking Tips</p>
           </div>
-        </div>
+        </motion.div>
         <div className="flex flex-col justify-between gap-4 h-full">
-          <div className="flex relative bg-white rounded-[8px] flex-1">
+          <motion.div
+            className="flex relative bg-white rounded-[8px] flex-1"
+            ref={ref}
+            variants={topVariant}
+            animate={isInView ? 'visible' : 'hidden'}
+          >
               <Image
                 src="/assets/blogs/blog-img-2.png"
                 width={600}
@@ -73,8 +125,13 @@ export default function BlogSection() {
               </div>
               
               </div>
-          </div>
-          <div className="flex relative bg-white rounded-[8px] flex-1">
+          </motion.div>
+          <motion.div
+            className="flex relative bg-white rounded-[8px] flex-1"
+            ref={ref}
+            variants={bottomVariant}
+            animate={isInView ? 'visible' : 'hidden'}
+          >
               <Image
                 src="/assets/blogs/blog-img-3.png"
                 width={600}
@@ -107,7 +164,7 @@ export default function BlogSection() {
               </div>
               
               </div>
-          </div>
+         </motion.div>
         </div>
       </div>
     </div>

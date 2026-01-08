@@ -1,47 +1,75 @@
-export default function SectionHeader({ heading='', subHeading='', sectionName ='', hideButton = false, channelPartnerBtn = false }) {
-    return (
-        <div className="flex gap-4 justify-between items-center">
-            <div>
-                <div className="bg-gray-400 h-0.5 w-8 mb-2">
-                    <div className="w-1/2 h-0.5 bg-gray-900" />
-                </div>
-                <h2 className="text-2xl text-black font-semibold">{heading}</h2>
-                <h3 className="text-text-gray text-xs">{subHeading}</h3>
-            </div>
-            <div className="flex gap-3">
-            {channelPartnerBtn && 
-            <button className="font-medium w-auto text-sm 1xl:text-base animated-button px-9 py-2 border border-blue text-blue! hover:text-white! bg-transparent! text-center cursor-pointer">
-                    <span className="gap-3 relative flex justify-center">
-                        <p className={`text-nowrap`}>Contact Us</p>
-                    </span>
-                 </button>
-            }
-            {!hideButton && <button
-            className="font-medium w-auto text-sm 1xl:text-base animated-button px-9 py-2 border border-blue text-center cursor-pointer"
-          >
-            <span className="gap-3 relative flex justify-center">
-                <p className={`text-nowrap`}>View More</p>
-            </span>
-          </button>}
-          {
-            sectionName == 'featureProperties' && (
-                 <button className="font-medium w-auto text-sm 1xl:text-base animated-button px-9 py-2 border border-blue text-center cursor-pointer">
-                    <span className="gap-3 relative flex justify-center">
-                        <p className={`text-nowrap`}>For Sale</p>
-                    </span>
-                 </button>  
-            )
-          }
-          {
-            sectionName == 'featureProperties' && (
-                 <button className="font-medium w-auto text-sm 1xl:text-base animated-button px-9 py-1.5 border border-blue text-blue! hover:text-white! bg-transparent! text-center cursor-pointer">
-                    <span className="gap-3 relative flex justify-center">
-                        <p className={`text-nowrap`}>For Rentals</p>
-                    </span>
-                 </button>
-            )
-          }
-          </div>
+import { Easing, Variants } from "framer-motion";
+import { motion } from "framer-motion";
+
+export default function SectionHeader({
+  heading = "",
+  subHeading = "",
+  sectionName = "",
+  hideButton = false,
+  channelPartnerBtn = false,
+  isInView = false,
+}) {
+  const smartTransition = {
+    duration: 1,
+    ease: "easeOut" as Easing,
+  };
+
+  const fromTop: Variants = {
+    hidden: {
+      opacity: 0,
+      y: -120,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: smartTransition,
+    },
+  };
+
+  return (
+    <motion.div
+      className="flex gap-4 justify-between items-center"
+      variants={fromTop}
+      initial="hidden"
+      animate={isInView ? "visible" : "hidden"}
+    >
+      <div>
+        <div className="bg-gray-400 h-0.5 w-8 mb-2">
+          <div className="w-1/2 h-0.5 bg-gray-900" />
         </div>
-    )
+        <h2 className="text-2xl text-black font-semibold">{heading}</h2>
+        <h3 className="text-text-gray text-xs">{subHeading}</h3>
+      </div>
+      <div className="flex gap-3">
+        {channelPartnerBtn && (
+          <button className="font-medium w-auto text-sm 1xl:text-base animated-button px-9 py-2 border border-blue text-blue! hover:text-white! bg-transparent! text-center cursor-pointer">
+            <span className="gap-3 relative flex justify-center">
+              <p className={`text-nowrap`}>Contact Us</p>
+            </span>
+          </button>
+        )}
+        {!hideButton && (
+          <button className="font-medium w-auto text-sm 1xl:text-base animated-button px-9 py-2 border border-blue text-center cursor-pointer">
+            <span className="gap-3 relative flex justify-center">
+              <p className={`text-nowrap`}>View More</p>
+            </span>
+          </button>
+        )}
+        {sectionName == "featureProperties" && (
+          <button className="font-medium w-auto text-sm 1xl:text-base animated-button px-9 py-2 border border-blue text-center cursor-pointer">
+            <span className="gap-3 relative flex justify-center">
+              <p className={`text-nowrap`}>For Sale</p>
+            </span>
+          </button>
+        )}
+        {sectionName == "featureProperties" && (
+          <button className="font-medium w-auto text-sm 1xl:text-base animated-button px-9 py-1.5 border border-blue text-blue! hover:text-white! bg-transparent! text-center cursor-pointer">
+            <span className="gap-3 relative flex justify-center">
+              <p className={`text-nowrap`}>For Rentals</p>
+            </span>
+          </button>
+        )}
+      </div>
+    </motion.div>
+  );
 }

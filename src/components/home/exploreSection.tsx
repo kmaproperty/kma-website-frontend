@@ -4,6 +4,7 @@ import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import { useMemo, useRef } from "react";
 import Image from "next/image";
+import { motion, useInView } from "framer-motion";
 
 const properties = [
   {
@@ -38,8 +39,46 @@ const properties = [
   },
 ];
 
+const leftVariant = {
+  hidden: { x: "-100%", opacity: 0 },
+  visible: {
+    x: 0,
+    opacity: 1,
+    transition: { duration: 1, ease: "easeOut" as const },
+  },
+};
+
+const rightVariant = {
+  hidden: { x: "100%", opacity: 0 },
+  visible: {
+    x: 0,
+    opacity: 1,
+    transition: { duration: 1, ease: "easeOut" as const },
+  },
+};
+
+const bottomVariant = {
+  hidden: { y: '100%', opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: { duration: 1, ease: "easeOut" as const },
+  },
+};
+
+const topVariant = {
+  hidden: { y: '-100%', opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: { duration: 1, ease: "easeOut" as const },
+  },
+};
+
 export default function ExploreSection() {
   const sliderRef = useRef<Slider | null>(null);
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: false });
 
   const settings = useMemo(() => {
     return {
@@ -68,7 +107,12 @@ export default function ExploreSection() {
 
   return (
     <div className="w-full flex gap-6 items-center">
-      <div className="flex flex-col w-[30%] justify-center items-start gap-3">
+      <motion.div
+        className="flex flex-col w-[30%] justify-center items-start gap-3"
+        ref={ref}
+        variants={leftVariant}
+        animate={isInView ? "visible" : "hidden"}
+      >
         <h2 className="text-xl font-semibold text-black leading-tight">
           Explore by <br /> Property Type
         </h2>
@@ -109,12 +153,19 @@ export default function ExploreSection() {
             />
           </button>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="flex-1 min-w-0">
+      <motion.div
+        className="flex-1 min-w-0"
+        variants={rightVariant}
+      >
         <Slider ref={sliderRef} {...settings}>
           {properties.map((item, index) => (
-            <div key={index} className="px-2">
+            <motion.div
+                variants={(index == 0 || index == 1) ? topVariant : bottomVariant}
+                className="px-2"
+                animate={isInView ? 'visible' : 'hidden'}
+              >
               <div
                 className={`h-[180px] rounded-xl ${item.bg} flex flex-col items-center justify-center`}
               >
@@ -130,10 +181,10 @@ export default function ExploreSection() {
 
                 <p className="text-xs text-text-gray">{item.count}</p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </Slider>
-      </div>
+      </motion.div>
     </div>
   );
 }

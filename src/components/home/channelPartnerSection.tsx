@@ -1,5 +1,7 @@
 import Image from "next/image";
 import SectionHeader from "../common/home/secionHeader";
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
 
 const partnerData = [
     {
@@ -51,19 +53,46 @@ const partnerData = [
         expert: false,
     },
 ]
+
+
+const leftVariant = {
+  hidden: { x: '-100%', opacity: 0 },
+  visible: {
+    x: 0,
+    opacity: 1,
+    transition: { duration: 1, ease: "easeOut" as const },
+  },
+};
+
+const rightVariant = {
+  hidden: { x: '100%', opacity: 0 },
+  visible: {
+    x: 0,
+    opacity: 1,
+    transition: { duration: 1, ease: "easeOut" as const },
+  },
+};
 export default function ChannelPartnerSection(){
+    const ref = useRef(null);
+  const isInView = useInView(ref, { once: false });
     return(
-        <div className="">
+        <div ref={ref} className="">
             <SectionHeader
+                isInView={isInView}
                 channelPartnerBtn={true}
                 heading="Become a Channel Partner"
                 subHeading="Join hands with us and unlock new opportunities in the real estate ecosystem."
             />
             <div className="grid grid-cols-[1fr_1fr_1fr_1fr] gap-3 mt-3">
                 {
-                    partnerData.map(item => {
+                    partnerData.map((item, index) => {
                         return(
-                            <div className="bg-white px-2 py-4 flex gap-2 rounded-[8px]">
+                            <motion.div
+            className="bg-white px-2 py-4 flex gap-2 rounded-[8px]"
+            ref={ref}
+            variants={[0,1,2,3].includes(index) ? leftVariant : rightVariant}
+            animate={isInView ? 'visible' : 'hidden'}
+          >
                                 <Image src='/assets/property/profile.png' width={35} height={35} alt="profile" className="h-[35px] w-[35px] rounded-full"/> 
                                 <div className="flex flex-col">
                                     <p className="text-text-black text-sm font-medium">{item.name}</p>
@@ -75,7 +104,7 @@ export default function ChannelPartnerSection(){
                                     <p className={`mt-2 rounded-[2px]  text-white text-[10px] w-fit px-1`} style={{background: !item.expert ? '#FFC107' : '#FE792D'}}>{!item.expert ? 'Housing Expert' : 'Housing Expert Pro'}</p>
 
                                 </div>
-                            </div>
+                            </motion.div>
 
                         )
                     })

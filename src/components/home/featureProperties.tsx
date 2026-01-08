@@ -1,10 +1,28 @@
 "use client";
 import { useRef } from "react";
 import Slider from "react-slick";
-
+import { motion, useInView } from "framer-motion";
 import SectionHeader from "../common/home/secionHeader";
 import Image from "next/image";
 
+
+const bottomVariant = {
+  hidden: { y: '100%', opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: { duration: 1, ease: "easeOut" as const },
+  },
+};
+
+const topVariant = {
+  hidden: { y: '-100%', opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: { duration: 1, ease: "easeOut" as const },
+  },
+};
 const propertyList = [
   {
     type: "Apartment",
@@ -86,6 +104,8 @@ function Star({ className = "h-4 w-4" }) {
 
 export default function FeaturedProperties() {
   const sliderRef = useRef(null);
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: false });
 
   const settings = {
     slidesToShow: 4,
@@ -100,8 +120,9 @@ export default function FeaturedProperties() {
   };
 
   return (
-    <div className="flex flex-col">
+    <div ref={ref} className="flex flex-col">
       <SectionHeader
+        isInView={isInView}
         hideButton={true}
         sectionName="featureProperties"
         heading="Featured Properties"
@@ -110,8 +131,12 @@ export default function FeaturedProperties() {
 
       <div className="flex-1 min-w-0 -mx-2">
         <Slider ref={sliderRef} {...settings} className="mt-10">
-          {propertyList.map((item, idx) => (
-            <div key={idx} className="px-1.5 h-full">
+          {propertyList.map((item, index) => (
+            <motion.div
+              className="px-1.5 h-full"
+              variants={(index == 0 || index == 1) ? topVariant : bottomVariant}
+              animate={isInView ? 'visible' : 'hidden'}
+            >
               <div className="h-full rounded-[8px] border border-border bg-white">
                 <div className=" h-full">
                   {/* IMAGE */}
@@ -222,13 +247,17 @@ export default function FeaturedProperties() {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </Slider>
       </div>
 
       {/* ---------- CONTROLS ---------- */}
-      <div className="mt-10 flex justify-end gap-6">
+        <motion.div
+              className="mt-10 flex justify-end gap-6"
+              variants={bottomVariant}
+              animate={isInView ? 'visible' : 'hidden'}
+            >
         <div className="flex gap-3">
           <button
             type="button"
@@ -261,7 +290,7 @@ export default function FeaturedProperties() {
             </span>
           </button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
