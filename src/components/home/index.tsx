@@ -19,15 +19,15 @@ export default function Home() {
     <div className="overflow-hidden">
       <div className="relative ">
         <BannerSlider />
-        <MainHome />
+        {/* <MainHome /> */}
       </div>
       <div className="my-16 flex justify-center overflow-hidden">
-        <div className="w-[75%]">
+        <div className="w-[90%] md:w-[75%]">
           <NeedSection />
         </div>
       </div>
       <div className="bg-[#F2F2F2] flex justify-center overflow-hidden">
-        <div className="my-16 w-[75%]">
+        <div className="my-16 w-[90%] md:w-[75%]">
           <RealEstateSection />
         </div>
       </div>
@@ -35,12 +35,12 @@ export default function Home() {
           <AboutUsSection />
       </div>
       <div className="my-16 flex justify-center">
-        <div className="w-[75%]">
+        <div className="w-[90%] md:w-[75%]">
           <ExploreSection />
         </div>
       </div>
       <div className="bg-[#F2F2F2] flex justify-center">
-        <div className="my-16 w-[75%]">
+        <div className="my-16 w-[90%] md:w-[75%]">
           <FeaturedProperties />
         </div>
       </div>
@@ -51,12 +51,12 @@ export default function Home() {
           <SuccessStoriesSection />
       </div>
       <div className="flex justify-center overflow-hidden">
-        <div className="my-16 w-[75%]">
+        <div className="my-16 w-[90%] 2md:w-[75%]">
           <BlogSection />
         </div>
       </div>
       <div className="bg-[#F2F2F2] flex justify-center overflow-hidden">
-        <div className="my-16 w-[75%]">
+        <div className="my-16 w-[90%] 2md:w-[75%]">
           <ChannelPartnerSection />
         </div>
       </div>

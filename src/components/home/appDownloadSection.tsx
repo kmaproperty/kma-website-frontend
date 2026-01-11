@@ -48,16 +48,16 @@ const opacityVariant = {
 
 export default function AppDownloadSection() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: false });
+  const isInView = useInView(ref, { once: true });
     
   return (
     <>
       <div ref={ref} className="app-background">
         <div className="z-2 h-full relative py-16 flex justify-center w-full">
-          <div className="w-[75%] relative h-full flex flex-col gap-20">
+          <div className="w-[90%] 2md:w-[75%] relative h-full flex flex-col gap-10 2md:gap-20">
             <motion.div
             variants={topVariant}
-            className="flex w-[40%] h-full gap-20 flex-col justify-between items-start"
+            className="flex w-full 2md:w-[40%] h-full gap-20 flex-col justify-between items-start"
             animate={isInView ? 'visible' : 'hidden'}
           >
               <div>
@@ -105,7 +105,7 @@ export default function AppDownloadSection() {
             </motion.div>
             <motion.div
             variants={rightVariant}
-            className="absolute right-0 top-13 h-[400px]"
+            className="hidden 2md:block absolute right-0 top-13 h-[400px]"
             ref={ref}
             animate={isInView ? 'visible' : 'hidden'}
           >
@@ -136,13 +136,13 @@ export default function AppDownloadSection() {
       </div>
       <motion.div
       variants={bottomVariant}
-            className="flex justify-center mb-16"
+            className="flex justify-center mb-4 2md:mb-16"
             ref={ref}
             animate={isInView ? 'visible' : 'hidden'}
           >
         <div className="w-[75%] mt-3">
-          <div className="flex gap-3 justify-start items-center">
-            <div className="w-fit flex flex-col">
+          <div className="flex gap-3 flex-col lg:flex-row 2md:justify-start items-center">
+            <div className="w-fit flex flex-col items-center">
               <p className="text-text-black text-base">Download App</p>
               <p className="text-text-gray text-xs">
                 Explore, connect, and manage — anytime, anywhere.

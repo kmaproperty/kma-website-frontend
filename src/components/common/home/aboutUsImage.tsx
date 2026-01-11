@@ -1,12 +1,12 @@
 import React from "react";
 
-const AboutUsImage = ({ imageUrl, width = 500, height = 250 }) => {
+const AboutUsImage = ({ imageUrl, width = '500px', height = '250px' }) => {
   return (
     <div
       className="relative"
       style={{
-        width: `${width}px`,
-        height: `${height}px`,
+        width: width,
+        height: height,
       }}
     >
       <svg width="0" height="0" style={{ position: "absolute" }}>

@@ -105,7 +105,7 @@ function Star({ className = "h-4 w-4" }) {
 export default function FeaturedProperties() {
   const sliderRef = useRef(null);
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: false });
+  const isInView = useInView(ref, { once: true });
 
   const settings = {
     slidesToShow: 4,
@@ -129,7 +129,7 @@ export default function FeaturedProperties() {
         subHeading="Discover Exclusive Listings of Premium Properties Available for Purchase"
       />
 
-      <div className="flex-1 min-w-0 -mx-2">
+      <div className="flex-1 w-full  2md:min-w-0 -mx-2">
         <Slider ref={sliderRef} {...settings} className="mt-10">
           {propertyList.map((item, index) => (
             <motion.div

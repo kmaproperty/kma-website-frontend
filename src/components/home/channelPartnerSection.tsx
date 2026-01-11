@@ -74,7 +74,7 @@ const rightVariant = {
 };
 export default function ChannelPartnerSection(){
     const ref = useRef(null);
-  const isInView = useInView(ref, { once: false });
+  const isInView = useInView(ref, { once: true });
     return(
         <div ref={ref} className="">
             <SectionHeader
@@ -83,7 +83,7 @@ export default function ChannelPartnerSection(){
                 heading="Become a Channel Partner"
                 subHeading="Join hands with us and unlock new opportunities in the real estate ecosystem."
             />
-            <div className="grid grid-cols-[1fr_1fr_1fr_1fr] gap-3 mt-3">
+            <div className="grid  grid-cols-1 sm:grid-cols-[1fr_1fr] 2md:grid-cols-[1fr_1fr_1fr] xl:grid-cols-[1fr_1fr_1fr_1fr] gap-3 mt-3">
                 {
                     partnerData.map((item, index) => {
                         return(

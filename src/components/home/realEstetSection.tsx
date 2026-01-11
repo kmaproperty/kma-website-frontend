@@ -60,7 +60,7 @@ function ExploreCard({ name, properties, image }) {
 
 export default function RealEstateSection() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: false });
+  const isInView = useInView(ref, { once: true });
   const leftRowVariant = {
     hidden: { x: "-100%", opacity: 1 },
     visible: {
@@ -95,7 +95,7 @@ export default function RealEstateSection() {
       <div className="mt-10" ref={ref}>
         {/* First Row */}
         <motion.div
-          className="flex gap-4 will-change-transform"
+          className="flex flex-col 2md:flex-row gap-4 will-change-transform"
           variants={leftRowVariant}
           animate={isInView ? "visible" : "hidden"}
         >
@@ -105,7 +105,7 @@ export default function RealEstateSection() {
         </motion.div>
         {/* Second Row */}
         <motion.div
-          className="flex mt-4 gap-4 will-change-transform"
+          className="flex flex-col 2md:flex-row mt-4 gap-4 will-change-transform"
           variants={rightRowVariant}
           animate={isInView ? "visible" : "hidden"}
         >

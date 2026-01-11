@@ -41,7 +41,7 @@ const topVariant = {
 
 export default function BlogSection() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: false });
+  const isInView = useInView(ref, { once: true });
 
   return (
     <div ref={ref} className="">
@@ -50,9 +50,9 @@ export default function BlogSection() {
         heading="Latest Blogs"
         subHeading="Explore our featured blog posts on premium properties for sales & rents"
       />
-      <div className="grid grid-cols-2 gap-4 mt-10">
+      <div className="grid grid-cols-1 2md:grid-cols-2 gap-4 mt-10">
         <motion.div
-            className="relative bg-white rounded-[8px]"
+            className="hidden 2md:block relative bg-white rounded-[8px] border border-border"
             ref={ref}
             variants={leftVariant}
             animate={isInView ? 'visible' : 'hidden'}
@@ -88,7 +88,7 @@ export default function BlogSection() {
         </motion.div>
         <div className="flex flex-col justify-between gap-4 h-full">
           <motion.div
-            className="flex relative bg-white rounded-[8px] flex-1"
+            className="flex relative bg-white rounded-[8px] flex-1 border border-border"
             ref={ref}
             variants={topVariant}
             animate={isInView ? 'visible' : 'hidden'}
@@ -98,11 +98,12 @@ export default function BlogSection() {
                 width={600}
                 height={600}
                 alt="banner"
-                className="w-[50%] rounded-l-[8px] h-full"
+                className="w-[35%] 2md:w-[50%] rounded-l-[8px] 2md:h-full"
               />
               <div>
                 
-              <div className="flex flex-col gap-2 p-6">
+              <div className="flex flex-col justify-between gap-2 px-4 py-2 2md:p-6 h-full">
+                <div className="flex flex-col gap-2">
                 <p className="text-base text-black font-semibold">
                   Top 10 Tips for first-Time HomeBuyers
                 </p>
@@ -110,6 +111,7 @@ export default function BlogSection() {
                   Buying your first home? Learn how to budget, choose the right
                   location, and avoid common mistakes.
                 </p>
+                </div>
                 <p className="flex gap-2 items-center">
                   <Image
                     src="/assets/calendar-gray.svg"
@@ -127,7 +129,7 @@ export default function BlogSection() {
               </div>
           </motion.div>
           <motion.div
-            className="flex relative bg-white rounded-[8px] flex-1"
+            className="flex relative bg-white rounded-[8px] flex-1 border border-border"
             ref={ref}
             variants={bottomVariant}
             animate={isInView ? 'visible' : 'hidden'}
@@ -137,11 +139,12 @@ export default function BlogSection() {
                 width={600}
                 height={600}
                 alt="banner"
-                className="w-[50%] rounded-l-[8px] h-full"
+                className="w-[35%] 2md:w-[50%] rounded-l-[8px] h-full"
               />
               <div>
                 
-              <div className="flex flex-col gap-2 p-6">
+              <div className="flex flex-col justify-between gap-2 px-4 py-2 2md:p-6 h-full">
+                <div className="flex flex-col gap-2">
                 <p className="text-base text-black font-semibold">
                   Top 10 Tips for first-Time HomeBuyers
                 </p>
@@ -149,6 +152,7 @@ export default function BlogSection() {
                   Buying your first home? Learn how to budget, choose the right
                   location, and avoid common mistakes.
                 </p>
+                </div>
                 <p className="flex gap-2 items-center">
                   <Image
                     src="/assets/calendar-gray.svg"

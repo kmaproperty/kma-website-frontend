@@ -78,13 +78,12 @@ const topVariant = {
 export default function ExploreSection() {
   const sliderRef = useRef<Slider | null>(null);
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: false });
+  const isInView = useInView(ref, { once: true });
 
-  const settings = useMemo(() => {
-    return {
+  const settings = {
       dots: false,
       arrows: false,
-      infinite: true,
+      infinite: true, 
       speed: 600,
       slidesToShow: 4,
       slidesToScroll: 1,
@@ -103,12 +102,12 @@ export default function ExploreSection() {
         },
       ],
     };
-  }, []);
+  
 
   return (
-    <div className="w-full flex gap-6 items-center">
+    <div className="w-full flex flex-col 2md:flex-row gap-6 items-center">
       <motion.div
-        className="flex flex-col w-[30%] justify-center items-start gap-3"
+        className="flex flex-col 2md:w-[30%] justify-center items-start gap-3"
         ref={ref}
         variants={leftVariant}
         animate={isInView ? "visible" : "hidden"}
@@ -156,7 +155,7 @@ export default function ExploreSection() {
       </motion.div>
 
       <motion.div
-        className="flex-1 min-w-0"
+        className="flex-1 w-full 2md:min-w-0"
         variants={rightVariant}
       >
         <Slider ref={sliderRef} {...settings}>

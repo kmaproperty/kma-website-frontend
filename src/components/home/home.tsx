@@ -29,7 +29,7 @@ export default function MainHome() {
       variants={dissolve}
       initial="hidden"
       animate={show ? "visible" : "hidden"}
-      onMouseEnter={() => setShow(true)}
+      onMouseMove={() => setShow(true)}
     >
       <div>
         <Social />

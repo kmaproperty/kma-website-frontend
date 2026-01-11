@@ -42,13 +42,13 @@ const topVariant = {
 
 export default function WorkingSection(){
     const ref = useRef(null);
-  const isInView = useInView(ref, { once: false });
+  const isInView = useInView(ref, { once: true });
     return(
         <>
-            <div ref={ref} className="my-16 w-[75%] z-1">
-                <div className="grid grid-cols-2 gap-3 justify-between items-center">
+            <div ref={ref} className="my-16 w-[90%] md:w-[75%] z-1">
+                <div className="grid grid-cols-1 2md:grid-cols-2 gap-3 justify-between items-center">
                     <motion.div
-                            className="relative h-full"
+                            className="relative h-[300px] 2md:h-full w-full 2md:w-auto"
                             ref={ref}
                             variants={topVariant}
                             animate={isInView ? "visible" : "hidden"}

@@ -28,19 +28,19 @@ export default function SectionHeader({
 
   return (
     <motion.div
-      className="flex gap-4 justify-between items-center"
+      className="flex flex-col md:flex-row gap-4 justify-start md:justify-between items-center"
       variants={fromTop}
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
     >
-      <div>
+      <div className="w-full">
         <div className="bg-gray-400 h-0.5 w-8 mb-2">
           <div className="w-1/2 h-0.5 bg-gray-900" />
         </div>
         <h2 className="text-2xl text-black font-semibold">{heading}</h2>
         <h3 className="text-text-gray text-xs">{subHeading}</h3>
       </div>
-      <div className="flex gap-3">
+      <div className="flex gap-3 w-full md:justify-end">
         {channelPartnerBtn && (
           <button className="font-medium w-auto text-sm 1xl:text-base animated-button px-9 py-2 border border-blue text-blue! hover:text-white! bg-transparent! text-center cursor-pointer">
             <span className="gap-3 relative flex justify-center">

@@ -29,7 +29,7 @@ const featureDetails = [
 
 export default function NeedSection() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: false });
+  const isInView = useInView(ref, { once: true });
   const smartTransition = {
     duration: 1,
     ease: "easeOut" as Easing,
@@ -62,7 +62,7 @@ export default function NeedSection() {
         heading="All Your Needs. One Trusted Platform."
         subHeading="Reliable support for all your property, loan, and agreement needs."
       />
-      <div className="mt-10 flex gap-4 flex-col md:flex-row" ref={ref}>
+      <div className="mt-10 flex gap-4 flex-col flex-wrap 2md:flex-row" ref={ref}>
         {featureDetails.map((item, index) => {
           const initialVariant =
             index === 0
@@ -80,7 +80,7 @@ export default function NeedSection() {
               initial={initialVariant}
               animate={isInView ? "visible" : initialVariant}
             >
-              <div className="flex gap-4 items-center mb-2">
+              <div className="flex gap-4 items-start mb-2">
                 <img
                   src={`/assets/${item.icon}`}
                   alt={item.heading}

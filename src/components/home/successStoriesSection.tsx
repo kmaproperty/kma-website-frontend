@@ -52,11 +52,11 @@ const topVariant = {
 
 export default function SuccessStoriesSection() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: false });
+  const isInView = useInView(ref, { once: true });
   return (
     <>
-      <div ref={ref} className="my-16 w-[75%] z-10">
-        <div className="grid grid-cols-[1.2fr_1fr_1fr]">
+      <div ref={ref} className="my-16 w-[90%] 2md:w-[75%] z-10">
+        <div className="grid grid-cols-1 2md:grid-cols-[1.2fr_1fr_1fr]">
           
             <motion.div
             className="col-span-1 flex gap-4 flex-col"
@@ -97,12 +97,13 @@ export default function SuccessStoriesSection() {
                   <p className="text-text-gray text-xs"> 3,456 Reviews</p>
                 </div>
               </div>
-              <div className="-mt-8">
+              <div className="2md:-mt-8">
                 <Image
                   src={"/assets/stories/arrow.svg"}
                   width={100}
                   height={100}
                   alt="arrow"
+                  className="transform scale-y-[-1] 2md:scale-y-[1]"
                 />
               </div>
             </div>

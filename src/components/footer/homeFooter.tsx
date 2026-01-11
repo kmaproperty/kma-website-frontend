@@ -41,7 +41,7 @@ const topVariant = {
 
 export default function HomeFooter() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: false });
+  const isInView = useInView(ref, { once: true });
   const [footerTab, setFooterTab] = useState('1')
 
   const handleTab = (tab) => {
