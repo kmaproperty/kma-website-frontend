@@ -6,7 +6,7 @@ const SectionHeading = ({ title, subtitle, description, type, color, lineTop }) 
   const mainColor = color || "#0D1520";
   const lineColor = color || "#778f9c";
   const innerLineColor = color === "white" ? "#778f9c" : "#0D1520";
-  const descColor = color === "white" ? "#d5d5d5" : "#0D1520";
+  const descColor = color === "white" ? "#d5d5d5" : "#5C727D";
 
   const Line = () => (
     <span
