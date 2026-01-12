@@ -1,3 +1,4 @@
+'use client'
 import { Easing, useInView, Variants } from "framer-motion";
 import SectionHeader from "../common/home/secionHeader";
 import { motion } from "framer-motion";

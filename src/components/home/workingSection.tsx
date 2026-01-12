@@ -1,3 +1,4 @@
+'use client'
 import UserRating from "../common/home/rating";
 import WorkingSectionImage from "../common/home/workingSectionImage";
 import { useRef } from "react";

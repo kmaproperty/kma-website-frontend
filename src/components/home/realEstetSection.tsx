@@ -1,3 +1,4 @@
+'use client'
 import Image from "next/image";
 import SectionHeader from "../common/home/secionHeader";
 import { motion, useInView } from "framer-motion";

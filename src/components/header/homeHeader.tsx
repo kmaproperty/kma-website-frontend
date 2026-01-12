@@ -1,6 +1,11 @@
+import { Menu } from "@mui/material";
 import Image from "next/image";
+import { useState } from "react";
+import ListView from "./listView";
 
 export default function HomdeHeader(){
+    const [anchorEl, setanchorEl] = useState(null)
+    const openType = Boolean(anchorEl);
     return(
         <div className="bg-white/10 rounded-[200px] bg-clip-padding backdrop-filter  backdrop-blur-[20px] h-[50px] 2md:h-[63px] px-3 lg:px-7 pt-[4px] flex justify-between items-center border border-1 border-[#FFFFFF33]"> 
             
@@ -31,7 +36,7 @@ export default function HomdeHeader(){
                     "Refer & Earn",
                     "Help",
                 ].map((item) => (
-                    <p key={item} className="hidden 2md:block mt-2 text-gray-100 break-word text-xs xl:text-sm nowrap w-max border-b-2 border-transparent hover:border-blue transition-colors duration-200 cursor-pointer px-1.5  pb-1">
+                    <p onClick={(event) => setanchorEl(event.currentTarget)} key={item} className="hidden 2md:block mt-2 text-gray-100 break-word text-xs xl:text-sm nowrap w-max border-b-2 border-transparent hover:border-blue transition-colors duration-200 cursor-pointer px-1.5  pb-1">
                     {item}
                     </p>
                 ))}
@@ -62,6 +67,20 @@ export default function HomdeHeader(){
                 />
                 </div>
             </div>
+
+            <Menu
+                  anchorEl={anchorEl}
+                  open={openType}
+                  onClose={() => {}}
+                  anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                  transformOrigin={{ vertical: "top", horizontal: "left" }}
+                  PaperProps={{
+                    className:
+                      "mt-5 w-auto rounded-2xl p-4 shadow-xl border border-gray-200",
+                  }}
+                >
+                  <ListView/>
+                </Menu>
         </div>
     )
 }
