@@ -8,8 +8,8 @@ export default function BannerText(){
             </div>
 
             <div className="text-white mt-5">
-                <p className="text-4xl font-bold mb-1">India's #1 Platform to Buy,</p>
-                <p className="text-4xl font-bold">Rent & Sell Property</p>
+                <p className="text-xl sm:text-2xl lg:text-4xl font-bold mb-1">India's #1 Platform to Buy,</p>
+                <p className="text-xl sm:text-2xl lg:text-4xl font-bold">Rent & Sell Property</p>
             </div>
 
             <p className="text-xs xl:text-sm text-white mt-2">Properties for buy / rent in your location. We have more than 3000+ listings</p>

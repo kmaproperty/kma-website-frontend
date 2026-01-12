@@ -35,22 +35,22 @@ export default function MainHome() {
         <Social />
       </div>
       <div className="flex flex-col items-center">
-        <div className="w-[75%] mt-[25px]">
+        <div className="w-[90%] lg:w-[75%] mt-[25px]">
           <HomdeHeader />
         </div>
 
-        <div className="w-[75%] mt-[45px] flex justify-between gap-5">
-          <div className="w-[50%]">
+        <div className="w-[75%] mt-[45px] flex justify-between gap-5 overflow-scroll no-scrollbar">
+          <div className="w-[100%] lg:w-[50%]">
             <BannerText />
           </div>
-          <div className="w-[40%]">
+          <div className="w-[100%] lg:w-[40%]">
             <TopProperties />
             <ProfileRating />
           </div>
         </div>
       </div>
       <div className="flex justify-center mt-10">
-        <div className="w-[55%]">
+        <div className="w-[75%] lg:w-[55%]">
           <Filter />
         </div>
       </div>

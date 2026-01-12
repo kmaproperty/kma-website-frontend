@@ -8,7 +8,7 @@ import Image from "next/image";
 
 const RenderSliderBody = ({ sliderItem }) => {
   return (
-    <div className="relative w-[100%] h-[90vh]">
+    <div className="relative w-[100%] min-h-[700px] 2md:min-h-auto 2md:h-[100vh]">
       <div className="absolute inset-0 gradient-mask">
         <Image alt='banner' className="" src={sliderItem.imagePath} fill/>
         <div className="gradient-overlay"></div>  
@@ -25,7 +25,7 @@ export default function BannerSlider(){
       infinite: true,
       slidesToShow: 1,
       slidesToScroll: 1,
-      autoplay: true,
+      autoplay: false,
       autoplaySpeed: 2000,
       arrows: false,
       pauseOnHover: false,

@@ -19,7 +19,7 @@ export default function Home() {
     <div className="overflow-hidden">
       <div className="relative ">
         <BannerSlider />
-        {/* <MainHome /> */}
+        <MainHome />
       </div>
       <div className="my-16 flex justify-center overflow-hidden">
         <div className="w-[90%] md:w-[75%]">

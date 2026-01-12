@@ -31,7 +31,7 @@ export default function ProfileRating({
 
  return (
    <div className={`flex items-center gap-4 text-white mt-3`}>
-     <div className="flex -space-x-4">
+     <div className="flex -space-x-2 2md:-space-x-4">
        {avatars.slice(0, 4).map((src, i) => (
          <Image
            key={i}
@@ -39,23 +39,23 @@ export default function ProfileRating({
            alt={`Client ${i + 1}`}
            width={30}
            height={30}
-           className="h-9 w-9 rounded-full object-cover"
+           className="h-5 2md:h-9 w-5 2md:w-9 rounded-full object-cover"
          />
        ))}
      </div>
 
      <div className="flex flex-col">
        <div className="flex items-center gap-3">
-         <p className="text-sm font-medium">
+         <p className="text-xs 2md:text-sm font-medium">
            {title} {rating.toFixed(1)}
          </p>
          <div className="flex">
            {stars.map((f, i) => (
-             <Star key={i} filled={f} />
+             <Star className='w-4 h-4 2md:w-6 2md:h-6' key={i} filled={f} />
            ))}
          </div>
        </div>
-       <p className="text-xs text-white font-normal">{subtitle}</p>
+       <p className="text-[10px] 2md:text-xs text-white font-normal">{subtitle}</p>
      </div>
    </div>
  );
