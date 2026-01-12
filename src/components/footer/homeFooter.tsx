@@ -187,7 +187,7 @@ export default function HomeFooter() {
                             animate={isInView ? 'visible' : 'hidden'}
                           >
                     <p className="text-white text-base font-semibold">Find Properties for Rent</p>
-                    <div className="grid grid-cols-4 gap-3">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-3">
                         <div className="flex flex-col gap-2">
                             <p className="text-white text-xs">Flats for rent in Mumbai</p>
                             <p className="text-white text-xs">Flats for rent in Mumbai</p>
@@ -228,7 +228,7 @@ export default function HomeFooter() {
                             animate={isInView ? 'visible' : 'hidden'}
                           >
                     <p className="text-white text-base font-semibold">Find Properties for Rent</p>
-                    <div className="grid grid-cols-4 gap-3">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-3">
                         <div className="flex flex-col gap-2">
                             <p className="text-white text-xs">Flats for rent in Mumbai</p>
                             <p className="text-white text-xs">Flats for rent in Mumbai</p>
