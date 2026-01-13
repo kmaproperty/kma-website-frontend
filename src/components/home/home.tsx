@@ -35,9 +35,9 @@ export default function MainHome() {
         <Social />
       </div>
       <div className="flex flex-col items-center">
-        <div className="w-[90%] lg:w-[75%] mt-[25px]">
+        {/* <div className=""> */}
           <HomdeHeader />
-        </div>
+        {/* </div> */}
 
         <div className="w-[75%] mt-[45px] flex justify-between gap-5 overflow-scroll no-scrollbar">
           <div className="w-[100%] lg:w-[50%]">
