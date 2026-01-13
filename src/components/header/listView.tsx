@@ -1,11 +1,13 @@
-export default function ListView(){
-    const list = ['Meet the Team', 'Social Media', 'Blog', 'Videos (our Happy customer)']
+export default function ListView({menuList = []}){
     return(
         <div className="flex flex-col">
             {
-                list.map(item => {
+                menuList.map((item, index) => {
                     return(
-                        <p className="text-sm border-b border-border hover:bg-light-purple p-2">{item}</p>
+                        <>
+                        <p className="text-sm text-text-black hover:bg-list-background cursor-pointer px-2 py-1.5 my-1 rounded-lg">{item.label}</p>
+                        {index != menuList.length - 1 && <div className="border-b border-border mx-2"></div>}
+                        </>
                     )
                 })
             }
