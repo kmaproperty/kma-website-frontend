@@ -13,13 +13,14 @@ import {
 import RentSellHeaderView from "./rentSellHeaderView";
 import CityView from "./cityView";
 import HomeMobileHeader from "./homeMobileHeader";
+import ProfileView from "./profileView";
 
 export default function HomdeHeader() {
   const [anchorEl, setanchorEl] = useState(null);
   const [menuList, setMenuList] = useState([]);
   const [type, setType] = useState(null);
   const [cityMenu, setCityMenu] = useState(null);
-
+  const [profileMenu, setProfileMenu] = useState(null)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [activeSubMenu, setActiveSubMenu] = useState(null);
  
@@ -71,6 +72,7 @@ export default function HomdeHeader() {
         setanchorEl(null);
     }
     setCityMenu(false);
+    setProfileMenu(null)
   };
 
   useEffect(() => {
@@ -176,6 +178,10 @@ export default function HomdeHeader() {
           </button>
           <div className="flex flex-row gap-[6px] items-center cursor-pointer">
             <Image
+             onMouseEnter={(event) => {
+              setProfileMenu('profile')
+              setanchorEl(event.currentTarget)
+             }}
               src="/assets/profile.png"
               height={40}
               width={40}
@@ -218,13 +224,15 @@ export default function HomdeHeader() {
               setanchorEl(null);
               setCityMenu(false);
               setType(null)
+              setProfileMenu(null)
             }}
           >
             <div>
               {!cityMenu &&
                 (!type ? (
                   <Paper className="w-auto min-w-[180px]! rounded-2xl! px-2 py-2 shadow-xl border border-gray-200">
-                    <ListView menuList={menuList} />
+                    {profileMenu != 'profile' ? <ListView menuList={menuList} />
+                     : <ProfileView/>}
                   </Paper>
                 ) : (
                   <RentSellHeaderView type={type} />
