@@ -1,5 +1,7 @@
+'use client'
 import { Easing, Variants } from "framer-motion";
 import { motion } from "framer-motion";
+import { useRouter } from "nextjs-toploader/app";
 
 export default function SectionHeader({
   heading = "",
@@ -9,6 +11,7 @@ export default function SectionHeader({
   channelPartnerBtn = false,
   isInView = false,
 }) {
+  const router = useRouter()
   const smartTransition = {
     duration: 1,
     ease: "easeOut" as Easing,
@@ -26,6 +29,10 @@ export default function SectionHeader({
     },
   };
 
+  const naviageChannelPartner = () => {
+    router.push('/signup?ownerType=CHANNEL_PARTNER')
+  }
+
   return (
     <motion.div
       className="flex flex-col md:flex-row gap-4 justify-start md:justify-between items-center"
@@ -42,7 +49,7 @@ export default function SectionHeader({
       </div>
       <div className="flex gap-3 w-full md:justify-end">
         {channelPartnerBtn && (
-          <button className="font-medium w-auto text-sm 1xl:text-base animated-button px-9 py-2 border border-blue text-blue! hover:text-white! bg-transparent! text-center cursor-pointer">
+          <button onClick={naviageChannelPartner} className="font-medium w-auto text-sm 1xl:text-base animated-button px-9 py-2 border border-blue text-blue! hover:text-white! bg-transparent! text-center cursor-pointer">
             <span className="gap-3 relative flex justify-center">
               <p className={`text-nowrap`}>Contact Us</p>
             </span>

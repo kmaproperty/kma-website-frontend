@@ -8,7 +8,7 @@ import ProfileRating from "./rating";
 import Filter from "./filter";
 import ContactUs from "./contactus";
 
-export default function MainHome() {
+export default function MainHome({propertyMasterData}) {
   const [show, setShow] = useState(false);
 
   const dissolve: Variants = {
@@ -36,7 +36,7 @@ export default function MainHome() {
       </div>
       <div className="flex flex-col items-center">
         {/* <div className=""> */}
-          <HomdeHeader />
+          <HomdeHeader propertyMasterData={propertyMasterData}/>
         {/* </div> */}
 
         <div className="w-[75%] mt-[45px] flex justify-between gap-5 overflow-scroll no-scrollbar">

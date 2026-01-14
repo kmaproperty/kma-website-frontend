@@ -12,14 +12,35 @@ import ChannelPartnerSection from "./channelPartnerSection";
 import AppDownloadSection from "./appDownloadSection";
 import HomeFooter from "../footer/homeFooter";
 import MainHome from "./home";
+import { useMutation } from "@tanstack/react-query";
+import { CitiesPayload, CitiesResponse, getCityListApiHandler } from "@/services/homeService";
+import { useEffect, useState } from "react";
 
-export default function Home() {
+export default function Home({ propertyMasterData }) {
+  const [selectedCity, setSelectedCity] = useState(null)
+  const [cityData, setCityData] = useState(null)
+
+  const {
+    mutate: fetchCities, isPending: cityLoader
+  } = useMutation({
+    mutationFn: getCityListApiHandler,
+    onSuccess: (response: CitiesResponse) => {
+
+    },
+    onError: (error) => {
+
+    }
+  });
+
+  useEffect(() => {
+    fetchCities({})
+  },[])
 
   return (
     <div className="overflow-hidden">
       <div className="relative ">
         <BannerSlider />
-        <MainHome />
+        <MainHome propertyMasterData={propertyMasterData} />
       </div>
       <div className="my-16 flex justify-center overflow-hidden">
         <div className="w-[90%] md:w-[75%]">
@@ -32,7 +53,7 @@ export default function Home() {
         </div>
       </div>
       <div className="relative bg-text-black flex justify-center overflow-hidden">
-          <AboutUsSection />
+        <AboutUsSection />
       </div>
       <div className="my-16 flex justify-center">
         <div className="w-[90%] md:w-[75%]">
@@ -45,10 +66,10 @@ export default function Home() {
         </div>
       </div>
       <div className="relative bg-text-black flex justify-center overflow-hidden">
-          <WorkingSection />
+        <WorkingSection />
       </div>
       <div className="relative bg-[#F2F2F2] flex justify-center overflow-hidden">
-          <SuccessStoriesSection />
+        <SuccessStoriesSection />
       </div>
       <div className="flex justify-center overflow-hidden">
         <div className="my-16 w-[90%] 2md:w-[75%]">
@@ -57,14 +78,14 @@ export default function Home() {
       </div>
       <div className="bg-[#F2F2F2] flex justify-center overflow-hidden">
         <div className="my-16 w-[90%] 2md:w-[75%]">
-          <ChannelPartnerSection />
+          <ChannelPartnerSection selectedCity={selectedCity}/>
         </div>
       </div>
       <div className="">
         <AppDownloadSection />
       </div>
       <div className="">
-        <HomeFooter/>
+        <HomeFooter />
       </div>
     </div>
   );

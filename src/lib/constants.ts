@@ -6,7 +6,7 @@ export const headerMenuList = [
     },
     {
         label: 'Buy',
-        value: 'buy'
+        value: 'sale'
     },
     {
         label: 'Projects',

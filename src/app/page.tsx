@@ -1,7 +1,14 @@
 import Home from "@/components/home";
+import { fetchPropertyMasterData } from "./api/home";
 
-export default function HomeDashboard() {
-  return (
-    <Home/>
-  );
+export default async function HomeDashboard() {
+  let propertyMasterData: any = await fetchPropertyMasterData();
+  if (propertyMasterData?.success) {
+    propertyMasterData = propertyMasterData.data;
+  } else {
+    propertyMasterData = [];
+  }
+
+  
+  return <Home propertyMasterData={propertyMasterData} />;
 }

@@ -15,7 +15,7 @@ import CityView from "./cityView";
 import HomeMobileHeader from "./homeMobileHeader";
 import ProfileView from "./profileView";
 
-export default function HomdeHeader() {
+export default function HomdeHeader({propertyMasterData}) {
   const [anchorEl, setanchorEl] = useState(null);
   const [menuList, setMenuList] = useState([]);
   const [type, setType] = useState(null);
@@ -56,7 +56,7 @@ export default function HomdeHeader() {
         setType(null);
         setanchorEl(event.currentTarget);
         break;
-      case "buy":
+      case "sale":
         setType(menuType);
         setMenuList([]);
         setanchorEl(event.currentTarget);
@@ -235,7 +235,7 @@ export default function HomdeHeader() {
                      : <ProfileView/>}
                   </Paper>
                 ) : (
-                  <RentSellHeaderView type={type} />
+                  <RentSellHeaderView propertyMasterData={propertyMasterData} type={type} />
                 ))}
               {cityMenu && (
                 <Paper className="w-auto min-w-[180px]! rounded-2xl! px-2 py-2 shadow-xl border border-gray-200">
@@ -247,7 +247,7 @@ export default function HomdeHeader() {
         </Popper>
       </div>
     </div>
-        <HomeMobileHeader open={isDrawerOpen} onClose={toggleDrawer} activeSubMenu={activeSubMenu} openSubMenu={openSubMenu} closeSubMenu={closeSubMenu}/>
+    <HomeMobileHeader open={isDrawerOpen} onClose={toggleDrawer} activeSubMenu={activeSubMenu} openSubMenu={openSubMenu} closeSubMenu={closeSubMenu}/>
     </>
   );
 }
