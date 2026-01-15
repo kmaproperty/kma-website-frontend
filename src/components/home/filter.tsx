@@ -1,73 +1,66 @@
 "use client";
 import Image from "next/image";
 import DynamicAsyncAutocomplete from "../common/dynamicAsyncSelectMui";
-import { InputBase } from "@mui/material";
-import PropertyTypeMenu from "./propertyTypeMenu";
+import { ClickAwayListener, InputBase, Popper } from "@mui/material";
+import PropertyTypeMenu from "../filtermenu/propertyTypeMenu";
 import { useState } from "react";
-import PriceRangeMenu from "./budgetTypeMenu";
+import PriceRangeMenu from "../filtermenu/budgetTypeMenu";
+import { filterTypeList } from "@/lib/constants";
+import PossessionStatusMenu from "../filtermenu/possesionStatusMenu";
+import FurnishTypeMenu from "../filtermenu/furnishTypeMenu";
+import ProjectStatusMenu from "../filtermenu/projectStatusMenu";
+import PostedByMenu from "../filtermenu/postedByMenu";
+import TransactionByMenu from "../filtermenu/transactionByMenu";
 
-export default function Filter() {
+export default function Filter({propertyMasterData}) {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const [popperType, setPopperType] = useState(null)
+
   const [budgetAnchorEl, setBudgetAnchorEl] = useState<null | HTMLElement>(
     null
   );
   const [typeAnchorEl, setTypeAnchorEl] = useState<null | HTMLElement>(null);
   const openBudget = Boolean(budgetAnchorEl);
-  const openType = Boolean(typeAnchorEl);
+  const openType = Boolean(anchorEl);
 
-  const handleBudgetClick = (event: React.MouseEvent<HTMLElement>) => {
-    setBudgetAnchorEl(event.currentTarget);
+  //Filter state 
+  const [filterType, setFilterType] = useState('rent')
+  const [selectedMinBudget, setSelectedMinBudget] = useState(null)
+  const [selectedMaxBudget, setSelectedMaxBudget] = useState(null)
+  const [selectedPropertyType, setSelectedPropertyType] = useState([])
+  const [selectedPossessionStatus, setSelectedPossessionStatus] = useState([])
+  const [selectedFurnishType, setSelectedFurnishType] = useState([])
+  const [selectedProjectStatus, setSelectedProjectStatus] = useState([])
+  const [selectedPostedBy, setSelectedPostedBy] = useState([])
+  const [transactionBy, setTransactionBy] = useState({name: 'Buy', value: 'rent'})
+
+  const handlePopperOpen = (event: React.MouseEvent<HTMLElement>, type) => {
+    setAnchorEl(event.currentTarget);
+    setPopperType(type)
   };
 
-  const handleBudgetClose = () => {
-    setBudgetAnchorEl(null);
-  };
-
-  const handleTypeClick = (event: React.MouseEvent<HTMLElement>) => {
-    setTypeAnchorEl(event.currentTarget);
-  };
-
-  const handleTypeClose = () => {
-    setTypeAnchorEl(null);
-  };
+  const handleFilterType = (value) => {
+    setFilterType(value)
+  }
 
   return (
     <div className="flex flex-col gap-2">
       <div className="flex justify-center font-medium text-blue overflow-auto no-scrollbar">
-        <button className="w-fit 2md:w-[110px] flex-shrink-0 animated-button-white px-5 2md:px-8 py-1 2md:py-2 border border-transparent text-center cursor-pointer">
+        {
+          filterTypeList.map((item, index) => {
+            return(
+              <button onClick={() => handleFilterType(item.value)} className={`w-fit 2md:w-[110px] ${index == 0 ? '' : 'ml-2'} flex-shrink-0 ${filterType == item.value ? 'animated-button' : 'animated-button-white'} px-5 2md:px-8 py-1 2md:py-2 border border-transparent text-center cursor-pointer`}>
           <span className="gap-3 relative flex justify-center">
             <p className={`text-nowrap text-xs 2md:text-sm 1xl:text-base`}>
-              For Buy
+              {item.label}
             </p>
           </span>
         </button>
-        <button className="2md:w-[110px] flex-shrink-0 ml-2 animated-button-white px-5 2md:px-8 py-1 2md:py-2 border border-transparent text-center cursor-pointer">
-          <span className="gap-3 relative flex justify-center">
-            <p className={`text-nowrap text-xs 2md:text-sm 1xl:text-base`}>
-              Rental
-            </p>
-          </span>
-        </button>
-        <button className="2md:w-[110px] flex-shrink-0 ml-2 animated-button-white px-5 2md:px-8 py-1 2md:py-2 border border-transparent text-center cursor-pointer">
-          <span className="gap-3 relative flex justify-center">
-            <p className={`text-nowrap text-xs 2md:text-sm 1xl:text-base`}>
-              Projects
-            </p>
-          </span>
-        </button>
-        <button className="2md:w-[110px] flex-shrink-0 ml-2 animated-button-white px-5 2md:px-8 py-1 2md:py-2 border border-transparent text-center cursor-pointer">
-          <span className="gap-3 relative flex justify-center">
-            <p className={`text-nowrap text-xs 2md:text-sm 1xl:text-base`}>
-              Plot & Land
-            </p>
-          </span>
-        </button>
-        <button className="2md:w-[110px] flex-shrink-0 ml-2 animated-button-white px-5 2md:px-8 py-1 2md:py-2 border border-transparent text-center cursor-pointer">
-          <span className="gap-3 relative flex justify-center">
-            <p className={`text-nowrap text-xs 2md:text-sm 1xl:text-base`}>
-              Commercial
-            </p>
-          </span>
-        </button>
+            )
+          })
+        }
+        
+        
       </div>
       <div className="flex flex-col rounded-[10px] bg-white mt-1 p-4">
         <div className="hidden 2md:flex h-[35px] 2md:h-[40px]">
@@ -229,11 +222,11 @@ export default function Filter() {
           </div>
         </div>
         <div className="flex justify-center gap-3 pt-2 2md:pt-3">
-          <div
-            onClick={handleBudgetClick}
+          {['commercial'].includes(filterType) && <div
+            onClick={(event) => handlePopperOpen(event, 'transactiontype')}
             className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
           >
-            Budget
+            {transactionBy ? transactionBy?.name : 'Transaction Type'}
             <Image
               src={"/assets/small-up-arrow-blue.svg"}
               width={12}
@@ -241,12 +234,12 @@ export default function Filter() {
               alt="arrow"
               className="mt-1"
             />
-          </div>
-          <div
-            onClick={handleTypeClick}
+          </div>}
+          {['rent', 'sale', 'projects','commercial'].includes(filterType) && <div
+            onClick={(event) => handlePopperOpen(event, 'budget')}
             className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
           >
-            Property Type
+            {(!selectedMinBudget && !selectedMaxBudget) ? 'Budget' : (selectedMinBudget && !selectedMaxBudget) ? 'Above' + selectedMinBudget?.label : selectedMinBudget?.label + ' - ' + selectedMaxBudget?.label }
             <Image
               src={"/assets/small-up-arrow-blue.svg"}
               width={12}
@@ -254,7 +247,72 @@ export default function Filter() {
               alt="arrow"
               className="mt-1"
             />
-          </div>
+          </div>}
+          {['projects'].includes(filterType) && <div
+            onClick={(event) => handlePopperOpen(event, 'projectstatus')}
+            className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
+          >
+            {selectedProjectStatus.length > 0 ? selectedProjectStatus[0].name + (selectedProjectStatus.length > 1 ? ' +1': '') : 'Project Status'}
+            <Image
+              src={"/assets/small-up-arrow-blue.svg"}
+              width={12}
+              height={12}
+              alt="arrow"
+              className="mt-1"
+            />
+          </div>}
+          {['rent', 'sale', 'projects', 'plot_land', 'commercial'].includes(filterType) && <div
+            onClick={(event) => handlePopperOpen(event, 'propertytype')}
+            className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
+          >
+           {selectedPropertyType.length > 0 ? selectedPropertyType[0].name + (selectedPropertyType.length > 1 ? " +1" : '')  : ' Property Type'}
+            <Image
+              src={"/assets/small-up-arrow-blue.svg"}
+              width={12}
+              height={12}
+              alt="arrow"
+              className="mt-1"
+            />
+          </div>}
+          {['rent'].includes(filterType) && <div
+            onClick={(event) => handlePopperOpen(event, 'possessionstatus')}
+            className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
+          >
+            {selectedPossessionStatus.length > 0 ? selectedPossessionStatus[0].name + (selectedPossessionStatus.length > 1 ? ' +1': '') : 'Possession Status'}
+            <Image
+              src={"/assets/small-up-arrow-blue.svg"}
+              width={12}
+              height={12}
+              alt="arrow"
+              className="mt-1"
+            />
+          </div>}
+          {['sale'].includes(filterType) && <div
+            onClick={(event) => handlePopperOpen(event, 'furnishType')}
+            className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
+          >
+            {selectedFurnishType.length > 0 ? selectedFurnishType[0].name + (selectedFurnishType.length > 1 ? ' +1': '') : 'Furnishing Status'}
+            <Image
+              src={"/assets/small-up-arrow-blue.svg"}
+              width={12}
+              height={12}
+              alt="arrow"
+              className="mt-1"
+            />
+          </div>}
+          {['plot_land'].includes(filterType) && <div
+            onClick={(event) => handlePopperOpen(event, 'postedby')}
+            className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
+          >
+            {selectedPostedBy.length > 0 ? selectedPostedBy[0].name + (selectedPostedBy.length > 1 ? ' +1': '') : 'Posted By'}
+            <Image
+              src={"/assets/small-up-arrow-blue.svg"}
+              width={12}
+              height={12}
+              alt="arrow"
+              className="mt-1"
+            />
+          </div>}
         </div>
         <div className="2md:hidden flex-1 mt-2">
             <button className="animated-button px-[30px] py-[9px] cursor-pointer ml-2 h-full w-[calc(100%-0.5rem)]">
@@ -272,16 +330,37 @@ export default function Filter() {
             </button>
           </div>
       </div>
-      <PriceRangeMenu
-        open={openBudget}
-        onClose={handleBudgetClose}
-        anchorEl={budgetAnchorEl}
-      />
-      <PropertyTypeMenu
-        open={openType}
-        handleClose={handleTypeClose}
-        anchorEl={typeAnchorEl}
-      />
+
+      <Popper
+          open={openType}
+          anchorEl={anchorEl}
+          placement="bottom-start"
+          modifiers={[
+            {
+              name: "offset",
+              options: {
+                offset: [0, 20],
+              },
+            },
+          ]}
+        >
+          <ClickAwayListener
+                      onClickAway={() => {
+                        setAnchorEl(null)
+                        setPopperType('')
+                      }}
+                    >
+                      <div className="bg-white overflow-hidden p-2 rounded-[10px] shadow-xl">
+                        {popperType == 'budget' && <PriceRangeMenu filterType={filterType} selectedMinBudget={selectedMinBudget} setSelectedMinBudget={setSelectedMinBudget} selectedMaxBudget={selectedMaxBudget} setSelectedMaxBudget={setSelectedMaxBudget}/>}
+                        {popperType == 'propertytype' && <PropertyTypeMenu isCommercial={filterType == 'commercial'} propertyMasterData={propertyMasterData} filterType={filterType == 'projects' ? 'rent' : filterType == 'commercial' ? transactionBy?.value : filterType} selectedPropertyType={selectedPropertyType} setSelectedPropertyType={setSelectedPropertyType}/>}
+                        {popperType == 'possessionstatus' && <PossessionStatusMenu selectedPossessionStatus={selectedPossessionStatus} setSelectedPossessionStatus={setSelectedPossessionStatus}/>}
+                        {popperType == 'furnishType' && <FurnishTypeMenu selectedFurnishType={selectedFurnishType} setSelectedFurnishType={setSelectedFurnishType}/>}
+                        {popperType == 'projectstatus' && <ProjectStatusMenu selectedProjectStatus={selectedProjectStatus} setSelectedProjectStatus={setSelectedProjectStatus}/>}
+                        {popperType == 'postedby' && <PostedByMenu selectedPostedBy={selectedPostedBy} setSelectedPostedBy={setSelectedPostedBy}/>}
+                        {popperType == 'transactiontype' && <TransactionByMenu transactionBy={transactionBy} setTransactionBy={setTransactionBy}/>}
+                      </div>
+                    </ClickAwayListener>
+        </Popper>
     </div>
   );
 }

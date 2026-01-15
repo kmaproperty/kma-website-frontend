@@ -1,8 +1,10 @@
-'use client'
+"use client";
 import Image from "next/image";
 import SectionHeader from "../common/home/secionHeader";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import { topCitiesApiHandler, TopCitiesResponse } from "@/services/homeService";
+import { useQuery } from "@tanstack/react-query";
 
 const exploreDetails = [
   {
@@ -32,15 +34,39 @@ const exploreDetails = [
   },
 ];
 function ExploreCard({ name, properties, image }) {
+  const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
+  console.log("city resp", name);
+
   return (
     <div className="relative flex-1 rounded-[8px] overflow-hidden shadow-md group">
-      <Image
-        src={`${image}`}
-        alt={name}
-        width={300}
-        height={400}
-        className="w-full h-45 object-fit transform transition-transform ease-in-out duration-800 group-hover:scale-150"
-      />
+      {image ? (
+        <Image
+          src={profileBaseUrl + image}
+          alt={name}
+          width={300}
+          height={400}
+          className="cursor-pointer
+        w-full h-full object-cover
+        transform transition-transform duration-700 ease-in-out
+        group-hover:scale-150
+      "
+        />
+      ) : (
+        <div
+          className=" cursor-pointer
+        w-full h-full min-h-[180px]
+        bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800
+        flex items-center justify-center
+        text-white
+        text-5xl font-bold
+        uppercase
+        transform transition-transform duration-700 ease-in-out
+        group-hover:scale-150
+      "
+        >
+          {name?.charAt(0)}
+        </div>
+      )}
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
       <div className="absolute bottom-4 left-4 text-white">
         <h3 className="text-base font-semibold">{name}</h3>
@@ -86,8 +112,19 @@ export default function RealEstateSection() {
     },
   };
 
+  const { data: citiList } = useQuery({
+    queryKey: ["city-list"],
+    queryFn: () => {
+      return topCitiesApiHandler();
+    },
+    select: (response: TopCitiesResponse) => {
+      return response.cities;
+    },
+  });
+  console.log("city resp", citiList);
+
   return (
-    <div >
+    <div>
       <SectionHeader
         isInView={isInView}
         heading="Explore Top Real Estate Opportunities Across India"
@@ -100,8 +137,13 @@ export default function RealEstateSection() {
           variants={leftRowVariant}
           animate={isInView ? "visible" : "hidden"}
         >
-          {exploreDetails.slice(0, 3).map((exploreDetail, index) => (
-            <ExploreCard key={exploreDetail.name} {...exploreDetail} />
+          {citiList?.slice(0, 3).map((exploreDetail, index) => (
+            <ExploreCard
+              key={exploreDetail.name}
+              name={exploreDetail.name}
+              image={exploreDetail.imageUrl}
+              properties={exploreDetail?.propertyCount}
+            />
           ))}
         </motion.div>
         {/* Second Row */}
@@ -110,8 +152,13 @@ export default function RealEstateSection() {
           variants={rightRowVariant}
           animate={isInView ? "visible" : "hidden"}
         >
-          {exploreDetails.slice(3).map((exploreDetail, index) => (
-            <ExploreCard key={exploreDetail.name} {...exploreDetail} />
+          {citiList?.slice(3).map((exploreDetail, index) => (
+            <ExploreCard
+              key={exploreDetail.name}
+              name={exploreDetail.name}
+              image={exploreDetail.imageUrl}
+              properties={exploreDetail?.propertyCount}
+            />
           ))}
         </motion.div>
       </div>

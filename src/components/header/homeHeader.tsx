@@ -14,8 +14,11 @@ import RentSellHeaderView from "./rentSellHeaderView";
 import CityView from "./cityView";
 import HomeMobileHeader from "./homeMobileHeader";
 import ProfileView from "./profileView";
+import { useRouter } from "nextjs-toploader/app";
 
 export default function HomdeHeader({propertyMasterData}) {
+  const router = useRouter()
+
   const [anchorEl, setanchorEl] = useState(null);
   const [menuList, setMenuList] = useState([]);
   const [type, setType] = useState(null);
@@ -91,6 +94,10 @@ export default function HomdeHeader({propertyMasterData}) {
   };
 }, [openType]);
 
+const navigatePostProperty = () => {
+  router.push('/post-property')
+}
+
   return (
     <>
     <div className="w-[90%] lg:w-[75%] mt-[25px]">
@@ -162,7 +169,7 @@ export default function HomdeHeader({propertyMasterData}) {
           </div>
         </div>
         <div className="flex items-center justify-start gap-[7px] shrink-0">
-          <button className="animated-button px-[10px] sm:px-[20px] py-[6px] sm:py-[9px] cursor-pointer">
+          <button onClick={navigatePostProperty} className="animated-button px-[10px] sm:px-[20px] py-[6px] sm:py-[9px] cursor-pointer">
             <span className="flex items-center justify-between gap-[6px] relative z-11">
               <Image
                 src="/assets/home-white.svg"
