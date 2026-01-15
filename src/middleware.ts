@@ -14,7 +14,7 @@ export default function middleware(req: NextRequest) {
    if (isHomePage) {
     return NextResponse.next();
   }
-  
+
   if (accessToken && (isSignupPage || isVerifyOtpPage)) {
     return NextResponse.redirect(new URL('/user-dashboard', req.url));
   }
@@ -27,5 +27,5 @@ export default function middleware(req: NextRequest) {
 } 
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.png$|.*\\.svg$).*)'],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.png$|.*\\.svg$.*\\.jpg$|).*)'],
 } 
