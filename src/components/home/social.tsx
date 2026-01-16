@@ -2,15 +2,48 @@ import { FaFacebookF } from "react-icons/fa";
 import { FaInstagram } from "react-icons/fa";
 import { FaTwitter } from "react-icons/fa";
 
-export default function Social() {
+export default function Social({aboutusData}) {
+  const { instagramLink, fbLink, twitterLink } = aboutusData || {};
   return (
     <div
       className="absolute top-1/2 left-1 lg:left-10 -translate-y-1/2 flex flex-row items-center text-xs gap-4 tracking-widest text-white"
       style={{ writingMode: "sideways-lr" }}
     >
-      <div className="cursor-pointer flex items-center gap-1"><FaFacebookF style={{ transform: "rotate(266deg)" }} /> Facebook{"  "}</div>
-      <div className="cursor-pointer flex items-center gap-1"><FaInstagram style={{ transform: "rotate(266deg)" }} /> Instagram{"  "}</div>
-      <div className="cursor-pointer flex items-center gap-1"><FaTwitter style={{ transform: "rotate(266deg)" }} /> Twitter</div>
+      {fbLink && (
+        <a
+          href={fbLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="cursor-pointer flex items-center gap-1 hover:opacity-80"
+        >
+          <FaFacebookF style={{ transform: "rotate(266deg)" }} />
+          Facebook
+        </a>
+      )}
+
+      {instagramLink && (
+        <a
+          href={instagramLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="cursor-pointer flex items-center gap-1 hover:opacity-80"
+        >
+          <FaInstagram style={{ transform: "rotate(266deg)" }} />
+          Instagram
+        </a>
+      )}
+
+      {twitterLink && (
+        <a
+          href={twitterLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="cursor-pointer flex items-center gap-1 hover:opacity-80"
+        >
+          <FaTwitter style={{ transform: "rotate(266deg)" }} />
+          Twitter
+        </a>
+      )}
     </div>
   );
 }

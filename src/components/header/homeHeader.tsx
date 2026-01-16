@@ -17,7 +17,7 @@ import ProfileView from "./profileView";
 import { useRouter } from "nextjs-toploader/app";
 import { USER_TYPE } from "@/lib/enums";
 
-export default function HomdeHeader({cityData, selectedCity, setSelectedCity, cityLoader, fetchCities, propertyMasterData}) {
+export default function HomdeHeader({cityData, aboutusData, selectedCity, setSelectedCity, cityLoader, fetchCities, propertyMasterData}) {
   const router = useRouter()
 
   const [anchorEl, setanchorEl] = useState(null);
@@ -278,7 +278,7 @@ const navigateDashboard = () => {
                      : <ProfileView/>}
                   </Paper>
                 ) : (
-                  <RentSellHeaderView propertyMasterData={propertyMasterData} type={type} />
+                  <RentSellHeaderView aboutusData={aboutusData} selectedCity={selectedCity} propertyMasterData={propertyMasterData} type={type} />
                 ))}
               {cityMenu && (
                 <Paper className="w-auto min-w-[180px]! rounded-2xl! px-2 py-2 shadow-xl border border-gray-200">

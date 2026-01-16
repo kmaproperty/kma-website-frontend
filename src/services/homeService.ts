@@ -246,3 +246,33 @@ export const getAboutUsSectionDataApiResponse = async () : Promise<GetAboutUsSec
         throw error.response?.data ?? error;
     }
 }   
+
+export interface AboutusResponse {
+  success: boolean;
+  configuration: {
+    id: string;
+    mobileAppAvailable: boolean;
+    description: string;
+    phoneNumber: string;
+    address: string;
+    latitude: number;
+    longitude: number;
+    instagramLink: string;
+    fbLink: string;
+    youtubeLink: string;
+    twitterLink: string;
+    createdAt: string; // ISO date string
+    updatedAt: string; // ISO date string
+  };
+}
+
+export const getAboutUsDataAPiHanlder = async () : Promise<AboutusResponse> => {
+    try{
+        const response = await axiosInstance.get<AboutusResponse>(
+      "end-user/configurations");
+
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}

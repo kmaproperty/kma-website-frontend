@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { useState } from "react";
 
-export default function RentSellHeaderView({propertyMasterData, type}) {
+export default function RentSellHeaderView({aboutusData, propertyMasterData, type, selectedCity}) {
   console.log('propertyMasterDatapropertyMasterData',propertyMasterData)
   const [categoryType, setCategoryType] = useState('867c2adf-7e01-45a8-a305-74900b24c529') //residential
 
@@ -42,15 +42,15 @@ export default function RentSellHeaderView({propertyMasterData, type}) {
       </div>
       <div className="grid grid-cols-1 2md:grid-cols-[1fr_150px] bg-white pl-8 py-5 pr-5">
         <div className="flex justify-between flex-col gap-3 2md:gap-0 pr-5">
-          <p className="text-sm 2md:mb-2 text-text-gray break-inside-avoid">
+          <p className="text-sm 2md:mb-2 text-text-gray break-inside-avoid underline font-medium">
             Property Type
           </p>
             <div className="2md:columns-2 2md:h-[180px] [column-fill:auto]">
               {
                 propertyList.map(item => {
                   return(
-                    <p className="cursor-pointer text-sm mt-1 font-medium text-text-black break-inside-avoid">
-                      {item.name}
+                    <p className="cursor-pointer text-sm mt-1  text-text-black break-inside-avoid hover:underline">
+                      {item.name} {selectedCity ? `in ${selectedCity?.name}` : ''}
                     </p>
                   ) 
                 })
@@ -61,7 +61,7 @@ export default function RentSellHeaderView({propertyMasterData, type}) {
                 <p className="text-xs text-text-gray max-w-[250px] lg:max-w-fit">Email Us at Services@kma.com or call us at 1800 41 00000 (IND Toll-Free)</p>
             </div>
         </div>
-        <div className="mt-5 2md:mt-0">
+        {aboutusData?.mobileAppAvailable && <div className="mt-5 2md:mt-0">
           <Image
             src={"/assets/app-banner.svg"}
             width={300}
@@ -69,7 +69,7 @@ export default function RentSellHeaderView({propertyMasterData, type}) {
             alt="app"
             className="w-[95%] 2md:w-[150px] h-full"
           />
-        </div>
+        </div>}
       </div>
     </div>
   );

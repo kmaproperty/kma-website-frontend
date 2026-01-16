@@ -12,7 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getUserReviewApiHandler, GetUserReviewApiHandlerResponse } from "@/services/homeService";
 import ContactInformation from "../contactInformation";
 
-export default function MainHome({cityData,selectedCity, setSelectedCity, cityLoader, fetchCities, propertyMasterData}) {
+export default function MainHome({aboutusData, cityData,selectedCity, setSelectedCity, cityLoader, fetchCities, propertyMasterData}) {
     const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
   const [show, setShow] = useState(false);
 
@@ -57,10 +57,10 @@ export default function MainHome({cityData,selectedCity, setSelectedCity, cityLo
       onMouseMove={() => setShow(true)}
     >
       <div>
-        <Social />
+        <Social aboutusData={aboutusData}/>
       </div>
       <div className="flex flex-col items-center">
-        <HomdeHeader selectedCity={selectedCity} setSelectedCity={setSelectedCity} cityData={cityData} cityLoader={cityLoader} fetchCities={fetchCities} propertyMasterData={propertyMasterData}/>
+        <HomdeHeader aboutusData={aboutusData} selectedCity={selectedCity} setSelectedCity={setSelectedCity} cityData={cityData} cityLoader={cityLoader} fetchCities={fetchCities} propertyMasterData={propertyMasterData}/>
        
 
         <div className="w-[75%] mt-[45px] flex justify-between gap-5 overflow-scroll no-scrollbar">

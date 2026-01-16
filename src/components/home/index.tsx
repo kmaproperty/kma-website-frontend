@@ -13,12 +13,13 @@ import AppDownloadSection from "./appDownloadSection";
 import HomeFooter from "../footer/homeFooter";
 import MainHome from "./home";
 import { useMutation } from "@tanstack/react-query";
-import { CitiesPayload, CitiesResponse, getCityListApiHandler } from "@/services/homeService";
+import { AboutusResponse, CitiesPayload, CitiesResponse, getAboutUsDataAPiHanlder, getCityListApiHandler } from "@/services/homeService";
 import { useEffect, useState } from "react";
 
 export default function Home({ propertyMasterData }) {
   const [selectedCity, setSelectedCity] = useState(null)
   const [cityData, setCityData] = useState(null)
+  const [aboutusData, setAboutusData] = useState(null)
 
   const {
     mutate: fetchCities, isPending: cityLoader
@@ -32,15 +33,28 @@ export default function Home({ propertyMasterData }) {
     }
   });
 
+  const {
+    mutate: fetchAboutusData, isPending: aboutusLoader
+  } = useMutation({
+    mutationFn: getAboutUsDataAPiHanlder,
+    onSuccess: (response: AboutusResponse) => {
+      setAboutusData(response?.configuration)
+    },
+    onError: (error) => {
+
+    }
+  });
+
   useEffect(() => {
     fetchCities({})
+    fetchAboutusData()
   },[])
 
   return (
     <div className="overflow-hidden">
       <div className="relative ">
         <BannerSlider />
-        <MainHome selectedCity={selectedCity} setSelectedCity={setSelectedCity} fetchCities={fetchCities} cityLoader={cityLoader} cityData={cityData} propertyMasterData={propertyMasterData} />
+        <MainHome aboutusData={aboutusData} selectedCity={selectedCity} setSelectedCity={setSelectedCity} fetchCities={fetchCities} cityLoader={cityLoader} cityData={cityData} propertyMasterData={propertyMasterData} />
       </div>
       <div className="my-16 flex justify-center overflow-hidden">
         <div className="w-[90%] md:w-[75%]">
@@ -81,11 +95,11 @@ export default function Home({ propertyMasterData }) {
           <ChannelPartnerSection selectedCity={selectedCity}/>
         </div>
       </div>
-      <div className="">
+      {aboutusData?.mobileAppAvailable && <div className="">
         <AppDownloadSection />
-      </div>
+      </div>}
       <div className="">
-        <HomeFooter />
+        <HomeFooter propertyMasterData={propertyMasterData} selectedCity={selectedCity} aboutusData={aboutusData}/>
       </div>
     </div>
   );
