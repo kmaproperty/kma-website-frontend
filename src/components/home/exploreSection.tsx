@@ -2,7 +2,7 @@
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
 
@@ -30,6 +30,24 @@ const properties = [
     count: "30 Properties",
     bg: "bg-[#D1E8E8]",
     icon: "/assets/explore/home.svg",
+  },
+  {
+    title: "Villas",
+    count: "28 Properties",
+    bg: "bg-[#FFF3E0]",
+    icon: "/assets/explore/villas.svg",
+  },
+  {
+    title: "Offices",
+    count: "45 Properties",
+    bg: "bg-[#E4DDFC]",
+    icon: "/assets/explore/office.svg",
+  },
+  {
+    title: "Apartment",
+    count: "35 Properties",
+    bg: "bg-[#FFECF4]",
+    icon: "/assets/explore/apratment.svg",
   },
   {
     title: "Home",
@@ -75,7 +93,7 @@ const topVariant = {
   },
 };
 
-export default function ExploreSection() {
+export default function ExploreSection({explorePropertyList}) {
   const sliderRef = useRef<Slider | null>(null);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
@@ -102,10 +120,10 @@ export default function ExploreSection() {
         },
       ],
     };
-  
 
   return (
-    <div className="w-full flex flex-col 2md:flex-row gap-6 items-center">
+    <>
+    {<div className="w-full flex flex-col 2md:flex-row gap-6 items-center">
       <motion.div
         className="flex flex-col 2md:w-[30%] justify-center items-start gap-3"
         ref={ref}
@@ -159,31 +177,34 @@ export default function ExploreSection() {
         variants={rightVariant}
       >
         <Slider ref={sliderRef} {...settings}>
-          {properties.map((item, index) => (
+          {Array.isArray(explorePropertyList) && explorePropertyList?.map((item, index) => {
+            const dummyData = properties[index]
+            return(
             <motion.div
                 variants={(index == 0 || index == 1) ? topVariant : bottomVariant}
                 className="px-2"
                 animate={isInView ? 'visible' : 'hidden'}
               >
               <div
-                className={`h-[180px] rounded-xl ${item.bg} flex flex-col items-center justify-center`}
+                className={`h-[180px] rounded-xl ${dummyData.bg} flex flex-col items-center justify-center`}
               >
                 <img
-                  src={item.icon}
-                  alt={item.title}
+                  src={dummyData.icon}
+                  alt={item.name}
                   className="w-14 h-14 mb-6"
                 />
 
-                <h3 className="text-lg font-semibold text-black">
-                  {item.title}
+                <h3 className="text-lg font-semibold text-black text-center">
+                  {item.name}
                 </h3>
 
-                <p className="text-xs text-text-gray">{item.count}</p>
+                <p className="text-xs text-text-gray">{item.propertyCount} Properties</p>
               </div>
             </motion.div>
-          ))}
+          )})}
         </Slider>
       </motion.div>
-    </div>
+    </div>}
+    </>
   );
 }

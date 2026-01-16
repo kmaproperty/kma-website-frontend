@@ -12,8 +12,8 @@ import ChannelPartnerSection from "./channelPartnerSection";
 import AppDownloadSection from "./appDownloadSection";
 import HomeFooter from "../footer/homeFooter";
 import MainHome from "./home";
-import { useMutation } from "@tanstack/react-query";
-import { AboutusResponse, CitiesPayload, CitiesResponse, getAboutUsDataAPiHanlder, getCityListApiHandler } from "@/services/homeService";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { AboutusResponse, CitiesPayload, CitiesResponse, getAboutUsDataAPiHanlder, getCityListApiHandler, getExploreApiHanlder, GetExplorePayload, GetExploreResponse } from "@/services/homeService";
 import { useEffect, useState } from "react";
 
 export default function Home({ propertyMasterData }) {
@@ -45,6 +45,22 @@ export default function Home({ propertyMasterData }) {
     }
   });
 
+  const { data: explorePropertyList } = useQuery({
+    queryKey: ["explore-list", selectedCity],
+    queryFn: () => {
+      let payload: GetExplorePayload = {
+        ...(selectedCity?.id ? {cityId: selectedCity?.id ?? null,} : {}),
+        ...(false ? {cityId: ''} : {}),
+        ...(false ? {cityId: '',} : {}),
+      };
+      return getExploreApiHanlder(payload);
+    },
+    select: (response: GetExploreResponse) => {
+      console.log("response", response);
+      return response.propertyTypes;
+    },
+  });
+
   useEffect(() => {
     fetchCities({})
     fetchAboutusData()
@@ -69,11 +85,11 @@ export default function Home({ propertyMasterData }) {
       <div className="relative bg-text-black flex justify-center overflow-hidden">
         <AboutUsSection />
       </div>
-      <div className="my-16 flex justify-center">
+      {Array.isArray(explorePropertyList) && explorePropertyList.length > 0 && <div className="my-16 flex justify-center">
         <div className="w-[90%] md:w-[75%]">
-          <ExploreSection />
+          <ExploreSection explorePropertyList={explorePropertyList}/>
         </div>
-      </div>
+      </div>}
       <div className="bg-[#F2F2F2] flex justify-center">
         <div className="my-16 w-[90%] md:w-[75%]">
           <FeaturedProperties />

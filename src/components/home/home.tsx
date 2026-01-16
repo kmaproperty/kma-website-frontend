@@ -76,7 +76,7 @@ export default function MainHome({aboutusData, cityData,selectedCity, setSelecte
       </div>
       <div className="flex justify-center mt-10">
         <div className="w-[75%] lg:w-[55%]">
-          <Filter propertyMasterData={propertyMasterData}/>
+          <Filter cityData={cityData} selectedCity={selectedCity} setSelectedCity={setSelectedCity} propertyMasterData={propertyMasterData}/>
         </div>
       </div>
       <div>

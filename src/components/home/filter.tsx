@@ -12,15 +12,10 @@ import ProjectStatusMenu from "../filtermenu/projectStatusMenu";
 import PostedByMenu from "../filtermenu/postedByMenu";
 import TransactionByMenu from "../filtermenu/transactionByMenu";
 
-export default function Filter({propertyMasterData}) {
+export default function Filter({propertyMasterData, setSelectedCity, selectedCity, cityData}) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [popperType, setPopperType] = useState(null)
 
-  const [budgetAnchorEl, setBudgetAnchorEl] = useState<null | HTMLElement>(
-    null
-  );
-  const [typeAnchorEl, setTypeAnchorEl] = useState<null | HTMLElement>(null);
-  const openBudget = Boolean(budgetAnchorEl);
   const openType = Boolean(anchorEl);
 
   //Filter state 
@@ -43,6 +38,8 @@ export default function Filter({propertyMasterData}) {
     setFilterType(value)
   }
 
+  const allCities = cityData?.allCities ?? []
+  
   return (
     <div className="flex flex-col gap-2">
       <div className="flex justify-center font-medium text-blue overflow-auto no-scrollbar">
@@ -156,8 +153,18 @@ export default function Filter({propertyMasterData}) {
               isMulti={false}
               isError={false}
               placeholder={"City"}
-              onChange={(value) => {}}
-              loadOptions={async () => []}
+              onChange={(value) => {
+
+              }}
+              loadOptions={async (inputValue: string) => {
+                if (!inputValue.trim()) return [];
+
+                return Promise.resolve(
+                  allCities.filter(city =>
+                    city.label.toLowerCase().includes(inputValue.toLowerCase())
+                  )
+                );
+              }}
               value={null}
               minHeight={"35px"}
               styles={{

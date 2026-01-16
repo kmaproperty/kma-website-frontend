@@ -37,7 +37,7 @@ export default function ChannelPartnerSection({ selectedCity }) {
     queryKey: ["channel-partner", selectedCity],
     queryFn: () => {
       let payload: GetChannelPartnerListPayload = {
-        city: selectedCity ?? "",
+        city: selectedCity?.name ?? "",
         experience: "",
         limit: "8",
         page: "1",

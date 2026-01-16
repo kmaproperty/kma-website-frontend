@@ -276,3 +276,34 @@ export const getAboutUsDataAPiHanlder = async () : Promise<AboutusResponse> => {
         throw error.response?.data ?? error;
     }
 }
+
+
+export interface GetExplorePayload {
+    cityId?: string | null,
+    propertyTypeId?: string | null,
+    listingTypeId?: string | null,
+}
+
+export interface PropertyType {
+    id: string;
+    name: string;
+    code: string;
+    propertyCount: number
+}
+export interface GetExploreResponse {
+    success: boolean;
+    propertyTypes: PropertyType[]
+}
+
+export const getExploreApiHanlder = async ({cityId, propertyTypeId, listingTypeId}: GetExplorePayload) : Promise<GetExploreResponse> => {
+    try{
+        const response = await axiosInstance.get<GetExploreResponse>(
+      "end-user/property-types/explore", {
+        params: {cityId, propertyTypeId, listingTypeId}
+      });
+
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}

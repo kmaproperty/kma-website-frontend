@@ -53,6 +53,7 @@ const DynamicAsyncAutocomplete: React.FC<DynamicAsyncAutocompleteProps> = ({
 
       setLoading(true);
       const result = await loadOptions(inputValue);
+      console.log('result', result)
       if (active) {
         let opts = Array.isArray(result) ? result : [];
         if (enableAddManually && menualAddItem) {
