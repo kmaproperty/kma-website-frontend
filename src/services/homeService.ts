@@ -18,6 +18,7 @@ export interface CitiesPayload {
 export interface CitiesResponse {
   success: boolean;
   featuredCities: City[];
+  allCities: City[];
   detectedCity: City | null;
 }
 
@@ -151,13 +152,18 @@ export const getChannelPartnerListApiHandler = async ({search, city, experience,
         throw error.response?.data ?? error;
     }
 }
-
+export interface User {
+    id: string,
+    name: string,
+    email: string,
+    profileImage: string,
+}
 export interface Rating {
     id: string;
     rating: string;
     review: string;
     name: string;
-    endUser: string | null;
+    endUser: User | null;
     createdAt: string
 }
 
@@ -167,7 +173,8 @@ export interface GetUserReviewApiHandlerResponse {
     statistics: {
         totalCount: number,
         averageRating: number
-    }
+    },
+    trustedByText: string
 }
 
 export const getUserReviewApiHandler = async () : Promise<GetUserReviewApiHandlerResponse> => {
@@ -208,6 +215,31 @@ export const getPropertyMasterDataApiHandler = async () : Promise<GetPropertyMas
     try{
         const response = await axiosInstance.get<GetPropertyMasterDataResponse>(
       "end-user/property-master-data");
+
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}   
+
+export interface GetAboutUsSectionResponse {
+    success: boolean;
+    aboutUs: {
+        heading: string;
+        description: string;
+    };
+    statistics: {
+        totalOwners: number;
+        totalChannelPartners: number;
+        totalUsers: number;
+        totalActiveProperties: number;
+        propertiesListedLast24Hours: number;
+    }
+}
+export const getAboutUsSectionDataApiResponse = async () : Promise<GetAboutUsSectionResponse> => {
+    try{
+        const response = await axiosInstance.get<GetAboutUsSectionResponse>(
+      "end-user/home/about-us");
 
     return response.data;
     }catch(error: any){

@@ -89,6 +89,7 @@ const topVariant = {
 };
 
 export default function SuccessStoriesSection() {
+    const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
@@ -173,23 +174,33 @@ export default function SuccessStoriesSection() {
                       height={20}
                       alt="quote"
                     />
-                    {/* <div className="flex">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} />
-                  ))}
-                </div> */}
                     <RatingStars rating={Number(item.rating)} total={5} />
                     <p className="text-sm text-text-gray line-clamp-2">
                       {item.review}
                     </p>
                     <div className="flex justify-start items-center gap-2">
-                      <Image
-                        src={"/assets/property/profile.png"}
-                        alt="profile"
-                        width={28}
-                        height={28}
-                        className="rounded-full"
-                      />
+                      {item.endUser?.profileImage ? (
+                        <Image
+                          src={profileBaseUrl + item.endUser?.profileImage}
+                          width={28}
+                          height={28}
+                          alt="profile"
+                          className="rounded-full object-cover"
+                        />
+                      ) : (
+                        <div
+                          className="
+                          h-[35px] w-[35px]
+                          rounded-full
+                          bg-gray-300
+                          flex items-center justify-center
+                          text-sm font-semibold text-gray-700
+                          uppercase
+                          "
+                        >
+                          {item.name?.charAt(0)}
+                        </div>
+                      )}
                       <p className="text-text-black font-medium text-sm">
                         {item.name}
                       </p>
@@ -229,13 +240,28 @@ export default function SuccessStoriesSection() {
                       {item.review}
                     </p>
                     <div className="flex justify-start items-center gap-2">
-                      <Image
-                        src={"/assets/property/profile.png"}
-                        alt="profile"
-                        width={28}
-                        height={28}
-                        className="rounded-full"
-                      />
+                      {item.endUser?.profileImage ? (
+                        <Image
+                          src={profileBaseUrl + item.endUser?.profileImage}
+                          width={28}
+                          height={28}
+                          alt="profile"
+                          className="rounded-full object-cover"
+                        />
+                      ) : (
+                        <div
+                          className="
+                          h-[35px] w-[35px]
+                          rounded-full
+                          bg-gray-300
+                          flex items-center justify-center
+                          text-sm font-semibold text-gray-700
+                          uppercase
+                          "
+                        >
+                          {item.name?.charAt(0)}
+                        </div>
+                      )}
                       <p className="text-text-black font-medium text-sm">
                         {item.name}
                       </p>

@@ -1,3 +1,4 @@
+'use client'
 import { Variants, motion } from "framer-motion";
 import { useState } from "react";
 import Social from "./social";
@@ -7,8 +8,12 @@ import TopProperties from "./topProperties";
 import ProfileRating from "./rating";
 import Filter from "./filter";
 import ContactUs from "./contactus";
+import UserRating from "../common/home/rating";
+import { useQuery } from "@tanstack/react-query";
+import { getUserReviewApiHandler, GetUserReviewApiHandlerResponse } from "@/services/homeService";
 
-export default function MainHome({propertyMasterData}) {
+export default function MainHome({cityData,selectedCity, setSelectedCity, cityLoader, fetchCities, propertyMasterData}) {
+    const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
   const [show, setShow] = useState(false);
 
   const dissolve: Variants = {
@@ -23,6 +28,25 @@ export default function MainHome({propertyMasterData}) {
       },
     },
   };
+
+  const { data: reviewData } = useQuery({
+    queryKey: ["review"],
+    queryFn: () => {
+      return getUserReviewApiHandler();
+    },
+    select: (response: GetUserReviewApiHandlerResponse) => {
+      console.log("response", response);
+      return response;
+    },
+  });
+
+   const profileImages = () => {
+    if(reviewData?.reviews?.length > 0){
+        return reviewData?.reviews?.map(item => ({img: item?.endUser?.profileImage ? profileBaseUrl + item?.endUser?.profileImage : '', name: item?.name}))
+    }else{
+      return []
+    }
+   }
   return (
     <motion.div
       className="absolute w-[100%] h-[88vh] top-0"
@@ -35,9 +59,8 @@ export default function MainHome({propertyMasterData}) {
         <Social />
       </div>
       <div className="flex flex-col items-center">
-        {/* <div className=""> */}
-          <HomdeHeader propertyMasterData={propertyMasterData}/>
-        {/* </div> */}
+        <HomdeHeader selectedCity={selectedCity} setSelectedCity={setSelectedCity} cityData={cityData} cityLoader={cityLoader} fetchCities={fetchCities} propertyMasterData={propertyMasterData}/>
+       
 
         <div className="w-[75%] mt-[45px] flex justify-between gap-5 overflow-scroll no-scrollbar">
           <div className="w-[100%] lg:w-[50%]">
@@ -45,7 +68,8 @@ export default function MainHome({propertyMasterData}) {
           </div>
           <div className="w-[100%] lg:w-[40%]">
             <TopProperties />
-            <ProfileRating />
+            {/* <ProfileRating /> */}
+            <UserRating avatars={profileImages()} rating={reviewData?.statistics?.averageRating} subtitle={reviewData?.trustedByText}/>
           </div>
         </div>
       </div>

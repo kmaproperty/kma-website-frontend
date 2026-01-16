@@ -132,3 +132,9 @@ body {
   -ms-overflow-style: none;  /* IE & Edge */
   scrollbar-width: none;     /* Firefox */
 }
+
+.number-count > span {
+  font-size: 24px;
+  color: white;
+  font-weight: 500;
+}

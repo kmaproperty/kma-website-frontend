@@ -25,7 +25,7 @@ export default function Home({ propertyMasterData }) {
   } = useMutation({
     mutationFn: getCityListApiHandler,
     onSuccess: (response: CitiesResponse) => {
-
+      setCityData(response)
     },
     onError: (error) => {
 
@@ -40,7 +40,7 @@ export default function Home({ propertyMasterData }) {
     <div className="overflow-hidden">
       <div className="relative ">
         <BannerSlider />
-        <MainHome propertyMasterData={propertyMasterData} />
+        <MainHome selectedCity={selectedCity} setSelectedCity={setSelectedCity} fetchCities={fetchCities} cityLoader={cityLoader} cityData={cityData} propertyMasterData={propertyMasterData} />
       </div>
       <div className="my-16 flex justify-center overflow-hidden">
         <div className="w-[90%] md:w-[75%]">

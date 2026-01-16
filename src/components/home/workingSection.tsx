@@ -4,6 +4,8 @@ import WorkingSectionImage from "../common/home/workingSectionImage";
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import Image from "next/image";
+import { useQuery } from "@tanstack/react-query";
+import { getUserReviewApiHandler, GetUserReviewApiHandlerResponse } from "@/services/homeService";
 
 const leftVariant = {
   hidden: { x: '-100%', opacity: 0 },
@@ -42,8 +44,28 @@ const topVariant = {
 };
 
 export default function WorkingSection(){
+    const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
     const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
+
+  const { data: reviewData } = useQuery({
+    queryKey: ["review"],
+    queryFn: () => {
+      return getUserReviewApiHandler();
+    },
+    select: (response: GetUserReviewApiHandlerResponse) => {
+      console.log("response", response);
+      return response;
+    },
+  });
+
+   const profileImages = () => {
+    if(reviewData?.reviews?.length > 0){
+        return reviewData?.reviews?.map(item => ({img: item?.endUser?.profileImage ? profileBaseUrl + item?.endUser?.profileImage : '', name: item?.name}))
+    }else{
+      return []
+    }
+   }
     return(
         <>
             <div ref={ref} className="my-16 w-[90%] md:w-[75%] z-1">
@@ -56,7 +78,7 @@ export default function WorkingSection(){
                           >
                         <WorkingSectionImage imageUrl={'/assets/aboutUs/about_us_img.png'}/>
                         <div className="absolute top-3 right-0 bg-white/10 rounded-full bg-clip-padding backdrop-filter flex flex-col gap-2 backdrop-blur-[10px] px-6 py-3">
-                            <UserRating/>
+                            <UserRating avatars={profileImages()} rating={reviewData?.statistics?.averageRating} subtitle={reviewData?.trustedByText}/>
                         </div>
                     </motion.div>
                         <motion.div

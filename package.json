@@ -23,6 +23,7 @@
     "nextjs-toploader": "^3.9.17",
     "quill": "^2.0.3",
     "react": "19.1.0",
+    "react-countup": "^6.5.3",
     "react-dom": "19.1.0",
     "react-icons": "^5.5.0",
     "react-redux": "^9.2.0",

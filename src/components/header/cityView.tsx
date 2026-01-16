@@ -1,14 +1,73 @@
+import { getUserCoordinates } from "@/hooks/useGeoloaction";
 import { InputBase } from "@mui/material";
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 
-export default function CityView() {
+export default function CityView({ cityData, selectedCity, setSelectedCity, fetchCities, cityLoader }) {
+  const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
+  const [cityInput, setCityInput] = useState("");
+  const [detecting, setDetecting] = useState(false)
+  const allCities = cityData?.allCities ?? [];
+  const featuredCity = cityData?.featuredCities ?? [];
+
+
+  const fetchLocation = async () => {
+    const location = await getUserCoordinates();
+    console.log("location", location);
+    if (location) {
+      setDetecting(true)
+      fetchCities({
+        latitude: String(location?.lat ?? ""),
+        longitude: String(location?.lng ?? ""),
+      });
+    } else {
+      console.log("Permission denied or unavailable");
+    }
+  };
+
+  const filterdList = (value) => {
+    if(value){
+      let data = allCities?.filter(item => {
+        const name = item.name
+        return name.toLowerCase().includes(value.toLowerCase())
+      }) ?? []
+
+      if(selectedCity){
+        return data.filter(item => item.id != selectedCity?.id)
+      }else{
+        return data
+      }
+    }else{
+      if(selectedCity){
+        return allCities.filter(item => item.id != selectedCity?.id)
+      }else{
+        return allCities
+      }
+    }
+  }
+
+  const handleSelectCity = (city) => {
+    setSelectedCity(city)
+  }
+
+  useEffect(() => {
+    setDetecting(false)
+  },[cityLoader])
+
   return (
     <div className="p-2 w-full sm:w-[330px]">
       <div className="flex justify-between items-center px-4 flex-3 border border-border rounded-full">
         <InputBase
           placeholder="Select or type your city"
           fullWidth
-          onChange={(event) => {}}
+          onChange={(event) => {
+            setCityInput(event.target.value);
+            // clearTimeout(searchRef.current);
+            // searchRef.current = setTimeout(() => {
+            //   fetchCities({ search: event.target.value });
+            // }, 300);
+          }}
+          value={cityInput}
           className="w-full h-[40px] px-2 text-xs rounded-full"
           inputProps={{
             className:
@@ -22,57 +81,63 @@ export default function CityView() {
           alt="search"
         />
       </div>
-      <div className="flex justify-start gap-2 mt-4">
-          <Image src={'/assets/city/purple-location-find.svg'} width={20} height={20} alt="location" />
-          <p className="text-sm text-[#757BEE]">Detect My Location</p>
+      <div onClick={fetchLocation} className="cursor-pointer flex justify-start gap-2 mt-4">
+        <Image
+          src={"/assets/city/purple-location-find.svg"}
+          width={20}
+          height={20}
+          alt="location"
+        />
+        <p className="text-sm text-[#757BEE]">Detect My Location {detecting && <span className="text-text-gray text-xs">(Detecting...)</span>}</p>
       </div>
       <div className="flex flex-wrap gap-1.5 mt-4">
-          <div className="flex flex-1 flex-col justify-center items-center gap-1.5 bg-[#F3F3F3] rounded-[5px] px-3 sm:px-1 py-3">
-            <Image src={'/assets/city/city1.svg'} width={600} height={600} alt="city" className="w-[45px] h-[34px]"/>
-            <p className="text-xs text-black">Hedrabad</p>
-          </div>
-          <div className="flex flex-1 flex-col justify-center items-center gap-1.5 bg-[#F3F3F3] rounded-[5px] px-3 sm:px-1 py-3">
-            <Image src={'/assets/city/city1.svg'} width={600} height={600} alt="city" className="w-[45px] h-[34px]"/>
-            <p className="text-xs text-black">Hedrabad</p>
-          </div>
-          <div className="flex flex-1 flex-col justify-center items-center gap-1.5 bg-[#F3F3F3] rounded-[5px] px-3 sm:px-1 py-3">
-            <Image src={'/assets/city/city1.svg'} width={600} height={600} alt="city" className="w-[45px] h-[34px]"/>
-            <p className="text-xs text-black">Hedrabad</p>
-          </div>
-          <div className="flex flex-1 flex-col justify-center items-center gap-1.5 bg-[#F3F3F3] rounded-[5px] px-3 sm:px-1 py-3">
-            <Image src={'/assets/city/city1.svg'} width={600} height={600} alt="city" className="w-[45px] h-[34px]"/>
-            <p className="text-xs text-black">Hedrabad</p>
-          </div>
-          <div className="flex flex-1 flex-col justify-center items-center gap-1.5 bg-[#F3F3F3] rounded-[5px] px-3 sm:px-1 py-3">
-            <Image src={'/assets/city/city1.svg'} width={600} height={600} alt="city" className="w-[45px] h-[34px]"/>
-            <p className="text-xs text-black">Hedrabad</p>
-          </div>
-          <div className="flex flex-1 flex-col justify-center items-center gap-1.5 bg-[#F3F3F3] rounded-[5px] px-3 sm:px-1 py-3">
-            <Image src={'/assets/city/city1.svg'} width={600} height={600} alt="city" className="w-[45px] h-[34px]"/>
-            <p className="text-xs text-black">Hedrabad</p>
-          </div>
-          <div className="flex flex-1 flex-col justify-center items-center gap-1.5 bg-[#F3F3F3] rounded-[5px] px-3 sm:px-1 py-3">
-            <Image src={'/assets/city/city1.svg'} width={600} height={600} alt="city" className="w-[45px] h-[34px]"/>
-            <p className="text-xs text-black">Hedrabad</p>
-          </div>
-          <div className="flex flex-1 flex-col justify-center items-center gap-1.5 bg-[#F3F3F3] rounded-[5px] px-3 sm:px-1 py-3 grayscale hover:grayscale-0 cursor-pointer">
-            <Image src={'/assets/city/city1.svg'} width={600} height={600} alt="city" className="w-[45px] h-[34px]"/>
-            <p className="text-xs text-black">Hedrabad</p>
-          </div>
+        {
+          featuredCity.map(item => {
+            return(
+              <div onClick={() => handleSelectCity(item)} className={`flex flex-1 flex-col justify-center items-center gap-1.5 bg-[#F3F3F3] rounded-[5px] px-3 sm:px-1 py-3 ${selectedCity?.id == item.id ? 'grayscale-0' : 'grayscale'} hover:grayscale-0 cursor-pointer`}>
+                <Image
+                  src={profileBaseUrl + item.icon}
+                  width={600}
+                  height={600}
+                  alt="city"
+                  className="w-[45px] h-[34px]"
+                />
+                <p className="text-xs text-black">{item.name}</p>
+              </div>
+            )
+          })
+        }
+        
       </div>
       <div className="mt-4">
         <p className="text-base text-text-black font-medium">Other Cities</p>
         <div className="h-full sm:h-[165px] overflow-auto">
-            <p className="text-sm text-text-black hover:bg-list-background cursor-pointer px-2 py-1.5 my-1 rounded-lg">{'Surat'}</p>
-            {<div className="border-b border-border mx-2"></div>}   
-            <p className="text-sm text-text-black hover:bg-list-background cursor-pointer px-2 py-1.5 my-1 rounded-lg">{'Surat'}</p>
-            {<div className="border-b border-border mx-2"></div>}   
-            <p className="text-sm text-text-black hover:bg-list-background cursor-pointer px-2 py-1.5 my-1 rounded-lg">{'Surat'}</p>
-            {<div className="border-b border-border mx-2"></div>}   
-            <p className="text-sm text-text-black hover:bg-list-background cursor-pointer px-2 py-1.5 my-1 rounded-lg">{'Surat'}</p>
-            {<div className="border-b border-border mx-2"></div>}   
-            <p className="text-sm text-text-black hover:bg-list-background cursor-pointer px-2 py-1.5 my-1 rounded-lg">{'Surat'}</p>
-            
+          {
+            selectedCity && (
+              <>
+              <p className="text-sm text-text-black bg-list-background cursor-pointer px-2 py-1.5 my-1 rounded-lg">
+                  {selectedCity?.name}
+                </p>
+                  <div className="border-b border-border mx-2"></div>
+            </>)
+          }
+          {filterdList(cityInput)?.map((item, index) => {
+            return (
+              <>
+                <p onClick={() => handleSelectCity(item)} className="text-sm text-text-black hover:bg-list-background cursor-pointer px-2 py-1.5 my-1 rounded-lg">
+                  {item.name}
+                </p>
+                {index != allCities.length - 1 && (
+                  <div className="border-b border-border mx-2"></div>
+                )}
+              </>
+            );
+          })}
+          {filterdList(cityInput)?.length == 0 && (
+            <div className="flex justify-center">
+              <p className="text-text-gray">No city found</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -3,6 +3,9 @@ import { motion, useInView } from "framer-motion";
 import Image from "next/image";
 import AboutUsImage from "../common/home/aboutUsImage";
 import { useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getAboutUsSectionDataApiResponse, GetAboutUsSectionResponse } from "@/services/homeService";
+import CountUp from 'react-countup';
 
 const leftVariant = {
   hidden: { x: "-100%", opacity: 0 },
@@ -39,17 +42,56 @@ const staggerContainer = {
     },
   },
 };
+const AnimatedCount = ({
+  value,
+  isInView
+}: {
+  value?: number;
+  isInView: boolean
+}) => {
+  console.log('value', value)
+  if (!value || !isInView) return null;
+
+  return (
+    <CountUp
+      key={value}
+      start={0}
+      end={value}
+      duration={2.5}
+      separator=","
+    >
+      {({ countUpRef }) => (
+        <span
+          ref={countUpRef}
+          className="text-xl 2md:text-2xl font-semibold text-white tracking-wide"
+        />
+      )}
+    </CountUp>
+  );
+};
+
 
 export default function AboutUsSection() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
+  const { data: aboutus } = useQuery({
+    queryKey: ["about-us"],
+    queryFn: () => {
+      return getAboutUsSectionDataApiResponse();
+    },
+    select: (response: GetAboutUsSectionResponse) => {
+      console.log("response", response);
+      return response;
+    },
+  });
+
   return (
     <>
-      <div className="my-16 w-[90%] 2md:w-[75%] z-10">
+      <div ref={ref} className="my-16 w-[90%] 2md:w-[75%] z-10">
         <motion.div
           className="grid grid-cols-1 2md:grid-cols-2 gap-6 justify-between items-center"
-          ref={ref}
+          
           animate={isInView ? "visible" : "hidden"}
         >
           <motion.div
@@ -62,13 +104,10 @@ export default function AboutUsSection() {
             </div>
             <div>
               <p className="text-xl text-white text-wrap font-semibold">
-                Discover property solutions that are simple, transparent, and
-                hassle-free.
+                {aboutus?.aboutUs?.heading}
               </p>
               <p className="mt-1 leading-4 text-xs text-white text-wrap font-regular">
-                Explore top-performing locations where we deliver expert
-                support, faster service, and exceptional customer satisfaction —
-                right in your neighborhood.
+                {aboutus?.aboutUs?.description}
               </p>
             </div>
             <div className="flex gap-4 mt-2">
@@ -96,26 +135,31 @@ export default function AboutUsSection() {
           variants={staggerContainer}
           animate={isInView ? "visible" : "hidden"}
         >
-          {[
+          {aboutus && [
             {
               img: "/assets/aboutUs/about_us_1.svg",
-              value: "8040+",
-              label: "Rentals Completed",
+              value: aboutus?.statistics?.totalOwners,
+              label: "Total Owners",
             },
             {
               img: "/assets/aboutUs/about_us_2.svg",
-              value: "1014+",
-              label: "Trusted Owners",
+              value: aboutus?.statistics?.totalChannelPartners,
+              label: "Total Channel Partner",
             },
             {
               img: "/assets/aboutUs/about_us_3.svg",
-              value: "6K+",
-              label: "Happy Clients",
+              value: aboutus?.statistics?.totalUsers,
+              label: "Total Users / Clients",
             },
             {
               img: "/assets/aboutUs/about_us_4.svg",
-              value: "1014+",
-              label: "Total Bookings",
+              value: aboutus?.statistics?.totalActiveProperties,
+              label: "Total Active Properties",
+            },
+             {
+              img: "/assets/aboutUs/about_us_4.svg",
+              value: aboutus?.statistics?.propertiesListedLast24Hours,
+              label: "Properties Listed in Last 24 Hours",
             },
           ].map((item, index) => (
             <motion.div
@@ -125,8 +169,8 @@ export default function AboutUsSection() {
               className="flex items-center gap-4 bg-[#131D2C] px-5 py-4 rounded-xl"
             >
               <Image src={item.img} width={40} height={40} alt={item.label} />
-              <div>
-                <p className="text-xl text-white font-medium">{item.value}</p>
+              <div className="number-count">
+                {isInView && <CountUp start={0} end={item.value} delay={1}></CountUp>}
                 <p className="text-xs text-white">{item.label}</p>
               </div>
             </motion.div>
