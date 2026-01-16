@@ -6,8 +6,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { UpgreadOwnerToChannelPartnerApiHandler, UpgreadOwnerToChannelPartnerPayload, UpgreadOwnerToChannelPartnerResponse, UserDashboardDetailsApiHandler, UserDashboardDetailsResponse } from "@/services/userService";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import CustomOptionField from "../common/addCustomOption";
 import { useRouter } from "next/navigation";
+import UpgradeChannelPartner from "../common/upgradeChannelpartner";
 
 export default function UserDashboard() {
   const router = useRouter()
@@ -41,7 +41,7 @@ export default function UserDashboard() {
         setOpenCodePopup(false)
         toast.success('Upgraded to Channel Partner successfully')
         getUpdatedDashboardDetails()
-        router.push('/user-dashboard')
+        window.location.reload();
       },
       onError: (error: any) => {
         console.log('error', error)
@@ -59,9 +59,9 @@ export default function UserDashboard() {
       setOpenCodePopup(false)
     }
 
-    const handleCode = (value: string) => {
+    const handleCode = (paylaod) => {
       if(!isPending){
-        handleUpgradUser({channelPartnerCode: value})
+        handleUpgradUser(paylaod)
       }
     }
 
@@ -338,7 +338,7 @@ export default function UserDashboard() {
           </div>
         </div>
       </div>
-            <CustomOptionField isCloseNotRequired={true} open={openCodePopup} onClose={() => handleCloseCodePopup()} label={'Channel Partner Code'} onSubmit={handleCode}/>
+            <UpgradeChannelPartner isCloseNotRequired={true} open={openCodePopup} onClose={() => handleCloseCodePopup()} onSubmit={handleCode}/>
     </div>
   );
 }

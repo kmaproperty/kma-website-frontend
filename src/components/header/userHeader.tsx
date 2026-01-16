@@ -59,8 +59,12 @@ export default function UserHeader() {
           router.push('/profile')
         }
       }
-    }else{
-      router.push('/post-property')
+    }else if(userDashboardDetails?.role == USER_TYPE.OWNER){
+      if(userDashboardDetails.freeListings.remaining != 0){
+        router.push('/post-property')
+      }else{
+        toast.error('Your free listing used upgread to channel partner to post property.')
+      }
     }
     
   }

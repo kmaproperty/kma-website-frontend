@@ -115,7 +115,7 @@ export default function ListCard({data, handleManage}: {data: ListingItem, handl
         </div>
         <div className="flex flex-col">
           <p className="text-blue text-base lg:text-sm font-medium">
-            {data.bhkTypeName} {data.propertyType.name}
+            {data.bhkTypeName} {data.propertyType?.name}
           </p>
           <p className="text-text-gray text-sm lg:text-xs">
             {data.address}

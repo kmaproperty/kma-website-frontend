@@ -86,7 +86,7 @@ export default function Listing({propertyList = [],listLoader, fetchPropertyList
                   const checked = topStatusFilter == item.value
                     return(
                         <div onClick={() => handleTopFilter(item.value)} className={`cursor-pointer flex items-center rounded-[5px] py-1 ${checked ? 'border border-blue bg-light-purple text-text-black': 'border border-border text-text-gray'}`}>
-                            <p className={` px-3 text-sm`}>{item.name}</p>
+                            <p className={` px-3 text-sm`}>{item?.name}</p>
                             {/* <p className="border-l h-full py-1 text-blue text-sm font-medium px-2 bg-[#0100481A]">
                             30
                             </p> */}
