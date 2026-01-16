@@ -29,3 +29,58 @@ export const submitContactForm = async (
     throw error.response?.data ?? error;
   }
 };
+
+
+export interface SubmitHomeContactPayload {
+    firstName: string;
+    email?: string;
+    phoneNumber: string;
+    message?: string;
+}
+
+export interface SubmitHomeContactResponse {
+  message: string;
+  success: string;
+  contactId: string
+}
+
+
+export const submitHomeContactApiHandler = async (
+  payload: SubmitHomeContactPayload
+): Promise<SubmitHomeContactResponse> => {
+  try {
+    const response = await axiosInstance.post<SubmitHomeContactResponse>(
+      "end-user/contact-us",
+      payload
+    );
+
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data ?? error;
+  }
+};
+
+export interface ContactUsHomeOtpPayload {
+  phone: string;
+}
+
+export interface ContactUsHOmeOtpResponse {
+  success: boolean;
+  message: string;
+  otp: string;
+}
+
+export const contactUsHomeOtpApiHandler = async (
+  payload: ContactUsHomeOtpPayload
+): Promise<ContactUsHOmeOtpResponse> => {
+  try {
+    const response = await axiosInstance.post<ContactUsHOmeOtpResponse>(
+      "end-user/contact-us/send-otp",
+      payload
+    );
+
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data ?? error;
+  }
+};

@@ -1,8 +1,22 @@
+"use client";
+import { createURLSearchParam } from "@/lib/helper";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 
 export default function ContactUs() {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handleRedirectCode = () => {
+    const params = createURLSearchParam({
+      isContactInformation: true,
+    });
+    router.push(`${pathname}${params}`);
+  };
   return (
     <div
+      onClick={handleRedirectCode}
       className="
         absolute top-1/2 right-0
         -translate-y-1/2
@@ -27,9 +41,7 @@ export default function ContactUs() {
         height={12}
       />
 
-      <span className="text-[11px] font-medium">
-        Contact Us
-      </span>
+      <span className="text-[11px] font-medium">Contact Us</span>
     </div>
   );
 }

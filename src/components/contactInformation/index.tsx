@@ -12,6 +12,8 @@ import { mobileNumberValidator } from "@/lib/commonValidator";
 import { useMutation } from "@tanstack/react-query";
 import { ContactDetailsPayload, ContactDetailsResponse, CreateContactDetailsApiHandler } from "@/services/userService";
 import { toast } from "react-toastify";
+import { contactUsHomeOtpApiHandler, ContactUsHomeOtpPayload, ContactUsHOmeOtpResponse, submitHomeContactApiHandler, SubmitHomeContactPayload, SubmitHomeContactResponse } from "@/services/contactService";
+import { createURLSearchParam } from "@/lib/helper";
 
 interface FormValues {
   firstName: string;
@@ -25,7 +27,7 @@ interface FormErrors {
   [key: string]: string;
 }
 
-export default function ContactInformation() {
+export default function ContactInformation({isEndUser = false}: {isEndUser?: boolean}) {
    const searchParams = useSearchParams()
     const pathname = usePathname();
     const router = useRouter()
@@ -87,12 +89,12 @@ export default function ContactInformation() {
    const handleClose: DialogProps["onClose"] = (event, reason) => {
       if (reason === "backdropClick" || reason === "escapeKeyDown") return;
        resetForm()
-       router.push(`${pathname}`);
+       router.replace(`${pathname}`);
     };
 
   const handleDirectClose = () => {
        resetForm()
-       router.push(`${pathname}`);
+       router.replace(`${pathname}`);
   }
 
   const openPopup = React.useMemo(() => {
@@ -110,7 +112,7 @@ export default function ContactInformation() {
         console.log('response', response)
         toast.success(response.message)
         resetForm()
-        router.push(`${pathname}`);
+        router.replace(`${pathname}`);
       },
       onError: (error: any) => {
         if(Array.isArray(error.message)){
@@ -123,7 +125,7 @@ export default function ContactInformation() {
       },
     });
 
-  const handleContactInformation = () => {
+  const handleContactInformation = async () => {
     if(validate()){
         const payload = {
           firstName: formData.firstName,
@@ -132,9 +134,25 @@ export default function ContactInformation() {
           message: formData.about, 
          ...(formData.email ? { email: formData.email} : {})
         }
-        submitContactDetails(payload)
-    }
+          submitContactDetails(payload)
+    } 
   }
+
+  React.useEffect(() => {
+    if(openPopup){
+      let userData: any = localStorage.getItem('user')
+      if(userData){
+        userData = JSON.parse(userData)
+        setFormData((pre) => ({
+          ...pre,
+          firstName: userData?.name ?? '',
+          phone: {code: '91', value: userData?.phone ??''},
+          email: userData?.email ?? ''
+        }))
+      }
+    }
+    
+  },[openPopup])
   
     const dynamicClass = (flag: string) => {
     return `

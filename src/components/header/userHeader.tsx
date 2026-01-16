@@ -53,7 +53,7 @@ export default function UserHeader() {
       if(userDashboardDetails?.kycStatus?.kyc_completed){
         router.push('/post-property')
       }else{
-        if(userDashboardDetails?.kycStatus?.kyc_status == 'under_review'){
+        if(userDashboardDetails?.kycStatus?.kyc_status == 'in_review'){
           toast.info('Your KYC is under review. You can post property once it is approved.')
         }else{
           router.push('/profile')
@@ -71,7 +71,7 @@ export default function UserHeader() {
 
   return (
     <div className="bg-white/10 rounded-[200px] bg-clip-padding backdrop-filter w-[80%]  backdrop-blur-[20px] h-[63px] px-7 pt-[4px] flex justify-between items-center border border-1 border-[#FFFFFF33] z-3">
-      <div className="flex items-center px-1.5 shrink-0 cursor-pointer">
+      <div onClick={() => handleRedirect('/')} className="flex items-center px-1.5 shrink-0 cursor-pointer">
         <Image
           src="/assets/kma-logo-white.svg"
           width={100}

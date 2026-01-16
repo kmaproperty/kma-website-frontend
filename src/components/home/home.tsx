@@ -5,12 +5,12 @@ import Social from "./social";
 import HomdeHeader from "../header/homeHeader";
 import BannerText from "./bannertext";
 import TopProperties from "./topProperties";
-import ProfileRating from "./rating";
 import Filter from "./filter";
 import ContactUs from "./contactus";
 import UserRating from "../common/home/rating";
 import { useQuery } from "@tanstack/react-query";
 import { getUserReviewApiHandler, GetUserReviewApiHandlerResponse } from "@/services/homeService";
+import ContactInformation from "../contactInformation";
 
 export default function MainHome({cityData,selectedCity, setSelectedCity, cityLoader, fetchCities, propertyMasterData}) {
     const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
@@ -48,6 +48,7 @@ export default function MainHome({cityData,selectedCity, setSelectedCity, cityLo
     }
    }
   return (
+    <>
     <motion.div
       className="absolute w-[100%] h-[88vh] top-0"
       variants={dissolve}
@@ -82,5 +83,7 @@ export default function MainHome({cityData,selectedCity, setSelectedCity, cityLo
         <ContactUs />
       </div>
     </motion.div>
+    <ContactInformation isEndUser={true}/>
+    </>
   );
 }

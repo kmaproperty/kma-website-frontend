@@ -15,6 +15,7 @@ import CityView from "./cityView";
 import HomeMobileHeader from "./homeMobileHeader";
 import ProfileView from "./profileView";
 import { useRouter } from "nextjs-toploader/app";
+import { USER_TYPE } from "@/lib/enums";
 
 export default function HomdeHeader({cityData, selectedCity, setSelectedCity, cityLoader, fetchCities, propertyMasterData}) {
   const router = useRouter()
@@ -94,8 +95,29 @@ export default function HomdeHeader({cityData, selectedCity, setSelectedCity, ci
   };
 }, [openType]);
 
+useEffect(() => {
+  const userData = localStorage.getItem('user')
+  if(userData){
+
+  }
+},[])
+
+const returnUserRole = () => {
+  let userData: any = localStorage.getItem('user')
+  if(userData){
+    userData = JSON.parse(userData)
+    return userData?.role
+  }else{
+    return null
+  }
+}
+
 const navigatePostProperty = () => {
   router.push('/post-property')
+}
+
+const navigateDashboard = () => {
+  router.push('/user-dashboard')
 }
 
   return (
@@ -169,7 +191,7 @@ const navigatePostProperty = () => {
           </div>
         </div>
         <div className="flex items-center justify-start gap-[7px] shrink-0">
-          <button onClick={navigatePostProperty} className="animated-button px-[10px] sm:px-[20px] py-[6px] sm:py-[9px] cursor-pointer">
+          {!returnUserRole() && <button onClick={navigatePostProperty} className="animated-button px-[10px] sm:px-[20px] py-[6px] sm:py-[9px] cursor-pointer">
             <span className="flex items-center justify-between gap-[6px] relative z-11">
               <Image
                 src="/assets/home-white.svg"
@@ -182,7 +204,21 @@ const navigatePostProperty = () => {
                 Post Property
               </p>
             </span>
-          </button>
+          </button>}
+          {(returnUserRole() == USER_TYPE.CHANNEL_PARTNER || returnUserRole() == USER_TYPE.OWNER) && <button onClick={navigateDashboard} className="animated-button px-[10px] sm:px-[20px] py-[6px] sm:py-[9px] cursor-pointer">
+            <span className="flex items-center justify-between gap-[6px] relative z-11">
+              <Image
+                src="/assets/home-white.svg"
+                width={14}
+                height={14}
+                alt="home"
+                className="w-3 h-3 w-3.5 h-3.5"
+              />
+              <p className="text-nowrap text-[10px] sm:text-xs xl:text-sm">
+                Seller Dashboard
+              </p>
+            </span>
+          </button>}
           <div className="flex flex-row gap-[6px] items-center cursor-pointer">
             <Image
              onMouseEnter={(event) => {
