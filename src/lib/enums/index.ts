@@ -14,10 +14,9 @@ export const USER_TYPE = {
 } as const
 
 export const KYC_STATUS = {
-  'not_started': 'Not Started',
-  'in_progress': 'In Progress',
-  'under_review': 'Under Review',
-  'completed': 'Completed',
+  'pending': 'Pending',
+  'in_review': 'Under Review',
+  'approved': 'Approved',
   'rejected ': 'Rejected'
 }
 

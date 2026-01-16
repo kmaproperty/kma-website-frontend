@@ -10,7 +10,7 @@ import { useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { UserDashboardDetailsApiHandler, UserDashboardDetailsResponse } from "@/services/userService";
 import { useRouter } from "next/navigation";
-import { PROPERTY_FORM_MODE } from "@/lib/enums";
+import { PROPERTY_FORM_MODE, USER_TYPE } from "@/lib/enums";
 
 export default function PostPropertyForm({mode}: {mode: string}) {
 const activeStep = useSelector(getActiveStep);
@@ -37,8 +37,14 @@ const activeStep = useSelector(getActiveStep);
 
   useEffect(() => {
     if(userDashboardDetails && mode != PROPERTY_FORM_MODE.EDIT){
-      if(userDashboardDetails.freeListings.remaining == 0){
-        router.replace('/user-dashboard')
+      if(userDashboardDetails?.role == USER_TYPE.OWNER){
+        if(userDashboardDetails.freeListings.remaining == 0){
+          router.replace('/user-dashboard')
+        }
+      }else if(userDashboardDetails.role == USER_TYPE.CHANNEL_PARTNER){
+        if(!userDashboardDetails?.kycStatus?.kyc_completed){
+          router.replace('/profile')
+        }
       }
     }
   },[userDashboardDetails])

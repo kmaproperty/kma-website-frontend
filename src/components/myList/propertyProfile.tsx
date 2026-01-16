@@ -268,11 +268,11 @@ const PropertyView = ({ open, onClose, propertyId }) => {
           </div>}
           <div>
             <p className="text-blue font-medium text-base">Created On:</p>
-            <p className="text-text-gray text-base">{moment(propertyDetails?.createdOn).format('DD MMM YYYY')}</p>
+            <p className="text-text-gray text-base">{propertyDetails?.createdOn ? moment(propertyDetails?.createdOn).format('DD MMM YYYY') : '-'}</p>
           </div>
           <div>
             <p className="text-blue font-medium text-base">Last Added:</p>
-            <p className="text-text-gray text-base">{moment(propertyDetails?.lastAddedOn).format('DD MMM YYYY')}</p>
+            <p className="text-text-gray text-base">{propertyDetails?.lastAddedOn ? moment(propertyDetails?.lastAddedOn).format('DD MMM YYYY') : '-'}</p>
           </div>
           <div>
             <p className="text-blue font-medium text-base">Leads</p>
@@ -280,7 +280,7 @@ const PropertyView = ({ open, onClose, propertyId }) => {
           </div>
           <div>
             <p className="text-blue font-medium text-base">Expiring On</p>
-            <p className="text-text-gray text-base">{moment(propertyDetails?.expiresAt).format('DD MMM YYYY')}</p>
+            <p className="text-text-gray text-base">{propertyDetails?.expiresAt ? moment(propertyDetails?.expiresAt).format('DD MMM YYYY') : '-'}</p>
           </div>
         </div>
         <div>

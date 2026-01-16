@@ -25,7 +25,6 @@ export default function UserProfile() {
   const baseUrl = process.env.NEXT_PUBLIC_AWS_URL;
   const router = useRouter();
   const dispatch = useDispatch();
-  const [kycVerificationPending, setKycVerificationPending] = useState(false);
   const [openProfileUpdate, setOpenProfileUpdate] = useState(false);
   const [openBankDetailsUpdate, setOpenBankDetaislUpdate] = useState(false)
 
@@ -59,32 +58,23 @@ export default function UserProfile() {
     refetchOnMount: true,
   });
 
-  const { data: userDashboardDetails } = useQuery({
-    queryKey: ["user-dashboard-details-profile"],
-    queryFn: async (): Promise<UserDashboardDetailsResponse> => {
-      return UserDashboardDetailsApiHandler();
-    },
-    select: (resposne: UserDashboardDetailsResponse) => {
-      return resposne;
-    },
-    staleTime: 0,
-    refetchOnMount: true,
-  });
-
-  useEffect(() => {
-    if (kycDetails) {
-      if (kycDetails.kyc_completed) {
-        setKycVerificationPending(true);
-      }
-    }
-  }, [kycDetails]);
+  // const { data: userDashboardDetails } = useQuery({
+  //   queryKey: ["user-dashboard-details-profile"],
+  //   queryFn: async (): Promise<UserDashboardDetailsResponse> => {
+  //     return UserDashboardDetailsApiHandler();
+  //   },
+  //   select: (resposne: UserDashboardDetailsResponse) => {
+  //     return resposne;
+  //   },
+  //   staleTime: 0,
+  //   refetchOnMount: true,
+  // });
 
   const renderTitle = (status) => {
-    if (status == "in_progress") {
-      return "KYC is In Progress";
-    }
-    if (status == "not_started") {
-      return "Your E-KYC is remaning";
+    if (status == "pending") {
+      return "KYC is Pending";
+    }else if(status == 'rejected') {
+      return 'KYC is Rejected'
     }
   };
 
@@ -132,7 +122,7 @@ export default function UserProfile() {
                   />
                   Edit Profile
                 </p>
-                {userDashboardDetails?.kycStatus?.kyc_status == "completed" && (
+                {kycDetails?.kyc_status == "completed" && (
                   <p
                     onClick={() => {
                       setOpenBankDetaislUpdate(true);
@@ -152,11 +142,11 @@ export default function UserProfile() {
             </div>
 
             <div className="flex-1">
-              {userDashboardDetails &&
-                userDashboardDetails?.role == USER_TYPE.CHANNEL_PARTNER &&
-                userDashboardDetails?.kycStatus?.kyc_status != "completed" &&
-                userDashboardDetails?.kycStatus?.kyc_status !=
-                  "under_review" && (
+              {kycDetails &&
+                userProfile?.role == USER_TYPE.CHANNEL_PARTNER &&
+                kycDetails?.kyc_status != "approved" &&
+                kycDetails?.kyc_status !=
+                  "in_review" && (
                   <div className="bg-light-purple w-[200px] h-auto p-3 flex flex-col justify-center items-center gap-1 border border-[#757BEE] rounded-xl">
                     <Image
                       src="/assets/kyc-info.svg"
@@ -165,9 +155,9 @@ export default function UserProfile() {
                       alt="kyc-info"
                     />
                     <p className="font-medium text-text-black text-sm">
-                      {renderTitle(userDashboardDetails?.kycStatus?.kyc_status)}
+                      {renderTitle(kycDetails?.kyc_status)}
                     </p>
-                    {!kycVerificationPending && (
+                    {!kycDetails?.kyc_completed && (
                       <button
                         onClick={() => {
                           router.push("/kyc");
@@ -189,7 +179,7 @@ export default function UserProfile() {
               <div className="flex gap-4">
                 <p className="text-text-black text-base w-[85px]">Kyc Status</p>
                 <p className="text-text-gray text-base">
-                  {KYC_STATUS[userDashboardDetails?.kycStatus?.kyc_status]}
+                  {KYC_STATUS[kycDetails?.kyc_status]} {kycDetails?.kyc_status == 'rejected' ? `(${''})` : ''}
                 </p>
               </div>
             </>

@@ -186,7 +186,10 @@ export interface KycStatusResponse {
  step3_bank_details: step3_bank_details,
  step4_docusign_agreement: step4_docusign_agreement,
  kyc_completed: boolean,
- kyc_steps_completed: number
+ kyc_steps_completed: number,
+ kyc_progress: number,
+ kyc_total_steps: number,
+ kyc_status: string,
 }
 
 export const getKycStatusApiHandler = async (): Promise<KycStatusResponse> => {
