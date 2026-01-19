@@ -2,13 +2,13 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useRouter } from 'nextjs-toploader/app';
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Dialog, { DialogProps } from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 
 import OtpInput from "../common/optInput";
 
@@ -18,17 +18,12 @@ import { toast } from "react-toastify";
 import Spinner from "../common/spinner";
 import { contactUsHomeOtpApiHandler, ContactUsHomeOtpPayload, ContactUsHOmeOtpResponse, submitHomeContactApiHandler, SubmitHomeContactPayload, SubmitHomeContactResponse } from "@/services/contactService";
 
-export default function ContactOtp() {
+export default function ContactOtp({open,mobileNumber, onClose, name, email}) {
   // Router & Params
-  const queryClient = useQueryClient()
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
-
-  const isOtp = searchParams.get("isOtp");
-  const mobileNumber = searchParams.get("mobile");
 
   // States
   const [otp, setOtp] = React.useState<string>("");
@@ -37,13 +32,12 @@ export default function ContactOtp() {
   const [isEnableOtpResend, setIsEnableOtpResend] = React.useState(false);
 
   // Derived State
-  const openPopup = React.useMemo(() => isOtp === "true", [isOtp]);
 
   // Dialog Close Handler
   const handleClose: DialogProps["onClose"] = (event, reason) => {
     if (reason === "backdropClick" || reason === "escapeKeyDown") return;
     setOtp('')
-    router.push(pathname);
+    onClose()
   };
 
   // Resend OTP
@@ -80,7 +74,8 @@ export default function ContactOtp() {
     onSuccess: (response: SubmitHomeContactResponse) => {
       console.log('response', response)
       toast.success(response.message)
-      router.replace(`${pathname}`);
+      setOtp('')
+      onClose()
     },
     onError: (error: any) => {
       if(Array.isArray(error.message)){
@@ -105,14 +100,11 @@ export default function ContactOtp() {
   
 const verifyOtp = (val: string) => {
   if(mobileNumber && val.length == 4){
-    let formData:any = localStorage.getItem('contaceDetails')
-    if(formData){
-      formData = JSON.parse(formData)
-
-      formData = {
-        ...formData,
-        otp: val
-      }
+    const formData = {
+      name: name,
+      email: email,
+      phone: mobileNumber,
+      otp: val
     }
     setOtpError("");
     submitEndUserContactDetails(formData);
@@ -122,7 +114,7 @@ const verifyOtp = (val: string) => {
 }
 
   React.useEffect(() => {
-    if(!openPopup){
+    if(!open){
       return
     }
     if (otpTimer > 0) {
@@ -134,16 +126,16 @@ const verifyOtp = (val: string) => {
     }
 
     setIsEnableOtpResend(true);
-  }, [otpTimer, openPopup]);
+  }, [otpTimer, open]);
 
   const formattedTimer = otpTimer > 0
     ? `in 0:${otpTimer < 10 ? "0" + otpTimer : otpTimer}`
     : "";
-
+  
   return (
     <Dialog
       fullScreen={fullScreen}
-      open={openPopup}
+      open={open}
       onClose={handleClose}
       aria-labelledby="responsive-dialog-title"
       slotProps={{

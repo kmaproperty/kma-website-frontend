@@ -138,3 +138,7 @@ body {
   color: white;
   font-weight: 500;
 }
+
+.custom-mobile-input .MuiInputBase-root {
+  height: 40px !important;
+}

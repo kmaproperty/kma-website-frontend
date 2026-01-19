@@ -32,9 +32,9 @@ export const submitContactForm = async (
 
 
 export interface SubmitHomeContactPayload {
-    firstName: string;
+    name: string;
     email?: string;
-    phoneNumber: string;
+    phone: string;
     message?: string;
 }
 
