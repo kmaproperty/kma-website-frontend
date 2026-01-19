@@ -81,15 +81,14 @@ export default function HomdeHeader({cityData, aboutusData, selectedCity, setSel
     setProfileMenu(null)
   };
 
-  useEffect(() => {
-  if (!openType) return;
-
   const handleScroll = () => {
     setanchorEl(null);
     setCityMenu(false);
     setType(null)
   };
 
+  useEffect(() => {
+  if (!openType) return;
   window.addEventListener("scroll", handleScroll, { passive: true });
 
   return () => {
@@ -286,7 +285,7 @@ const navigateDashboard = () => {
                 ))}
               {cityMenu && (
                 <Paper className="w-auto min-w-[180px]! rounded-2xl! px-2 py-2 shadow-xl border border-gray-200">
-                    <CityView selectedCity={selectedCity} setSelectedCity={setSelectedCity} cityData={cityData} cityLoader={cityLoader} fetchCities={fetchCities}/>
+                    <CityView selectedCity={selectedCity} setSelectedCity={setSelectedCity} cityData={cityData} cityLoader={cityLoader} fetchCities={fetchCities} handleScroll={handleScroll}/>
                 </Paper>
               )}
             </div>

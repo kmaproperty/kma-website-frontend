@@ -16,7 +16,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { AboutusResponse, CitiesPayload, CitiesResponse, getAboutUsDataAPiHanlder, getCityListApiHandler, getExploreApiHanlder, GetExplorePayload, GetExploreResponse, getTopProperties, GetTopPropertiesPayload, GetTopPropertiesResponse } from "@/services/homeService";
 import { useEffect, useState } from "react";
 
-export default function Home({ propertyMasterData }) {
+export default function Home({ propertyMasterData, propertyCitiesData }) {
   const [selectedCity, setSelectedCity] = useState(null)
   const [cityData, setCityData] = useState(null)
   const [aboutusData, setAboutusData] = useState(null)
@@ -77,11 +77,20 @@ export default function Home({ propertyMasterData }) {
       console.log("response", response);
       return response;
     },
+    enabled: selectedCity ? true : false
   });
 
   useEffect(() => {
-    fetchCities({})
     fetchAboutusData()
+    if(propertyCitiesData){
+      let findCity = propertyCitiesData?.allCities?.find(item => item.name == 'Gurgaon')
+      if(findCity){
+        setSelectedCity(findCity)
+      }
+      setCityData(propertyCitiesData)
+    }else{
+      fetchCities({})
+    }
   },[])
 
   return (
