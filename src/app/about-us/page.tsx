@@ -6,7 +6,7 @@ import { TbBulb } from "react-icons/tb";
 import SectionHeading from '@/components/common/SectionHeading';
 import Image from 'next/image';
 import BlogSection from '@/components/home/blogSection';
-// import HomeFooter from '@/components/footer/homeFooter';
+import HomeFooter from '@/components/footer/homeFooter';
 import { FaFacebook, FaLinkedin, FaTwitter, FaYoutube } from 'react-icons/fa';
 
 const AboutUs = () => {
