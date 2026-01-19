@@ -41,7 +41,7 @@ export default function TopProperties({ topProperties }) {
                 <div key={index}>
                   <div className="flex justify-start gap-2 2md:gap-3">
                     <div className="w-[110px] flex-shrink-0">
-                      {img && (
+                      {img ? (
                         <Image
                           src={profileBaseUrl + img}
                           width={100}
@@ -49,6 +49,12 @@ export default function TopProperties({ topProperties }) {
                           alt="property"
                           className="rounded-[8px] w-[110px] h-[110px] object-cover"
                         />
+                      ) : (
+                        <div className="w-[110px] h-[110px] rounded-[8px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 flex items-center justify-center">
+                          <span className="text-white/50 text-xs font-medium">
+                            No Image
+                          </span>
+                        </div>
                       )}
                     </div>
 
