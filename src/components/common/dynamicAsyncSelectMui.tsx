@@ -53,7 +53,6 @@ const DynamicAsyncAutocomplete: React.FC<DynamicAsyncAutocompleteProps> = ({
 
       setLoading(true);
       const result = await loadOptions(inputValue);
-      console.log('result', result)
       if (active) {
         let opts = Array.isArray(result) ? result : [];
         if (enableAddManually && menualAddItem) {
@@ -71,13 +70,16 @@ const DynamicAsyncAutocomplete: React.FC<DynamicAsyncAutocompleteProps> = ({
 
   return (
     <Autocomplete
+      clearIcon={false}
       multiple={isMulti}
       open={open}
       onOpen={() => setOpen(true)}
       onClose={() => setOpen(false)}
       options={options}
       value={value || (isMulti ? [] : null)}
-      onChange={(e, newValue: OptionType | OptionType[]) => onChange?.(newValue)}
+      onChange={(e, newValue: OptionType | OptionType[]) => {
+        onChange?.(newValue)
+      }}
       inputValue={inputValue}
       onInputChange={(e, val) => setInputValue(val)}
       getOptionLabel={(option: OptionType) => option?.label ?? ""}

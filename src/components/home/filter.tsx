@@ -3,7 +3,7 @@ import Image from "next/image";
 import DynamicAsyncAutocomplete from "../common/dynamicAsyncSelectMui";
 import { ClickAwayListener, InputBase, Popper } from "@mui/material";
 import PropertyTypeMenu from "../filtermenu/propertyTypeMenu";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PriceRangeMenu from "../filtermenu/budgetTypeMenu";
 import { filterTypeList } from "@/lib/constants";
 import PossessionStatusMenu from "../filtermenu/possesionStatusMenu";
@@ -11,15 +11,19 @@ import FurnishTypeMenu from "../filtermenu/furnishTypeMenu";
 import ProjectStatusMenu from "../filtermenu/projectStatusMenu";
 import PostedByMenu from "../filtermenu/postedByMenu";
 import TransactionByMenu from "../filtermenu/transactionByMenu";
-
+import { useQuery } from "@tanstack/react-query";
+import { getPropertiesCountApiHandler, GetPropertiesCountPayload, GetPropertiesCountResponse } from "@/services/homeService";
 export default function Filter({propertyMasterData, setSelectedCity, selectedCity, cityData}) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [popperType, setPopperType] = useState(null)
 
   const openType = Boolean(anchorEl);
 
+  const [searchCount, setSearchCount] = useState(null)
+
   //Filter state 
   const [filterType, setFilterType] = useState('rent')
+  const [search, setSearch] = useState('')
   const [selectedMinBudget, setSelectedMinBudget] = useState(null)
   const [selectedMaxBudget, setSelectedMaxBudget] = useState(null)
   const [selectedPropertyType, setSelectedPropertyType] = useState([])
@@ -36,10 +40,52 @@ export default function Filter({propertyMasterData, setSelectedCity, selectedCit
 
   const handleFilterType = (value) => {
     setFilterType(value)
+    setSelectedMinBudget(null)
+    setSelectedMaxBudget(null)
+    setSelectedPropertyType([])
+    setSelectedPossessionStatus([])
+    setSelectedFurnishType([])
+    setSelectedProjectStatus([])
+    setSelectedPostedBy([])
+    setTransactionBy({name: 'Buy', value: 'rent'})
+    setSearch('')
+    setSearchCount(null)
   }
 
-  const allCities = cityData?.allCities ?? []
-  
+  const { data: explorePropertyCount } = useQuery({
+    queryKey: ["explore-list", selectedCity, search, selectedMinBudget, selectedMaxBudget, selectedPropertyType, selectedPossessionStatus, selectedFurnishType, selectedProjectStatus, selectedPostedBy, transactionBy],
+    queryFn: () => {
+      let payload: GetPropertiesCountPayload = {
+        page: '1',
+        limit: '5',
+        ...(selectedCity?.id ? {cityId: selectedCity?.id ?? null,} : {}),
+        ...(search ? {search: search ?? null,} : {}),
+        ...(selectedPropertyType.length > 0 ? {propertyTypeIds: selectedPropertyType.map(item => item.id).join(',') ?? '',} : {}),
+        ...(selectedFurnishType.length > 0 ? {furnishingTypes: selectedFurnishType.map(item => item.value).join(',') ?? '',} : {}),
+        ...(selectedPossessionStatus.length > 0 ? {constructionStatuses: selectedPossessionStatus.map(item => item.value).join(',') ?? '',} : {}),
+        ...(selectedMinBudget  ? {minPrice: selectedMinBudget?.value ?? 0,} : {}),
+        ...(selectedMaxBudget  ? {maxPrice: selectedMaxBudget?.value ?? 0,} : {}),
+        ...(selectedPostedBy.length > 0  ? {postedBy: selectedPostedBy.map(item => item.value).join(',') ?? '',} : {}),
+      };
+      return getPropertiesCountApiHandler(payload);
+    },
+    select: (response: GetPropertiesCountResponse) => {
+      console.log("response", response);
+      return response.count
+    },
+  });
+
+  let allCities = cityData?.allCities ?? []
+  allCities = allCities.map((item => ({...item, label: item.name, value: item.id})))
+
+  const selectedCityValye = selectedCity ? {...selectedCity, label: selectedCity.name, value:selectedCity.id} : null
+
+  useEffect(() => {
+    if(explorePropertyCount != null){
+      setSearchCount(explorePropertyCount)
+    }
+  },[explorePropertyCount])
+
   return (
     <div className="flex flex-col gap-2">
       <div className="flex justify-center font-medium text-blue overflow-auto no-scrollbar">
@@ -66,9 +112,19 @@ export default function Filter({propertyMasterData, setSelectedCity, selectedCit
               isMulti={false}
               isError={false}
               placeholder={"City"}
-              onChange={(value) => {}}
-              loadOptions={async () => []}
-              value={null}
+              onChange={(value) => {
+                setSelectedCity(value)
+              }}
+              loadOptions={async (inputValue: string) => {
+                if (!inputValue.trim()) return allCities;
+
+                return Promise.resolve(
+                  allCities.filter(city =>
+                    city.label.toLowerCase().includes(inputValue.toLowerCase())
+                  )
+                );
+              }}
+              value={selectedCityValye}
               minHeight={"35px"}
               styles={{
                 "& .MuiOutlinedInput-root": {
@@ -76,6 +132,7 @@ export default function Filter({propertyMasterData, setSelectedCity, selectedCit
                   borderBottomLeftRadius: "9999px",
                   boxShadow: "none",
                   height: "40px",
+                  paddingRight: '5px !important' ,
                   "& fieldset": {
                     borderColor: "var(--color-border)",
                     boxShadow: "none",
@@ -114,7 +171,10 @@ export default function Filter({propertyMasterData, setSelectedCity, selectedCit
               <InputBase
                 placeholder="Search by Project, Locality, or Builder"
                 fullWidth
-                onChange={(event) => {}}
+                value={search}
+                onChange={(event) => {
+                  setSearch(event.target.value)
+                }}
                 className="w-full h-full px-3 text-xs rounded-full"
                 inputProps={{
                   className:
@@ -141,7 +201,7 @@ export default function Filter({propertyMasterData, setSelectedCity, selectedCit
                   alt="Search"
                 />
                 <p className="text-nowrap font-medium text-xs lg:text-sm">
-                  Search
+                  {searchCount != null ? searchCount == 0 ? 'No Properties Availabel' : `View ${searchCount} Properties`  : 'Search'}
                 </p>
               </span>
             </button>
@@ -154,7 +214,7 @@ export default function Filter({propertyMasterData, setSelectedCity, selectedCit
               isError={false}
               placeholder={"City"}
               onChange={(value) => {
-
+                setSelectedCity(value)
               }}
               loadOptions={async (inputValue: string) => {
                 if (!inputValue.trim()) return [];
@@ -165,12 +225,13 @@ export default function Filter({propertyMasterData, setSelectedCity, selectedCit
                   )
                 );
               }}
-              value={null}
+              value={selectedCityValye}
               minHeight={"35px"}
               styles={{
                 "& .MuiOutlinedInput-root": {
                   borderRadius: "9999px",
                   boxShadow: "none",
+                  paddingRight: '5px',
                   height: "35px",
                   "& fieldset": {
                     borderColor: "var(--color-border)",
@@ -242,7 +303,7 @@ export default function Filter({propertyMasterData, setSelectedCity, selectedCit
               className="mt-1"
             />
           </div>}
-          {['rent', 'sale', 'projects','commercial'].includes(filterType) && <div
+          {['rent', 'sale', 'projects','commercial', 'plot_land'].includes(filterType) && <div
             onClick={(event) => handlePopperOpen(event, 'budget')}
             className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
           >
@@ -268,7 +329,7 @@ export default function Filter({propertyMasterData, setSelectedCity, selectedCit
               className="mt-1"
             />
           </div>}
-          {['rent', 'sale', 'projects', 'plot_land', 'commercial'].includes(filterType) && <div
+          {['rent', 'sale', 'projects', 'commercial'].includes(filterType) && <div
             onClick={(event) => handlePopperOpen(event, 'propertytype')}
             className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
           >

@@ -1,4 +1,6 @@
 "use client";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import { useRef } from "react";
 import Slider from "react-slick";
 import { motion, useInView } from "framer-motion";
@@ -102,7 +104,7 @@ function Star({ className = "h-4 w-4" }) {
   );
 }
 
-export default function FeaturedProperties() {
+export default function FeaturedProperties({topProperties}) {
   const sliderRef = useRef(null);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });

@@ -12,7 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getUserReviewApiHandler, GetUserReviewApiHandlerResponse } from "@/services/homeService";
 import ContactInformation from "../contactInformation";
 
-export default function MainHome({aboutusData, cityData,selectedCity, setSelectedCity, cityLoader, fetchCities, propertyMasterData}) {
+export default function MainHome({topProperties, aboutusData, cityData,selectedCity, setSelectedCity, cityLoader, fetchCities, propertyMasterData}) {
     const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
   const [show, setShow] = useState(false);
 
@@ -68,8 +68,7 @@ export default function MainHome({aboutusData, cityData,selectedCity, setSelecte
             <BannerText />
           </div>
           <div className="w-[100%] lg:w-[40%]">
-            <TopProperties />
-            {/* <ProfileRating /> */}
+            {Array.isArray(topProperties) && topProperties.length > 0 && <TopProperties topProperties={topProperties}/>}
             <UserRating avatars={profileImages()} rating={reviewData?.statistics?.averageRating} subtitle={reviewData?.trustedByText}/>
           </div>
         </div>

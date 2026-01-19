@@ -307,3 +307,104 @@ export const getExploreApiHanlder = async ({cityId, propertyTypeId, listingTypeI
         throw error.response?.data ?? error;
     }
 }
+
+export interface GetTopPropertiesPayload {
+    cityId: string | null
+}
+export interface PropertyDetails {
+    id: string;
+    propertyName: string;
+    address: string;
+    description: number;
+    imageUrl: string;
+    images: {
+        fileKey: string;
+        view: string;
+        isCoverImage: string;
+    }[];
+    videos: {
+        fileKey: string;
+        format: string;
+    };
+    isReraRegistered: boolean;
+    constructionStatus: string;
+    category: string;
+    listingType: string;
+    propertyType: string;
+    bhkType: string;
+    plotArea: number;
+    plotAreaUnit: string;
+    facing: string;
+    furnishType: string;
+    videoCount: string;
+    imageCount: string;
+    price: number;
+    monthlyRent: number;
+    city: string;
+    society: string;
+    locality: string;
+    units: {
+        unit: string;
+        size: string;
+        price: string;
+    }[],
+    owner: string;
+    isFavorite: boolean
+}
+
+export interface GetTopPropertiesResponse {
+    success: boolean;
+    properties: PropertyDetails[];
+    total: number
+}
+
+export const getTopProperties = async ({cityId}: GetTopPropertiesPayload) : Promise<GetTopPropertiesResponse> => {
+    try{
+        const response = await axiosInstance.get<GetTopPropertiesResponse>(
+      "end-user/top-properties", {
+        params: {cityId}
+      });
+
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}
+
+export interface GetPropertiesCountPayload {
+    page?: string;
+    limit?: string;
+    cityId?: string;
+    search?: string;
+    categoryIds?: string;
+    propertyTypeIds?: string;
+    bhkTypeIds?: string;
+    furnishingTypes?: string;
+    constructionStatuses?: string;
+    minPrice?: string;
+    maxPrice?: string;
+    latitude?: string;
+    longitude?: string;
+    radius?: string;
+    sortBy?: string;
+    sortOrder?: string;
+    postedBy?: string
+}
+
+export interface GetPropertiesCountResponse {
+    success: boolean;
+    count: number
+}
+
+export const getPropertiesCountApiHandler = async ({page,limit,cityId,search, categoryIds, propertyTypeIds, bhkTypeIds, furnishingTypes, constructionStatuses, minPrice, maxPrice, latitude, longitude, radius, sortBy, sortOrder, postedBy }: GetPropertiesCountPayload) : Promise<GetPropertiesCountResponse> => {
+    try{
+        const response = await axiosInstance.get<GetPropertiesCountResponse>(
+      "end-user/properties/count", {
+        params: {cityId, search, categoryIds, propertyTypeIds, bhkTypeIds, furnishingTypes, constructionStatuses, minPrice, maxPrice, latitude, longitude, radius, sortBy, sortOrder, postedBy}
+      });
+
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}

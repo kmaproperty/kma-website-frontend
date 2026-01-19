@@ -13,7 +13,7 @@ import AppDownloadSection from "./appDownloadSection";
 import HomeFooter from "../footer/homeFooter";
 import MainHome from "./home";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { AboutusResponse, CitiesPayload, CitiesResponse, getAboutUsDataAPiHanlder, getCityListApiHandler, getExploreApiHanlder, GetExplorePayload, GetExploreResponse } from "@/services/homeService";
+import { AboutusResponse, CitiesPayload, CitiesResponse, getAboutUsDataAPiHanlder, getCityListApiHandler, getExploreApiHanlder, GetExplorePayload, GetExploreResponse, getTopProperties, GetTopPropertiesPayload, GetTopPropertiesResponse } from "@/services/homeService";
 import { useEffect, useState } from "react";
 
 export default function Home({ propertyMasterData }) {
@@ -26,6 +26,10 @@ export default function Home({ propertyMasterData }) {
   } = useMutation({
     mutationFn: getCityListApiHandler,
     onSuccess: (response: CitiesResponse) => {
+      let findCity = response?.allCities?.find(item => item.name == 'Gurgaon')
+      if(findCity){
+        setSelectedCity(findCity)
+      }
       setCityData(response)
     },
     onError: (error) => {
@@ -61,6 +65,20 @@ export default function Home({ propertyMasterData }) {
     },
   });
 
+  const { data } = useQuery({
+    queryKey: ["top-properties-list", selectedCity],
+    queryFn: () => {
+      let payload: GetTopPropertiesPayload = {
+        cityId: selectedCity?.id ?? null
+      };
+      return getTopProperties(payload);
+    },
+    select: (response: GetTopPropertiesResponse) => {
+      console.log("response", response);
+      return response;
+    },
+  });
+
   useEffect(() => {
     fetchCities({})
     fetchAboutusData()
@@ -70,7 +88,7 @@ export default function Home({ propertyMasterData }) {
     <div className="overflow-hidden">
       <div className="relative ">
         <BannerSlider />
-        <MainHome aboutusData={aboutusData} selectedCity={selectedCity} setSelectedCity={setSelectedCity} fetchCities={fetchCities} cityLoader={cityLoader} cityData={cityData} propertyMasterData={propertyMasterData} />
+        <MainHome topProperties={data?.properties ?? []} aboutusData={aboutusData} selectedCity={selectedCity} setSelectedCity={setSelectedCity} fetchCities={fetchCities} cityLoader={cityLoader} cityData={cityData} propertyMasterData={propertyMasterData} />
       </div>
       <div className="my-16 flex justify-center overflow-hidden">
         <div className="w-[90%] md:w-[75%]">
@@ -90,11 +108,11 @@ export default function Home({ propertyMasterData }) {
           <ExploreSection explorePropertyList={explorePropertyList}/>
         </div>
       </div>}
-      <div className="bg-[#F2F2F2] flex justify-center">
+      {Array.isArray(data?.properties) && data?.properties.length > 0 && <div className="bg-[#F2F2F2] flex justify-center">
         <div className="my-16 w-[90%] md:w-[75%]">
-          <FeaturedProperties />
+          <FeaturedProperties topProperties={data?.properties ?? []}/>
         </div>
-      </div>
+      </div>}
       <div className="relative bg-text-black flex justify-center overflow-hidden">
         <WorkingSection />
       </div>
