@@ -30,7 +30,7 @@ export default function PriceRangeMenu({filterType, selectedMinBudget, setSelect
                 setSelectedMaxBudget(null)
               }}
               key={idx}
-              className={`px-3 py-2 rounded-lg text-sm cursor-pointer 
+              className={`px-3 py-2 rounded-lg text-sm cursor-pointer hover:bg-gray-100
                 ${price.value === selectedMinBudget?.value ? "bg-gray-100 font-semibold" : ""}
               `}
             >

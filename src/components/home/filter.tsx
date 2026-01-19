@@ -55,11 +55,13 @@ export default function Filter({propertyMasterData, setSelectedCity, selectedCit
   const { data: explorePropertyCount } = useQuery({
     queryKey: ["explore-list", selectedCity, search, selectedMinBudget, selectedMaxBudget, selectedPropertyType, selectedPossessionStatus, selectedFurnishType, selectedProjectStatus, selectedPostedBy, transactionBy],
     queryFn: () => {
+      const listId = propertyMasterData.find(item => item.code == filterType)?.id
       let payload: GetPropertiesCountPayload = {
         page: '1',
         limit: '5',
         ...(selectedCity?.id ? {cityId: selectedCity?.id ?? null,} : {}),
         ...(search ? {search: search ?? null,} : {}),
+        ...(listId ? {listingTypeIds: listId ?? null,} : {}),
         ...(selectedPropertyType.length > 0 ? {propertyTypeIds: selectedPropertyType.map(item => item.id).join(',') ?? '',} : {}),
         ...(selectedFurnishType.length > 0 ? {furnishingTypes: selectedFurnishType.map(item => item.value).join(',') ?? '',} : {}),
         ...(selectedPossessionStatus.length > 0 ? {constructionStatuses: selectedPossessionStatus.map(item => item.value).join(',') ?? '',} : {}),
