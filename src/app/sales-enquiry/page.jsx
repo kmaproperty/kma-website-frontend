@@ -1,4 +1,4 @@
-import HomdeHeader from '@/components/header/homeHeader'
+// import HomdeHeader from '@/components/header/homeHeader'
 import { BadgePercent, CircleCheckBig, House, Lightbulb, ListCheck, ListChecks, Mail, MapPin, Phone, PhoneCall, PhoneIncoming, Section } from 'lucide-react';
 import PageTitle from '@/components/common/PageTitle';
 import { TbBulb } from "react-icons/tb";
@@ -27,7 +27,7 @@ const SalesEnquiry = () => {
         <div>
             <div className="relative pt-[25px] h-[100vh] max-h-[600px]" style={{ backgroundImage: 'url(assets/app/sales-enquiry-bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'bottom' }}>
                 <div className="w-[75%] mx-auto">
-                    <HomdeHeader />
+                    {/* <HomdeHeader /> */}
                 </div>
                 <div className="w-[75%] max-w-[600px] mx-auto mt-[150px]">
                     <PageTitle
