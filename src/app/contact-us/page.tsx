@@ -1,4 +1,5 @@
-import HomdeHeader from '@/components/header/homeHeader'
+'use client'
+// import HomdeHeader from '@/components/header/homeHeader'
 import { BadgePercent, CircleCheckBig, House, Lightbulb, ListCheck, ListChecks, PhoneCall, Section } from 'lucide-react';
 import PageTitle from '@/components/common/PageTitle';
 import { TbBulb } from "react-icons/tb";
@@ -26,7 +27,7 @@ const ContactUs = () => {
         <div>
             <div className="relative pt-[25px] h-[100vh] max-h-[600px]" style={{ backgroundImage: 'url(assets/About-bg.jpg)', backgroundSize: 'cover' }}>
                 <div className="w-[75%] mx-auto">
-                    <HomdeHeader />
+                    {/* <HomdeHeader /> */}
                 </div>
                 <div className="w-[75%] max-w-[600px] mx-auto mt-[100px]">
                     <PageTitle
