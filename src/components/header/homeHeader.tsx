@@ -27,6 +27,8 @@ export default function HomdeHeader({cityData, aboutusData, selectedCity, setSel
   const [profileMenu, setProfileMenu] = useState(null)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [activeSubMenu, setActiveSubMenu] = useState(null);
+
+  const [userRole, setUserRole] = useState(null)
  
 
   const toggleDrawer = () => {
@@ -95,13 +97,6 @@ export default function HomdeHeader({cityData, aboutusData, selectedCity, setSel
   };
 }, [openType]);
 
-useEffect(() => {
-  const userData = localStorage.getItem('user')
-  if(userData){
-
-  }
-},[])
-
 const returnUserRole = () => {
   let userData: any = localStorage.getItem('user')
   if(userData){
@@ -111,6 +106,15 @@ const returnUserRole = () => {
     return null
   }
 }
+
+useEffect(() => {
+  const userData = localStorage.getItem('user')
+  if(userData){
+    setUserRole(returnUserRole())
+  }
+},[])
+
+
 
 const navigatePostProperty = () => {
   router.push('/post-property')
@@ -191,7 +195,7 @@ const navigateDashboard = () => {
           </div>
         </div>
         <div className="flex items-center justify-start gap-[7px] shrink-0">
-          {!returnUserRole() && <button onClick={navigatePostProperty} className="animated-button px-[10px] sm:px-[20px] py-[6px] sm:py-[9px] cursor-pointer">
+          {!userRole && <button onClick={navigatePostProperty} className="animated-button px-[10px] sm:px-[20px] py-[6px] sm:py-[9px] cursor-pointer">
             <span className="flex items-center justify-between gap-[6px] relative z-11">
               <Image
                 src="/assets/home-white.svg"
@@ -205,7 +209,7 @@ const navigateDashboard = () => {
               </p>
             </span>
           </button>}
-          {(returnUserRole() == USER_TYPE.CHANNEL_PARTNER || returnUserRole() == USER_TYPE.OWNER) && <button onClick={navigateDashboard} className="animated-button px-[10px] sm:px-[20px] py-[6px] sm:py-[9px] cursor-pointer">
+          {(userRole == USER_TYPE.CHANNEL_PARTNER || userRole == USER_TYPE.OWNER) && <button onClick={navigateDashboard} className="animated-button px-[10px] sm:px-[20px] py-[6px] sm:py-[9px] cursor-pointer">
             <span className="flex items-center justify-between gap-[6px] relative z-11">
               <Image
                 src="/assets/home-white.svg"
