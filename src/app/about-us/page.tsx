@@ -6,7 +6,7 @@ import { TbBulb } from "react-icons/tb";
 import SectionHeading from '@/components/common/SectionHeading';
 import Image from 'next/image';
 import BlogSection from '@/components/home/blogSection';
-import HomeFooter from '@/components/footer/homeFooter';
+// import HomeFooter from '@/components/footer/homeFooter';
 import { FaFacebook, FaLinkedin, FaTwitter, FaYoutube } from 'react-icons/fa';
 
 const AboutUs = () => {
@@ -25,7 +25,7 @@ const AboutUs = () => {
         <div>
             <div className="relative pt-[25px] h-[100vh] max-h-[600px]" style={{ backgroundImage: 'url(assets/About-bg.jpg)', backgroundSize: 'cover' }}>
                 <div className="w-[75%] mx-auto">
-                    <HomdeHeader />
+                    {/* <HomdeHeader /> */}
                 </div>
                 <div className="w-[75%] max-w-[600px] mx-auto mt-[100px]">
                     <PageTitle
