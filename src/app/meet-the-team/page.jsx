@@ -1,5 +1,5 @@
 'use client'
-import HomdeHeader from '@/components/header/homeHeader'
+// import HomdeHeader from '@/components/header/homeHeader'
 import { BadgePercent, CircleCheckBig, House, Lightbulb, ListCheck, ListChecks, PhoneCall, Section } from 'lucide-react';
 import PageTitle from '@/components/common/PageTitle';
 import { TbBulb } from "react-icons/tb";
@@ -69,7 +69,7 @@ const MeetTheTeam = () => {
         <div>
             <div className="relative pt-[25px] h-[100vh] max-h-[600px]" style={{ backgroundImage: 'url(assets/team/meet-the-team-herobg.png)', backgroundSize: 'cover', backgroundPosition: 'bottom' }}>
                 <div className="w-[75%] mx-auto">
-                    <HomdeHeader />
+                    {/* <HomdeHeader /> */}
                 </div>
                 <div className="w-[75%] max-w-[600px] mx-auto mt-[140px]">
                     <PageTitle
