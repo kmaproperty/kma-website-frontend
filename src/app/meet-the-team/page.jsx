@@ -1,3 +1,4 @@
+'use client'
 import HomdeHeader from '@/components/header/homeHeader'
 import { BadgePercent, CircleCheckBig, House, Lightbulb, ListCheck, ListChecks, PhoneCall, Section } from 'lucide-react';
 import PageTitle from '@/components/common/PageTitle';
