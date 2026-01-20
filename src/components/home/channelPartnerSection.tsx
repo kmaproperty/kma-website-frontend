@@ -10,6 +10,8 @@ import {
   GetChannelPartnerListResponse,
 } from "@/services/homeService";
 import ContactUsPopup from "../contactUsPopup";
+import { useSelector } from "react-redux";
+import { getSelectedCity } from "@/store/homeHeaderSlice";
 
 function Star({
   fill = 100,
@@ -54,7 +56,9 @@ const rightVariant = {
   },
 };
 
-export default function ChannelPartnerSection({ selectedCity }) {
+export default function ChannelPartnerSection() {
+  const selectedCity = useSelector(getSelectedCity)
+
   const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });

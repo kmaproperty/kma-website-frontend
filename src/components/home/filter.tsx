@@ -13,7 +13,12 @@ import PostedByMenu from "../filtermenu/postedByMenu";
 import TransactionByMenu from "../filtermenu/transactionByMenu";
 import { useQuery } from "@tanstack/react-query";
 import { getPropertiesCountApiHandler, GetPropertiesCountPayload, GetPropertiesCountResponse } from "@/services/homeService";
-export default function Filter({propertyMasterData, setSelectedCity, selectedCity, cityData}) {
+import { useDispatch, useSelector } from "react-redux";
+import { getSelectedCity, setSelectedCity } from "@/store/homeHeaderSlice";
+export default function Filter({propertyMasterData, cityData}) {
+  const dispatch = useDispatch()
+  const selectedCity = useSelector(getSelectedCity)
+  
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [popperType, setPopperType] = useState(null)
 
@@ -115,7 +120,7 @@ export default function Filter({propertyMasterData, setSelectedCity, selectedCit
               isError={false}
               placeholder={"City"}
               onChange={(value) => {
-                setSelectedCity(value)
+                dispatch(setSelectedCity(value))
               }}
               loadOptions={async (inputValue: string) => {
                 if (!inputValue.trim()) return allCities;
@@ -216,7 +221,7 @@ export default function Filter({propertyMasterData, setSelectedCity, selectedCit
               isError={false}
               placeholder={"City"}
               onChange={(value) => {
-                setSelectedCity(value)
+                dispatch(setSelectedCity(value))
               }}
               loadOptions={async (inputValue: string) => {
                 if (!inputValue.trim()) return [];

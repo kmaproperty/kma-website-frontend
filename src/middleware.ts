@@ -7,11 +7,12 @@ export default function middleware(req: NextRequest) {
   console.log('accesstoken', accessToken,refreshToken, pathname, searchParams.get('event'))
 
   const isHomePage = pathname === "/";
+  const isAbooutUsPage = pathname === "/about-us";
   const isSignupPage = pathname === '/signup';
   const isVerifyOtpPage = pathname === '/verify-otp';
   const event = searchParams.get('event')
 
-   if (isHomePage) {
+   if (isHomePage || isAbooutUsPage) {
     return NextResponse.next();
   }
 

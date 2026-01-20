@@ -15,13 +15,10 @@ export default function HomeMobileHeader({
   activeSubMenu,
   openSubMenu,
   closeSubMenu,
-  selectedCity,
-  setSelectedCity,
   cityData,
   cityLoader,
   fetchCities,
   propertyMasterData,
-  type
 }) {
   const listMapping = {
     project: projectMenuList,
@@ -172,7 +169,7 @@ export default function HomeMobileHeader({
           }
           {
             activeSubMenu == 'city' && <div>
-                <CityView selectedCity={selectedCity} setSelectedCity={setSelectedCity} cityData={cityData} cityLoader={cityLoader} fetchCities={fetchCities}/>
+                <CityView handleScroll={onClose} cityData={cityData} cityLoader={cityLoader} fetchCities={fetchCities}/>
             </div>
           }
         </div>

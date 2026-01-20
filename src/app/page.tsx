@@ -10,6 +10,5 @@ export default async function HomeDashboard() {
   }
 
   let propertyCitiesData: any = await fetchPropertyCitiesData();
-  console.log('propertyciti', propertyCitiesData)
   return <Home propertyMasterData={propertyMasterData} propertyCitiesData={propertyCitiesData}/>;
 }

@@ -1,8 +1,12 @@
+import { getAboutusData, getSelectedCity } from "@/store/homeHeaderSlice";
 import Image from "next/image";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
-export default function RentSellHeaderView({aboutusData, propertyMasterData, type, selectedCity}) {
-  console.log('propertyMasterDatapropertyMasterData',propertyMasterData)
+export default function RentSellHeaderView({propertyMasterData, type}) {
+  const selectedCity = useSelector(getSelectedCity)
+  const aboutusData = useSelector(getAboutusData)
+  
   const [categoryType, setCategoryType] = useState('867c2adf-7e01-45a8-a305-74900b24c529') //residential
 
   const category = propertyMasterData?.find(item => item.code == type)?.categories ?? []

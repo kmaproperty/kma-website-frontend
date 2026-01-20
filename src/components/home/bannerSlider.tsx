@@ -6,18 +6,18 @@ import { useMemo } from "react";
 import Slider from "react-slick";
 import Image from "next/image";
 
-const RenderSliderBody = ({ sliderItem }) => {
+const RenderSliderBody = ({ sliderItem, overlayClass, bannerHeight }) => {
   return (
-    <div className="relative w-[100%] min-h-[700px] 2md:min-h-auto 2md:h-[90vh]">
+    <div className={`relative w-[100%] ${bannerHeight}`}>
       <div className="absolute inset-0 gradient-mask">
         <Image alt='banner' className="" src={sliderItem.imagePath} fill/>
-        <div className="gradient-overlay"></div>  
+        <div className={overlayClass}></div>  
       </div>
     </div>
   );
 };
 
-export default function BannerSlider(){
+export default function BannerSlider({backgroundImages, overlayClass, bannerHeight}){
 
     var settings = useMemo(() => {
     return {
@@ -33,23 +33,14 @@ export default function BannerSlider(){
   }, []);
 
   let sliderImages = useMemo(() => {
-    return [
-      {
-        imagePath: "/assets/backgroundSlider/background_slider_1.jpg",
-        alt: "Background Image 1",
-      },
-      {
-        imagePath: "/assets/backgroundSlider/background_slider_2.png",
-        alt: "Background Image 2",
-      },
-    ];
-  }, []);
+    return backgroundImages
+  }, [backgroundImages]);
 
     return(
         <div>
             <Slider {...settings}>
                 {sliderImages.map((sliderItem, index) => {
-                return <RenderSliderBody key={index} sliderItem={sliderItem} />;
+                return <RenderSliderBody bannerHeight={bannerHeight} key={index} sliderItem={sliderItem} overlayClass={overlayClass}/>;
                 })}
             </Slider>
         </div>
