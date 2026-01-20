@@ -87,7 +87,7 @@ export default function Step4({containerRef}) {
     return hasError;
   };
 
-  const { mutate: handleFileUpload } = useMutation({
+  const { mutate: handleFileUpload, isPending: fileLoader } = useMutation({
     mutationFn: async (
       payload: UploadFileToS3Payload
     ): Promise<UploadFileToS3Response> => {
@@ -294,6 +294,9 @@ const handleUploadFileToS3 = async (files: File[], type: string) => {
     onSuccess: (response: Step4PostPropertyResponse) => {
       console.log("step4 success response", response);
       // dispatch(setActiveStep({ step: activeStep + 1 }));
+      if(toastRef.current){
+        toast.dismiss(toastRef.current);
+      }
       toast.success('Post Property created successfully')
       dispatch(resetProgress())
       dispatch(setActiveStep({step: 1}))
@@ -484,7 +487,7 @@ const handleUploadFileToS3 = async (files: File[], type: string) => {
             </span>
           </button>
           <button
-            disabled={step4Loader}
+            disabled={step4Loader || fileLoader}
             onClick={() => {
               if (activeStep == 4) {
                 if (validate()) {
@@ -497,7 +500,7 @@ const handleUploadFileToS3 = async (files: File[], type: string) => {
             className="w-full md:w-[130px] text-sm 1xl:text-base animated-button px-12 py-3 border border-blue text-center cursor-pointer"
           >
             <span className="gap-3 relative flex justify-center">
-               {!step4Loader ? (
+               {(!step4Loader || !fileLoader) ? (
                 <p className={`text-nowrap`}>{activeStep == 4 ? 'Submit' : 'Next'}</p>
               ) : (
                 <Spinner size={20} className="h-[24px]"/>
