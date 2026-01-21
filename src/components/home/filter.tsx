@@ -27,7 +27,7 @@ export default function Filter({propertyMasterData, cityData}) {
   const [searchCount, setSearchCount] = useState(null)
 
   //Filter state 
-  const [filterType, setFilterType] = useState('rent')
+  const [filterType, setFilterType] = useState('sale')
   const [search, setSearch] = useState('')
   const [selectedMinBudget, setSelectedMinBudget] = useState(null)
   const [selectedMaxBudget, setSelectedMaxBudget] = useState(null)
@@ -36,7 +36,7 @@ export default function Filter({propertyMasterData, cityData}) {
   const [selectedFurnishType, setSelectedFurnishType] = useState([])
   const [selectedProjectStatus, setSelectedProjectStatus] = useState([])
   const [selectedPostedBy, setSelectedPostedBy] = useState([])
-  const [transactionBy, setTransactionBy] = useState({name: 'Buy', value: 'rent'})
+  const [transactionBy, setTransactionBy] = useState({name: 'Buy', value: 'sale'})
 
   const handlePopperOpen = (event: React.MouseEvent<HTMLElement>, type) => {
     setAnchorEl(event.currentTarget);
@@ -432,7 +432,7 @@ export default function Filter({propertyMasterData, cityData}) {
                         {popperType == 'furnishType' && <FurnishTypeMenu selectedFurnishType={selectedFurnishType} setSelectedFurnishType={setSelectedFurnishType}/>}
                         {popperType == 'projectstatus' && <ProjectStatusMenu selectedProjectStatus={selectedProjectStatus} setSelectedProjectStatus={setSelectedProjectStatus}/>}
                         {popperType == 'postedby' && <PostedByMenu selectedPostedBy={selectedPostedBy} setSelectedPostedBy={setSelectedPostedBy}/>}
-                        {popperType == 'transactiontype' && <TransactionByMenu transactionBy={transactionBy} setTransactionBy={setTransactionBy}/>}
+                        {popperType == 'transactiontype' && <TransactionByMenu transactionBy={transactionBy} setTransactionBy={setTransactionBy} setSelectedPropertyType={setSelectedPropertyType}/>}
                       </div>
                     </ClickAwayListener>
         </Popper>

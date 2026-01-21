@@ -74,11 +74,11 @@ export const moreMenuList = [
 export const filterTypeList = [
   {
     label: 'For Buy',
-    value: 'rent' 
+    value: 'sale' 
   },
   {
     label: 'Rental',
-    value: 'sale'
+    value: 'rent'
   },
   {
     label: 'Projects',
@@ -153,11 +153,11 @@ export const postedBy =[
 export const transectionType =[
   {
     name: 'Buy',
-    value: 'rent'
+    value: 'sale'
   },
   {
-    name: 'Sale',
-    value: 'sale'
+    name: 'Rent',
+    value: 'rent'
   },
 ]
 

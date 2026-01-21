@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 export default function RentSellHeaderView({propertyMasterData, type}) {
   const selectedCity = useSelector(getSelectedCity)
   const aboutusData = useSelector(getAboutusData)
-  
+  console.log('propertyMasterData', propertyMasterData)
   const [categoryType, setCategoryType] = useState('867c2adf-7e01-45a8-a305-74900b24c529') //residential
 
   const category = propertyMasterData?.find(item => item.code == type)?.categories ?? []
@@ -15,22 +15,10 @@ export default function RentSellHeaderView({propertyMasterData, type}) {
     <div className="flex  flex-col 2md:flex-row justify-start overflow-hidden rounded-xl h-full 2md:h-[280px]">
       <div className="flex flex-col gap-6 2md:gap-0 justify-between bg-blue pl-8 pt-8 pb-3 pr-5">
         <div className="flex flex-col gap-2">
-          <div className="flex ">
-            <p className="underline text-white font-semibold text-sm">
-              {type =='rent' ? 'RENT' : 'BUY'} A HOME
-            </p>
-            <Image
-              src={"/assets/left-arrow-white.svg"}
-              width={20}
-              height={20}
-              alt="arrow"
-              className="ml-6"
-            />
-          </div>
           {
             category.map(item => {
               return(
-                <p onClick={() => setCategoryType(item.id)} className="text-white text-sm cursor-pointer w-fit" style={{borderBottom: categoryType == item.id ? '1px solid white' : ''}}>{item.name}</p>
+                <p onClick={() => setCategoryType(item.id)} className="text-white text-base cursor-pointer w-fit" style={{borderBottom: categoryType == item.id ? '1px solid white' : ''}}>{item.name}</p>
               )
             })
           }
@@ -46,7 +34,7 @@ export default function RentSellHeaderView({propertyMasterData, type}) {
       </div>
       <div className="grid grid-cols-1 2md:grid-cols-[1fr_150px] bg-white pl-8 py-5 pr-5">
         <div className="flex justify-between flex-col gap-3 2md:gap-0 pr-5">
-          <p className="text-sm 2md:mb-2 text-text-gray break-inside-avoid underline font-medium">
+          <p className="text-base 2md:mb-2 text-text-gray break-inside-avoid underline font-medium">
             Property Type
           </p>
             <div className="2md:columns-2 2md:h-[180px] [column-fill:auto]">
