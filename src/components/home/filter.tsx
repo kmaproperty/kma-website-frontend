@@ -278,7 +278,10 @@ export default function Filter({propertyMasterData, cityData}) {
               <InputBase
                 placeholder="Search by Project, Locality, or Builder"
                 fullWidth
-                onChange={(event) => {}}
+                value={search}
+                onChange={(event) => {
+                  setSearch(event.target.value)
+                }}
                 className="w-full h-full px-3 text-xs rounded-full"
                 inputProps={{
                   className:
