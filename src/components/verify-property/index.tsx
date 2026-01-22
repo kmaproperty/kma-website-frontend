@@ -47,7 +47,7 @@ const requestLocation = async () => {
             name: "geolocation",
         });
         
-        if (permission.state != "granted") {
+        // if (permission.state != "granted") {
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
             alert(`Geolocation not supported ${pos.coords.latitude}`);
@@ -55,6 +55,7 @@ const requestLocation = async () => {
           setCoords({
             latitude: pos.coords.latitude,
             longitude: pos.coords.longitude,
+            state: permission.state
           });
           setLocationGranted(true);
         },
@@ -62,10 +63,10 @@ const requestLocation = async () => {
           setLocationGranted(false);
         }
       );
-    } else {
-      // Permission is denied
-      setShowLocationHelp(true);
-    }
+    // } else {
+    //   // Permission is denied
+    //   setShowLocationHelp(true);
+    // }
   } catch {
     // Fallback (older Safari)
     navigator.geolocation.getCurrentPosition(
@@ -193,15 +194,16 @@ const requestLocation = async () => {
           name: "geolocation",
         });
 
-        if (locationPermission.state != "granted") {
+        // if (locationPermission.state != "granted") {
           navigator.geolocation.getCurrentPosition((pos) => {
             setCoords({
               latitude: pos.coords.latitude,
               longitude: pos.coords.longitude,
+              state: locationPermission.state
             });
             setLocationGranted(true);
           });
-        }
+        // }
       }
 
       /* -------- CAMERA -------- */
@@ -235,6 +237,7 @@ const requestLocation = async () => {
   if (!locationGranted) {
     return (
         <>
+        <p>{coords?.latitude} {coords?.longitude} {coords?.state}</p>
       <PermissionScreen
         title="Allow Location"
         description="Location is required to verify property"
@@ -271,7 +274,7 @@ const requestLocation = async () => {
   if (!cameraGranted) {
     return (
         <>
-        <p>{coords.latitude} {coords.longitude}</p>
+        <p>{coords?.latitude} {coords?.longitude} {coords?.state}</p>
       <PermissionScreen
         title="Allow Camera"
         description="Camera access is required"
