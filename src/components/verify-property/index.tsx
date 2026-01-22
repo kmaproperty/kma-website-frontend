@@ -47,7 +47,7 @@ const requestLocation = async () => {
             name: "geolocation",
         });
         
-        // if (permission.state != "granted") {
+        if (permission.state == "granted" || permission.state == "prompt") {
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
             alert(`Geolocation not supported ${pos.coords.latitude}`);
@@ -59,14 +59,17 @@ const requestLocation = async () => {
           });
           setLocationGranted(true);
         },
-        () => {
-          setLocationGranted(false);
+        (error) => {
+            setCoords({
+                error: error.message
+            })
+        //   setLocationGranted(false);
         }
       );
-    // } else {
-    //   // Permission is denied
-    //   setShowLocationHelp(true);
-    // }
+    } else {
+      // Permission is denied
+      setShowLocationHelp(true);
+    }
   } catch {
     // Fallback (older Safari)
     navigator.geolocation.getCurrentPosition(
@@ -194,7 +197,7 @@ const requestLocation = async () => {
           name: "geolocation",
         });
 
-        // if (locationPermission.state != "granted") {
+        if (locationPermission.state == "granted" || locationPermission.state == "prompt") {
           navigator.geolocation.getCurrentPosition((pos) => {
             setCoords({
               latitude: pos.coords.latitude,
@@ -202,8 +205,12 @@ const requestLocation = async () => {
               state: locationPermission.state
             });
             setLocationGranted(true);
+          }, (error) => {
+            setCoords({
+                error: error.message
+            })
           });
-        // }
+        }
       }
 
       /* -------- CAMERA -------- */
@@ -237,7 +244,7 @@ const requestLocation = async () => {
   if (!locationGranted) {
     return (
         <>
-        <p>{coords?.latitude} {coords?.longitude} {coords?.state}</p>
+        <p>{coords?.latitude} {coords?.longitude} {coords?.state} {coords?.error}</p>
       <PermissionScreen
         title="Allow Location"
         description="Location is required to verify property"
@@ -274,7 +281,7 @@ const requestLocation = async () => {
   if (!cameraGranted) {
     return (
         <>
-        <p>{coords?.latitude} {coords?.longitude} {coords?.state}</p>
+        <p>{coords?.latitude} {coords?.longitude} {coords?.state} {coords?.error}</p>
       <PermissionScreen
         title="Allow Camera"
         description="Camera access is required"
