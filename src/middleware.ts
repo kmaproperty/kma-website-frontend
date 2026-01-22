@@ -13,7 +13,7 @@ export default function middleware(req: NextRequest) {
   const isVerifyOtpPage = pathname === '/verify-otp';
   const event = searchParams.get('event')
 
-   if (isHomePage || isAbooutUsPage || verifyProperty) {
+  if (isHomePage || isAbooutUsPage || verifyProperty) {
     return NextResponse.next();
   }
 

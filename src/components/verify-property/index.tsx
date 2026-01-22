@@ -99,7 +99,7 @@ const requestLocation = async () => {
       const permission = await navigator.permissions.query({
         name: "camera",
       });
-
+      alert(`dsjfsdj ${permission.state}`)
       if (permission.state === "denied") {
         setShowCameraHelp(true);
         return;
@@ -116,6 +116,7 @@ const requestLocation = async () => {
     videoRef.current.srcObject = mediaStream;
   } catch (err) {
     // Covers Safari + manual denial
+    alert(`lddsjflsdf ${err.message}`)
     setShowCameraHelp(true);
   }
 };
@@ -218,8 +219,7 @@ const requestLocation = async () => {
         const cameraPermission = await navigator.permissions.query({
           name: "camera",
         });
-
-        if (cameraPermission.state === "granted") {
+        if (cameraPermission.state == "granted" || cameraPermission.state == 'prompt') {
           const mediaStream = await navigator.mediaDevices.getUserMedia({
             video: true,
             audio: true,
@@ -232,8 +232,7 @@ const requestLocation = async () => {
         }
       }
     } catch (err) {
-      // Safari fallback (no permissions API)
-      // Do nothing → user will see Allow screens
+      
     }
   };
 
