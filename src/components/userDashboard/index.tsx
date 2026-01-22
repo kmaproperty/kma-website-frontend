@@ -330,7 +330,7 @@ export default function UserDashboard() {
             </p>
           </div>
           <div>
-            <button className="w-full md:w-[130px] text-sm 1xl:text-base px-12 py-3 border border-[#E7E7E7] text-center cursor-pointer rounded-[5px] bg-light-purple">
+            <button className="w-full text-sm 1xl:text-base px-5 py-3 border border-[#E7E7E7] text-center cursor-pointer rounded-[5px] bg-light-purple">
               <span className="gap-3 relative flex justify-center">
                 <p className={`text-nowrap font-medium`}>Go to Help Center</p>
               </span>
