@@ -813,3 +813,25 @@ export const generatePropertyDescriptionApiHandler = async (paylaod: GeneratePro
     }
 }
 
+export interface GetVerifyPropertyLinkPayload {
+  propertyId: string
+}
+
+export interface GetVerifyPropertyLinkResponse {
+  success: boolean;
+  message: string;
+  verificationRequestId: string;
+  verificationToken: string;
+  verificationLink: string
+
+}
+export const getVerifyPropertyLinkAPiHandler = async (paylaod: GetVerifyPropertyLinkPayload) : Promise<GetVerifyPropertyLinkResponse> => {
+    try{
+        const response = await axiosInstance.post<GetVerifyPropertyLinkResponse>(
+      "property/request-verification", paylaod);
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}
+

@@ -17,7 +17,7 @@ export const KYC_STATUS = {
   'pending': 'Pending',
   'in_review': 'Under Review',
   'approved': 'Approved',
-  'rejected ': 'Rejected'
+  'rejected': 'Rejected'
 }
 
 export const userType = {
