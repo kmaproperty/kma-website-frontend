@@ -793,3 +793,23 @@ export const repostPropertyApiHandler = async (paylaod: RepostPropertyPaylaod) :
         throw error.response?.data ?? error;
     }
 }
+
+export interface GeneratePropertyDescriptionPayload {
+  propertyId: string
+}
+
+export interface GeneratePropertyDescriptionResponse {
+  success: boolean;
+  description: string;
+  propertyId: string;
+}
+export const generatePropertyDescriptionApiHandler = async (paylaod: GeneratePropertyDescriptionPayload) : Promise<GeneratePropertyDescriptionResponse> => {
+    try{
+        const response = await axiosInstance.post<GeneratePropertyDescriptionResponse>(
+      "property/generate-description", paylaod);
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}
+

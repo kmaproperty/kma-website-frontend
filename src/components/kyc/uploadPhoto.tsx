@@ -180,8 +180,7 @@ export default function UploadPhoto() {
 
   const clearData = () => {
     setFile(null)
-    setShowCamera(false)
-    setStream(null)
+    stopCamera()
     setPreview(null)
     router.push('/profile')
   }
@@ -289,6 +288,7 @@ export default function UploadPhoto() {
         {!isPhotoApproved && <button
           className="cursor-pointer w-full md:w-[130px] px-12 py-3 animated-button border border-blue"
           onClick={() => {
+            stopCamera()
             uploadFileHanlder()
           }}
           disabled={ownerLoader || uploadLoader}

@@ -3,6 +3,11 @@
 import { useEffect, useRef } from "react";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
+import { generatePropertyDescriptionApiHandler, GeneratePropertyDescriptionResponse } from "@/services/postProperty";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+import { useParams } from "next/navigation";
+import Spinner from "../spinner";
 
 interface QuillEditorProps {
   value?: string;
@@ -10,6 +15,7 @@ interface QuillEditorProps {
 }
 
 export default function QuillEditor({ value = "", onChange }: QuillEditorProps) {
+  const params = useParams();
   const editorRef = useRef<HTMLDivElement | null>(null);
   const quillInstance = useRef<Quill | null>(null);
 
@@ -51,7 +57,6 @@ export default function QuillEditor({ value = "", onChange }: QuillEditorProps) 
     };
   }, []);
 
-  // If external value changes, update Quill content
   useEffect(() => {
     if (!quillInstance.current) return;
     const quill = quillInstance.current;
@@ -62,9 +67,34 @@ export default function QuillEditor({ value = "", onChange }: QuillEditorProps) 
     }
   }, [value]);
 
+  const { mutate: getDescription, isPending: loader } = useMutation({
+    mutationFn: generatePropertyDescriptionApiHandler,
+    onSuccess: (response: GeneratePropertyDescriptionResponse) => {
+      onChange(response?.description)
+    },
+    onError: (error) => {
+      if (Array.isArray(error.message)) {
+        error.message.map((item: string) => {
+          toast.error(item);
+        });
+      } else {
+        toast.error(error.message);
+      }
+    },
+  });
+
+
+  const getAiGeneratedDescription = () => {
+    getDescription({propertyId: String(params?.propertyId ?? '')})
+  }
+
+
   return (
-    <div className="w-full">
-      <div ref={editorRef} className="bg-white min-h-[200px] font-ibm-plex-sans!"></div>
+    <div className="relative w-full">
+      <div ref={editorRef} className=" bg-white min-h-[200px] pb-10 font-ibm-plex-sans!"></div>
+      <div className="absolute bottom-[10px] right-[10px] flex justify-end">
+          <button disabled={loader} type="button" onClick={getAiGeneratedDescription} className="min-w-[160px] flex justify-center rounded-full py-2 px-4 mt-2 text-sm border border-border cursor-pointer hover:bg-list-background">{loader ? <Spinner className="fill-black!"/> : 'Generate With AI'}</button>
+        </div>
     </div>
   );
 }
