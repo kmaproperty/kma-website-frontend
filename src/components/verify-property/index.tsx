@@ -50,7 +50,7 @@ const requestLocation = async () => {
         if (permission.state != "granted") {
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
-            alert(`Geolocation not supported ${permission.state}`);
+            alert(`Geolocation not supported ${pos.coords.latitude}`);
             
           setCoords({
             latitude: pos.coords.latitude,
@@ -193,7 +193,7 @@ const requestLocation = async () => {
           name: "geolocation",
         });
 
-        if (locationPermission.state === "granted") {
+        if (locationPermission.state != "granted") {
           navigator.geolocation.getCurrentPosition((pos) => {
             setCoords({
               latitude: pos.coords.latitude,
@@ -271,6 +271,7 @@ const requestLocation = async () => {
   if (!cameraGranted) {
     return (
         <>
+        <p>{coords.latitude} {coords.longitude}</p>
       <PermissionScreen
         title="Allow Camera"
         description="Camera access is required"
