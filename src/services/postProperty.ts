@@ -835,3 +835,19 @@ export const getVerifyPropertyLinkAPiHandler = async (paylaod: GetVerifyProperty
     }
 }
 
+export interface GetPropertyPhotoTypeListResponse {
+  id: string;
+  name: string;
+  displayOrder: number
+}
+
+export const getPropertyPhotoTypeListApiHandler = async () : Promise<GetPropertyPhotoTypeListResponse[]> => {
+    try{
+        const response = await axiosInstance.get<GetPropertyPhotoTypeListResponse[]>(
+      "property/rooms");
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}
+
