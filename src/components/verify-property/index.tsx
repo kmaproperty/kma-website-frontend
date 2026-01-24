@@ -445,6 +445,8 @@ export default function VerifyProperty() {
       const newMode = facingMode == "user" ? "environment" : "user";
       setFacingMode(newMode);
       setStream(null)
+      setVideoTimer(0)
+      setRecording(false)
       await startCamera(newMode, true);
 };
 
