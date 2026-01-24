@@ -17,6 +17,28 @@ export default function VerifyPropertyLink({open, onClose, link}) {
     onClose()
   };
 
+
+  const handleCopyLink = async () => {
+    try {
+    await navigator.clipboard.writeText(link);
+    alert("Link copied to clipboard");
+  } catch (err) {
+    // Fallback for older browsers
+    const textarea = document.createElement("textarea");
+    textarea.value = link;
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+
+    document.execCommand("copy");
+    document.body.removeChild(textarea);
+
+    alert("Link copied to clipboard");
+  }
+  }
   
   return (
     <Dialog
@@ -66,10 +88,10 @@ export default function VerifyPropertyLink({open, onClose, link}) {
                 </div>
             </div>
             <div className="grid grid-cols-[1fr_34px] gap-2 mt-5">
-                <div className="select-none flex-1 min-w-0 border border-border rounded-[5px] py-2 px-3 truncate">
+                <div title={link} className="select-none flex-1 min-w-0 border border-border rounded-[5px] py-2 px-3 truncate">
                    {link}
                 </div>
-                <div title="Copy Link" className="flex items-center justify-center border border-border rounded-[5px] py-1 px-1 bg-background-gray cursor-pointer hover:bg-list-background">
+                <div onClick={handleCopyLink} title="Click here to Copy Link" className="flex items-center justify-center border border-border rounded-[5px] py-1 px-1 bg-background-gray cursor-pointer hover:bg-list-background">
                     <Image src={'/assets/copy.svg'} width={20} height={20} alt="copy link" />
                 </div>
             </div>

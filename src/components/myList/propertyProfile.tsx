@@ -251,7 +251,7 @@ const PropertyView = ({ open, onClose, propertyId }) => {
                       return(
                           <div className="relative">
                               <video
-                                  src={imageBaseUrl + item.fileKey + '?t=5'}
+                                  src={imageBaseUrl + item.fileKey + '?t=2'}
                                   className="rounded-[10px] w-full aspect-video"
                               />
                               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">

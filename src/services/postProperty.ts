@@ -851,3 +851,26 @@ export const getPropertyPhotoTypeListApiHandler = async () : Promise<GetProperty
     }
 }
 
+export interface SubmitPropertyVerificationPayload {
+  verificationToken: string;
+  livePhotos: { fileKey: string, view: string}[],
+  liveVideos: { fileKey: string, view: string}[],
+  latitude: string,
+  longitude: string
+}
+
+export interface SubmitPropertyVerificationResponse {
+  success: boolean;
+  message: string;
+  verificationRequestId: string
+}
+
+export const submitPropertyVerificationApiHandler = async (paylaod: SubmitPropertyVerificationPayload) : Promise<SubmitPropertyVerificationResponse> => {
+    try{
+        const response = await axiosInstance.post<SubmitPropertyVerificationResponse>(
+      "property-verification/submit-media", paylaod);
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}

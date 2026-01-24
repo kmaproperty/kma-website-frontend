@@ -1,277 +1,498 @@
 "use client";
+import {
+  getPropertyPhotoTypeListApiHandler,
+  GetPropertyPhotoTypeListResponse,
+  submitPropertyVerificationApiHandler,
+  SubmitPropertyVerificationPayload,
+  SubmitPropertyVerificationResponse,
+} from "@/services/postProperty";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import Select from "react-select";
+import DynamicSelect from "../common/select";
+import {
+  getFileUploadUrlApiHandler,
+  GetFileUploadUrlPayload,
+  GetFileUploadUrlResponse,
+  uploadFileToS3ApiHandler,
+  UploadFileToS3Payload,
+  UploadFileToS3Response,
+} from "@/services/masterService";
+import { toast } from "react-toastify";
+import Image from "next/image";
+import VideoPreviewDialog from "../common/videoPreview";
+import Spinner from "../common/spinner";
+import { useSearchParams } from "next/navigation";
 
 const mediaTypeOptions = [
   { value: "photo", label: "Photo" },
   { value: "video", label: "Video" },
 ];
 
-const viewOptions = [
-  { value: "Living Room", label: "Living Room" },
-  { value: "Bedroom", label: "Bedroom" },
-  { value: "Kitchen", label: "Kitchen" },
-];
-
 export default function VerifyProperty() {
+  const imageBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
   const videoRef = useRef(null);
+  const toastRef = useRef(null);
+  const videoTimerRef = useRef(null);
   const mediaRecorderRef = useRef(null);
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
 
-  const [showCameraHelp, setShowCameraHelp] = useState(false);
-  const [showLocationHelp, setShowLocationHelp] = useState(false)
-  const [locationGranted, setLocationGranted] = useState(false);
-  const [cameraGranted, setCameraGranted] = useState(false);
   const [coords, setCoords] = useState(null);
+  const [showLocationHelp, setShowLocationHelp] = useState(false);
+  const [locationGranted, setLocationGranted] = useState(false);
 
-  const [stream, setStream] = useState(null);
+  const [openVideoPreview, setOpenVideoPreview] = useState(false);
+  const [videoPreviewUrl, setVideoPreviewUrl] = useState(null);
+
+  /* ---------- PERMISSIONS ---------- */
+  const [cameraGranted, setCameraGranted] = useState(false);
+
+  /* ---------- MODE ---------- */
   const [mediaType, setMediaType] = useState(null);
 
-  const [recording, setRecording] = useState(false);
-  const [chunks, setChunks] = useState([]);
-  const [previewUrl, setPreviewUrl] = useState(null);
-  const [capturedBlob, setCapturedBlob] = useState(null);
+  /* ---------- CAMERA ---------- */
+  const [stream, setStream] = useState(null);
+  const [cameraActive, setCameraActive] = useState(false);
 
+  /* ---------- PHOTO ---------- */
+  const [photoBlob, setPhotoBlob] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(null);
   const [selectedView, setSelectedView] = useState(null);
+  const [imageTypeError, setImageTypeError] = useState('')
+
+  /* ---------- VIDEO ---------- */
+  const [recording, setRecording] = useState(false);
+  const [videoBlob, setVideoBlob] = useState(null);
+  const [videoPreview, setVideoPreview] = useState(null);
+  const [videoTimer, setVideoTimer] = useState(0);
+
+  /* ---------- UPLOAD LIST ---------- */
   const [photos, setPhotos] = useState([]);
   const [videos, setVideos] = useState([]);
 
-  /* ---------------- LOCATION ---------------- */
-const requestLocation = async () => {
+  const handleOpenVideoPreview = (url) => {
+    setOpenVideoPreview(true);
+    setVideoPreviewUrl(url);
+  };
+  const handleClosePreview = () => {
+    setOpenVideoPreview(false);
+    setVideoPreviewUrl(null);
+  };
+
+  const { data: propertyPhotoTypeList, isPending: photoListLoader } = useQuery({
+    queryKey: ["photo-type-list"],
+    queryFn: getPropertyPhotoTypeListApiHandler,
+    select: (resposne: GetPropertyPhotoTypeListResponse[]) => {
+      return Array.isArray(resposne)
+        ? resposne.map((item) => ({ label: item.name, value: item.name })) ?? []
+        : [];
+    },
+    staleTime: 0,
+    refetchOnMount: true,
+  });
+
+  /* ---------- PERMISSION CHECK ---------- */
+
+  const requestLocation = async () => {
     if (!navigator.geolocation) {
-        alert(`Geolocation not supported`);
-        return;
+      alert(`Geolocation not supported`);
+      return;
     }
-    
+
     try {
-        const permission = await navigator.permissions.query({
-            name: "geolocation",
-        });
-        
-        if (permission.state == "granted" || permission.state == "prompt") {
-            navigator.geolocation.getCurrentPosition(
-                (pos) => {
+      const permission = await navigator.permissions.query({
+        name: "geolocation",
+      });
+
+      if (permission.state == "granted" || permission.state == "prompt") {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
             alert(`Geolocation not supported ${pos.coords.latitude}`);
-            
+
+            setCoords({
+              latitude: pos.coords.latitude,
+              longitude: pos.coords.longitude,
+              state: permission.state,
+            });
+            setLocationGranted(true);
+          },
+          (error) => {
+            setCoords({
+              error: error.message,
+            });
+            //   setLocationGranted(false);
+          }
+        );
+      } else {
+        // Permission is denied
+        setShowLocationHelp(true);
+      }
+    } catch {
+      // Fallback (older Safari)
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
           setCoords({
             latitude: pos.coords.latitude,
             longitude: pos.coords.longitude,
-            state: permission.state
           });
           setLocationGranted(true);
         },
-        (error) => {
-            setCoords({
-                error: error.message
-            })
-        //   setLocationGranted(false);
-        }
+        () => setShowLocationHelp(true)
       );
-    } else {
-      // Permission is denied
-      setShowLocationHelp(true);
     }
-  } catch {
-    // Fallback (older Safari)
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setCoords({
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude,
+  };
+
+  useEffect(() => {
+    (async () => {
+      if (navigator.permissions) {
+        const permission = await navigator.permissions.query({
+          name: "geolocation",
         });
-        setLocationGranted(true);
-      },
-      () => setShowLocationHelp(true)
-    );
-  }
-};
-
-
-  /* ---------------- CAMERA ---------------- */
-  const requestCamera = async () => {
-  if (!navigator.mediaDevices?.getUserMedia) {
-    alert("Camera not supported");
-    return;
-  }
-
-  try {
-    // Try permission API (Chrome, Edge, Firefox)
-    if (navigator.permissions) {
-      const permission = await navigator.permissions.query({
-        name: "camera",
-      });
-      alert(`dsjfsdj ${permission.state}`)
-      if (permission.state === "denied") {
-        setShowCameraHelp(true);
-        return;
+        if (permission.state == "granted" || permission.state == "prompt") {
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              setCoords({
+                latitude: pos.coords.latitude,
+                longitude: pos.coords.longitude,
+                state: permission.state,
+              });
+              setLocationGranted(true);
+            },
+            (error) => {
+              setCoords({
+                error: error.message,
+              });
+              setLocationGranted(false);
+            }
+          );
+        }
+        const cam = await navigator.permissions.query({ name: "camera" });
+        if (cam.state === "granted") setCameraGranted(true);
       }
-    }
+    })();
+  }, []);
+
+  /* ---------- CAMERA HELPERS ---------- */
+  const startCamera = async () => {
+    if (stream) return;
 
     const mediaStream = await navigator.mediaDevices.getUserMedia({
       video: true,
-      audio: true,
     });
 
     setStream(mediaStream);
-    setCameraGranted(true);
-    videoRef.current.srcObject = mediaStream;
-  } catch (err) {
-    // Covers Safari + manual denial
-    alert(`lddsjflsdf ${err.message}`)
-    setShowCameraHelp(true);
-  }
-};
+    setCameraActive(true);
 
+    if (videoRef.current) {
+      videoRef.current.srcObject = mediaStream;
+    }
+  };
 
-  /* ---------------- PHOTO ---------------- */
+  const stopCamera = () => {
+    if (!stream) return;
+
+    stream.getTracks().forEach((t) => t.stop());
+    setStream(null);
+    setCameraActive(false);
+
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+  };
+
+  /* ---------- MEDIA TYPE CHANGE ---------- */
+  const onMediaTypeChange = async (option) => {
+    setMediaType(option);
+
+    setPhotoBlob(null);
+    setPhotoPreview(null);
+    setVideoBlob(null);
+    setVideoPreview(null);
+    setSelectedView(null);
+
+    await startCamera();
+  };
+
+  /* ---------- PHOTO ---------- */
   const capturePhoto = () => {
     const video = videoRef.current;
     const canvas = document.createElement("canvas");
+
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     canvas.getContext("2d").drawImage(video, 0, 0);
+
     canvas.toBlob((blob) => {
-      setCapturedBlob(blob);
-      setPreviewUrl(URL.createObjectURL(blob));
+      if (!blob) return;
+
+      const file = new File([blob], `photo-${Date.now()}.jpg`, {
+        type: "image/jpeg",
+      });
+
+      setPhotoBlob(file); // now a FILE, not blob
+      setPhotoPreview(URL.createObjectURL(file));
+
+      stopCamera();
     }, "image/jpeg");
   };
 
-  /* ---------------- VIDEO ---------------- */
+  /* ---------- VIDEO ---------- */
   const startRecording = () => {
-    setChunks([]);
     const recorder = new MediaRecorder(stream);
-    recorder.ondataavailable = (e) =>
-      e.data.size && setChunks((prev) => [...prev, e.data]);
+    const chunks = [];
+
+    recorder.ondataavailable = (e) => chunks.push(e.data);
     recorder.onstop = () => {
-      const blob = new Blob(chunks, { type: "video/mp4" });
-      setCapturedBlob(blob);
-      setPreviewUrl(URL.createObjectURL(blob));
+      const blob = new Blob(chunks, { type: 'video/webm' });
+
+      const file = new File([blob], `video-${Date.now()}.webm`, {
+        type: blob.type,
+      });
+      setVideoBlob(file);
+      setVideoPreview(URL.createObjectURL(file));
+      clearInterval(videoTimerRef.current);
+      videoTimerRef.current = null;
+      setVideoTimer(0)
     };
+
     recorder.start();
     mediaRecorderRef.current = recorder;
     setRecording(true);
+
+    videoTimerRef.current = setInterval(() => {
+      setVideoTimer((prev) => prev + 1);
+    }, 1000);
   };
 
   const stopRecording = () => {
     mediaRecorderRef.current.stop();
     setRecording(false);
+    stopCamera();
+
+    setVideoTimer(0)
+    clearInterval(videoTimerRef.current);
+    videoTimerRef.current = null;
   };
 
-  /* ---------------- SAVE ---------------- */
+  /* ---------- SAVE ---------- */
   const saveMedia = () => {
-    const fileKey = `uploads/${Date.now()}-${Math.random()
-      .toString(36)
-      .slice(2)}`;
+    if(mediaType?.value == 'photo' && !selectedView){
+      setImageTypeError('Select the Image type')
+      return
+    }
 
     if (mediaType.value === "photo") {
-      setPhotos((p) => [
-        ...p,
-        { fileKey: fileKey + ".jpg", view: selectedView?.value },
-      ]);
+      handleGetFileUrl(
+        {
+          contentType: photoBlob?.type,
+          filename: photoBlob?.name,
+          expiresIn: 3600,
+          folder: process.env.NEXT_PUBLIC_AWS_FOLDER,
+        },
+        {
+          onSuccess: (response: GetFileUploadUrlResponse) => {
+            if (response.success) {
+              handleFileUpload(
+                { url: response.data.url, file: photoBlob },
+                {
+                  onSuccess: (fileResponse: UploadFileToS3Response) => {
+                    if (fileResponse.status === 200) {
+                      setPhotos((pre) => [
+                        ...pre,
+                        {
+                          fileKey: response.data.key,
+                          view: selectedView?.value,
+                        },
+                      ]);
+                    } else {
+                      toast.error(`Error uploading ${photoBlob.name}`);
+                    }
+                  },
+                }
+              );
+            } else {
+              toast.error(`Failed to get upload URL for ${photoBlob.name}`);
+            }
+          },
+        }
+      );
     } else {
-      setVideos((v) => [...v, { fileKey: fileKey + ".mp4", format: "mp4" }]);
+      handleGetFileUrl(
+        {
+          contentType: videoBlob?.type,
+          filename: videoBlob?.name,
+          expiresIn: 3600,
+          folder: process.env.NEXT_PUBLIC_AWS_FOLDER,
+        },
+        {
+          onSuccess: (response: GetFileUploadUrlResponse) => {
+            if (response.success) {
+              handleFileUpload(
+                { url: response.data.url, file: videoBlob },
+                {
+                  onSuccess: (fileResponse: UploadFileToS3Response) => {
+                    if (fileResponse.status === 200) {
+                      setVideos((pre) => [
+                        ...pre,
+                        {
+                          fileKey: response.data.key,
+                          format: videoBlob?.type,
+                        },
+                      ]);
+                    } else {
+                      toast.error(`Error uploading ${videoBlob.name}`);
+                    }
+                  },
+                }
+              );
+            } else {
+              toast.error(`Failed to get upload URL for ${videoBlob.name}`);
+            }
+          },
+        }
+      );
     }
 
-    setPreviewUrl(null);
-    setCapturedBlob(null);
-    setSelectedView(null);
+    setMediaType(null);
+    setPhotoPreview(null);
+    setVideoPreview(null);
   };
 
-  /* ---------------- FINAL SUBMIT ---------------- */
-  const submitAll = () => {
-    const payload = {
-      verificationToken: "abc123def456",
-      livePhotos: photos,
-      liveVideos: videos,
-      latitude: coords.latitude,
-      longitude: coords.longitude,
-    };
-    console.log(payload);
-    alert("Submitted – check console");
-  };
+  const { mutate: handleFileUpload, isPending: fileLoader } = useMutation({
+    mutationFn: async (
+      payload: UploadFileToS3Payload
+    ): Promise<UploadFileToS3Response> => {
+      return await uploadFileToS3ApiHandler(payload);
+    },
+    onError: (error: any) => {
+      console.log("file upload s3 api", error);
+      toast.dismiss(toastRef.current);
+      if (Array.isArray(error.message)) {
+        error.message.map((item: string) => {
+          toast.error(item);
+        });
+      } else {
+        toast.error(error.message);
+      }
+    },
+  });
+
+  const { mutate: handleGetFileUrl, isPending: ownerLoader } = useMutation({
+    mutationFn: async (
+      payload: GetFileUploadUrlPayload
+    ): Promise<GetFileUploadUrlResponse> => {
+      return await getFileUploadUrlApiHandler(payload);
+    },
+    onError: (error: any) => {
+      console.log("get file url api", error);
+      toast.dismiss(toastRef.current);
+      if (Array.isArray(error.message)) {
+        error.message.map((item: string) => {
+          toast.error(item);
+        });
+      } else {
+        toast.error(error.message);
+      }
+    },
+  });
+
+  const { mutate: submitPropertyVerification, isPending: submitLoader } =
+    useMutation({
+      mutationFn: async (
+        payload: SubmitPropertyVerificationPayload
+      ): Promise<SubmitPropertyVerificationResponse> => {
+        return await submitPropertyVerificationApiHandler(payload);
+      },
+      onSuccess: (response: SubmitPropertyVerificationResponse) => {},
+      onError: (error: any) => {
+        toast.dismiss(toastRef.current);
+        if (Array.isArray(error.message)) {
+          error.message.map((item: string) => {
+            toast.error(item);
+          });
+        } else {
+          toast.error(error.message);
+        }
+      },
+    });
+
+    const handleFinalSubmit = () => {
+      let payload = {
+        verificationToken: token,
+        livePhotos: photos,
+        liveVideos: videos,
+        latitude: coords?.latitude,
+        longitude: coords?.longitude,
+      }
+      submitPropertyVerification(payload)
+    }
+
+    const handleDelete = (type, key) => {
+      if(type == 'photo'){
+        let updatedPhotoList = photos.filter(item => item.fileKey != key)
+        setPhotos(updatedPhotoList)
+      }else{
+        let updatedVideoList = videos.filter(item => item.fileKey != key)
+        setVideos(updatedVideoList)
+      }
+    }
 
   useEffect(() => {
-  const checkPermissions = async () => {
-    try {
-      /* -------- LOCATION -------- */
-      if (navigator.permissions) {
-        const locationPermission = await navigator.permissions.query({
-          name: "geolocation",
-        });
-
-        if (locationPermission.state == "granted" || locationPermission.state == "prompt") {
-          navigator.geolocation.getCurrentPosition((pos) => {
-            setCoords({
-              latitude: pos.coords.latitude,
-              longitude: pos.coords.longitude,
-              state: locationPermission.state
-            });
-            setLocationGranted(true);
-          }, (error) => {
-            setCoords({
-                error: error.message
-            })
-          });
-        }
-      }
-
-      /* -------- CAMERA -------- */
-      if (navigator.permissions) {
-        const cameraPermission = await navigator.permissions.query({
-          name: "camera",
-        });
-        if (cameraPermission.state == "granted" || cameraPermission.state == 'prompt') {
-          const mediaStream = await navigator.mediaDevices.getUserMedia({
-            video: true,
-            audio: true,
-          });
-          setStream(mediaStream);
-          setCameraGranted(true);
-          if (videoRef.current) {
-            videoRef.current.srcObject = mediaStream;
-          }
-        }
-      }
-    } catch (err) {
-      
+    if (stream) {
+      videoRef.current.srcObject = stream;
     }
-  };
+    return () => stopCamera();
+  }, [cameraActive]);
 
-  checkPermissions();
-}, []);
+  const PermissionScreen = ({ title, description, action }) => (
+    <div className="h-screen flex flex-col justify-center items-center p-6 text-center space-y-4">
+      <h2 className="text-2xl font-semibold">{title}</h2>
+      <p className="text-gray-600">{description}</p>
+      <button
+        className="cursor-pointer w-full md:w-[130px] px-12 py-3 animated-button border border-blue"
+        onClick={action}
+      >
+        <span className="gap-3 relative flex justify-center">
+          <p className={`text-nowrap`}>Allow</p>
+        </span>
+      </button>
+    </div>
+  );
 
-  /* ---------------- PERMISSION SCREENS ---------------- */
   if (!locationGranted) {
     return (
-        <>
-        <p>{coords?.latitude} {coords?.longitude} {coords?.state} {coords?.error}</p>
-      <PermissionScreen
-        title="Allow Location"
-        description="Location is required to verify property"
-        action={requestLocation}
-      />
-      {showLocationHelp && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999]">
+      <>
+        <p>
+          {coords?.latitude} {coords?.longitude} {coords?.state} {coords?.error}
+        </p>
+        <PermissionScreen
+          title="Allow Location"
+          description="Location is required to verify property"
+          action={requestLocation}
+        />
+        {showLocationHelp && (
+          <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999]">
             <div className="bg-white rounded-xl p-6 max-w-sm text-center space-y-4">
-            <h3 className="text-lg font-semibold">Location Required</h3>
-            <p className="text-sm text-gray-600">
+              <h3 className="text-lg font-semibold">Location Required</h3>
+              <p className="text-sm text-gray-600">
                 Location access is blocked. Please enable it from your browser
                 settings to continue.
-            </p>
+              </p>
 
-            <ul className="text-left text-sm text-gray-500 space-y-1">
+              <ul className="text-left text-sm text-gray-500 space-y-1">
                 <li>• Tap the 🔒 lock icon in the address bar</li>
                 <li>• Enable Location access</li>
                 <li>• Refresh the page</li>
-            </ul>
+              </ul>
 
-            <button
+              <button
                 onClick={() => window.location.reload()}
                 className="w-full py-3 bg-light-purple text-text-black cursor-pointer rounded-lg"
-            >
+              >
                 Refresh Page
-            </button>
+              </button>
             </div>
-        </div>
+          </div>
         )}
       </>
     );
@@ -279,60 +500,38 @@ const requestLocation = async () => {
 
   if (!cameraGranted) {
     return (
-        <>
-        <p>{coords?.latitude} {coords?.longitude} {coords?.state} {coords?.error}</p>
-      <PermissionScreen
-        title="Allow Camera"
-        description="Camera access is required"
-        action={requestCamera}
-      />
-      {showCameraHelp && (
-  <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
-    <div className="bg-white rounded-xl p-6 max-w-sm w-full text-center space-y-4">
-      <h3 className="text-lg font-semibold">Camera Access Required</h3>
-
-      <p className="text-sm text-gray-600">
-        Camera access is blocked. Please enable it in your browser settings
-        to continue verification.
-      </p>
-
-      <div className="text-left text-sm text-gray-500 space-y-1">
-        <p>Steps to allow:</p>
-        <ul className="list-disc ml-5 space-y-1">
-          <li>Tap the 🔒 lock icon in address bar</li>
-          <li>Enable <b>Camera</b> permission</li>
-          <li>Refresh the page</li>
-        </ul>
-      </div>
-
-      <button
-        onClick={() => window.location.reload()}
-        className="w-full py-3 bg-blue-600 text-white rounded-lg font-medium"
-      >
-        Refresh Page
-      </button>
-    </div>
-  </div>
-)}
-
+      <>
+        <PermissionScreen
+          title="Allow Camera"
+          description="Camera is required to verify property"
+          action={async () => {
+            await navigator.mediaDevices.getUserMedia({ video: true });
+            setCameraGranted(true);
+          }}
+        />
       </>
     );
   }
 
   return (
-    <div className="max-w-md mx-auto p-4 space-y-4">
+    <div className="flex items-center gap-3 flex-col p-4 space-y-4">
+      <div className="flex flex-col gap-3 w-full p-3 sm:w-[380px]">
       <h1 className="text-xl font-semibold text-center">
         Property Verification
       </h1>
 
-      <Select
-        placeholder="Select Media Type"
+      <DynamicSelect
+        placeholder="Select Camera Type"
+        minHeight="40px"
         options={mediaTypeOptions}
         value={mediaType}
-        onChange={setMediaType}
+        onChange={(val) => {
+          onMediaTypeChange(val);
+        }}
+        fontwidth="16px"
       />
 
-      {mediaType && (
+      {cameraActive && (
         <>
           <video
             ref={videoRef}
@@ -340,95 +539,220 @@ const requestLocation = async () => {
             playsInline
             className="w-full rounded-xl border"
           />
-
-          {mediaType.value === "photo" && (
-            <button onClick={capturePhoto} className="btn-primary">
-              Capture Photo
-            </button>
-          )}
-
-          {mediaType.value === "video" && (
-            <>
-              {!recording ? (
-                <button onClick={startRecording} className="btn-primary">
-                  Start Recording
-                </button>
-              ) : (
-                <button onClick={stopRecording} className="btn-danger">
-                  Stop & Save
-                </button>
-              )}
-            </>
+          {mediaType?.value == "video" && (
+            <div>
+              <p className="text-center text-red-600 font-semibold">
+                Recording: {videoTimer}s
+              </p>
+            </div>
           )}
         </>
       )}
 
-      {previewUrl && (
-        <div className="space-y-3">
-          {mediaType.value === "photo" ? (
-            <img src={previewUrl} className="rounded-xl" />
-          ) : (
-            <video src={previewUrl} controls className="rounded-xl" />
-          )}
-
-          {mediaType.value === "photo" && (
-            <Select
-              placeholder="What is this photo for?"
-              options={viewOptions}
-              value={selectedView}
-              onChange={setSelectedView}
-            />
-          )}
-
-          <button onClick={saveMedia} className="btn-primary">
-            Upload
+      {/* PHOTO */}
+      {mediaType?.value === "photo" && cameraActive && (
+        <div className="flex justify-center">
+          <button
+            onClick={capturePhoto}
+            className="w-fit text-sm 1xl:text-base animated-button px-12 py-3 border border-blue text-center cursor-pointer"
+          >
+            <span className="gap-3 relative flex justify-center">
+              Capture Photo
+            </span>
           </button>
         </div>
       )}
 
+      {photoPreview && (
+        <>
+          <img src={photoPreview} className="rounded-xl" />
+          <DynamicSelect
+            placeholder="Select view"
+            minHeight="40px"
+            options={propertyPhotoTypeList}
+            value={selectedView}
+            onChange={(val) => {
+              setSelectedView(val);
+              setImageTypeError('')
+            }}
+            fontwidth="16px"
+          />
+          {imageTypeError && (
+            <p className="text-red-500 text-xs">{imageTypeError}</p>
+          )}
+        </>
+      )}
 
-      <MediaList title="Uploaded Photos" items={photos} />
-      <MediaList title="Uploaded Videos" items={videos} />
+      {/* VIDEO */}
+      {mediaType?.value === "video" && cameraActive && (
+        <>
+          {!recording ? (
+            <div className="flex justify-center">
+              <button
+                onClick={startRecording}
+                className="w-fit text-sm 1xl:text-base animated-button px-12 py-3 border border-blue text-center cursor-pointer"
+              >
+                <span className="gap-3 relative flex justify-center">
+                  Start Recording
+                </span>
+              </button>
+            </div>
+          ) : (
+            <div className="flex justify-center">
+              <button
+                onClick={stopRecording}
+                className="w-fit text-sm 1xl:text-base animated-button px-12 py-3 border border-blue text-center cursor-pointer"
+              >
+                <span className="gap-3 relative flex justify-center">
+                  Stop Recording
+                </span>
+              </button>
+            </div>
+          )}
+        </>
+      )}
 
-      <button
-        disabled={!photos.length && !videos.length}
-        onClick={submitAll}
-        className="btn-submit"
-      >
-        Final Submit
-      </button>
+      {videoPreview && (
+        <>
+          <video src={videoPreview} controls className="rounded-xl" />
+        </>
+      )}
+
+      {(photoPreview || videoPreview) && (
+        <div className="flex justify-center">
+          <button
+            disabled={ownerLoader || fileLoader}
+            onClick={saveMedia}
+            className="w-full md:w-[130px] text-sm 1xl:text-base animated-button px-12 py-3 border border-blue text-center cursor-pointer"
+          >
+            <span className="gap-3 relative flex justify-center">
+              {!ownerLoader || !fileLoader ? (
+                <p className={`text-nowrap`}>Upload</p>
+              ) : (
+                <Spinner size={20} className="h-[24px]" />
+              )}
+            </span>
+          </button>
+        </div>
+      )}
+      </div>
+
+      {photos.length > 0 && (
+        <MediaList title="Photos" items={photos} imageBaseUrl={imageBaseUrl} handleDelete={handleDelete}/>
+      )}
+      {videos.length > 0 && (
+        <VideoMediaList
+          title="Videos"
+          items={videos}
+          imageBaseUrl={imageBaseUrl}
+          handleOpenVideoPreview={handleOpenVideoPreview}
+          handleDelete={handleDelete}
+        />
+      )}
+
+      <VideoPreviewDialog
+        open={openVideoPreview}
+        videoUrl={videoPreviewUrl}
+        onClose={handleClosePreview}
+      />
+
+      {(photos.length > 2 || videos.length > 0) && (
+        <div className="flex justify-center">
+          <button
+            disabled={submitLoader}
+            onClick={handleFinalSubmit}
+            className="w-fit text-sm 1xl:text-base animated-button px-12 py-3 border border-blue text-center cursor-pointer"
+          >
+            <span className="gap-3 relative flex justify-center">
+              {!submitLoader ? (
+                <p className={`text-nowrap`}>Submit uploded media</p>
+              ) : (
+                <Spinner size={20} className="h-[24px]" />
+              )}
+            </span>
+          </button>
+        </div>
+      )}
     </div>
   );
-
-
 }
 
-/* ---------------- COMPONENTS ---------------- */
+/* ---------- COMPONENT ---------- */
 
-const PermissionScreen = ({ title, description, action }) => (
-  <div className="h-screen flex flex-col justify-center items-center p-6 text-center space-y-4">
-    <h2 className="text-2xl font-semibold">{title}</h2>
-    <p className="text-gray-600">{description}</p>
-    <button
-      className="cursor-pointer w-full md:w-[130px] px-12 py-3 animated-button border border-blue"
-      onClick={action}
-    >
-      <span className="gap-3 relative flex justify-center">
-        <p className={`text-nowrap`}>Allow</p>
-      </span>
-    </button>
+const MediaList = ({ title, items, imageBaseUrl, handleDelete }) => (
+  <div>
+    <h3 className="text-base pb-2 font-semibold">{title}</h3>
+    <div className="grid grid-cols-[1fr] sm:grid-cols-[1fr_1fr] xl:grid-cols-[1fr_1fr_1fr] gap-3 items-stretch">
+      {Array.isArray(items) &&
+        items.map((item) => {
+          return (
+            <div className="relative">
+              <Image
+                src={imageBaseUrl + item.fileKey}
+                alt="property photo"
+                width={600}
+                height={600}
+                className="aspect-video rounded-[5px]"
+              />
+              <p className="bg-[#00000099] text-white text-sm rounded-full absolute bottom-2 px-2 py-0.5 left-2">
+                {item.view}
+              </p>
+              <button onClick={() => handleDelete('photo', item.fileKey)} className="bg-[#00000055] text-white text-sm rounded-full absolute top-2 p-2 cursor-pointer right-2">
+                <Image src='/assets/delete.svg' width={15} height={15} alt="delete" />
+              </button>
+            </div>
+          );
+        })}
+    </div>
   </div>
 );
 
-const MediaList = ({ title, items }) => (
+const VideoMediaList = ({
+  title,
+  items,
+  imageBaseUrl,
+  handleOpenVideoPreview,
+  handleDelete
+}) => (
   <div>
-    <h3 className="font-semibold mb-2">{title}</h3>
-    <div className="space-y-2">
-      {items.map((i, idx) => (
-        <div key={idx} className="p-2 border rounded text-sm text-gray-600">
-          {i.fileKey}
-        </div>
-      ))}
+    <h3 className="text-base pb-2 font-semibold">{title}</h3>
+    {items.map((i, idx) => (
+      <div key={idx} className="text-sm text-gray-600">
+        {i.key}
+      </div>
+    ))}
+    <div className="grid grid-cols-[1fr] lg:grid-cols-[1fr_1fr] xl:grid-cols-[1fr_1fr_1fr] gap-3 items-stretch">
+      {Array.isArray(items) &&
+        items.map((item) => {
+          return (
+            <div className="relative">
+              <video
+                src={imageBaseUrl + item.fileKey + "?t=2"}
+                className="rounded-[10px] w-full aspect-video object-cover"
+              />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                <div className="flex cursor-pointer items-center justify-center rounded-full w-12 h-12 bg-[#01004866]">
+                  <div
+                    onClick={() => {
+                      handleOpenVideoPreview(imageBaseUrl + item.fileKey);
+                    }}
+                    className="flex items-center justify-center rounded-full w-10 h-10 bg-blue"
+                  >
+                    <Image
+                      alt="play"
+                      src="/assets/play-white.svg"
+                      width={16}
+                      height={16}
+                    />
+                  </div>
+                </div>
+              </div>
+              <button onClick={() => handleDelete('video', item.fileKey)} className="bg-[#00000055] text-white text-sm rounded-full absolute top-2 p-2 cursor-pointer right-2">
+                <Image src='/assets/delete.svg' width={15} height={15} alt="delete" />
+              </button>
+            </div>
+          );
+        })}
     </div>
   </div>
 );
