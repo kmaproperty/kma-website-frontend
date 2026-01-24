@@ -175,8 +175,8 @@ export default function VerifyProperty() {
   }, []);
 
   /* ---------- CAMERA HELPERS ---------- */
-  const startCamera = async (mode = facingMode) => {
-    if (stream) return;
+  const startCamera = async (mode = facingMode, isNewStrem = false) => {
+    if (!isNewStrem && stream) return;
 
     const mediaStream = await navigator.mediaDevices.getUserMedia({
       video: { facingMode: mode },
@@ -212,7 +212,7 @@ export default function VerifyProperty() {
     setVideoPreview(null);
     setSelectedView(null);
 
-    await startCamera();
+    await startCamera(facingMode);
   };
 
   /* ---------- PHOTO ---------- */
@@ -442,10 +442,10 @@ export default function VerifyProperty() {
     }
 
     const switchCamera = async () => {
-      const newMode = facingMode === "user" ? "environment" : "user";
+      const newMode = facingMode == "user" ? "environment" : "user";
       setFacingMode(newMode);
-
-      await startCamera(newMode);
+      setStream(null)
+      await startCamera(newMode, true);
 };
 
   useEffect(() => {
