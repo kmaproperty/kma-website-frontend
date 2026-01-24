@@ -22,6 +22,7 @@ import Image from "next/image";
 import VideoPreviewDialog from "../common/videoPreview";
 import Spinner from "../common/spinner";
 import { useSearchParams } from "next/navigation";
+import { SwitchCamera } from "lucide-react";
 
 const mediaTypeOptions = [
   { value: "photo", label: "Photo" },
@@ -30,6 +31,7 @@ const mediaTypeOptions = [
 
 export default function VerifyProperty() {
   const imageBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
+  const [facingMode, setFacingMode] = useState("environment"); // default back
   const videoRef = useRef(null);
   const toastRef = useRef(null);
   const videoTimerRef = useRef(null);
@@ -173,11 +175,11 @@ export default function VerifyProperty() {
   }, []);
 
   /* ---------- CAMERA HELPERS ---------- */
-  const startCamera = async () => {
+  const startCamera = async (mode = facingMode) => {
     if (stream) return;
 
     const mediaStream = await navigator.mediaDevices.getUserMedia({
-      video: true,
+      video: { facingMode: mode },
     });
 
     setStream(mediaStream);
@@ -249,7 +251,9 @@ export default function VerifyProperty() {
         type: blob.type,
       });
       setVideoBlob(file);
-      setVideoPreview(URL.createObjectURL(file));
+      setTimeout(() => {
+        setVideoPreview(URL.createObjectURL(file));
+      }, 100);
       clearInterval(videoTimerRef.current);
       videoTimerRef.current = null;
       setVideoTimer(0)
@@ -437,6 +441,13 @@ export default function VerifyProperty() {
       }
     }
 
+    const switchCamera = async () => {
+      const newMode = facingMode === "user" ? "environment" : "user";
+      setFacingMode(newMode);
+
+      await startCamera(newMode);
+};
+
   useEffect(() => {
     if (stream) {
       videoRef.current.srcObject = stream;
@@ -504,8 +515,8 @@ export default function VerifyProperty() {
         <PermissionScreen
           title="Allow Camera"
           description="Camera is required to verify property"
-          action={async () => {
-            await navigator.mediaDevices.getUserMedia({ video: true });
+          action={async (mode = facingMode) => {
+            await navigator.mediaDevices.getUserMedia({ video: { facingMode: mode } });
             setCameraGranted(true);
           }}
         />
@@ -533,12 +544,20 @@ export default function VerifyProperty() {
 
       {cameraActive && (
         <>
+         <div className="relative">
           <video
             ref={videoRef}
             autoPlay
             playsInline
             className="w-full rounded-xl border"
           />
+          <button
+            onClick={switchCamera}
+            className="absolute cursor-pointer bottom-4 right-4 bg-black/60 text-white p-2 rounded-full"
+          >
+            <SwitchCamera fontSize={16}/>
+          </button>
+          </div>
           {mediaType?.value == "video" && (
             <div>
               <p className="text-center text-red-600 font-semibold">
@@ -614,7 +633,7 @@ export default function VerifyProperty() {
 
       {videoPreview && (
         <>
-          <video src={videoPreview} controls className="rounded-xl" />
+          <video key={videoPreview} src={videoPreview} playsInline controls preload="metadata" className="rounded-xl" />
         </>
       )}
 

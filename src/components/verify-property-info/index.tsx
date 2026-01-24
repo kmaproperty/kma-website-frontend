@@ -95,6 +95,9 @@ export default function VerifyPropertyLink({open, onClose, link}) {
                     <Image src={'/assets/copy.svg'} width={20} height={20} alt="copy link" />
                 </div>
             </div>
+            <div className="mt-1">
+              <p className="text-xs text-text-gray">Note*: Above Link valid only for 24 hours.</p>
+            </div>
           </div>
       </DialogContent>
     </Dialog>
