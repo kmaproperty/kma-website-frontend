@@ -254,6 +254,7 @@ export interface AboutusResponse {
     mobileAppAvailable: boolean;
     description: string;
     phoneNumber: string;
+    email: string;
     address: string;
     latitude: number;
     longitude: number;

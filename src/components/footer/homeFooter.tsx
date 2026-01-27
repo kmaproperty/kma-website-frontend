@@ -231,7 +231,7 @@ export default function HomeFooter({
                       alt="mobile"
                     />
                   </span>{" "}
-                  infomail123@domain.com
+                  {aboutusData?.email}
                 </li>
                 <li className="flex items-center gap-3">
                   <span>
