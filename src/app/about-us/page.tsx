@@ -60,18 +60,53 @@ const AboutUs = () => {
                                 <p className={`text-[#5C727D] text-md leading-7 font-normal`}>Bespoke Client Experiences</p>
                             </div>
                         </div>
-                        <div className='w-fit px-10 py-3 rounded-lg border border-dashed border-gray-400 flex gap-14 mt-10'>
+                        <div className='w-fit px-8 py-3 rounded-lg border border-dashed border-gray-400 flex gap-8 justify-between mt-10'>
                             <div>
-                                <h3 className='text-[40px] font-semibold text-[#010048]'>250+</h3>
-                                <p className={`text-[#5C727D] text-md leading-7 font-medium`}>Premium Properties</p>
+                                <h3 className='text-[38px] font-semibold text-[#010048]'>10Lac+</h3>
+                                <p className={`text-[#5C727D] text-md leading-7 font-medium`}>Active Listing</p>
                             </div>
                             <div>
-                                <h3 className='text-[40px] font-semibold text-[#010048]'>100+</h3>
-                                <p className={`text-[#5C727D] text-md leading-7 font-medium`}>Projects</p>
+                                <h3 className='text-[38px] font-semibold text-[#010048]'>15,000</h3>
+                                <p className={`text-[#5C727D] text-md leading-7 font-medium`}>Projects across India</p>
                             </div>
                             <div>
-                                <h3 className='text-[40px] font-semibold text-[#010048]'>75+</h3>
-                                <p className={`text-[#5C727D] text-md leading-7 font-medium`}>Satisfied Clients</p>
+                                <h3 className='text-[38px] font-semibold text-[#010048]'>10,000+</h3>
+                                <p className={`text-[#5C727D] text-md leading-7 font-medium`}>Happy Customers</p>
+                            </div>
+                            <div>
+                                <h3 className='text-[38px] font-semibold text-[#010048]'>500+</h3>
+                                <p className={`text-[#5C727D] text-md leading-7 font-medium`}>Channel Partner across India.</p>
+                            </div>
+                        </div>
+                        <div className='mt-16'>
+                            <h2 className={`text-[28px] leading-11 font-semibold text-[#010048]`}>Founder’s Profile</h2>
+                            <div className=' mt-5 flex gap-6'>
+                               <div className='px-5 py-3 border border-[#D9D9D9] rounded-lg flex gap-4'>
+                                    <Image
+                                    src={"/assets/aboutUs/avatar.png"}
+                                    width={60}
+                                    height={60}
+                                    className='w-[56px] rounded-full h-[56px]'
+                                    alt=''
+                                    />
+                                    <div>
+                                        <p className={`text-[#0D1520] text-md leading-7 font-semibold`}>Dwayne Douglas </p>
+                                        <p className={`text-[#fff] text-sm w-fit rounded-md leading-7 font-normal px-2 mt-1 py-[1px]`} style={{background: "linear-gradient(45deg, #C75C10, #CE9554)"}}>Founder & CEO</p>
+                                    </div>
+                               </div>
+                               <div className='px-5 py-3 border border-[#D9D9D9] rounded-lg flex gap-4'>
+                                    <Image
+                                    src={"/assets/aboutUs/avatar.png"}
+                                    width={60}
+                                    height={60}
+                                    className='w-[56px] rounded-full h-[56px]'
+                                    alt=''
+                                    />
+                                    <div>
+                                        <p className={`text-[#0D1520] text-md leading-7 font-semibold`}>Dwayne Douglas </p>
+                                        <p className={`text-[#fff] text-sm w-fit rounded-md leading-7 font-normal px-2 mt-1 py-[1px]`} style={{background: "linear-gradient(45deg, #C75C10, #CE9554)"}}>Founder & CEO</p>
+                                    </div>
+                               </div>
                             </div>
                         </div>
                     </div>
@@ -95,7 +130,7 @@ const AboutUs = () => {
             </div>
             <div className='w-full px-[50px] py-[100px]'>
                 <div className='max-w-[1444px] mx-auto '>
-                    <SectionHeading title="Why Choose Us?" subtitle="A Service You Can Trust and Feel Confident In" type={'center'} description="" />
+                    <SectionHeading lineTop="" title="" color="" subtitle="A Service You Can Trust and Feel Confident In" type={'center'} description="" />
                     <div className='grid grid-cols-4 gap-x-8 gap-y-4 mt-10 items-center'>
                         <div className='bg-[#F2F2F2] px-8 py-5 rounded-lg flex flex-col gap-1 h-full justify-center'>
                             <div className='bg-white w-[60px] h-[60px] flex items-center justify-center rounded-lg mb-2'><BadgePercent className='w-8 h-8 text-[#010048]' /></div>

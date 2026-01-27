@@ -1,5 +1,4 @@
-'use client'
-// import HomdeHeader from '@/components/header/homeHeader'
+import HomdeHeader from '@/components/header/homeHeader'
 import { BadgePercent, CircleCheckBig, House, Lightbulb, ListCheck, ListChecks, PhoneCall, Section } from 'lucide-react';
 import PageTitle from '@/components/common/PageTitle';
 import { TbBulb } from "react-icons/tb";
@@ -26,8 +25,8 @@ const ContactUs = () => {
     return (
         <div>
             <div className="relative pt-[25px] h-[100vh] max-h-[600px]" style={{ backgroundImage: 'url(assets/About-bg.jpg)', backgroundSize: 'cover' }}>
-                <div className="w-[75%] mx-auto">
-                    {/* <HomdeHeader /> */}
+                <div className="flex justify-center">
+                    <HomdeHeader />
                 </div>
                 <div className="w-[75%] max-w-[600px] mx-auto mt-[100px]">
                     <PageTitle
@@ -93,15 +92,25 @@ const ContactUs = () => {
                     <div className='w-[30%] max-w-[350px]  space-y-3'>
                         <h2 className={`text-[38px] leading-11 font-semibold text-[#010048]`}>What People Are Saying</h2>
                         <p className={`text-[#5C727D] text-md leading-7`}>Real stories from real people who've found their dream properties with us.</p>
-                        <Link href={'/blogs'}>
-                            <button
-                                className="w-fit text-sm 1xl:text-base animated-button px-10 py-3 border border-blue text-center cursor-pointer"
-                            >
-                                <span className="gap-3 relative flex justify-center">
-                                    <p className={`text-nowrap`}>View More</p>
-                                </span>
-                            </button>
-                        </Link>
+                        <div className='flex gap-3'>
+
+                            <Link href={'/blogs'}>
+                                <button
+                                    className="w-fit text-sm 1xl:text-base animated-button px-10 py-2.5 border border-blue text-center cursor-pointer"
+                                >
+                                    <span className="gap-3 relative flex justify-center">
+                                        <p className={`text-nowrap`}>View More</p>
+                                    </span>
+                                </button>
+                            </Link>
+                            <Link href={'/blogs'}>
+                                <button className="w-auto text-sm 1xl:text-base text-blue! py-2.5 hover:text-text-black! animated-button px-8 border border-blue bg-transparent! text-center cursor-pointer">
+                                    <span className="gap-3 relative flex justify-center">
+                                        <p className={`text-nowrap`}>Add a Review</p>
+                                    </span>
+                                </button>
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>
