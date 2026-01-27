@@ -431,10 +431,10 @@ export default function VerifyProperty() {
         verificationToken: token,
         livePhotos: photos,
         liveVideos: videos,
-        // latitude: coords?.latitude,
-        // longitude: coords?.longitude,
-        latitude: '21.23452',
-        longitude: '72.91567'
+        latitude: coords?.latitude,
+        longitude: coords?.longitude,
+        // latitude: '21.23452',
+        // longitude: '72.91567'
       } 
       submitPropertyVerification(payload)
     }
