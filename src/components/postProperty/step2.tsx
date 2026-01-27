@@ -4,7 +4,7 @@ import ChipTag from "../common/chipTag";
 import { useEffect, useRef, useState } from "react";
 import { BACHELOR_PREFERENCE, BROKRAGE_CHARGE, CONSTRUCTION_TYPE, CUSTOM_SECTION_NAME, FACING_LIST, FIELD_NAME, LIFTS, LOCK_IN_PERIOD, MAINTENANCE_CHARGES, PROPERTY_POSSESSION_STATUS, RENT_AVAILABEL_FROM, RENT_SUITABLE_FOR, SECURITY_CHARGES, TRANSACTION_TYPE_LIST, TRUTY_LIST } from "@/lib/enums";
 import DynamicSelect from "../common/select";
-import { generateFloors, generateLockInPeriod } from "@/lib/helper";
+import { generateFloors, generateLockInPeriod, numberToWordsIndian } from "@/lib/helper";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Step1DetailsResponse, step1PostPropertyDetailsApiHandler, Step2DetailsResponse, step2PostPropertyCreateApiHandler, step2PostPropertyDetailsApiHandler, Step2PostPropertyPayload, Step2PostPropertyResponse } from "@/services/postProperty";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
@@ -1830,6 +1830,7 @@ export default function Step2({containerRef}) {
             dropdownValue={'Per month'}
             disabled={true}
            />
+           {numberToWordsIndian(dynamicFieldDetails?.rent) && <p className="pt-1 text-text-gray text-xs">{numberToWordsIndian(dynamicFieldDetails?.rent)}</p>}
           {errors?.rent && <p className="pt-1 text-red-500 text-xs">{errors.rent}</p>}
         </div>}
 
@@ -1956,6 +1957,7 @@ export default function Step2({containerRef}) {
                 className: "placeholder-gray",
               }}
             />
+            {numberToWordsIndian(dynamicFieldDetails?.plotPrice) && <p className="pt-1 text-text-gray text-xs">{numberToWordsIndian(dynamicFieldDetails?.plotPrice)}</p>}
           {errors?.plotPrice && <p className="pt-1 text-red-500 text-xs">{errors.plotPrice}</p>}
         </div>}
 
@@ -1981,6 +1983,7 @@ export default function Step2({containerRef}) {
               className: "placeholder-gray",
             }}
            />
+           {numberToWordsIndian(dynamicFieldDetails?.price) && <p className="pt-1 text-text-gray text-xs">{numberToWordsIndian(dynamicFieldDetails?.price)}</p>}
           {errors?.price && <p className="pt-1 text-red-500 text-xs">{errors.price}</p>}
         </div>}
 
@@ -2014,13 +2017,14 @@ export default function Step2({containerRef}) {
                 const isOnlyDigits = /^\d*$/.test(value);
                 if (!isOnlyDigits) return;
                 if(Number(value) > 99999) return 
-              setDynamicFieldDetails((pre) => ({...pre, otherMaintenanceCharges: value,}))
-              setErrors((pre) => ({...pre, otherMaintenanceCharges: ''}))
+                setDynamicFieldDetails((pre) => ({...pre, otherMaintenanceCharges: value,}))
+                setErrors((pre) => ({...pre, otherMaintenanceCharges: ''}))
               }}
               value={dynamicFieldDetails.otherMaintenanceCharges ?? ''}
               dropdownValue={'Per month'}
               disabled={true}
-            />
+              />
+          {numberToWordsIndian(dynamicFieldDetails?.otherMaintenanceCharges) && <p className="pt-1 text-text-gray text-xs">{numberToWordsIndian(dynamicFieldDetails?.otherMaintenanceCharges)}</p>}
           {errors?.otherMaintenanceCharges && <p className="pt-1 text-red-500 text-xs">{errors.otherMaintenanceCharges}</p>}
           </div>}
         </div>}
@@ -2062,6 +2066,7 @@ export default function Step2({containerRef}) {
               dropdownValue={'Per month'}
               disabled={true}
             />
+            {numberToWordsIndian(dynamicFieldDetails?.otherSecurityDeposite) && <p className="pt-1 text-text-gray text-xs">{numberToWordsIndian(dynamicFieldDetails?.otherSecurityDeposite)}</p>}
             {errors?.otherSecurityDeposite && <p className="pt-1 text-red-500 text-xs">{errors.otherSecurityDeposite}</p>}
           </div>}
         </div>}
@@ -2153,6 +2158,7 @@ export default function Step2({containerRef}) {
                 className: "placeholder-gray",
               }}
             />  
+            {numberToWordsIndian(dynamicFieldDetails?.otherBrokerageCharge) && <p className="pt-1 text-text-gray text-xs">{numberToWordsIndian(dynamicFieldDetails?.otherBrokerageCharge)}</p>}
           {errors?.otherBrokerageCharge && <p className="pt-1 text-red-500 text-xs">{errors.otherBrokerageCharge}</p>}
             </div>}
           {renderShowField(FIELD_NAME.NEGOTIABLE_BROKERAGE) && <div className="mt-2" onClick={() => {
@@ -2260,6 +2266,7 @@ export default function Step2({containerRef}) {
               className: "placeholder-gray",
             }}
           />
+          {numberToWordsIndian(dynamicFieldDetails?.price) && <p className="pt-1 text-text-gray text-xs">{numberToWordsIndian(dynamicFieldDetails?.price)}</p>}
           {errors?.price && <p className="pt-1 text-red-500 text-xs">{errors.price}</p>}
         </div>}
 
@@ -2483,7 +2490,8 @@ export default function Step2({containerRef}) {
               inputProps={{
                 className: "placeholder-gray",
               }}
-            />  
+              />  
+              {numberToWordsIndian(dynamicFieldDetails?.otherBrokerageCharge) && <p className="pt-1 text-text-gray text-xs">{numberToWordsIndian(dynamicFieldDetails?.otherBrokerageCharge)}</p>}
           {errors?.otherBrokerageCharge && <p className="pt-1 text-red-500 text-xs">{errors.otherBrokerageCharge}</p>}
             </div>}
           {renderShowField(FIELD_NAME.NEGOTIABLE_BROKERAGE) && <div className="mt-2" onClick={() => {
