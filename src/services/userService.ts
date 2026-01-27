@@ -88,6 +88,10 @@ export interface UserDashboardDetailsResponse {
       commercial: number;
     };
   };
+  listingsSummary: {
+    commercial: number;
+    residential: number;
+  }
 }
 
 export const UserDashboardDetailsApiHandler = async () : Promise<UserDashboardDetailsResponse> => {

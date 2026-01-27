@@ -273,7 +273,7 @@ const PropertyView = ({ open, onClose, propertyId }) => {
               {propertyDetails?.isVerified == 'unverified' && propertyDetails?.status == 'active' && <button disabled={verifyLoader} onClick={() => {
                   handleVerifyProperty({propertyId: propertyId})
                 }} className="w-fit cursor-pointer bg-[#d5f3e8] text-sm text-[#008f4b] flex items-center gap-2 px-3 py-1.5 rounded-[5px] font-medium border border-[#d5f3e8] hover:border-[#008f4b]">
-                  <img src="/assets/verify.svg" className="w-4 h-4"></img> Verify
+                  <img src="/assets/verify.svg" className="w-4 h-4"></img> {propertyDetails?.verificationStatus == 'rejected' ? 'Re Verify' : 'Verify'}
                 </button>}
           </div>
         </div>
@@ -307,6 +307,12 @@ const PropertyView = ({ open, onClose, propertyId }) => {
           {propertyDetails?.status == 'rejected' && <div className="flex flex-col">
             <p className="text-blue font-medium text-base">Reject Reason:</p>
             <p className="text-text-gray text-base">{propertyDetails?.rejectionReason}</p>
+          </div>}
+        </div>
+        <div>
+          {propertyDetails?.verificationStatus == 'rejected' && <div className="flex flex-col">
+            <p className="text-blue font-medium text-base">Verify Reject Reason:</p>
+            <p className="text-text-gray text-base">{propertyDetails?.comments}</p>
           </div>}
         </div>
       </DialogContent>

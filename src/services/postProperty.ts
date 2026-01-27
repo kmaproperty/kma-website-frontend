@@ -635,6 +635,9 @@ export interface GetPropertyDetailsResponse {
   constructionStatus: string | null;
   furnishingType: string | null;
 
+  verificationStatus: string; 
+  comments: string;
+
   photos: {
     fileKey: string;
     view: string | null;
