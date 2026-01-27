@@ -23,6 +23,7 @@ import VideoPreviewDialog from "../common/videoPreview";
 import Spinner from "../common/spinner";
 import { useSearchParams } from "next/navigation";
 import { SwitchCamera } from "lucide-react";
+import { useRouter } from "nextjs-toploader/app";
 
 const mediaTypeOptions = [
   { value: "photo", label: "Photo" },
@@ -38,6 +39,7 @@ export default function VerifyProperty() {
   const mediaRecorderRef = useRef(null);
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
+  const router = useRouter()
 
   const [coords, setCoords] = useState(null);
   const [showLocationHelp, setShowLocationHelp] = useState(false);
@@ -109,7 +111,6 @@ export default function VerifyProperty() {
       if (permission.state == "granted" || permission.state == "prompt") {
         navigator.geolocation.getCurrentPosition(
           (pos) => {
-            alert(`Geolocation not supported ${pos.coords.latitude}`);
 
             setCoords({
               latitude: pos.coords.latitude,
@@ -407,7 +408,12 @@ export default function VerifyProperty() {
       ): Promise<SubmitPropertyVerificationResponse> => {
         return await submitPropertyVerificationApiHandler(payload);
       },
-      onSuccess: (response: SubmitPropertyVerificationResponse) => {},
+      onSuccess: (response: SubmitPropertyVerificationResponse) => {
+        toast.success(response?.message)
+        setVideos([])
+        setPhotos([])
+        router.push('/')
+      },
       onError: (error: any) => {
         toast.dismiss(toastRef.current);
         if (Array.isArray(error.message)) {
@@ -427,7 +433,9 @@ export default function VerifyProperty() {
         liveVideos: videos,
         latitude: coords?.latitude,
         longitude: coords?.longitude,
-      }
+        // latitude: '21.23452',
+        // longitude: '72.91567'
+      } 
       submitPropertyVerification(payload)
     }
 
@@ -677,7 +685,7 @@ export default function VerifyProperty() {
         onClose={handleClosePreview}
       />
 
-      {(photos.length > 2 || videos.length > 0) && (
+      {(photos.length >= 2 || videos.length > 0) && (
         <div className="flex justify-center">
           <button
             disabled={submitLoader}
@@ -748,8 +756,9 @@ const VideoMediaList = ({
           return (
             <div className="relative">
               <video
-                src={imageBaseUrl + item.fileKey + "?t=2"}
+                src={imageBaseUrl + item.fileKey + "?t=0.002"}
                 className="rounded-[10px] w-full aspect-video object-cover"
+                preload="metadata"
               />
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                 <div className="flex cursor-pointer items-center justify-center rounded-full w-12 h-12 bg-[#01004866]">
