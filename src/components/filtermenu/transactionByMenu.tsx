@@ -1,7 +1,7 @@
 import { transectionType } from "@/lib/constants";
 import { Checkbox } from "@mui/material";
 
-export default function TransactionByMenu({transactionBy, setTransactionBy}){
+export default function TransactionByMenu({transactionBy, setTransactionBy, setSelectedPropertyType}){
 
   return(
         <div>
@@ -10,6 +10,7 @@ export default function TransactionByMenu({transactionBy, setTransactionBy}){
             <div
               onClick={() => {
                 setTransactionBy(item)
+                setSelectedPropertyType([])
               }}
               key={item.value}
               className="flex items-center gap-3 cursor-pointer"

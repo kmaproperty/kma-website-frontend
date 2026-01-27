@@ -254,6 +254,7 @@ export interface AboutusResponse {
     mobileAppAvailable: boolean;
     description: string;
     phoneNumber: string;
+    email: string;
     address: string;
     latitude: number;
     longitude: number;
@@ -377,6 +378,7 @@ export interface GetPropertiesCountPayload {
     cityId?: string;
     search?: string;
     categoryIds?: string;
+    listingTypeIds?: string;
     propertyTypeIds?: string;
     bhkTypeIds?: string;
     furnishingTypes?: string;
@@ -396,11 +398,11 @@ export interface GetPropertiesCountResponse {
     count: number
 }
 
-export const getPropertiesCountApiHandler = async ({page,limit,cityId,search, categoryIds, propertyTypeIds, bhkTypeIds, furnishingTypes, constructionStatuses, minPrice, maxPrice, latitude, longitude, radius, sortBy, sortOrder, postedBy }: GetPropertiesCountPayload) : Promise<GetPropertiesCountResponse> => {
+export const getPropertiesCountApiHandler = async ({page,limit,cityId,search,listingTypeIds, categoryIds, propertyTypeIds, bhkTypeIds, furnishingTypes, constructionStatuses, minPrice, maxPrice, latitude, longitude, radius, sortBy, sortOrder, postedBy }: GetPropertiesCountPayload) : Promise<GetPropertiesCountResponse> => {
     try{
         const response = await axiosInstance.get<GetPropertiesCountResponse>(
       "end-user/properties/count", {
-        params: {cityId, search, categoryIds, propertyTypeIds, bhkTypeIds, furnishingTypes, constructionStatuses, minPrice, maxPrice, latitude, longitude, radius, sortBy, sortOrder, postedBy}
+        params: {cityId, search, categoryIds, propertyTypeIds,listingTypeIds, bhkTypeIds, furnishingTypes, constructionStatuses, minPrice, maxPrice, latitude, longitude, radius, sortBy, sortOrder, postedBy}
       });
 
     return response.data;

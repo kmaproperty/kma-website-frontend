@@ -122,7 +122,7 @@ export default function UserProfile() {
                   />
                   Edit Profile
                 </p>
-                {kycDetails?.kyc_status == "completed" && (
+                {kycDetails?.kyc_status == "approved" && (
                   <p
                     onClick={() => {
                       setOpenBankDetaislUpdate(true);
@@ -162,7 +162,7 @@ export default function UserProfile() {
                         onClick={() => {
                           router.push("/kyc");
                         }}
-                        className="w-full md:w-auto text-xs 1xl:text-base animated-button px-12 py-3 border border-blue text-center cursor-pointer"
+                        className="w-full md:w-auto text-xs 1xl:text-sm animated-button px-6 py-2 border border-blue text-center cursor-pointer"
                       >
                         <span className="gap-3 relative">
                           <p className="text-nowrap">Complete kyc</p>
@@ -179,7 +179,7 @@ export default function UserProfile() {
               <div className="flex gap-4">
                 <p className="text-text-black text-base w-[85px]">Kyc Status</p>
                 <p className="text-text-gray text-base">
-                  {KYC_STATUS[kycDetails?.kyc_status]} {kycDetails?.kyc_status == 'rejected' ? `(${''})` : ''}
+                  {KYC_STATUS[kycDetails?.kyc_status]} {kycDetails?.kyc_status == 'rejected' ? `(${kycDetails?.kyc_rejection_reason})` : ''}
                 </p>
               </div>
             </>

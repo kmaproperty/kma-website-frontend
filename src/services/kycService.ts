@@ -190,6 +190,7 @@ export interface KycStatusResponse {
  kyc_progress: number,
  kyc_total_steps: number,
  kyc_status: string,
+ kyc_rejection_reason: string,
 }
 
 export const getKycStatusApiHandler = async (): Promise<KycStatusResponse> => {

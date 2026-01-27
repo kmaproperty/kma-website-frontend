@@ -12,9 +12,9 @@ import { useQuery } from "@tanstack/react-query";
 import { getUserReviewApiHandler, GetUserReviewApiHandlerResponse } from "@/services/homeService";
 import ContactInformation from "../contactInformation";
 
-export default function MainHome({topProperties, aboutusData, cityData,selectedCity, setSelectedCity, cityLoader, fetchCities, propertyMasterData}) {
+export default function MainHome({topProperties, cityData, cityLoader, fetchCities, propertyMasterData}) {
     const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
-  const [show, setShow] = useState(false);
+    const [show, setShow] = useState(false);
 
   const dissolve: Variants = {
     hidden: {
@@ -57,12 +57,10 @@ export default function MainHome({topProperties, aboutusData, cityData,selectedC
       onMouseMove={() => setShow(true)}
     >
       <div>
-        <Social aboutusData={aboutusData}/>
+        <Social/>
       </div>
       <div className="flex flex-col items-center">
-        <HomdeHeader aboutusData={aboutusData} selectedCity={selectedCity} setSelectedCity={setSelectedCity} cityData={cityData} cityLoader={cityLoader} fetchCities={fetchCities} propertyMasterData={propertyMasterData}/>
-       
-
+        <HomdeHeader cityData={cityData} cityLoader={cityLoader} fetchCities={fetchCities} propertyMasterData={propertyMasterData}/>
         <div className="w-[75%] mt-[45px] flex justify-between gap-5 overflow-scroll no-scrollbar">
           <div className="w-[100%] lg:w-[50%]">
             <BannerText />
@@ -75,7 +73,7 @@ export default function MainHome({topProperties, aboutusData, cityData,selectedC
       </div>
       <div className="flex justify-center mt-10">
         <div className="w-[75%] lg:w-[55%]">
-          <Filter cityData={cityData} selectedCity={selectedCity} setSelectedCity={setSelectedCity} propertyMasterData={propertyMasterData}/>
+          <Filter cityData={cityData} propertyMasterData={propertyMasterData}/>
         </div>
       </div>
       <div>

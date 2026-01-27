@@ -92,8 +92,19 @@ body {
   inset: 0; 
   background: linear-gradient(
     to left,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 0.7) 100%
+    rgba(0, 0, 0, 0.3) 0%,
+    rgba(0, 0, 0,0.7) 100%
+  );
+  pointer-events: none; 
+}
+
+.about-us-gradient-overlay {
+  position: absolute;
+  inset: 0; 
+  background: linear-gradient(
+    to left,
+    rgba(0, 0, 0, 0.6) 0%,
+    rgba(0, 0, 0,0.6) 100%
   );
   pointer-events: none; 
 }
@@ -141,4 +152,44 @@ body {
 
 .custom-mobile-input .MuiInputBase-root {
   height: 40px !important;
+}
+
+
+/* Equal height slick cards */
+.feature-property .slick-track {
+  display: flex !important;
+  align-items: stretch;
+}
+
+.feature-property .slick-slide {
+  height: auto !important;
+  max-width: 250px !important
+}
+
+.feature-property .slick-slide > div {
+  height: 100%;
+  max-width: 250px !important
+}
+
+@media (max-width: 1279px) {
+  .feature-property .slick-slide,
+  .feature-property .slick-slide > div {
+    max-width: 300px !important;
+  }
+}
+
+/* <= 1023px (slidesToShow: 2) */
+@media (max-width: 1023px) {
+  .feature-property .slick-slide,
+  .feature-property .slick-slide > div {
+    max-width: 340px !important;
+  }
+}
+
+/* <= 639px (slidesToShow: 1) */
+@media (max-width: 639px) {
+  .feature-property .slick-slide,
+  .feature-property .slick-slide > div {
+    max-width: 100% !important;
+  }
 }

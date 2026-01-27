@@ -13,13 +13,17 @@ import AppDownloadSection from "./appDownloadSection";
 import HomeFooter from "../footer/homeFooter";
 import MainHome from "./home";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { AboutusResponse, CitiesPayload, CitiesResponse, getAboutUsDataAPiHanlder, getCityListApiHandler, getExploreApiHanlder, GetExplorePayload, GetExploreResponse, getTopProperties, GetTopPropertiesPayload, GetTopPropertiesResponse } from "@/services/homeService";
+import { AboutusResponse, CitiesResponse, getAboutUsDataAPiHanlder, getCityListApiHandler, getExploreApiHanlder, GetExplorePayload, GetExploreResponse, getTopProperties, GetTopPropertiesPayload, GetTopPropertiesResponse } from "@/services/homeService";
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getAboutusData, getSelectedCity, setAboutusData, setSelectedCity } from "@/store/homeHeaderSlice";
 
-export default function Home({ propertyMasterData }) {
-  const [selectedCity, setSelectedCity] = useState(null)
+export default function Home({ propertyMasterData, propertyCitiesData }) {
+  const dispatch = useDispatch()
+  const selectedCity = useSelector(getSelectedCity)
+  const aboutusData = useSelector(getAboutusData)
+
   const [cityData, setCityData] = useState(null)
-  const [aboutusData, setAboutusData] = useState(null)
 
   const {
     mutate: fetchCities, isPending: cityLoader
@@ -28,7 +32,7 @@ export default function Home({ propertyMasterData }) {
     onSuccess: (response: CitiesResponse) => {
       let findCity = response?.allCities?.find(item => item.name == 'Gurgaon')
       if(findCity){
-        setSelectedCity(findCity)
+        dispatch(setSelectedCity(findCity))
       }
       setCityData(response)
     },
@@ -42,7 +46,7 @@ export default function Home({ propertyMasterData }) {
   } = useMutation({
     mutationFn: getAboutUsDataAPiHanlder,
     onSuccess: (response: AboutusResponse) => {
-      setAboutusData(response?.configuration)
+      dispatch(setAboutusData(response?.configuration))
     },
     onError: (error) => {
 
@@ -77,18 +81,38 @@ export default function Home({ propertyMasterData }) {
       console.log("response", response);
       return response;
     },
+    enabled: selectedCity ? true : false
   });
 
   useEffect(() => {
-    fetchCities({})
     fetchAboutusData()
+    if(propertyCitiesData){
+      let findCity = propertyCitiesData?.allCities?.find(item => item.name == 'Gurgaon')
+      if(findCity){
+        dispatch(setSelectedCity(findCity))
+      }
+      setCityData(propertyCitiesData)
+    }else{
+      fetchCities({})
+    }
   },[])
+
+  const imageSlider =  [
+      {
+        imagePath: "/assets/backgroundSlider/background_slider_1.jpg",
+        alt: "Background Image 1",
+      },
+      {
+        imagePath: "/assets/backgroundSlider/background_slider_2.png",
+        alt: "Background Image 2",
+      },
+    ];
 
   return (
     <div className="overflow-hidden">
       <div className="relative ">
-        <BannerSlider />
-        <MainHome topProperties={data?.properties ?? []} aboutusData={aboutusData} selectedCity={selectedCity} setSelectedCity={setSelectedCity} fetchCities={fetchCities} cityLoader={cityLoader} cityData={cityData} propertyMasterData={propertyMasterData} />
+        <BannerSlider bannerHeight={'min-h-[700px] 2md:min-h-auto 2md:h-[90vh]'} backgroundImages={imageSlider} overlayClass='gradient-overlay'/>
+        <MainHome topProperties={data?.properties ?? []} fetchCities={fetchCities} cityLoader={cityLoader} cityData={cityData} propertyMasterData={propertyMasterData} />
       </div>
       <div className="my-16 flex justify-center overflow-hidden">
         <div className="w-[90%] md:w-[75%]">
@@ -126,14 +150,14 @@ export default function Home({ propertyMasterData }) {
       </div>
       <div className="bg-[#F2F2F2] flex justify-center overflow-hidden">
         <div className="my-16 w-[90%] 2md:w-[75%]">
-          <ChannelPartnerSection selectedCity={selectedCity}/>
+          <ChannelPartnerSection/>
         </div>
       </div>
       {aboutusData?.mobileAppAvailable && <div className="">
         <AppDownloadSection />
       </div>}
       <div className="">
-        <HomeFooter propertyMasterData={propertyMasterData} selectedCity={selectedCity} aboutusData={aboutusData}/>
+        <HomeFooter propertyMasterData={propertyMasterData}/>
       </div>
     </div>
   );

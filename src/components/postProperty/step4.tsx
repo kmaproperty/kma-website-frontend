@@ -16,10 +16,10 @@ import {
   UploadFileToS3Response,
 } from "@/services/masterService";
 import { toast } from "react-toastify";
-import { MultiValue } from "react-select";
-import { PROPERTY_IMAGE_TYPE } from "@/lib/enums";
 import VideoPreviewDialog from "../common/videoPreview";
 import {
+  getPropertyPhotoTypeListApiHandler,
+  GetPropertyPhotoTypeListResponse,
   Step1DetailsResponse,
   step1PostPropertyDetailsApiHandler,
   Step4DetailsResponse,
@@ -32,7 +32,6 @@ import Spinner from "../common/spinner";
 import FullscreenSpinner from "../common/spinner/fullScreenSpinner";
 
 export default function Step4({containerRef}) {
-  const { calculateProgress } = useStepProgress();
   const params = useParams();
   const toastRef = useRef(null);
   const router = useRouter()
@@ -87,7 +86,7 @@ export default function Step4({containerRef}) {
     return hasError;
   };
 
-  const { mutate: handleFileUpload } = useMutation({
+  const { mutate: handleFileUpload, isPending: fileLoader } = useMutation({
     mutationFn: async (
       payload: UploadFileToS3Payload
     ): Promise<UploadFileToS3Response> => {
@@ -248,6 +247,16 @@ const handleUploadFileToS3 = async (files: File[], type: string) => {
     setErrors((pre) => ({...pre, view: ''}))
   };
 
+  const { data: propertyPhotoTypeList, isPending: photoListLoader } = useQuery({
+    queryKey: ["step4-details"],
+    queryFn: getPropertyPhotoTypeListApiHandler,
+    select: (resposne: GetPropertyPhotoTypeListResponse[]) => {
+      return Array.isArray(resposne) ? resposne.map(item => ({label: item.name, value: item.name})) ?? [] : []
+    },
+    staleTime: 0,
+    refetchOnMount: true,
+  });
+
   const { data: step4Details, isPending: step4DetailsLoader } = useQuery({
     queryKey: ["step4-details", params?.propertyId],
     queryFn: async (): Promise<Step4DetailsResponse> => {
@@ -294,6 +303,9 @@ const handleUploadFileToS3 = async (files: File[], type: string) => {
     onSuccess: (response: Step4PostPropertyResponse) => {
       console.log("step4 success response", response);
       // dispatch(setActiveStep({ step: activeStep + 1 }));
+      if(toastRef.current){
+        toast.dismiss(toastRef.current);
+      }
       toast.success('Post Property created successfully')
       dispatch(resetProgress())
       dispatch(setActiveStep({step: 1}))
@@ -405,7 +417,7 @@ const handleUploadFileToS3 = async (files: File[], type: string) => {
                   id={String(index)}
                   onCoverChange={handleCoverChange}
                   onRoomChange={handleRoomChange}
-                  options={PROPERTY_IMAGE_TYPE}
+                  options={propertyPhotoTypeList ?? []}
                 />
               </div>
             );
@@ -484,7 +496,7 @@ const handleUploadFileToS3 = async (files: File[], type: string) => {
             </span>
           </button>
           <button
-            disabled={step4Loader}
+            disabled={step4Loader || fileLoader}
             onClick={() => {
               if (activeStep == 4) {
                 if (validate()) {
@@ -497,7 +509,7 @@ const handleUploadFileToS3 = async (files: File[], type: string) => {
             className="w-full md:w-[130px] text-sm 1xl:text-base animated-button px-12 py-3 border border-blue text-center cursor-pointer"
           >
             <span className="gap-3 relative flex justify-center">
-               {!step4Loader ? (
+               {(!step4Loader || !fileLoader) ? (
                 <p className={`text-nowrap`}>{activeStep == 4 ? 'Submit' : 'Next'}</p>
               ) : (
                 <Spinner size={20} className="h-[24px]"/>

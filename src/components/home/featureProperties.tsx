@@ -24,73 +24,6 @@ const topVariant = {
     transition: { duration: 1, ease: "easeOut" as const },
   },
 };
-const propertyList = [
-  {
-    type: "Apartment",
-    rating: "5.0",
-    name: "Royal Apartment",
-    location: "25, Willow Crest Apartment",
-    price: "$400.00",
-    ListedOn: "25 May 2025",
-    PossessionStatus: "Ready to move",
-    bed: 2,
-    bath: 2,
-    size: "350 Sq Ft",
-    imgage: "/assets/property/img-1.png",
-  },
-  {
-    type: "Villa",
-    rating: "5.0",
-    name: "Grand Villa House",
-    location: "10, Oak Ridge Villa",
-    price: "$400.00",
-    ListedOn: "25 May 2025",
-    PossessionStatus: "Ready to move",
-    bed: 2,
-    bath: 2,
-    size: "350 Sq Ft",
-    imgage: "/assets/property/img-2.png",
-  },
-  {
-    type: "Suite",
-    rating: "5.0",
-    name: "Elite Suite Room",
-    location: "42, Maple Grove Residences",
-    price: "$400.00",
-    ListedOn: "25 May 2025",
-    PossessionStatus: "Ready to move",
-    bed: 2,
-    bath: 2,
-    size: "350 Sq Ft",
-    imgage: "/assets/property/img-3.png",
-  },
-  {
-    type: "Residency",
-    rating: "5.0",
-    name: "Celestial Residency",
-    location: "88, Pine Valley Heights",
-    price: "$400.00",
-    ListedOn: "25 May 2025",
-    PossessionStatus: "Ready to move",
-    bed: 2,
-    bath: 2,
-    size: "350 Sq Ft",
-    imgage: "/assets/property/img-4.png",
-  },
-  {
-    type: "Residency",
-    rating: "5.0",
-    name: "Celestial Residency",
-    location: "88, Pine Valley Heights",
-    price: "$400.00",
-    ListedOn: "25 May 2025",
-    PossessionStatus: "Ready to move",
-    bed: 2,
-    bath: 2,
-    size: "350 Sq Ft",
-    imgage: "/assets/property/img-1.png",
-  },
-];
 
 function Star({ className = "h-4 w-4" }) {
   return (
@@ -109,16 +42,17 @@ export default function FeaturedProperties({ topProperties }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
+  const slidesCount = topProperties.length;
   const settings = {
-    slidesToShow: 4,
+    slidesToShow: Math.min(4, slidesCount),
     slidesToScroll: 1,
     infinite: false,
     arrows: false,
-    responsive: [
-      { breakpoint: 1280, settings: { slidesToShow: 3 } },
-      { breakpoint: 1024, settings: { slidesToShow: 2 } },
-      { breakpoint: 640, settings: { slidesToShow: 1 } },
-    ],
+      responsive: [
+        { breakpoint: 1280, settings: { slidesToShow: 3 } },
+        { breakpoint: 1024, settings: { slidesToShow: 2 } },
+        { breakpoint: 640, settings: { slidesToShow: 1 } },
+      ],
   };
 
   return (
@@ -131,11 +65,11 @@ export default function FeaturedProperties({ topProperties }) {
         subHeading="Discover Exclusive Listings of Premium Properties Available for Purchase"
       />
 
-      <div className="flex-1 w-full  2md:min-w-0 -mx-2">
+      <div className="flex-1 w-full  2md:min-w-0 -mx-2 feature-property">
         <Slider ref={sliderRef} {...settings} className="mt-10">
           {topProperties.map((item, index) => {
             const img = item.images.length > 0 ? item.images[0]?.fileKey : null;
-            const size = item.units.length > 0 ? item.units[0]?.size : null
+            const size = item.units?.length > 0 ? item.units[0]?.size : null
             return (
               <motion.div
                 className="px-1.5 h-full"

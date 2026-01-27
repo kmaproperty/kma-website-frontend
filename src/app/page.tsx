@@ -1,5 +1,5 @@
 import Home from "@/components/home";
-import { fetchPropertyMasterData } from "./api/home";
+import { fetchPropertyCitiesData, fetchPropertyMasterData } from "./api/home";
 
 export default async function HomeDashboard() {
   let propertyMasterData: any = await fetchPropertyMasterData();
@@ -9,6 +9,6 @@ export default async function HomeDashboard() {
     propertyMasterData = [];
   }
 
-  
-  return <Home propertyMasterData={propertyMasterData} />;
+  let propertyCitiesData: any = await fetchPropertyCitiesData();
+  return <Home propertyMasterData={propertyMasterData} propertyCitiesData={propertyCitiesData}/>;
 }

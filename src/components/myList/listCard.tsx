@@ -69,15 +69,8 @@ export default function ListCard({data, handleManage}: {data: ListingItem, handl
   };
 
   return (
-    <div className="flex flex-col lg:flex-row items-center bg-[#F2F2F2] rounded-[10px] px-2 gap-5 py-2">
+    <div className="flex flex-col lg:h-[200px] lg:flex-row items-center bg-[#F2F2F2] rounded-[10px] px-2 gap-5 py-2">
       <div className="relative w-[260px] lg:h-full rounded-[5px] overflow-hidden property-slider">
-        {/* <Image
-          src={imgBaseUrl + data.coverPhotoKey}
-          alt="image"
-          width={600}
-          height={600}
-          className="w-full lg:w-[260px] lg:h-full object-cover aspect-video rounded-[10px]"
-        /> */}
         <Slider {...settings}>
           {data?.photos?.map((img, index) => (
             <div key={index} className="relative h-full w-full">
@@ -93,6 +86,9 @@ export default function ListCard({data, handleManage}: {data: ListingItem, handl
         </Slider>
         <div className="absolute top-[5px] right-[5px] px-3 py-1 text-xs font-bold text-white rounded-[5px]" style={{background: getStatusColor(data.status)?.color}}>
             <p>{getStatusColor(data.status)?.name}</p>
+        </div>
+        <div className="absolute bottom-[5px] left-[5px] px-3 py-1 text-xs text-white rounded-[5px] bg-black/60">
+            <p>{data?.photos?.length + ' Photos'}</p>
         </div>
       </div>
       <div className="w-full flex flex-1 flex-col justify-start gap-4 bg-[#F2F2F2]">

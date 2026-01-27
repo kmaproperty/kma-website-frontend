@@ -8,6 +8,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import UpgradeChannelPartner from "../common/upgradeChannelpartner";
+import { AboutusResponse, getAboutUsDataAPiHanlder } from "@/services/homeService";
 
 export default function UserDashboard() {
   const router = useRouter()
@@ -28,6 +29,14 @@ export default function UserDashboard() {
       placeholderData: null,
       refetchOnMount: true,
   });
+
+    const {data: aboutusData} = useQuery({
+      queryKey: ['aboutus'],
+      queryFn: getAboutUsDataAPiHanlder,
+      select: (response: AboutusResponse) => {
+        return response?.configuration
+      }
+    });
 
   const {
       mutate: handleUpgradUser,
@@ -80,8 +89,8 @@ export default function UserDashboard() {
       <div className="flex flex-col gap-4 p-3">
         <div className="flex flex-col 2md:flex-row gap-3">
 
-          <div className="flex flex-1.2 rounded-xl flex-col lg:flex-row justify-between lg:items-center bg-[#F2F2F2] p-3 gap-2">
-            {/* <div className="flex flex-col gap-3 sm:flex-row justify-start items-center"> */}
+          <div className="flex flex-1 rounded-xl flex-col lg:flex-row justify-between lg:items-center bg-[#F2F2F2] p-3 gap-2">
+            <div className="flex gap-3">
               <Image
                 src="/assets/profile.png"
                 height={40}
@@ -101,16 +110,18 @@ export default function UserDashboard() {
                   May your day be filled with progress and good energy!
                 </p>
               </div>
+              </div>
               {userDashboardDetails?.role == USER_TYPE.CHANNEL_PARTNER && 
-              <div className="min-w-[143px] flex justify-start items-center gap-1">
-                <div className="w-fit flex p-2 rounded-full bg-white ">
+              <div className="flex justify-start items-center gap-1">
+                <div className="w-fit flex px-4 py-2 rounded-full bg-white ">
                     <Image src='/assets/doller.svg' width={20} height={20} alt="doller" />
                     <p className="text-text-black underline text-sm pl-2">400 Credits</p>
                 </div>
                     <Image src='/assets/info-blue.svg' width={20} height={20} alt="info" />
               </div>}
           </div>
-
+        </div>
+        <div className="flex gap-4 flex-col 2md:flex-row">
 
           <div className="flex flex-1 rounded-xl flex-col justify-between bg-[#F2F2F2] p-3 gap-3">
             <div className="flex flex-col gap-2 2md:flex-row justify-between 2md:items-center">
@@ -130,7 +141,64 @@ export default function UserDashboard() {
               />
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row 2md:flex-col xl:flex-row gap-3 justify-start">
+            <div className="flex flex-col sm:flex-row 2md:flex-col lg:flex-row gap-3 justify-start">
+              <div className="flex flex-row items-center rounded-xl bg-white flex-1">
+                <div className="flex items-center gap-2 p-2.5 flex-1 min-w-0">
+                  <Image
+                    src="/assets/residential-blue-dashboard.svg"
+                    height={25}
+                    width={25}
+                    alt="residential"
+                    className="w-[25px] h-[25px]"
+                  />
+                  <p
+                    className="font-medium text-text-black truncate"
+                    title="Residential"
+                  >
+                    Residential
+                  </p>
+                </div>
+
+                <div
+                  className="min-w-[40px] flex-shrink-0 font-semibold text-base
+                                    border-l border-[#E7E7E7] text-center p-2"
+                >
+                  {renderPropertyCount() ? renderPropertyCount().residential : '00'}
+                </div>
+              </div>
+              <div className="flex flex-row items-center rounded-xl bg-white flex-1">
+                <div className="flex items-center gap-2 p-2.5 flex-1 min-w-0">
+                  <Image
+                    src="/assets/commercial-red-dashboard.svg"
+                    height={25}
+                    width={25}
+                    alt="residential"
+                    className="w-[25px] h-[25px]"
+                  />
+                  <p
+                    className="font-medium text-text-black truncate"
+                    title="Residential"
+                  >
+                    Commercial
+                  </p>
+                </div>
+
+                <div
+                  className="min-w-[40px] flex-shrink-0 font-semibold text-base
+                                    border-l border-[#E7E7E7] text-center p-2"
+                >
+                  {renderPropertyCount() ? renderPropertyCount().commercial : '00'}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-1 rounded-xl flex-col justify-between bg-[#F2F2F2] p-3 gap-3">
+            <div className="flex flex-col gap-2 2md:flex-row justify-between 2md:items-center">
+              <p className="pt-1 font-semibold text-base text-text-black">
+                List Summary{" "}
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row 2md:flex-col lg:flex-row gap-3 justify-start">
               <div className="flex flex-row items-center rounded-xl bg-white flex-1">
                 <div className="flex items-center gap-2 p-2.5 flex-1 min-w-0">
                   <Image
@@ -330,12 +398,30 @@ export default function UserDashboard() {
             </p>
           </div>
           <div>
-            <button className="w-full md:w-[130px] text-sm 1xl:text-base px-12 py-3 border border-[#E7E7E7] text-center cursor-pointer rounded-[5px] bg-light-purple">
+            <button className="w-full text-sm 1xl:text-base px-5 py-3 border border-[#E7E7E7] text-center cursor-pointer rounded-[5px] bg-light-purple">
               <span className="gap-3 relative flex justify-center">
                 <p className={`text-nowrap font-medium`}>Go to Help Center</p>
               </span>
             </button>
           </div>
+        </div>
+
+        <div className="flex flex-col gap-4 border justify-between border-[#E7E7E7] rounded-[10px] px-4 py-3">
+          <p className="font-bold text-lg">Customer Support</p>
+          <div className="flex flex-row justify-between gap-4">
+            <div className="flex flex-col flex-1">
+              <Image src={'/assets/mobile-blue.svg'} width={45} height={45} alt="mobile" className="mb-3"/>
+              <p className="font-semibold text-lg">Call Us</p>
+              <a href={`tel:${aboutusData?.phoneNumber}`} className="text-base text-text-gray">{aboutusData?.phoneNumber}</a>
+            </div>
+            <div className="h-[1px] 2md:h-auto 2md:mx-5 my-4 2md:my-0 2md:py-8 border  border-[#E7E7E7]"></div>
+            <div className="flex flex-col flex-1">
+              <Image src={'/assets/email-blue.svg'} width={45} height={45} alt="mobile" className="mb-3"/>
+              <p className="font-semibold text-lg">Email Us</p>
+              <a href={`mailto:${aboutusData?.email}`} className="text-base text-text-gray">{aboutusData?.email}</a>
+            </div>
+          </div>
+          
         </div>
       </div>
             <UpgradeChannelPartner isCloseNotRequired={true} open={openCodePopup} onClose={() => handleCloseCodePopup()} onSubmit={handleCode}/>

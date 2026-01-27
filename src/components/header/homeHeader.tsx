@@ -16,10 +16,13 @@ import HomeMobileHeader from "./homeMobileHeader";
 import ProfileView from "./profileView";
 import { useRouter } from "nextjs-toploader/app";
 import { USER_TYPE } from "@/lib/enums";
+import { useDispatch, useSelector } from "react-redux";
+import { getSelectedCity } from "@/store/homeHeaderSlice";
 
-export default function HomdeHeader({cityData, aboutusData, selectedCity, setSelectedCity, cityLoader, fetchCities, propertyMasterData}) {
+export default function HomdeHeader({cityData, cityLoader, fetchCities, propertyMasterData}) {
   const router = useRouter()
-
+  const dispatch = useDispatch()
+  const selectedCity = useSelector(getSelectedCity)
   const [anchorEl, setanchorEl] = useState(null);
   const [menuList, setMenuList] = useState([]);
   const [type, setType] = useState(null);
@@ -81,15 +84,14 @@ export default function HomdeHeader({cityData, aboutusData, selectedCity, setSel
     setProfileMenu(null)
   };
 
-  useEffect(() => {
-  if (!openType) return;
-
   const handleScroll = () => {
     setanchorEl(null);
     setCityMenu(false);
     setType(null)
   };
 
+  useEffect(() => {
+  if (!openType) return;
   window.addEventListener("scroll", handleScroll, { passive: true });
 
   return () => {
@@ -282,11 +284,11 @@ const navigateDashboard = () => {
                      : <ProfileView/>}
                   </Paper>
                 ) : (
-                  <RentSellHeaderView aboutusData={aboutusData} selectedCity={selectedCity} propertyMasterData={propertyMasterData} type={type} />
+                  <RentSellHeaderView propertyMasterData={propertyMasterData} type={type} />
                 ))}
               {cityMenu && (
                 <Paper className="w-auto min-w-[180px]! rounded-2xl! px-2 py-2 shadow-xl border border-gray-200">
-                    <CityView selectedCity={selectedCity} setSelectedCity={setSelectedCity} cityData={cityData} cityLoader={cityLoader} fetchCities={fetchCities}/>
+                    <CityView cityData={cityData} cityLoader={cityLoader} fetchCities={fetchCities} handleScroll={handleScroll}/>
                 </Paper>
               )}
             </div>
@@ -294,7 +296,7 @@ const navigateDashboard = () => {
         </Popper>
       </div>
     </div>
-    <HomeMobileHeader propertyMasterData={propertyMasterData} type={type}  selectedCity={selectedCity} setSelectedCity={setSelectedCity} cityData={cityData} cityLoader={cityLoader} fetchCities={fetchCities} open={isDrawerOpen} onClose={toggleDrawer} activeSubMenu={activeSubMenu} openSubMenu={openSubMenu} closeSubMenu={closeSubMenu}/>
+    <HomeMobileHeader propertyMasterData={propertyMasterData} cityData={cityData} cityLoader={cityLoader} fetchCities={fetchCities} open={isDrawerOpen} onClose={toggleDrawer} activeSubMenu={activeSubMenu} openSubMenu={openSubMenu} closeSubMenu={closeSubMenu}/>
     </>
   );
 }

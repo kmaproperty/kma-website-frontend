@@ -2344,11 +2344,11 @@ console.log('step1DetailsLoader',step1DetailsLoader)
         <FieldLabel label="No. of open sides"/>
         <div className="flex flex-wrap gap-3 pt-2">
           {
-            ['1', '2', '3+'].map(item => {
+            ['1', '2', '3'].map(item => {
               return(
                 <ChipTag
                   checked={item == dynamicFieldDetails.openSide}
-                  label={item}
+                  label={item == '3' ? '3+' : item}
                   onChagne={() => {
                     setDynamicFieldDetails((pre) => ({...pre, openSide: item}))
                   }}

@@ -793,3 +793,84 @@ export const repostPropertyApiHandler = async (paylaod: RepostPropertyPaylaod) :
         throw error.response?.data ?? error;
     }
 }
+
+export interface GeneratePropertyDescriptionPayload {
+  propertyId: string
+}
+
+export interface GeneratePropertyDescriptionResponse {
+  success: boolean;
+  description: string;
+  propertyId: string;
+}
+export const generatePropertyDescriptionApiHandler = async (paylaod: GeneratePropertyDescriptionPayload) : Promise<GeneratePropertyDescriptionResponse> => {
+    try{
+        const response = await axiosInstance.post<GeneratePropertyDescriptionResponse>(
+      "property/generate-description", paylaod);
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}
+
+export interface GetVerifyPropertyLinkPayload {
+  propertyId: string
+}
+
+export interface GetVerifyPropertyLinkResponse {
+  success: boolean;
+  message: string;
+  verificationRequestId: string;
+  verificationToken: string;
+  verificationLink: string
+
+}
+export const getVerifyPropertyLinkAPiHandler = async (paylaod: GetVerifyPropertyLinkPayload) : Promise<GetVerifyPropertyLinkResponse> => {
+    try{
+        const response = await axiosInstance.post<GetVerifyPropertyLinkResponse>(
+      "property/request-verification", paylaod);
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}
+
+export interface GetPropertyPhotoTypeListResponse {
+  id: string;
+  name: string;
+  displayOrder: number
+}
+
+export const getPropertyPhotoTypeListApiHandler = async () : Promise<GetPropertyPhotoTypeListResponse[]> => {
+    try{
+        const response = await axiosInstance.get<GetPropertyPhotoTypeListResponse[]>(
+      "property/rooms");
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}
+
+export interface SubmitPropertyVerificationPayload {
+  verificationToken: string;
+  livePhotos: { fileKey: string, view: string}[],
+  liveVideos: { fileKey: string, view: string}[],
+  latitude: string,
+  longitude: string
+}
+
+export interface SubmitPropertyVerificationResponse {
+  success: boolean;
+  message: string;
+  verificationRequestId: string
+}
+
+export const submitPropertyVerificationApiHandler = async (paylaod: SubmitPropertyVerificationPayload) : Promise<SubmitPropertyVerificationResponse> => {
+    try{
+        const response = await axiosInstance.post<SubmitPropertyVerificationResponse>(
+      "property-verification/submit-media", paylaod);
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}

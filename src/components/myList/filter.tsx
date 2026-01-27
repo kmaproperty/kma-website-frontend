@@ -7,11 +7,10 @@ import {
   getPropertyListApiHandler,
   getPropertyTypeApiHandler,
   PropertyListResponse,
-  PropertyTypeResponse,
 } from "@/services/masterService";
 import {  useEffect, useRef, useState } from "react";
 import { FURNISH_TYPE, LISTING_STATUS, PROPERTY_STATUS, VERIFICATION_STATUS } from "@/lib/enums";
-import { InputBase, Slider, useForkRef } from "@mui/material";
+import { InputBase, Slider } from "@mui/material";
 import Image from "next/image";
 import { encodeFilters } from "@/lib/helper";
 import { defaultFilters } from "./contentLayout";

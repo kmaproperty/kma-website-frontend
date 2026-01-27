@@ -1,8 +1,11 @@
+import { getAboutusData } from "@/store/homeHeaderSlice";
 import { FaFacebookF } from "react-icons/fa";
 import { FaInstagram } from "react-icons/fa";
 import { FaTwitter } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
-export default function Social({aboutusData}) {
+export default function Social() {
+  const aboutusData = useSelector(getAboutusData)
   const { instagramLink, fbLink, twitterLink } = aboutusData || {};
   return (
     <div

@@ -13,7 +13,12 @@ import PostedByMenu from "../filtermenu/postedByMenu";
 import TransactionByMenu from "../filtermenu/transactionByMenu";
 import { useQuery } from "@tanstack/react-query";
 import { getPropertiesCountApiHandler, GetPropertiesCountPayload, GetPropertiesCountResponse } from "@/services/homeService";
-export default function Filter({propertyMasterData, setSelectedCity, selectedCity, cityData}) {
+import { useDispatch, useSelector } from "react-redux";
+import { getSelectedCity, setSelectedCity } from "@/store/homeHeaderSlice";
+export default function Filter({propertyMasterData, cityData}) {
+  const dispatch = useDispatch()
+  const selectedCity = useSelector(getSelectedCity)
+  
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [popperType, setPopperType] = useState(null)
 
@@ -22,7 +27,7 @@ export default function Filter({propertyMasterData, setSelectedCity, selectedCit
   const [searchCount, setSearchCount] = useState(null)
 
   //Filter state 
-  const [filterType, setFilterType] = useState('rent')
+  const [filterType, setFilterType] = useState('sale')
   const [search, setSearch] = useState('')
   const [selectedMinBudget, setSelectedMinBudget] = useState(null)
   const [selectedMaxBudget, setSelectedMaxBudget] = useState(null)
@@ -31,7 +36,7 @@ export default function Filter({propertyMasterData, setSelectedCity, selectedCit
   const [selectedFurnishType, setSelectedFurnishType] = useState([])
   const [selectedProjectStatus, setSelectedProjectStatus] = useState([])
   const [selectedPostedBy, setSelectedPostedBy] = useState([])
-  const [transactionBy, setTransactionBy] = useState({name: 'Buy', value: 'rent'})
+  const [transactionBy, setTransactionBy] = useState({name: 'Buy', value: 'sale'})
 
   const handlePopperOpen = (event: React.MouseEvent<HTMLElement>, type) => {
     setAnchorEl(event.currentTarget);
@@ -55,11 +60,13 @@ export default function Filter({propertyMasterData, setSelectedCity, selectedCit
   const { data: explorePropertyCount } = useQuery({
     queryKey: ["explore-list", selectedCity, search, selectedMinBudget, selectedMaxBudget, selectedPropertyType, selectedPossessionStatus, selectedFurnishType, selectedProjectStatus, selectedPostedBy, transactionBy],
     queryFn: () => {
+      const listId = propertyMasterData.find(item => item.code == filterType)?.id
       let payload: GetPropertiesCountPayload = {
         page: '1',
         limit: '5',
         ...(selectedCity?.id ? {cityId: selectedCity?.id ?? null,} : {}),
         ...(search ? {search: search ?? null,} : {}),
+        ...(listId ? {listingTypeIds: listId ?? null,} : {}),
         ...(selectedPropertyType.length > 0 ? {propertyTypeIds: selectedPropertyType.map(item => item.id).join(',') ?? '',} : {}),
         ...(selectedFurnishType.length > 0 ? {furnishingTypes: selectedFurnishType.map(item => item.value).join(',') ?? '',} : {}),
         ...(selectedPossessionStatus.length > 0 ? {constructionStatuses: selectedPossessionStatus.map(item => item.value).join(',') ?? '',} : {}),
@@ -113,7 +120,7 @@ export default function Filter({propertyMasterData, setSelectedCity, selectedCit
               isError={false}
               placeholder={"City"}
               onChange={(value) => {
-                setSelectedCity(value)
+                dispatch(setSelectedCity(value))
               }}
               loadOptions={async (inputValue: string) => {
                 if (!inputValue.trim()) return allCities;
@@ -214,7 +221,7 @@ export default function Filter({propertyMasterData, setSelectedCity, selectedCit
               isError={false}
               placeholder={"City"}
               onChange={(value) => {
-                setSelectedCity(value)
+                dispatch(setSelectedCity(value))
               }}
               loadOptions={async (inputValue: string) => {
                 if (!inputValue.trim()) return [];
@@ -271,7 +278,10 @@ export default function Filter({propertyMasterData, setSelectedCity, selectedCit
               <InputBase
                 placeholder="Search by Project, Locality, or Builder"
                 fullWidth
-                onChange={(event) => {}}
+                value={search}
+                onChange={(event) => {
+                  setSearch(event.target.value)
+                }}
                 className="w-full h-full px-3 text-xs rounded-full"
                 inputProps={{
                   className:
@@ -425,7 +435,7 @@ export default function Filter({propertyMasterData, setSelectedCity, selectedCit
                         {popperType == 'furnishType' && <FurnishTypeMenu selectedFurnishType={selectedFurnishType} setSelectedFurnishType={setSelectedFurnishType}/>}
                         {popperType == 'projectstatus' && <ProjectStatusMenu selectedProjectStatus={selectedProjectStatus} setSelectedProjectStatus={setSelectedProjectStatus}/>}
                         {popperType == 'postedby' && <PostedByMenu selectedPostedBy={selectedPostedBy} setSelectedPostedBy={setSelectedPostedBy}/>}
-                        {popperType == 'transactiontype' && <TransactionByMenu transactionBy={transactionBy} setTransactionBy={setTransactionBy}/>}
+                        {popperType == 'transactiontype' && <TransactionByMenu transactionBy={transactionBy} setTransactionBy={setTransactionBy} setSelectedPropertyType={setSelectedPropertyType}/>}
                       </div>
                     </ClickAwayListener>
         </Popper>
