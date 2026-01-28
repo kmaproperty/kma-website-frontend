@@ -83,6 +83,11 @@ export default function ChannelPartnerSection() {
       return response.data;
     },
   });
+  
+
+  if (!Array.isArray(channelPartnerList) || channelPartnerList.length === 0) {
+    return null;
+  }
 
   return (
     <div ref={ref} className="">

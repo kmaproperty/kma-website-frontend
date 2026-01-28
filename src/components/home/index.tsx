@@ -31,7 +31,7 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
     mutationFn: getCityListApiHandler,
     onSuccess: (response: CitiesResponse) => {
       let findCity = response?.allCities?.find(item => item.name == 'Gurgaon')
-      if(findCity){
+      if (findCity) {
         dispatch(setSelectedCity(findCity))
       }
       setCityData(response)
@@ -57,9 +57,9 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
     queryKey: ["explore-list", selectedCity],
     queryFn: () => {
       let payload: GetExplorePayload = {
-        ...(selectedCity?.id ? {cityId: selectedCity?.id ?? null,} : {}),
-        ...(false ? {cityId: ''} : {}),
-        ...(false ? {cityId: '',} : {}),
+        ...(selectedCity?.id ? { cityId: selectedCity?.id ?? null, } : {}),
+        ...(false ? { cityId: '' } : {}),
+        ...(false ? { cityId: '', } : {}),
       };
       return getExploreApiHanlder(payload);
     },
@@ -86,32 +86,32 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
 
   useEffect(() => {
     fetchAboutusData()
-    if(propertyCitiesData){
+    if (propertyCitiesData) {
       let findCity = propertyCitiesData?.allCities?.find(item => item.name == 'Gurgaon')
-      if(findCity){
+      if (findCity) {
         dispatch(setSelectedCity(findCity))
       }
       setCityData(propertyCitiesData)
-    }else{
+    } else {
       fetchCities({})
     }
-  },[])
+  }, [])
 
-  const imageSlider =  [
-      {
-        imagePath: "/assets/backgroundSlider/background_slider_1.jpg",
-        alt: "Background Image 1",
-      },
-      {
-        imagePath: "/assets/backgroundSlider/background_slider_2.png",
-        alt: "Background Image 2",
-      },
-    ];
+  const imageSlider = [
+    {
+      imagePath: "/assets/backgroundSlider/background_slider_1.jpg",
+      alt: "Background Image 1",
+    },
+    {
+      imagePath: "/assets/backgroundSlider/background_slider_2.png",
+      alt: "Background Image 2",
+    },
+  ];
 
   return (
     <div className="overflow-hidden">
       <div className="relative ">
-        <BannerSlider bannerHeight={'min-h-[700px] 2md:min-h-auto 2md:h-[90vh]'} backgroundImages={imageSlider} overlayClass='gradient-overlay'/>
+        <BannerSlider bannerHeight={'min-h-[700px] 2md:min-h-auto 2md:h-[90vh]'} backgroundImages={imageSlider} overlayClass='gradient-overlay' />
         <MainHome topProperties={data?.properties ?? []} fetchCities={fetchCities} cityLoader={cityLoader} cityData={cityData} propertyMasterData={propertyMasterData} />
       </div>
       <div className="my-16 flex justify-center overflow-hidden">
@@ -129,35 +129,37 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
       </div>
       {Array.isArray(explorePropertyList) && explorePropertyList.length > 0 && <div className="my-16 flex justify-center">
         <div className="w-[90%] md:w-[75%]">
-          <ExploreSection explorePropertyList={explorePropertyList}/>
+          <ExploreSection explorePropertyList={explorePropertyList} />
         </div>
       </div>}
       {Array.isArray(data?.properties) && data?.properties.length > 0 && <div className="bg-[#F2F2F2] flex justify-center">
         <div className="my-16 w-[90%] md:w-[75%]">
-          <FeaturedProperties topProperties={data?.properties ?? []}/>
+          <FeaturedProperties topProperties={data?.properties ?? []} />
         </div>
       </div>}
+
+      <div className="relative bg-[#F2F2F2] flex justify-center overflow-hidden">
+        <SuccessStoriesSection />
+      </div>
+
       <div className="relative bg-text-black flex justify-center overflow-hidden">
         <WorkingSection />
       </div>
-      <div className="relative bg-[#F2F2F2] flex justify-center overflow-hidden">
-        <SuccessStoriesSection />
+      <div className="bg-[#F2F2F2] flex justify-center overflow-hidden">
+        <div className="my-16 w-[90%] 2md:w-[75%]">
+          <ChannelPartnerSection />
+        </div>
+      </div>
+      <div className="">
+        <AppDownloadSection />
       </div>
       <div className="flex justify-center overflow-hidden">
         <div className="my-16 w-[90%] 2md:w-[75%]">
           <BlogSection />
         </div>
       </div>
-      <div className="bg-[#F2F2F2] flex justify-center overflow-hidden">
-        <div className="my-16 w-[90%] 2md:w-[75%]">
-          <ChannelPartnerSection/>
-        </div>
-      </div>
-      {aboutusData?.mobileAppAvailable && <div className="">
-        <AppDownloadSection />
-      </div>}
       <div className="">
-        <HomeFooter propertyMasterData={propertyMasterData}/>
+        <HomeFooter propertyMasterData={propertyMasterData} />
       </div>
     </div>
   );
