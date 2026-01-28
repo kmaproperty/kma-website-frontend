@@ -2,7 +2,7 @@ import { CitiesPayload, CitiesResponse, GetPropertyMasterDataResponse } from "@/
 
 export const fetchPropertyMasterData = async (): Promise<GetPropertyMasterDataResponse> => {
   try {
-    const baseUrl = process.env.API_URL;
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
     const response = await fetch(
       `${baseUrl}/end-user/property-master-data`,
@@ -34,7 +34,7 @@ export const fetchPropertyMasterData = async (): Promise<GetPropertyMasterDataRe
 
 export const fetchPropertyCitiesData = async (): Promise<CitiesResponse> => {
   try {
-    const baseUrl = process.env.API_URL;
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
     const response = await fetch(
       `${baseUrl}/end-user/home/cities`,
