@@ -24,7 +24,6 @@ export default function ListFilter({ filters: stableFilter, setFilters, statusDa
   const [tempSearch, setTempSearch] = useState('')
   const [propertyTypeList, setPropertyTypeList] = useState([])
 
-console.log('filtersfilters', filters)
   const updateFilter = (field: string, value: any) => {
     const newFilters = { ...filters, [field]: value };
     setCurrentFilters(newFilters)

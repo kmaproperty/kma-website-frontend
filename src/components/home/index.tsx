@@ -64,7 +64,6 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
       return getExploreApiHanlder(payload);
     },
     select: (response: GetExploreResponse) => {
-      console.log("response", response);
       return response.propertyTypes;
     },
   });
@@ -78,7 +77,6 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
       return getTopProperties(payload);
     },
     select: (response: GetTopPropertiesResponse) => {
-      console.log("response", response);
       return response;
     },
     enabled: selectedCity ? true : false

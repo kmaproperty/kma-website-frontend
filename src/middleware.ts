@@ -4,7 +4,6 @@ export default function middleware(req: NextRequest) {
   const { pathname, searchParams } = req.nextUrl;
   const accessToken = req.cookies.get("accessToken")?.value;
   const refreshToken = req.cookies.get("refreshToken")?.value;
-  console.log('accesstoken', accessToken,refreshToken, pathname, searchParams.get('event'))
 
   const isHomePage = pathname === "/";
   const isAbooutUsPage = pathname === "/about-us";

@@ -13,7 +13,6 @@ export async function getUserCoordinates(): Promise<{ lat: number; lng: number }
           });
         },
         (err) => {
-            console.log('err',err)
           resolve(null);
         },
         { enableHighAccuracy: false, timeout: 10000, maximumAge: 10000 }
@@ -23,7 +22,6 @@ export async function getUserCoordinates(): Promise<{ lat: number; lng: number }
   if (navigator.permissions) {
     try {
       const permissionStatus = await navigator.permissions.query({ name: "geolocation" });
-        console.log('permissionStatus', permissionStatus)
       permissionStatus.onchange = () => {
         if (permissionStatus.state === "granted") {
           requestLocation();

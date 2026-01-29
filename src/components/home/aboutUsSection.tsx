@@ -49,7 +49,6 @@ const AnimatedCount = ({
   value?: number;
   isInView: boolean
 }) => {
-  console.log('value', value)
   if (!value || !isInView) return null;
 
   return (
@@ -81,7 +80,6 @@ export default function AboutUsSection() {
       return getAboutUsSectionDataApiResponse();
     },
     select: (response: GetAboutUsSectionResponse) => {
-      console.log("response", response);
       return response;
     },
   });

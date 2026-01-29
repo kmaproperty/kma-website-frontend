@@ -55,7 +55,6 @@ export default function Step4({containerRef}) {
   const [openVideoPreview, setOpenVideoPreview] = useState(false);
   const [videoPreviewUrl, setVideoPreviewUrl] = useState("");
 
-  console.log("step4 state details", photoList, videoList);
 
   const validate = () => {
     let hasError = false;
@@ -81,7 +80,6 @@ export default function Step4({containerRef}) {
         hasError = true;
       }
     }
-    console.log('step4 validation error', updatedErrors)
     setErrors(updatedErrors);
     return hasError;
   };
@@ -93,7 +91,6 @@ export default function Step4({containerRef}) {
       return await uploadFileToS3ApiHandler(payload);
     },
     onError: (error: any) => {
-      console.log("file upload s3 api", error);
       toast.dismiss(toastRef.current);
       if (Array.isArray(error.message)) {
         error.message.map((item: string) => {
@@ -112,7 +109,6 @@ export default function Step4({containerRef}) {
       return await getFileUploadUrlApiHandler(payload);
     },
     onError: (error: any) => {
-      console.log("get file url api", error);
       toast.dismiss(toastRef.current);
       if (Array.isArray(error.message)) {
         error.message.map((item: string) => {
@@ -265,7 +261,6 @@ const handleUploadFileToS3 = async (files: File[], type: string) => {
       );
     },
     select: (resposne: Step4DetailsResponse) => {
-      console.log("step4 details", resposne);
       return resposne;
     },
     enabled: params?.propertyId ? true : false,
@@ -301,7 +296,6 @@ const handleUploadFileToS3 = async (files: File[], type: string) => {
       return await step4PostPropertyCreateApiHandler(payload);
     },
     onSuccess: (response: Step4PostPropertyResponse) => {
-      console.log("step4 success response", response);
       // dispatch(setActiveStep({ step: activeStep + 1 }));
       if(toastRef.current){
         toast.dismiss(toastRef.current);
@@ -316,7 +310,6 @@ const handleUploadFileToS3 = async (files: File[], type: string) => {
       }
     },
     onError: (error: any) => {
-      console.log("step4 error response", error);
       if (Array.isArray(error.message)) {
         error.message.map((item: string) => {
           toast.error(item);

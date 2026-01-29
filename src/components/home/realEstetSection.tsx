@@ -35,7 +35,6 @@ const exploreDetails = [
 ];
 function ExploreCard({ name, properties, image }) {
   const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
-  console.log("city resp", name);
 
   return (
     <div className="relative flex-1 rounded-[8px] overflow-hidden shadow-md group">
@@ -121,7 +120,6 @@ export default function RealEstateSection() {
       return response.cities;
     },
   });
-  console.log("city resp", citiList);
 
   return (
     <div>

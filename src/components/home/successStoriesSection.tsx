@@ -89,7 +89,7 @@ const topVariant = {
 };
 
 export default function SuccessStoriesSection() {
-    const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
+  const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
@@ -99,7 +99,6 @@ export default function SuccessStoriesSection() {
       return getUserReviewApiHandler();
     },
     select: (response: GetUserReviewApiHandlerResponse) => {
-      console.log("response", response);
       return response;
     },
   });

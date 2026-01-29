@@ -79,7 +79,6 @@ export default function ChannelPartnerSection() {
       return getChannelPartnerListApiHandler(payload);
     },
     select: (response: GetChannelPartnerListResponse) => {
-      console.log("response", response);
       return response.data;
     },
   });

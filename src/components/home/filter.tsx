@@ -77,7 +77,6 @@ export default function Filter({propertyMasterData, cityData}) {
       return getPropertiesCountApiHandler(payload);
     },
     select: (response: GetPropertiesCountResponse) => {
-      console.log("response", response);
       return response.count
     },
   });

@@ -54,7 +54,6 @@ export default function WorkingSection(){
       return getUserReviewApiHandler();
     },
     select: (response: GetUserReviewApiHandlerResponse) => {
-      console.log("response", response);
       return response;
     },
   });

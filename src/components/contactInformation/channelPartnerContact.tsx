@@ -88,7 +88,6 @@ export default function ChannelPartnerContact({ open, onClose }) {
           return await submitHomeContactApiHandler(payload);
         },
         onSuccess: (response: SubmitHomeContactResponse) => {
-          console.log('response', response)
           toast.success(response.message)
           setFormData({
             name: "",

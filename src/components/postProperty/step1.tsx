@@ -134,7 +134,6 @@ export default function Step1({containerRef}) {
   //Other list
   const [bhkList, setBhkList] = useState(generateBHKList(false))
 
-  console.log('step1 state', basicStaticDetails, dynamicFieldDetails, errors)
 
   //Master APIS
   const { data: propertyTypeList } = useQuery({
@@ -251,7 +250,6 @@ export default function Step1({containerRef}) {
     })
     return bhkList as unknown as OptionType[]
   }
-console.log('renderOtherBhk', renderOtherBhk())
   const renderBHKAmeneties = () => {
     if(dynamicFieldDetails.bhk?.id == 'other' && dynamicFieldDetails.otherBhk?.value){
       return generateBHKAmeneties(dynamicFieldDetails.otherBhk?.bhk)
@@ -891,7 +889,6 @@ console.log('renderOtherBhk', renderOtherBhk())
 
     }
 
-    console.log('step1 validation error', updatedError)
     setErrors(updatedError)
     return {hasError: hasError, errorData: updatedError};
   }
@@ -965,11 +962,9 @@ console.log('renderOtherBhk', renderOtherBhk())
       return await resetPostPropertyApiHandler(payload);
     },
     onSuccess: (response: resetAPIResponse) => {
-      console.log("step1 create response", response);
       dispatch(setTotalProgress({progress: Number(response.progressPercentage ?? 0)}))
     },
     onError: (error: any) => {
-      console.log("step2 error response", error);
       if(Array.isArray(error.message)){
         error.message.map((item: string) => {
           toast.error(item)
@@ -1113,13 +1108,11 @@ console.log('renderOtherBhk', renderOtherBhk())
       return await step1PostPropertyCreateApiHandler(payload);
     },
     onSuccess: (response: Step1PostPropertyResponse) => {
-      console.log("step1 create response", response);
       let propertyId = response.id
       dispatch(setActiveStep({step: activeStep + 1}))
       router.push(`/post-property/${propertyId}`)
     },
     onError: (error: any) => {
-      console.log("step2 error response", error);
       if(Array.isArray(error.message)){
         error.message.map((item: string) => {
           toast.error(item)
@@ -1136,14 +1129,12 @@ console.log('renderOtherBhk', renderOtherBhk())
       return step1PostPropertyDetailsApiHandler(String(params?.propertyId ?? ''));
     },
     select: (resposne: Step1DetailsResponse) => {
-      console.log('step1 details',resposne)
       return resposne
     },
     enabled: params?.propertyId ? true : false,
     staleTime: 0,
     refetchOnMount: true
   });
-console.log('step1DetailsLoader',step1DetailsLoader)
   useEffect(() => {
     if(step1Details){
       setBasicStaticDetails((pre) => ({
@@ -1236,17 +1227,14 @@ console.log('step1DetailsLoader',step1DetailsLoader)
         }
     },
     onError: (error: any) => {
-      console.log("location detect error", error);
     },
   });
 
   const fetchLocation = async () => {
       const location = await getUserCoordinates();
-      console.log('location', location)
       if (location) {
         getUserCurrentCity({latitude: String(location?.lat ?? ''),longitude: String(location?.lng ?? '')})
       } else {
-        console.log("Permission denied or unavailable");
       }
   };
 
@@ -2541,7 +2529,6 @@ console.log('step1DetailsLoader',step1DetailsLoader)
                 return
               }
               let payload = generatePayload()
-              console.log('payload', payload)
               handleStep1Submit(payload)
             }
           }} className="w-full md:w-[130px] text-sm 1xl:text-base animated-button px-12 py-3 border border-blue text-center cursor-pointer">

@@ -97,7 +97,6 @@ export default function BankDetails({isPopup = false, onClose}) {
       return bankDetailsGetApiHandler();
     },
     select: (resposne: BankDetailsGetResponse) => {
-      console.log("uploadDetails", resposne);
       return resposne;
     },
     staleTime: 0,

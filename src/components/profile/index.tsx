@@ -34,7 +34,6 @@ export default function UserProfile() {
       return getKycStatusApiHandler();
     },
     select: (resposne: KycStatusResponse) => {
-      console.log("kyc", resposne);
       return resposne;
     },
     staleTime: 0,
@@ -51,7 +50,6 @@ export default function UserProfile() {
       return userProfileApiHandler();
     },
     select: (resposne: UserProfileResponse) => {
-      console.log("profile", resposne);
       return resposne.user;
     },
     staleTime: 0,

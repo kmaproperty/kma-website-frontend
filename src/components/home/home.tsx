@@ -35,7 +35,6 @@ export default function MainHome({topProperties, cityData, cityLoader, fetchCiti
       return getUserReviewApiHandler();
     },
     select: (response: GetUserReviewApiHandlerResponse) => {
-      console.log("response", response);
       return response;
     },
   });

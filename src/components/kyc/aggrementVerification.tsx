@@ -24,13 +24,11 @@ export default function AggrementVerification({event}) {
       return await ChannelPartnerAgreementApiHandler(url);
     },
     onSuccess: (response: ChannelPartnerAgreementResponse) => {
-      console.log("agreement response", response);
       if (response.url) {
         window.open(response.url, "_blank");
       }
     },
     onError: (error: any) => {
-      console.log("owner create error", error);
       if (Array.isArray(error.message)) {
         error.message.map((item: string) => {
           toast.error(item);
@@ -52,7 +50,6 @@ export default function AggrementVerification({event}) {
       return docuSingStatusApiHanlder();
     },
     select: (resposne: DocusignResponse) => {
-      console.log("uploadDetails", resposne);
       return resposne;
     },
     staleTime: 0,

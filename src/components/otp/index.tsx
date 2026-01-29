@@ -61,7 +61,6 @@ export default function Otp() {
     mutationFn: (payload: OtpPayload): Promise<SendOtpResponse> =>
       resendOtpApiHandler(payload),
     onSuccess: (res) => {
-      console.log("Resent OTP:", res);
       toast.success(res.otp)
     },
     onError: (err: any) => {
