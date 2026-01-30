@@ -42,32 +42,6 @@ const staggerContainer = {
     },
   },
 };
-const AnimatedCount = ({
-  value,
-  isInView
-}: {
-  value?: number;
-  isInView: boolean
-}) => {
-  if (!value || !isInView) return null;
-
-  return (
-    <CountUp
-      key={value}
-      start={0}
-      end={value}
-      duration={2.5}
-      separator=","
-    >
-      {({ countUpRef }) => (
-        <span
-          ref={countUpRef}
-          className="text-xl 2md:text-2xl font-semibold text-white tracking-wide"
-        />
-      )}
-    </CountUp>
-  );
-};
 
 
 export default function AboutUsSection() {
@@ -129,7 +103,7 @@ export default function AboutUsSection() {
           </motion.div>
         </motion.div>
         <motion.div
-          className="grid grid-cols-2 2md:grid-cols-4 gap-3 mt-15"
+          className="grid grid-cols-1 2md:grid-cols-4 gap-3 mt-15 justify-items-center "
           variants={staggerContainer}
           animate={isInView ? "visible" : "hidden"}
         >
@@ -154,22 +128,22 @@ export default function AboutUsSection() {
               value: aboutus?.statistics?.totalActiveProperties,
               label: "Total Active Properties",
             },
-             {
-              img: "/assets/aboutUs/about_us_4.svg",
-              value: aboutus?.statistics?.propertiesListedLast24Hours,
-              label: "Properties Listed in Last 24 Hours",
-            },
+            //  {
+            //   img: "/assets/aboutUs/about_us_4.svg",
+            //   value: aboutus?.statistics?.propertiesListedLast24Hours,
+            //   label: "Properties Listed in Last 24 Hours",
+            // },
           ].map((item, index) => (
             <motion.div
               key={index}
               variants={bottomVariant}
               animate={isInView ? "visible" : "hidden"}
-              className="flex items-center gap-4 bg-[#131D2C] px-5 py-4 rounded-xl"
+              className="flex items-center gap-4 bg-[#131D2C] w-full max-w-[343px] h-[117px] px-5 py-4 rounded-[10px] border border-white/5 shadow-[0_8px_24px_rgba(0,0,0,0.25)] hover:border-white/10 transition-colors"
             >
               <Image src={item.img} width={40} height={40} alt={item.label} />
               <div className="number-count">
-                {isInView && <CountUp start={0} end={item.value} delay={1}></CountUp>}
-                <p className="text-xs text-white">{item.label}</p>
+                {isInView && <CountUp start={0} end={Number(item.value ?? 0)} delay={1} />}
+                <p className="text-xs text-white leading-tight">{item.label}</p>
               </div>
             </motion.div>
           ))}
