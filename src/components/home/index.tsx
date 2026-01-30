@@ -16,12 +16,11 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { AboutusResponse, CitiesResponse, getAboutUsDataAPiHanlder, getCityListApiHandler, getExploreApiHanlder, GetExplorePayload, GetExploreResponse, getTopProperties, GetTopPropertiesPayload, GetTopPropertiesResponse } from "@/services/homeService";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAboutusData, getSelectedCity, setAboutusData, setSelectedCity } from "@/store/homeHeaderSlice";
+import { getSelectedCity, setAboutusData, setSelectedCity } from "@/store/homeHeaderSlice";
 
 export default function Home({ propertyMasterData, propertyCitiesData }) {
   const dispatch = useDispatch()
   const selectedCity = useSelector(getSelectedCity)
-  const aboutusData = useSelector(getAboutusData)
 
   const [cityData, setCityData] = useState(null)
 
@@ -30,33 +29,29 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
   } = useMutation({
     mutationFn: getCityListApiHandler,
     onSuccess: (response: CitiesResponse) => {
-      let findCity = response?.allCities?.find(item => item.name == 'Gurgaon')
+      const findCity = response?.allCities?.find(item => item.name == 'Gurgaon')
       if (findCity) {
         dispatch(setSelectedCity(findCity))
       }
       setCityData(response)
     },
-    onError: (error) => {
-
-    }
+    onError: () => {}
   });
 
   const {
-    mutate: fetchAboutusData, isPending: aboutusLoader
+    mutate: fetchAboutusData
   } = useMutation({
     mutationFn: getAboutUsDataAPiHanlder,
     onSuccess: (response: AboutusResponse) => {
       dispatch(setAboutusData(response?.configuration))
     },
-    onError: (error) => {
-
-    }
+    onError: () => {}
   });
 
   const { data: explorePropertyList } = useQuery({
     queryKey: ["explore-list", selectedCity],
     queryFn: () => {
-      let payload: GetExplorePayload = {
+      const payload: GetExplorePayload = {
         ...(selectedCity?.id ? { cityId: selectedCity?.id ?? null, } : {}),
         ...(false ? { cityId: '' } : {}),
         ...(false ? { cityId: '', } : {}),
@@ -71,7 +66,7 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
   const { data } = useQuery({
     queryKey: ["top-properties-list", selectedCity],
     queryFn: () => {
-      let payload: GetTopPropertiesPayload = {
+      const payload: GetTopPropertiesPayload = {
         cityId: selectedCity?.id ?? null
       };
       return getTopProperties(payload);
@@ -85,7 +80,7 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
   useEffect(() => {
     fetchAboutusData()
     if (propertyCitiesData) {
-      let findCity = propertyCitiesData?.allCities?.find(item => item.name == 'Gurgaon')
+      const findCity = propertyCitiesData?.allCities?.find(item => item.name == 'Gurgaon')
       if (findCity) {
         dispatch(setSelectedCity(findCity))
       }
@@ -93,7 +88,7 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
     } else {
       fetchCities({})
     }
-  }, [])
+  }, [dispatch, fetchAboutusData, fetchCities, propertyCitiesData])
 
   const imageSlider = [
     {
@@ -145,7 +140,7 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
       </div>
       <div className="bg-[#F2F2F2] flex justify-center overflow-hidden">
         <div className="my-16 w-[90%] 2md:w-[75%]">
-          <ChannelPartnerSection />
+          <ChannelPartnerSection selectedCity={selectedCity} />
         </div>
       </div>
       <div className="">

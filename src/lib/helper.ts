@@ -173,6 +173,19 @@ export const clearAuthCookies = async () => {
   }
 };
 
+export function joinUrl(
+  base?: string | null,
+  path?: string | null
+): string | null {
+  if (!path) return null;
+  if (path.startsWith("http://") || path.startsWith("https://")) return path;
+  if (!base) return null;
+
+  const safeBase = base.replace(/\/+$/, "");
+  const safePath = path.replace(/^\/+/, "");
+  return `${safeBase}/${safePath}`;
+}
+
 export function numberToWordsIndian(num) {
   if(!num) return ''
   if (num === 0) return "Zero Rupees";

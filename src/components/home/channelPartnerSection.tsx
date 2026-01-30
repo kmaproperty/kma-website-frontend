@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import SectionHeader from "../common/home/secionHeader";
-import { useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -12,6 +12,9 @@ import {
 import ContactUsPopup from "../contactUsPopup";
 import { useSelector } from "react-redux";
 import { getSelectedCity } from "@/store/homeHeaderSlice";
+import { joinUrl } from "@/lib/helper";
+
+type SelectedCity = { id?: unknown; name?: string } | null | undefined;
 
 function Star({
   fill = 100,
@@ -20,18 +23,20 @@ function Star({
   fill?: number; // 0 → 100
   className?: string;
 }) {
-  const id = Math.random().toString(36).slice(2); // unique gradient id
+  // Stable id avoids hydration mismatches (Math.random() is unstable across renders).
+  const id = useId();
+  const gradientId = `star-${id.replace(/:/g, "")}`;
 
   return (
     <svg viewBox="0 0 24 24" className={className}>
       <defs>
-        <linearGradient id={id}>
+        <linearGradient id={gradientId}>
           <stop offset={`${fill}%`} stopColor="white" />
-          <stop offset={`${fill}%`} stopColor="white" />
+          <stop offset={`${fill}%`} stopColor="#ffffff33" />
         </linearGradient>
       </defs>
       <path
-        fill={`url(#${id})`}
+        fill={`url(#${gradientId})`}
         d="M12 2.5l2.97 6.02 6.65.97-4.81 4.69 1.14 6.64L12 17.77 6.05 20.82l1.14-6.64-4.81-4.69 6.65-.97L12 2.5z"
       />
     </svg>
@@ -56,19 +61,24 @@ const rightVariant = {
   },
 };
 
-export default function ChannelPartnerSection() {
-  const selectedCity = useSelector(getSelectedCity)
-
+export default function ChannelPartnerSection({
+  selectedCity: selectedCityProp,
+}: {
+  selectedCity?: SelectedCity;
+}) {
+  const selectedCityFromRedux = useSelector(getSelectedCity) as SelectedCity;
+  const selectedCity = selectedCityProp ?? selectedCityFromRedux;
   const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
-  const [openContact, setOpenContact] = useState(false)
+  const [openContact, setOpenContact] = useState(false);
 
-  const { data: channelPartnerList } = useQuery({
-    queryKey: ["channel-partner", selectedCity],
+  const { data: channelPartnerResponse } =
+    useQuery<GetChannelPartnerListResponse>({
+      queryKey: ["channel-partner", selectedCity?.name ?? ""],
     queryFn: () => {
-      let payload: GetChannelPartnerListPayload = {
+      const payload: GetChannelPartnerListPayload = {
         city: selectedCity?.name ?? "",
         experience: "",
         limit: "8",
@@ -78,12 +88,9 @@ export default function ChannelPartnerSection() {
       };
       return getChannelPartnerListApiHandler(payload);
     },
-    select: (response: GetChannelPartnerListResponse) => {
-      return response.data;
-    },
   });
-  
 
+  const channelPartnerList = channelPartnerResponse?.data ?? [];
   if (!Array.isArray(channelPartnerList) || channelPartnerList.length === 0) {
     return null;
   }
@@ -99,87 +106,100 @@ export default function ChannelPartnerSection() {
       <div className="grid  grid-cols-1 sm:grid-cols-[1fr_1fr] 2md:grid-cols-[1fr_1fr_1fr] xl:grid-cols-[1fr_1fr_1fr_1fr] gap-3 mt-6">
         {Array.isArray(channelPartnerList) &&
           channelPartnerList?.map((item, index) => {
-            const cityList = item?.cities?.split(',') ?? []
+            const cityList =
+              item?.cities
+                ?.split(",")
+                .map((c) => c.trim())
+                .filter(Boolean) ?? [];
+
+            const profileSrc =
+              joinUrl(profileBaseUrl, item?.profile_image);
+            const rating = Number((item as any)?.rating ?? 4.3);
+            const ratingText = Number.isFinite(rating) ? rating.toFixed(1) : "4.3";
+
             return (
               <motion.div
-                className="cursor-pointer bg-white px-2 py-4 flex flex-col gap-2 rounded-[8px]"
-                ref={ref}
+                key={item?.id ?? `${item?.name ?? "partner"}-${index}`}
+                className="cursor-pointer bg-white p-5 flex flex-col rounded-2xl border border-[#EEF0F4] shadow-[0_6px_24px_rgba(0,0,0,0.06)]"
                 variants={
                   [0, 1, 2, 3].includes(index) ? leftVariant : rightVariant
                 }
+                initial="hidden"
                 animate={isInView ? "visible" : "hidden"}
               >
-                <div className="flex gap-1">
-                {item.profile_image ? (
-                  <Image
-                    src={profileBaseUrl + item.profile_image}
-                    width={35}
-                    height={35}
-                    alt="profile"
-                    className="h-[35px] w-[35px] rounded-full object-cover"
-                  />
-                ) : (
-                  <div
-                    className="
-                    h-[35px] w-[35px]
-                    rounded-full
-                    bg-gray-300
-                    flex items-center justify-center
-                    text-sm font-semibold text-gray-700
-                    uppercase
-                    "
-                  >
-                    {item.name?.charAt(0)}
+                <div className="flex items-start gap-3">
+                  {profileSrc ? (
+                    <Image
+                      src={profileSrc}
+                      width={56}
+                      height={56}
+                      alt={`${item?.name ?? "Channel partner"} profile`}
+                      className="h-14 w-14 rounded-full object-cover ring-1 ring-[#EEF0F4]"
+                    />
+                  ) : (
+                    <div className="h-14 w-14 rounded-full bg-[#F2F2F2] flex items-center justify-center text-base font-semibold text-text-black uppercase ring-1 ring-[#EEF0F4]">
+                      {item?.name?.charAt(0) ?? "?"}
+                    </div>
+                  )}
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="text-text-black text-lg font-semibold leading-6 truncate">
+                        {item?.name}
+                      </p>
+                      <span className="shrink-0 bg-blue rounded-lg px-2 py-1 text-white text-xs font-semibold flex items-center gap-1">
+                        <Star className="h-4 w-4" />
+                        {ratingText}
+                      </span>
+                    </div>
+
+                    <span className="mt-2 inline-flex w-fit rounded-lg bg-[#FE792D] px-3 py-1 text-xs font-semibold text-white">
+                      KMA Expert Pro
+                    </span>
+                  </div>
+                </div>
+
+                <p className="mt-3 text-sm text-text-gray">
+                  {item?.experience_years ?? 0} Years Experience
+                  <span className="mx-2 text-[#D9D9D9]">|</span>
+                  {item?.property_count ?? 0} Properties
+                </p>
+
+                {cityList.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {cityList.map((city, cityIndex) => (
+                      <span
+                        key={`${city}-${cityIndex}`}
+                        className="px-4 py-1 text-xs bg-[#F2F2F2] rounded-full text-text-gray"
+                      >
+                        {city}
+                      </span>
+                    ))}
                   </div>
                 )}
-                <div className="flex flex-col flex-1 gap-1">
-                  <p className="text-text-black text-sm font-medium flex gap-1">
-                    {item.name} <span className="bg-[#010048CC] rounded-[3px] px-1 text-white text-[10px] gap-1 flex items-center"><Star/>5</span>
-                  </p>
-                  <p className={`rounded-[2px]  text-white text-[10px] w-fit px-1`} style={{background: '#FE792D'}}>{'KMA Expert Pro'}</p>
-                </div>
-                </div>
-                <div className="flex flex-col justify-start items-start">
-                    <p className="text-text-gray text-xs">
-                      {item.experience_years} Years Experience
-                    </p>
-                    {/* <div className="border-l border-1 border-border h-full"></div> */}
-                    <p className="text-text-gray text-xs">
-                      {item.property_count} Properties
-                    </p>
-                    {
-                      cityList.length > 0 && <div className="flex flex-wrap mt-1">
-                        {
-                          cityList.map(city => {
-                            return(
-                              <p className="px-4 py-1 text-xs bg-[#F2F2F2] rounded-full text-text-black">{city}</p>
-                            )
-                          })
-                        }
-                      </div>
-                    }
-                    <button onClick={() => {
-                      setOpenContact(true)
-                    }} className="animated-button mt-2 px-[30px] py-[8px] cursor-pointer h-full w-full">
-                      <span className="flex items-center justify-center gap-[6px] relative z-11">
-                        <Image
-                          src="/assets/call-ring-white.svg"
-                          width={16}
-                          height={16}
-                          alt="Search"
-                        />
-                        <p className="text-nowrap font-medium text-xs">
-                          Contact Us
-                        </p>
-                      </span>
-                    </button>
-                  </div>
+
+                <button
+                  onClick={() => setOpenContact(true)}
+                  className="animated-button mt-4 w-full py-3 px-6 cursor-pointer"
+                >
+                  <span className="flex items-center justify-center gap-2 relative z-11">
+                    <Image
+                      src="/assets/call-ring-white.svg"
+                      width={18}
+                      height={18}
+                      alt="Phone"
+                    />
+                    <span className="text-nowrap font-semibold text-sm">
+                      Contact Now
+                    </span>
+                  </span>
+                </button>
               </motion.div>
             );
           })}
       </div>
       <ContactUsPopup open={openContact} onClose={() => {
-        setOpenContact(false)
+        setOpenContact(false);
       }}/>
     </div>
   );
