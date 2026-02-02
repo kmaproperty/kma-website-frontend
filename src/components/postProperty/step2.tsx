@@ -99,7 +99,6 @@ export default function Step2({containerRef}) {
 
   const [errors, setErrors] = useState<any>({})
 
-  console.log('step2 state details', dynamicFieldDetails, errors)
 
   const renderFirstSectionLabel = () => {
     const isResidential = basicStaticDetail.propertyCategory?.code == 'residential'
@@ -909,7 +908,6 @@ export default function Step2({containerRef}) {
       //   hasError = true;
       // }
     }
-    console.log('step2 validation error', updatedError)
     setErrors(updatedError)
     return {hasError: hasError, errorData: updatedError};
   }
@@ -1007,7 +1005,6 @@ export default function Step2({containerRef}) {
       return await step2PostPropertyCreateApiHandler(payload);
     },
     onSuccess: (response: Step2PostPropertyResponse) => {
-      console.log("step2 success response", response);
       const propertyType = basicStaticDetail.propertyType?.code
       const isStep3Skipped = ['res-sale-plot', 'res-sale-agri-land', 'com-rent-warehouse', 'com-sale-warehouse', 'com-rent-plot', 'com-sale-plot'].includes(propertyType ?? '')
       if(isStep3Skipped){
@@ -1017,7 +1014,6 @@ export default function Step2({containerRef}) {
       }
     },
     onError: (error: any) => {
-      console.log("step2 error response", error);
       if(Array.isArray(error.message)){
         error.message.map((item: string) => {
           toast.error(item)
@@ -1034,7 +1030,6 @@ export default function Step2({containerRef}) {
       return step1PostPropertyDetailsApiHandler(String(params?.propertyId ?? ''));
     },
     select: (resposne: Step1DetailsResponse) => {
-      console.log('step1 details',resposne)
       return resposne
     },
     enabled: params?.propertyId ? true : false,
@@ -1048,7 +1043,6 @@ export default function Step2({containerRef}) {
       return step2PostPropertyDetailsApiHandler(String(params?.propertyId ?? ''));
     },
     select: (resposne: Step2DetailsResponse) => {
-      console.log('step2 details',resposne)
       return resposne
     },
     enabled: params?.propertyId ? true : false,

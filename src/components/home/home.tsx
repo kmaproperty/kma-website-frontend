@@ -35,7 +35,6 @@ export default function MainHome({topProperties, cityData, cityLoader, fetchCiti
       return getUserReviewApiHandler();
     },
     select: (response: GetUserReviewApiHandlerResponse) => {
-      console.log("response", response);
       return response;
     },
   });
@@ -49,6 +48,16 @@ export default function MainHome({topProperties, cityData, cityLoader, fetchCiti
    }
   return (
     <>
+    <div className="fixed -top-[25px] left-0 right-0 z-[60] flex justify-center pointer-events-none">
+      <div className="pointer-events-auto w-full flex justify-center">
+        <HomdeHeader
+          cityData={cityData}
+          cityLoader={cityLoader}
+          fetchCities={fetchCities}
+          propertyMasterData={propertyMasterData}
+        />
+      </div>
+    </div>
     <motion.div
       className="absolute w-[100%] h-[88vh] top-0"
       variants={dissolve}
@@ -59,8 +68,7 @@ export default function MainHome({topProperties, cityData, cityLoader, fetchCiti
       <div>
         <Social/>
       </div>
-      <div className="flex flex-col items-center">
-        <HomdeHeader cityData={cityData} cityLoader={cityLoader} fetchCities={fetchCities} propertyMasterData={propertyMasterData}/>
+      <div className="flex flex-col items-center pt-[85px]">
         <div className="w-[75%] mt-[45px] flex justify-between gap-5 overflow-scroll no-scrollbar">
           <div className="w-[100%] lg:w-[50%]">
             <BannerText />

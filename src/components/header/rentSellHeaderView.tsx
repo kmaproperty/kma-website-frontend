@@ -6,7 +6,6 @@ import { useSelector } from "react-redux";
 export default function RentSellHeaderView({propertyMasterData, type}) {
   const selectedCity = useSelector(getSelectedCity)
   const aboutusData = useSelector(getAboutusData)
-  console.log('propertyMasterData', propertyMasterData)
   const [categoryType, setCategoryType] = useState('867c2adf-7e01-45a8-a305-74900b24c529') //residential
 
   const category = propertyMasterData?.find(item => item.code == type)?.categories ?? []

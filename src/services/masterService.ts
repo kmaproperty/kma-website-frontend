@@ -222,7 +222,6 @@ export const uploadFileToS3ApiHandler = async ({url, file}: UploadFileToS3Payloa
         "Content-Type": file.type
       }
     })
-    console.log('file upload response', response)
     return {status: response.status, statusText: response.statusText}
   }catch(error: any){
     throw error.response?.data ?? error

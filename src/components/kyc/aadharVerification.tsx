@@ -41,7 +41,6 @@ export default function AadharVerification(){
       return aadharVerifyGetApiHandler();
     },
     select: (resposne: AadharVerifyGetApiHandler) => {
-      console.log("uploadDetails", resposne);
       return resposne;
     },
     staleTime: 0,

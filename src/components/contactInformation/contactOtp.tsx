@@ -72,7 +72,6 @@ export default function ContactOtp({open,mobileNumber, onClose, name, email}) {
       return await submitHomeContactApiHandler(payload);
     },
     onSuccess: (response: SubmitHomeContactResponse) => {
-      console.log('response', response)
       toast.success(response.message)
       setOtp('')
       onClose()

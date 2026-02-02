@@ -26,7 +26,6 @@ axiosInstance.interceptors.request.use(
     return config;
   },
   (error) => {
-    console.log('error', error)
     return Promise.reject(error);
   }
 );
@@ -41,7 +40,6 @@ axiosInstance.interceptors.response.use(
     // const { refreshToken } = await res.json();
 
     // Prevent infinite retry loop
-    console.log('error',error)
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
@@ -70,7 +68,6 @@ axiosInstance.interceptors.response.use(
       clearAuthCookies()
       window.location.href = "/signup"
     }
-    console.log('error in reject', error)
     return Promise.reject(error?.response?.data ?? error);
   }
 );

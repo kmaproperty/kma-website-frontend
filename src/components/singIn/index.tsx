@@ -46,7 +46,6 @@ export default function SignIn() {
         return await sendSignInOtpApiHandler(payload);
       },
       onSuccess: (response: SendOtpResponse) => {
-        console.log('response', response)
         const params = createURLSearchParam({
           mobile: mobileInput.value,
           code: mobileInput.code,
@@ -59,7 +58,6 @@ export default function SignIn() {
         router.replace(`${pathname}${params}`);
       },
       onError: (error: any) => {
-        console.log('error', error)
         if(Array.isArray(error.message)){
         error.message.map((item: string) => {
           toast.error(item)

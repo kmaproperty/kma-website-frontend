@@ -370,7 +370,6 @@ export default function VerifyProperty() {
       return await uploadFileToS3ApiHandler(payload);
     },
     onError: (error: any) => {
-      console.log("file upload s3 api", error);
       toast.dismiss(toastRef.current);
       if (Array.isArray(error.message)) {
         error.message.map((item: string) => {
@@ -389,7 +388,6 @@ export default function VerifyProperty() {
       return await getFileUploadUrlApiHandler(payload);
     },
     onError: (error: any) => {
-      console.log("get file url api", error);
       toast.dismiss(toastRef.current);
       if (Array.isArray(error.message)) {
         error.message.map((item: string) => {

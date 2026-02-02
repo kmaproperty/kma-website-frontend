@@ -46,14 +46,12 @@ export default function UserDashboard() {
         return await UpgreadOwnerToChannelPartnerApiHandler(payload);
       },
       onSuccess: (response: UpgreadOwnerToChannelPartnerResponse) => {
-        console.log('response', response)
         setOpenCodePopup(false)
         toast.success('Upgraded to Channel Partner successfully')
         getUpdatedDashboardDetails()
         window.location.reload();
       },
       onError: (error: any) => {
-        console.log('error', error)
         if(Array.isArray(error.message)){
         error.message.map((item: string) => {
           toast.error(item)

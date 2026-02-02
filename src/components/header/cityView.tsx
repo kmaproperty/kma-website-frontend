@@ -18,7 +18,6 @@ export default function CityView({ cityData, fetchCities, cityLoader, handleScro
 
   const fetchLocation = async () => {
     const location = await getUserCoordinates();
-    console.log("location", location);
     if (location) {
       setDetecting(true)
       fetchCities({
@@ -26,7 +25,6 @@ export default function CityView({ cityData, fetchCities, cityLoader, handleScro
         longitude: String(location?.lng ?? ""),
       });
     } else {
-      console.log("Permission denied or unavailable");
     }
   };
 

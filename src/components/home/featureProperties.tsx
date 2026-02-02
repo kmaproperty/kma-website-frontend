@@ -25,9 +25,18 @@ const topVariant = {
   },
 };
 
-function Star({ className = "h-4 w-4" }) {
+function Star({
+  className = "h-4 w-4",
+  filled = true,
+}: {
+  className?: string;
+  filled?: boolean;
+}) {
   return (
-    <svg viewBox="0 0 24 24" className={`${className} text-amber-400`}>
+    <svg
+      viewBox="0 0 24 24"
+      className={`${className} ${filled ? "text-amber-400" : "text-slate-200"}`}
+    >
       <path
         fill="currentColor"
         d="M12 2.5l2.97 6.02 6.65.97-4.81 4.69 1.14 6.64L12 17.77 6.05 20.82l1.14-6.64-4.81-4.69 6.65-.97L12 2.5z"
@@ -42,17 +51,17 @@ export default function FeaturedProperties({ topProperties }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
-  const slidesCount = topProperties.length;
+  const slidesCount = topProperties?.length ?? 0;
   const settings = {
     slidesToShow: Math.min(4, slidesCount),
     slidesToScroll: 1,
     infinite: false,
     arrows: false,
-      responsive: [
-        { breakpoint: 1280, settings: { slidesToShow: 3 } },
-        { breakpoint: 1024, settings: { slidesToShow: 2 } },
-        { breakpoint: 640, settings: { slidesToShow: 1 } },
-      ],
+    responsive: [
+      { breakpoint: 1280, settings: { slidesToShow: 3 } },
+      { breakpoint: 1024, settings: { slidesToShow: 2 } },
+      { breakpoint: 640, settings: { slidesToShow: 1 } },
+    ],
   };
 
   return (
@@ -67,144 +76,194 @@ export default function FeaturedProperties({ topProperties }) {
 
       <div className="flex-1 w-full  2md:min-w-0 -mx-2 feature-property">
         <Slider ref={sliderRef} {...settings} className="mt-10">
-          {topProperties.map((item, index) => {
-            const img = item.images.length > 0 ? item.images[0]?.fileKey : null;
-            const size = item.units?.length > 0 ? item.units[0]?.size : null
+          {(topProperties ?? []).map((item, index) => {
+            const img = item?.images?.length > 0 ? item.images[0]?.fileKey : null;
+            const size = item?.units?.length > 0 ? item.units[0]?.size : null;
+            const ratingNumber = Math.max(
+              0,
+              Math.min(5, Number.parseFloat(String(item?.rating ?? "5")) || 0)
+            );
+            const filledStars = Math.round(ratingNumber);
+            const priceValue =
+              item?.listingType == "Sale" ? item?.price : item?.monthlyRent;
+            const formattedPrice =
+              typeof priceValue === "number"
+                ? new Intl.NumberFormat("en-IN").format(priceValue)
+                : priceValue ?? "-";
             return (
               <motion.div
-                className="px-1.5 h-full"
+                key={item?.id ?? index}
+                className="px-1.5 w-[344px] h-[528px]"
                 variants={index == 0 || index == 1 ? topVariant : bottomVariant}
                 animate={isInView ? "visible" : "hidden"}
               >
-                <div className="h-full rounded-[8px] border border-border bg-white">
-                  <div className=" h-full">
+                <div className="h-full w-full rounded-[10px] border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 overflow-hidden">
+                  <div className="h-full flex flex-col">
+                    {/* IMAGE */}
                     <div className="relative">
                       {img ? (
                         <Image
                           src={profileBaseUrl + img}
-                          width={100}
-                          height={100}
+                          width={600}
+                          height={400}
                           alt="property"
-                          className="h-[160px] w-full object-cover rounded-t-[8px]"
+                          className="h-[230px] w-full object-cover"
                         />
                       ) : (
-                        <div className="w-full h-[160px] rounded-t-[8px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 flex items-center justify-center">
-                          <span className="text-white/50 text-xs font-medium">
+                        <div className="w-full h-[230px] bg-gradient-to-br from-slate-100 via-slate-50 to-white flex items-center justify-center">
+                          <span className="text-slate-400 text-xs font-medium">
                             No Image
                           </span>
                         </div>
                       )}
 
-                      <span className="absolute top-3 right-3 rounded-[4px] px-3 py-1 text-xs text-white bg-indigo-500">
-                        {item.propertyType}
+                      {/* Tag pill */}
+                      <span className="absolute top-3 right-3 rounded-lg px-4 py-2 text-sm font-medium text-white bg-indigo-500 shadow-sm">
+                        {item?.propertyType}
                       </span>
 
-                      <button className="absolute bottom-3 left-3 border border-white rounded-full">
+                      {/* Avatar */}
+                      <button
+                        type="button"
+                        className="absolute -bottom-5 left-4 rounded-full bg-white p-1 shadow-sm ring-1 ring-slate-200"
+                        aria-label="View agent"
+                      >
                         <Image
                           src={"/assets/property/profile.png"}
                           width={28}
                           height={28}
                           alt="profile"
-                          className="rounded-full"
+                          className="rounded-full h-8 w-8"
                         />
                       </button>
                     </div>
 
                     {/* CONTENT */}
-                    <div className="flex flex-col gap-1 px-3 py-3">
-                      {/* RATING */}
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} />
-                          ))}
-                          <span className="ml-2 text-sm text-text-gray">
-                            {item.rating}
+                    <div className="flex flex-1 min-h-0 flex-col px-4 pb-4 pt-8 gap-2 overflow-hidden">
+                      {/* Rating + Like */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center">
+                            {[...Array(5)].map((_, i) => (
+                              <Star
+                                key={i}
+                                className="h-4 w-4"
+                                filled={i < filledStars}
+                              />
+                            ))}
+                          </div>
+                          <span className="text-sm text-text-gray">
+                            {ratingNumber.toFixed(1)}
                           </span>
                         </div>
-                        <div>
+
+                        <button
+                          type="button"
+                          className="rounded-full border border-slate-200 bg-white p-2 shadow-sm transition-colors hover:bg-slate-50"
+                          aria-label="Add to favorites"
+                        >
                           <Image
                             src={"/assets/property/heart.svg"}
-                            width={16}
-                            height={16}
+                            width={18}
+                            height={18}
                             alt="Like"
                           />
-                        </div>
+                        </button>
                       </div>
 
-                      <div>
-                        <p className="text-base font-medium leading-snug line-clamp-2 text-text-black">
-                          {item.propertyName}
+                      {/* Title + Address */}
+                      <div className="min-h-[56px]">
+                        <p className="text-xl font-semibold leading-snug text-text-black line-clamp-2">
+                          {item?.propertyName}
                         </p>
-                        <p className="mt-1 flex items-start gap-1 text-xs text-text-gray ">
+                        <div className="mt-1 flex items-start gap-2 text-sm text-text-gray">
                           <Image
-                            src={"/assets/property/location-white.svg"}
-                            width={14}
-                            height={14}
+                            src={"/assets/location-blue.svg"}
+                            width={16}
+                            height={16}
                             alt="location"
+                            className="mt-0.5"
                           />
-                          <p className="line-clamp-2">{item.address}</p>
-                        </p>
-                      </div>
-
-                      <p className="text-base font-semibold text-blue">
-                        ₹ {item.listingType == "Sale"
-                          ? item.price
-                          : item.monthlyRent}{" "} {item.listingType == "Sale" ? "" : "/ Month"}
-                      </p>
-
-                      <div className="pt-3 pb-2 border-t flex flex-col justify-center items-start text-[10px] border-border">
-                        <div className="flex gap-2 text-xs">
-                          <p className="text-text-gray">Listed On:</p>
-                          <p>25 May 2025</p>
+                          <span className="line-clamp-2">{item?.address}</span>
                         </div>
-                        {item.constructionStatus && <div className="flex gap-2 text-xs">
-                          <p className="text-text-gray">Possession Status:</p>
-                          <p>{item.constructionStatus}</p>
-                        </div>}
                       </div>
-                      <div className="pt-3 border-t flex justify-between items-center text-[10px] border-border">
-                        {![
-                          "Office",
-                          "Plot",
-                          "Retail Shop",
-                          "Warehouse",
-                          "Showroom",
-                          "Agricultural Land",
-                        ].includes(item.propertyType) && <div className="flex items-center gap-1">
-                          <Image
-                            src={"/assets/property/bad.svg"}
-                            width={23}
-                            height={23}
-                            alt="bed"
-                          />{" "}
-                          {item.bed} Bed
-                        </div>}
-                        {![
-                          "Office",
-                          "Plot",
-                          "Retail Shop",
-                          "Warehouse",
-                          "Showroom",
-                          "Agricultural Land",
-                        ].includes(item.propertyType) && <div className="flex items-center gap-1">
-                          <Image
-                            src={"/assets/property/bathroom.svg"}
-                            width={23}
-                            height={23}
-                            alt="bed"
-                          />{" "}
-                          {item.bath} Bath
-                        </div>}
-                        {size && <div className="flex items-center gap-1 truncate">
-                          <Image
-                            src={"/assets/property/major-white.svg"}
-                            width={23}
-                            height={23}
-                            alt="major"
-                          />{" "}
-                          {size}
-                        </div>}
+
+                      {/* Price */}
+                      <div className="text-2xl font-bold text-blue">
+                        <span>₹ {formattedPrice}</span>
+                        <span className="text-sm font-medium text-text-gray">
+                          {item?.listingType == "Sale" ? "" : " / Month"}
+                        </span>
+                      </div>
+
+                      {/* Meta */}
+                      <div className="mt-1 border-t border-slate-200 pt-3 text-sm">
+                        <div className="flex items-center gap-2">
+                          <span className="text-text-gray">Listed on :</span>
+                          <span className="text-text-black">25 May 2025</span>
+                        </div>
+                        {item?.constructionStatus ? (
+                          <div className="mt-1 flex items-center gap-2">
+                            <span className="text-text-gray">
+                              Possession status:
+                            </span>
+                            <span className="text-text-black">
+                              {item.constructionStatus}
+                            </span>
+                          </div>
+                        ) : null}
+                      </div>
+
+                      {/* Amenities */}
+                      <div className="mt-2 border-t border-slate-200 pt-3">
+                        <div className="flex flex-wrap gap-3">
+                          {![
+                            "Office",
+                            "Plot",
+                            "Retail Shop",
+                            "Warehouse",
+                            "Showroom",
+                            "Agricultural Land",
+                          ].includes(item?.propertyType) ? (
+                            <>
+                              <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 text-sm text-text-black border border-slate-200">
+                                <Image
+                                  src={"/assets/property/bad.svg"}
+                                  width={18}
+                                  height={18}
+                                  alt="bed"
+                                />
+                                <span className="whitespace-nowrap">
+                                  {item?.bed} Bed
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 text-sm text-text-black border border-slate-200">
+                                <Image
+                                  src={"/assets/property/bathroom.svg"}
+                                  width={18}
+                                  height={18}
+                                  alt="bath"
+                                />
+                                <span className="whitespace-nowrap">
+                                  {item?.bath} Bath
+                                </span>
+                              </div>
+                            </>
+                          ) : null}
+
+                          {size ? (
+                            <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 text-sm text-text-black border border-slate-200 max-w-full">
+                              <Image
+                                src={"/assets/property/major-white.svg"}
+                                width={18}
+                                height={18}
+                                alt="size"
+                                className="invert"
+                              />
+                              <span className="truncate">{size}</span>
+                            </div>
+                          ) : null}
+                        </div>
                       </div>
                     </div>
                   </div>

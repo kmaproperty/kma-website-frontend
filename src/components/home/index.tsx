@@ -16,12 +16,11 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { AboutusResponse, CitiesResponse, getAboutUsDataAPiHanlder, getCityListApiHandler, getExploreApiHanlder, GetExplorePayload, GetExploreResponse, getTopProperties, GetTopPropertiesPayload, GetTopPropertiesResponse } from "@/services/homeService";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAboutusData, getSelectedCity, setAboutusData, setSelectedCity } from "@/store/homeHeaderSlice";
+import { getSelectedCity, setAboutusData, setSelectedCity } from "@/store/homeHeaderSlice";
 
 export default function Home({ propertyMasterData, propertyCitiesData }) {
   const dispatch = useDispatch()
   const selectedCity = useSelector(getSelectedCity)
-  const aboutusData = useSelector(getAboutusData)
 
   const [cityData, setCityData] = useState(null)
 
@@ -30,41 +29,36 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
   } = useMutation({
     mutationFn: getCityListApiHandler,
     onSuccess: (response: CitiesResponse) => {
-      let findCity = response?.allCities?.find(item => item.name == 'Gurgaon')
-      if(findCity){
+      const findCity = response?.allCities?.find(item => item.name == 'Gurgaon')
+      if (findCity) {
         dispatch(setSelectedCity(findCity))
       }
       setCityData(response)
     },
-    onError: (error) => {
-
-    }
+    onError: () => {}
   });
 
   const {
-    mutate: fetchAboutusData, isPending: aboutusLoader
+    mutate: fetchAboutusData
   } = useMutation({
     mutationFn: getAboutUsDataAPiHanlder,
     onSuccess: (response: AboutusResponse) => {
       dispatch(setAboutusData(response?.configuration))
     },
-    onError: (error) => {
-
-    }
+    onError: () => {}
   });
 
   const { data: explorePropertyList } = useQuery({
     queryKey: ["explore-list", selectedCity],
     queryFn: () => {
-      let payload: GetExplorePayload = {
-        ...(selectedCity?.id ? {cityId: selectedCity?.id ?? null,} : {}),
-        ...(false ? {cityId: ''} : {}),
-        ...(false ? {cityId: '',} : {}),
+      const payload: GetExplorePayload = {
+        ...(selectedCity?.id ? { cityId: selectedCity?.id ?? null, } : {}),
+        ...(false ? { cityId: '' } : {}),
+        ...(false ? { cityId: '', } : {}),
       };
       return getExploreApiHanlder(payload);
     },
     select: (response: GetExploreResponse) => {
-      console.log("response", response);
       return response.propertyTypes;
     },
   });
@@ -72,13 +66,12 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
   const { data } = useQuery({
     queryKey: ["top-properties-list", selectedCity],
     queryFn: () => {
-      let payload: GetTopPropertiesPayload = {
+      const payload: GetTopPropertiesPayload = {
         cityId: selectedCity?.id ?? null
       };
       return getTopProperties(payload);
     },
     select: (response: GetTopPropertiesResponse) => {
-      console.log("response", response);
       return response;
     },
     enabled: selectedCity ? true : false
@@ -86,32 +79,32 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
 
   useEffect(() => {
     fetchAboutusData()
-    if(propertyCitiesData){
-      let findCity = propertyCitiesData?.allCities?.find(item => item.name == 'Gurgaon')
-      if(findCity){
+    if (propertyCitiesData) {
+      const findCity = propertyCitiesData?.allCities?.find(item => item.name == 'Gurgaon')
+      if (findCity) {
         dispatch(setSelectedCity(findCity))
       }
       setCityData(propertyCitiesData)
-    }else{
+    } else {
       fetchCities({})
     }
-  },[])
+  }, [dispatch, fetchAboutusData, fetchCities, propertyCitiesData])
 
-  const imageSlider =  [
-      {
-        imagePath: "/assets/backgroundSlider/background_slider_1.jpg",
-        alt: "Background Image 1",
-      },
-      {
-        imagePath: "/assets/backgroundSlider/background_slider_2.png",
-        alt: "Background Image 2",
-      },
-    ];
+  const imageSlider = [
+    {
+      imagePath: "/assets/backgroundSlider/background_slider_1.jpg",
+      alt: "Background Image 1",
+    },
+    {
+      imagePath: "/assets/backgroundSlider/background_slider_2.png",
+      alt: "Background Image 2",
+    },
+  ];
 
   return (
     <div className="overflow-hidden">
       <div className="relative ">
-        <BannerSlider bannerHeight={'min-h-[700px] 2md:min-h-auto 2md:h-[90vh]'} backgroundImages={imageSlider} overlayClass='gradient-overlay'/>
+        <BannerSlider bannerHeight={'min-h-[700px] 2md:min-h-auto 2md:h-[90vh]'} backgroundImages={imageSlider} overlayClass='gradient-overlay' />
         <MainHome topProperties={data?.properties ?? []} fetchCities={fetchCities} cityLoader={cityLoader} cityData={cityData} propertyMasterData={propertyMasterData} />
       </div>
       <div className="my-16 flex justify-center overflow-hidden">
@@ -129,35 +122,37 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
       </div>
       {Array.isArray(explorePropertyList) && explorePropertyList.length > 0 && <div className="my-16 flex justify-center">
         <div className="w-[90%] md:w-[75%]">
-          <ExploreSection explorePropertyList={explorePropertyList}/>
+          <ExploreSection explorePropertyList={explorePropertyList} />
         </div>
       </div>}
       {Array.isArray(data?.properties) && data?.properties.length > 0 && <div className="bg-[#F2F2F2] flex justify-center">
         <div className="my-16 w-[90%] md:w-[75%]">
-          <FeaturedProperties topProperties={data?.properties ?? []}/>
+          <FeaturedProperties topProperties={data?.properties ?? []} />
         </div>
       </div>}
+
+      <div className="relative bg-[#F2F2F2] flex justify-center overflow-hidden">
+        <SuccessStoriesSection />
+      </div>
+
       <div className="relative bg-text-black flex justify-center overflow-hidden">
         <WorkingSection />
       </div>
-      <div className="relative bg-[#F2F2F2] flex justify-center overflow-hidden">
-        <SuccessStoriesSection />
+      <div className="bg-[#F2F2F2] flex justify-center overflow-hidden">
+        <div className="my-16 w-[90%] 2md:w-[75%]">
+          <ChannelPartnerSection selectedCity={selectedCity} />
+        </div>
+      </div>
+      <div className="">
+        <AppDownloadSection />
       </div>
       <div className="flex justify-center overflow-hidden">
         <div className="my-16 w-[90%] 2md:w-[75%]">
           <BlogSection />
         </div>
       </div>
-      <div className="bg-[#F2F2F2] flex justify-center overflow-hidden">
-        <div className="my-16 w-[90%] 2md:w-[75%]">
-          <ChannelPartnerSection/>
-        </div>
-      </div>
-      {aboutusData?.mobileAppAvailable && <div className="">
-        <AppDownloadSection />
-      </div>}
       <div className="">
-        <HomeFooter propertyMasterData={propertyMasterData}/>
+        <HomeFooter propertyMasterData={propertyMasterData} />
       </div>
     </div>
   );

@@ -52,14 +52,14 @@ const DynamicSelect = ({
       minHeight: typeof minHeight === "number" ? `${minHeight}px` : minHeight,
       paddingLeft: "0.5rem",
       fontSize: minHeight == '47.81px' ? '1rem' : (fontwidth ? fontwidth : '0.750rem'),
-      fontFamily: "IBM Plex Sans, sans-serif",
+      fontFamily: "IBM Plex Sans",
     }),
     input: (base) => ({ ...base, paddingLeft: 0 }),
     placeholder: (base) => ({
       ...base,
       color: "var(--color-text-gray)",
       fontWeight: 400,
-      fontFamily: "IBM Plex Sans, sans-serif",
+      fontFamily: "IBM Plex Sans",
     }),
     indicatorSeparator: () => ({ display: "none" }),
     dropdownIndicator: (base) => ({

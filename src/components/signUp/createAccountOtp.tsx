@@ -44,7 +44,6 @@ export default function CreateAccountOtp() {
       return await validateOtpApiHandler(payload);
     },
     onSuccess:async (response: ValidateOtpResponse) => {
-      console.log('Otp response', response)
       await setAuthCookies(response.accessToken,response.refreshToken)
       // localStorage.setItem('refreshToken', response.refreshToken)
       // localStorage.setItem('accessToken', response.accessToken)
@@ -58,7 +57,6 @@ export default function CreateAccountOtp() {
       }, 300);
     },
     onError: (error: any) => {
-      console.log('otp error', error)
       setOtpError(error?.message)
     },
   });
@@ -70,11 +68,9 @@ export default function CreateAccountOtp() {
       return await resendOtpApiHandler(payload);
     },
     onSuccess: (response: SendOtpResponse) => {
-      console.log('Otp resend response', response)
       toast.success(response.message + ' ' + response.otp)
     },
     onError: (error: any) => {
-      console.log('otp error', error)
       if(Array.isArray(error.message)){
         error.message.map((item: string) => {
           toast.error(item)

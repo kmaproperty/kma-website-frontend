@@ -21,13 +21,11 @@ export default function ProfileMenu({ anchorEl, open, handleClose }) {
       return await UserLogoutApiHandler();
     },
     onSuccess: async (response: UserLogoutResponse) => {
-      console.log("response", response);
       localStorage.clear();
       await clearAuthCookies();
       router.replace("/signup");
     },
     onError: (error: any) => {
-      console.log("error", error);
       if (Array.isArray(error.message)) {
         error.message.map((item: string) => {
           toast.error(item);

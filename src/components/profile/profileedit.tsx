@@ -65,7 +65,6 @@ export default function ProfileUpdate({ open, onClose }) {
 
   const formData = useSelector((state: RootState) => state.form);
   const dispatch = useDispatch();
-  console.log("formData", formData);
   const [formErrors, setFormErrors] = React.useState<FormErrors>({});
   const [codeError, setCodeError] = React.useState(false);
   const [emailError, setEmailError] = React.useState(false);
@@ -99,7 +98,6 @@ export default function ProfileUpdate({ open, onClose }) {
       return await validateEmailApiHandler(payload);
     },
     onSuccess: (response: ValidateEmailResponse) => {
-      console.log("email duplicate response", response);
       if (response?.success) {
         setFormErrors((pre) => ({ ...pre, email: "" }));
         setEmailError(false);
@@ -109,7 +107,6 @@ export default function ProfileUpdate({ open, onClose }) {
       }
     },
     onError: (error: any) => {
-      console.log("channel partner error", error);
       if (error?.success) {
         setFormErrors((pre) => ({ ...pre, email: "" }));
         setEmailError(false);
@@ -127,7 +124,6 @@ export default function ProfileUpdate({ open, onClose }) {
       return await ValidateChannelPartnerCodeApiHandler(payload);
     },
     onSuccess: (response: ValidateChannelPartnerCodeResponse) => {
-      console.log("channel partner response", response);
       if (response?.valid) {
         setFormErrors((pre) => ({ ...pre, partnerCode: "" }));
         setCodeError(false);
@@ -137,7 +133,6 @@ export default function ProfileUpdate({ open, onClose }) {
       }
     },
     onError: (error: any) => {
-      console.log("channel partner error", error);
     },
   });
 
@@ -148,7 +143,6 @@ export default function ProfileUpdate({ open, onClose }) {
       return await uploadFileToS3ApiHandler(payload);
     },
     onError: (error: any) => {
-      console.log("file upload s3 api", error);
       if (Array.isArray(error.message)) {
         error.message.map((item: string) => {
           toast.error(item);
@@ -166,7 +160,6 @@ export default function ProfileUpdate({ open, onClose }) {
       return await getFileUploadUrlApiHandler(payload);
     },
     onError: (error: any) => {
-      console.log("get file url api", error);
       if (Array.isArray(error.message)) {
         error.message.map((item: string) => {
           toast.error(item);
@@ -188,7 +181,6 @@ export default function ProfileUpdate({ open, onClose }) {
         onClose(true)
     },
     onError: (error: any) => {
-      console.log("get file url api", error);
       if (Array.isArray(error.message)) {
         error.message.map((item: string) => {
           toast.error(item);
@@ -209,7 +201,6 @@ export default function ProfileUpdate({ open, onClose }) {
       return userProfileApiHandler();
     },
     select: (resposne: UserProfileResponse) => {
-      console.log("profile", resposne);
       return resposne.user;
     },
     staleTime: 0,
