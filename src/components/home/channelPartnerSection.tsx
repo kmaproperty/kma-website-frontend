@@ -74,9 +74,18 @@ export default function ChannelPartnerSection({
 
   const [openContact, setOpenContact] = useState(false);
 
-  const { data: channelPartnerResponse } =
-    useQuery<GetChannelPartnerListResponse>({
-      queryKey: ["channel-partner", selectedCity?.name ?? ""],
+  const { data: channelPartnerResponse } = useQuery<GetChannelPartnerListResponse>({
+    queryKey: ["channel-partner", selectedCity?.name ?? ""],
+    // Override global defaults (staleTime: 5min, refetchOnWindowFocus: false)
+    // so this section stays in sync when backend data changes.
+    staleTime: 0,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    // Keep UI updated even if you stay on the page (polling).
+    // Adjust the interval as needed (ms).
+    refetchInterval: 30_000,
+    refetchIntervalInBackground: false,
     queryFn: () => {
       const payload: GetChannelPartnerListPayload = {
         city: selectedCity?.name ?? "",
@@ -114,7 +123,7 @@ export default function ChannelPartnerSection({
 
             const profileSrc =
               joinUrl(profileBaseUrl, item?.profile_image);
-            const rating = Number((item as any)?.rating ?? 4.3);
+            const rating = Number(item?.rating ?? 4.3);
             const ratingText = Number.isFinite(rating) ? rating.toFixed(1) : "4.3";
 
             return (
