@@ -6,7 +6,6 @@ import { motion, useInView } from "framer-motion";
 import { useSelector } from "react-redux";
 import { getAboutusData, getSelectedCity } from "@/store/homeHeaderSlice";
 
-
 const rightVariant = {
   hidden: { x: "100%", opacity: 0 },
   visible: {
@@ -28,9 +27,9 @@ const topVariant = {
 export default function HomeFooter({
   propertyMasterData,
 }) {
-  const selectedCity = useSelector(getSelectedCity)
-  const aboutusData = useSelector(getAboutusData)
-  
+  const selectedCity = useSelector(getSelectedCity);
+  const aboutusData = useSelector(getAboutusData);
+
   const {
     instagramLink,
     fbLink,
@@ -42,6 +41,7 @@ export default function HomeFooter({
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
   const [footerTab, setFooterTab] = useState("1");
+  const currentYear = new Date().getFullYear();
 
   const handleTab = (tab) => {
     setFooterTab(tab);
@@ -71,179 +71,162 @@ export default function HomeFooter({
       (item) => item.id == "867c2adf-7e01-45a8-a305-74900b24c529"
     )?.propertyTypes ?? [];
 
+  const isRentTab = footerTab === "1";
+  const propertyVerb = isRentTab ? "rent" : "sale";
+  const residentialList = isRentTab
+    ? residentialRentProperty
+    : residentialSaleProperty;
+  const commercialList = isRentTab ? commercialRentProperty : commercialSaleProperty;
+  const citySuffix = selectedCity?.name ? `in ${selectedCity.name}` : "";
+
   return (
-    <>
-      <div
-        ref={ref}
-        className="bg-[#121D2B] h-[40px] w-full flex justify-center"
-      >
-        <div className="cursor-pointer w-[90%] md:w-[75%] flex justify-between items-center">
-          <div
+    <footer className="w-full bg-text-black">
+      {/* Tabs */}
+      <div ref={ref} className="w-full bg-[#121D2B] flex justify-center border-t border-white/5">
+        <div className="w-[90%] md:w-[75%] flex items-stretch">
+          <button
+            type="button"
             onClick={() => handleTab("1")}
-            className={`flex w-full justify-center items-center text-center h-full ${
-              footerTab == "1"
-                ? "border-b-2 border-white"
-                : "border-b-2 border-[#121D2B]"
+            className={`flex-1 py-3 text-center transition-colors ${
+              footerTab === "1"
+                ? "border-b-2 border-white text-white"
+                : "border-b-2 border-transparent text-white/80 hover:text-white"
             }`}
+            aria-pressed={footerTab === "1"}
           >
-            <p className="uppercase text-white text-xs md:text-sm">
+            <span className="uppercase text-xs md:text-sm tracking-wide">
               Properties for Rent
-            </p>
-          </div>
-          <div
+            </span>
+          </button>
+          <button
+            type="button"
             onClick={() => handleTab("2")}
-            className={`flex w-full justify-center items-center text-center h-full ${
-              footerTab == "2"
-                ? "border-b-2 border-white"
-                : "border-b-2 border-[#121D2B]"
+            className={`flex-1 py-3 text-center transition-colors ${
+              footerTab === "2"
+                ? "border-b-2 border-white text-white"
+                : "border-b-2 border-transparent text-white/80 hover:text-white"
             }`}
+            aria-pressed={footerTab === "2"}
           >
-            <p className="uppercase text-white text-xs md:text-sm">
+            <span className="uppercase text-xs md:text-sm tracking-wide">
               Properties for Sale
-            </p>
+            </span>
+          </button>
+        </div>
+      </div>
+
+      {/* Property Links */}
+      <div className="flex justify-center">
+        <div className="w-[90%] md:w-[75%] pt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <motion.div
+              variants={topVariant}
+              className="flex flex-col gap-3"
+              animate={isInView ? "visible" : "hidden"}
+            >
+              <p className="text-white text-base font-semibold">In Residential</p>
+              {residentialList.length === 0 ? (
+                <p className="text-[#fffc] text-[13px]">No property types available.</p>
+              ) : (
+                <ul className="mt-1 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
+                  {residentialList.map((item) => (
+                    <li
+                      key={item.id}
+                      className="text-[#fffc] text-[13px] leading-5 cursor-pointer hover:underline hover:text-white"
+                    >
+                      {item.name} for {propertyVerb} {citySuffix ? ` ${citySuffix}` : ""}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </motion.div>
+
+            <motion.div
+              variants={topVariant}
+              className="flex flex-col gap-3"
+              animate={isInView ? "visible" : "hidden"}
+            >
+              <p className="text-white text-base font-semibold">In Commercial</p>
+              {commercialList.length === 0 ? (
+                <p className="text-[#fffc] text-[13px]">No property types available.</p>
+              ) : (
+                <ul className="mt-1 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
+                  {commercialList.map((item) => (
+                    <li
+                      key={item.id}
+                      className="text-[#fffc] text-[13px] leading-5 cursor-pointer hover:underline hover:text-white"
+                    >
+                      {item.name} for {propertyVerb} {citySuffix ? ` ${citySuffix}` : ""}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </motion.div>
           </div>
         </div>
       </div>
-      <div className="bg-text-black flex justify-center">
-        <div className="mt-6 w-[90%] md:w-[75%]">
-          {footerTab == "1" && (
-            <div className="flex flex-col gap-5">
-              <motion.div
-                variants={topVariant}
-                className="flex flex-col gap-3"
-                animate={isInView ? "visible" : "hidden"}
-              >
-                <p className="text-white text-base font-semibold">
-                  In Residential
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 2md:grid-cols-3 lg:grid-cols-4 gap-3 mt-1">
-                  {residentialRentProperty.map((item) => {
-                    return (
-                      <p key={item.id} className="text-[#fffc] text-[13px] cursor-pointer hover:underline hover:text-white">
-                        {item.name} for rent{" "}
-                        {selectedCity ? `in ${selectedCity?.name}` : ""}
-                      </p>
-                    );
-                  })}
-                </div>
-              </motion.div>
 
-              <motion.div
-                variants={topVariant}
-                className="flex flex-col gap-3 mt-2"
-                animate={isInView ? "visible" : "hidden"}
-              >
-                <p className="text-white text-base font-semibold">
-                  In Commercial
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 2md:grid-cols-3 lg:grid-cols-4 gap-3 mt-1">
-                  {commercialRentProperty.map((item) => {
-                    return (
-                      <p key={item.id} className="text-[#fffc] text-[13px] cursor-pointer hover:underline hover:text-white">
-                        {item.name} for rent{" "}
-                        {selectedCity ? `in ${selectedCity?.name}` : ""}
-                      </p>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            </div>
-          )}
-          {footerTab == "2" && (
-            <div className="flex flex-col gap-5">
-              <motion.div
-                variants={topVariant}
-                className="flex flex-col gap-3"
-                animate={isInView ? "visible" : "hidden"}
-              >
-                <p className="text-white text-base font-semibold">
-                  In Residential
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 2md:grid-cols-3 lg:grid-cols-4 gap-3 mt-1">
-                  {residentialSaleProperty.map((item) => {
-                    return (
-                      <p key={item.id} className="text-[#fffc] text-[13px] cursor-pointer hover:underline hover:text-white">
-                        {item.name} for rent{" "}
-                        {selectedCity ? `in ${selectedCity?.name}` : ""}
-                      </p>
-                    );
-                  })}
-                </div>
-              </motion.div>
-
-              <motion.div
-                variants={topVariant}
-                className="flex flex-col gap-3 mt-2"
-                animate={isInView ? "visible" : "hidden"}
-              >
-                <p className="text-white text-base font-semibold">
-                  In Commercial
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 2md:grid-cols-3 lg:grid-cols-4 gap-3 mt-1">
-                  {commercialSaleProperty.map((item) => {
-                    return (
-                      <p key={item.id} className="text-[#fffc] text-[13px] cursor-pointer hover:underline hover:text-white">
-                        {item.name} for rent{" "}
-                        {selectedCity ? `in ${selectedCity?.name}` : ""}
-                      </p>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            </div>
-          )}
-        </div>
-      </div>
-      <div className="w-full bg-text-black flex justify-center py-6">
+      {/* Main Footer Content */}
+      <div className="w-full flex justify-center py-8">
         <div className="w-[90%] md:w-[75%]">
-          <div className="border-t border-text-gray mb-6" />
-          {/* Top Grid */}
+          <div className="border-t border-text-gray/60 mb-8" />
+
           <motion.div
             variants={topVariant}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
             animate={isInView ? "visible" : "hidden"}
           >
             {/* About KMA */}
             <div className="space-y-3">
               <h3 className="text-white text-base font-semibold">About KMA</h3>
-              <p className="text-xs text-white leading-relaxed pr-3">
+              <p className="text-[13px] text-white/90 leading-relaxed">
                 {aboutusData?.description ?? ""}
               </p>
 
-              <ul className="space-y-3 text-xs text-white">
-                <li className="flex items-center gap-3">
-                  <span>
+              <ul className="space-y-3 text-[13px] text-white/90">
+                <li className="flex items-start gap-3">
+                  <span className="mt-[1px]">
                     <Image
                       src={"/assets/footor/mobile.svg"}
-                      width={25}
-                      height={25}
+                      width={22}
+                      height={22}
                       alt="mobile"
-                    />{" "}
-                  </span>{" "}
-                  +91 {aboutusData?.phoneNumber}
+                    />
+                  </span>
+                  <a
+                    href={aboutusData?.phoneNumber ? `tel:+91${aboutusData.phoneNumber}` : undefined}
+                    className="hover:text-white"
+                  >
+                    +91 {aboutusData?.phoneNumber ?? ""}
+                  </a>
                 </li>
-                <li className="flex items-center gap-3">
-                  <span>
+                <li className="flex items-start gap-3">
+                  <span className="mt-[1px]">
                     <Image
                       src={"/assets/footor/email.svg"}
-                      width={25}
-                      height={25}
-                      alt="mobile"
+                      width={22}
+                      height={22}
+                      alt="email"
                     />
-                  </span>{" "}
-                  {aboutusData?.email}
+                  </span>
+                  <a
+                    href={aboutusData?.email ? `mailto:${aboutusData.email}` : undefined}
+                    className="break-words hover:text-white"
+                  >
+                    {aboutusData?.email ?? ""}
+                  </a>
                 </li>
-                <li className="flex items-center gap-3">
-                  <span>
+                <li className="flex items-start gap-3">
+                  <span className="mt-[1px]">
                     <Image
                       src={"/assets/footor/location.svg"}
-                      width={25}
-                      height={25}
-                      alt="mobile"
-                      className="h-[25px]"
+                      width={22}
+                      height={22}
+                      alt="location"
+                      className="h-[22px]"
                     />
-                  </span>{" "}
-                  {aboutusData?.address}
+                  </span>
+                  <span className="break-words">{aboutusData?.address ?? ""}</span>
                 </li>
               </ul>
             </div>
@@ -253,25 +236,22 @@ export default function HomeFooter({
               <h3 className="text-white text-base font-semibold mb-3">
                 Company
               </h3>
-              <ul className="space-y-3 text-xs text-white">
-                <li className="text-[#fffc] text-[13px] hover:text-white hover:underline">
-                  About Us
-                </li>
-                <li className="text-[#fffc] text-[13px] hover:text-white hover:underline">
-                  Careers
-                </li>
-                <li className="text-[#fffc] text-[13px] hover:text-white hover:underline">
-                  Services
-                </li>
-                <li className="text-[#fffc] text-[13px] hover:text-white hover:underline">
-                  Contact Us
-                </li>
-                <li className="text-[#fffc] text-[13px] hover:text-white hover:underline">
-                  Terms & Conditions
-                </li>
-                <li className="text-[#fffc] text-[13px] hover:text-white hover:underline">
-                  Privacy Policy
-                </li>
+              <ul className="space-y-3 text-[13px] text-white/90">
+                {[
+                  "About Us",
+                  "Careers",
+                  "Services",
+                  "Contact Us",
+                  "Terms & Conditions",
+                  "Privacy Policy",
+                ].map((label) => (
+                  <li
+                    key={label}
+                    className="text-[#fffc] hover:text-white hover:underline cursor-pointer"
+                  >
+                    {label}
+                  </li>
+                ))}
               </ul>
             </div>
 
@@ -280,11 +260,11 @@ export default function HomeFooter({
               <h3 className="text-base text-white font-semibold mb-3">
                 KMA Location
               </h3>
-              <div className="overflow-hidden rounded-xl border border-gray-700">
+              <div className="overflow-hidden rounded-xl border border-white/10">
                 <iframe
                   src={`https://www.google.com/maps?q=${latitude},${longitude}&output=embed`}
                   width="100%"
-                  height="150"
+                  height="170"
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
                 ></iframe>
@@ -292,8 +272,7 @@ export default function HomeFooter({
             </div>
           </motion.div>
 
-          {/* Divider */}
-          <div className="border-t border-text-gray my-6" />
+          <div className="border-t border-text-gray/60 my-8" />
 
           {/* Gallery Section */}
           <motion.div
@@ -301,7 +280,7 @@ export default function HomeFooter({
             className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-10 items-center"
             animate={isInView ? "visible" : "hidden"}
           >
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <Image
                 src="/assets/kma-logo-white.svg"
                 width={100}
@@ -309,8 +288,19 @@ export default function HomeFooter({
                 alt="logo"
                 style={{ height: "38px" }}
               />
-              <div>
-                <p className="text-xs text-[#FFBB55] mt-2">@kma on Instagram</p>
+              <div className="sm:text-right">
+                {instagramLink ? (
+                  <a
+                    href={instagramLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-[#FFBB55] hover:underline"
+                  >
+                    @kma on Instagram
+                  </a>
+                ) : (
+                  <p className="text-xs text-[#FFBB55]">@kma on Instagram</p>
+                )}
                 <p className="text-sm font-semibold text-white mt-1">
                   Nice Gallery
                 </p>
@@ -321,19 +311,22 @@ export default function HomeFooter({
               {[1, 2, 3, 4, 5].map((i) => (
                 <div
                   key={i}
-                  className="relative group h-28 w-full overflow-hidden rounded-[5px]"
+                  className="relative group w-full overflow-hidden rounded-lg border border-white/10 aspect-square"
                 >
-                  <img
+                  <Image
                     src="/assets/blogs/blog-img-1.png"
                     alt="Gallery"
-                    className="h-full w-full object-cover"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 20vw"
                   />
 
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <img
+                    <Image
                       src="/assets/footor/instagram.svg"
-                      alt="icon"
-                      className="w-6 h-6"
+                      alt="Instagram"
+                      width={24}
+                      height={24}
                     />
                   </div>
                 </div>
@@ -342,24 +335,29 @@ export default function HomeFooter({
           </motion.div>
         </div>
       </div>
-      <div className="w-full bg-text-black flex justify-center">
-        <div className="w-[90%] md:w-[75%] border-t border-text-gray pt-6 pb-10 flex flex-col md:flex-row items-center justify-between text-xs text-white">
-          <p>Copyright © 2025 KMA. All Rights Reserved.</p>
 
-          <div className="flex items-center gap-3 mt-4 md:mt-0">
-            <span>Social Media:</span>
+      {/* Bottom Bar */}
+      <div className="w-full flex justify-center">
+        <div className="w-[90%] md:w-[75%] border-t border-text-gray/60 py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-xs text-white">
+          <p className="text-center md:text-left">
+            Copyright © {currentYear} KMA. All Rights Reserved.
+          </p>
+
+          <div className="flex items-center justify-center md:justify-end gap-3">
+            <span className="text-white/90">Social Media:</span>
 
             {fbLink && (
               <a
                 href={fbLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:opacity-80"
+                className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 hover:border-white/20 transition"
+                aria-label="Facebook"
               >
                 <Image
                   src="/assets/footor/facebook.svg"
-                  width={9}
-                  height={9}
+                  width={14}
+                  height={14}
                   alt="facebook"
                 />
               </a>
@@ -370,12 +368,13 @@ export default function HomeFooter({
                 href={twitterLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:opacity-80"
+                className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 hover:border-white/20 transition"
+                aria-label="X"
               >
                 <Image
                   src="/assets/footor/x.svg"
-                  width={14}
-                  height={14}
+                  width={16}
+                  height={16}
                   alt="x"
                 />
               </a>
@@ -386,12 +385,13 @@ export default function HomeFooter({
                 href={youtubeLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:opacity-80"
+                className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 hover:border-white/20 transition"
+                aria-label="YouTube"
               >
                 <Image
                   src="/assets/footor/youtube.svg"
-                  width={16}
-                  height={16}
+                  width={18}
+                  height={18}
                   alt="youtube"
                 />
               </a>
@@ -402,12 +402,13 @@ export default function HomeFooter({
                 href={instagramLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:opacity-80"
+                className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 hover:border-white/20 transition"
+                aria-label="Instagram"
               >
                 <Image
                   src="/assets/footor/instagram.svg"
-                  width={14}
-                  height={14}
+                  width={16}
+                  height={16}
                   alt="instagram"
                 />
               </a>
@@ -415,6 +416,6 @@ export default function HomeFooter({
           </div>
         </div>
       </div>
-    </>
+    </footer>
   );
 }
