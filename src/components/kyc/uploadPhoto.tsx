@@ -285,8 +285,7 @@ export default function UploadPhoto() {
           className="cursor-pointer w-full md:w-[130px] px-12 py-3 animated-button border border-blue"
           onClick={() => {
             stopCamera()
-            // uploadFileHanlder()
-            router.push('/kyc?tabName=Aadhar Verification')
+            uploadFileHanlder()
           }}
           disabled={ownerLoader || uploadLoader}
         >
