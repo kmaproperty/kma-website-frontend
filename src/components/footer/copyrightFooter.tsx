@@ -15,5 +15,4 @@ export default function CopyRightFooter() {
       </div>
     </div>
   )
-  
-}
+  }
