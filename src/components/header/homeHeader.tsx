@@ -16,12 +16,26 @@ import HomeMobileHeader from "./homeMobileHeader";
 import ProfileView from "./profileView";
 import { useRouter } from "nextjs-toploader/app";
 import { USER_TYPE } from "@/lib/enums";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { getSelectedCity } from "@/store/homeHeaderSlice";
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+
+const getUserRoleFromLocalStorage = (): string | null => {
+  const raw = localStorage.getItem("user");
+  if (!raw) return null;
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (isRecord(parsed) && typeof parsed.role === "string") return parsed.role;
+    return null;
+  } catch {
+    return null;
+  }
+};
 
 export default function HomdeHeader({cityData, cityLoader, fetchCities, propertyMasterData}) {
   const router = useRouter()
-  const dispatch = useDispatch()
   const selectedCity = useSelector(getSelectedCity)
   const [anchorEl, setanchorEl] = useState(null);
   const [menuList, setMenuList] = useState([]);
@@ -30,6 +44,7 @@ export default function HomdeHeader({cityData, cityLoader, fetchCities, property
   const [profileMenu, setProfileMenu] = useState(null)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [activeSubMenu, setActiveSubMenu] = useState(null);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const [userRole, setUserRole] = useState(null)
  
@@ -90,6 +105,16 @@ export default function HomdeHeader({cityData, cityLoader, fetchCities, property
     setType(null)
   };
 
+  // Make header clearly visible on scroll by switching to a solid theme color background.
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 20);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, []);
+
   useEffect(() => {
   if (!openType) return;
   window.addEventListener("scroll", handleScroll, { passive: true });
@@ -99,20 +124,10 @@ export default function HomdeHeader({cityData, cityLoader, fetchCities, property
   };
 }, [openType]);
 
-const returnUserRole = () => {
-  let userData: any = localStorage.getItem('user')
-  if(userData){
-    userData = JSON.parse(userData)
-    return userData?.role
-  }else{
-    return null
-  }
-}
-
 useEffect(() => {
   const userData = localStorage.getItem('user')
   if(userData){
-    setUserRole(returnUserRole())
+    setUserRole(getUserRoleFromLocalStorage())
   }
 },[])
 
@@ -128,8 +143,16 @@ const navigateDashboard = () => {
 
   return (
     <>
+    <div className="sticky top-0 z-50 w-full flex justify-center">
     <div className="w-[90%] lg:w-[75%] mt-[25px]">
-      <div className="bg-white/10 rounded-[200px] bg-clip-padding backdrop-filter  backdrop-blur-[20px] h-[50px] 2md:h-[63px] px-3 lg:px-7 pt-[4px] flex justify-between items-center border border-1 border-[#FFFFFF33]">
+      <div
+        className={[
+          "rounded-[200px] h-[50px] 2md:h-[63px] px-3 lg:px-7 pt-[4px] flex justify-between items-center border border-1 transition-colors duration-300",
+          isScrolled
+            ? "bg-blue shadow-xl border-[#FFFFFF1F]"
+            : "bg-white/10 bg-clip-padding backdrop-filter backdrop-blur-[20px] border-[#FFFFFF33]",
+        ].join(" ")}
+      >
         <div className="flex items-center px-1.5 shrink-0 cursor-pointer">
           <Image
             src="/assets/kma-logo-white.svg"
@@ -259,11 +282,24 @@ const navigateDashboard = () => {
           open={openType}
           anchorEl={anchorEl}
           placement="bottom-start"
+          sx={{ zIndex: 9999 }}
           modifiers={[
             {
               name: "offset",
               options: {
                 offset: cityMenu ? [-50, 26] : type ? [-250, 20] : [0, 20],
+              },
+            },
+            {
+              name: "preventOverflow",
+              options: {
+                padding: 8,
+              },
+            },
+            {
+              name: "flip",
+              options: {
+                padding: 8,
               },
             },
           ]}
@@ -279,7 +315,7 @@ const navigateDashboard = () => {
             <div>
               {!cityMenu &&
                 (!type ? (
-                  <Paper className="w-auto min-w-[180px]! rounded-2xl! px-2 py-2 shadow-xl border border-gray-200">
+                  <Paper className="w-auto min-w-[180px]! rounded-2xl! px-2 py-2 shadow-xl border border-gray-200 bg-white relative z-[9999]">
                     {profileMenu != 'profile' ? <ListView menuList={menuList} />
                      : <ProfileView/>}
                   </Paper>
@@ -287,7 +323,7 @@ const navigateDashboard = () => {
                   <RentSellHeaderView propertyMasterData={propertyMasterData} type={type} />
                 ))}
               {cityMenu && (
-                <Paper className="w-auto min-w-[180px]! rounded-2xl! px-2 py-2 shadow-xl border border-gray-200">
+                <Paper className="w-auto min-w-[180px]! rounded-2xl! px-2 py-2 shadow-xl border border-gray-200 bg-white relative z-[9999]">
                     <CityView cityData={cityData} cityLoader={cityLoader} fetchCities={fetchCities} handleScroll={handleScroll}/>
                 </Paper>
               )}
@@ -295,6 +331,7 @@ const navigateDashboard = () => {
           </ClickAwayListener>
         </Popper>
       </div>
+    </div>
     </div>
     <HomeMobileHeader propertyMasterData={propertyMasterData} cityData={cityData} cityLoader={cityLoader} fetchCities={fetchCities} open={isDrawerOpen} onClose={toggleDrawer} activeSubMenu={activeSubMenu} openSubMenu={openSubMenu} closeSubMenu={closeSubMenu}/>
     </>
