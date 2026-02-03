@@ -1,5 +1,5 @@
 "use client";
-import HomdeHeader from "@/components/header/homeHeader";
+import HomeHeader from "@/components/header/homeHeader";
 import {
   BadgePercent,
   CircleCheckBig,
@@ -81,7 +81,7 @@ export default function AboutUsComponent({
       <div className="relative">
         <BannerSlider bannerHeight={'min-h-[600px] 2md:min-h-auto 2md:h-[60vh]'} backgroundImages={sliderImage} overlayClass='about-us-gradient-overlay'/>
         <div className="absolute flex flex-col items-center top-0 w-[100%] ">
-          <HomdeHeader
+          <HomeHeader
             fetchCities={fetchCities}
             cityLoader={cityLoader}
             cityData={cityData}

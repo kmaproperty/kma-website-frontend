@@ -127,6 +127,7 @@ export interface ChannelPartner {
     cities: string;
     experience_years: number;
     property_count: number;
+    rating?: number | string | null;
 }
 
 export interface GetChannelPartnerListResponse {

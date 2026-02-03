@@ -94,6 +94,8 @@ const topVariant = {
 };
 
 export default function ExploreSection({explorePropertyList}) {
+  console.log(explorePropertyList);
+  
   const sliderRef = useRef<Slider | null>(null);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
@@ -195,7 +197,7 @@ export default function ExploreSection({explorePropertyList}) {
                 />
 
                 <h3 className="text-lg font-semibold text-black text-center">
-                  {item.name}
+                 abhay {item.name}
                 </h3>
 
                 <p className="text-xs text-text-gray">{item.propertyCount} Properties</p>

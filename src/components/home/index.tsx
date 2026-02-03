@@ -1,22 +1,24 @@
 "use client";
-import AboutUsSection from "./aboutUsSection";
 import BannerSlider from "./bannerSlider";
-import NeedSection from "./needSection";
-import RealEstateSection from "./realEstetSection";
-import ExploreSection from "./exploreSection";
-import BlogSection from "./blogSection";
-import FeaturedProperties from "./featureProperties";
-import SuccessStoriesSection from "./successStoriesSection";
-import WorkingSection from "./workingSection";
-import ChannelPartnerSection from "./channelPartnerSection";
-import AppDownloadSection from "./appDownloadSection";
-import HomeFooter from "../footer/homeFooter";
 import MainHome from "./home";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AboutusResponse, CitiesResponse, getAboutUsDataAPiHanlder, getCityListApiHandler, getExploreApiHanlder, GetExplorePayload, GetExploreResponse, getTopProperties, GetTopPropertiesPayload, GetTopPropertiesResponse } from "@/services/homeService";
-import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getSelectedCity, setAboutusData, setSelectedCity } from "@/store/homeHeaderSlice";
+
+const LazyNeedSection = dynamic(() => import("./needSection"), { loading: () => <div className="min-h-[200px]" /> });
+const LazyRealEstateSection = dynamic(() => import("./realEstetSection"), { loading: () => <div className="min-h-[200px]" /> });
+const LazyAboutUsSection = dynamic(() => import("./aboutUsSection"), { loading: () => <div className="min-h-[200px]" /> });
+const LazyExploreSection = dynamic(() => import("./exploreSection"), { loading: () => <div className="min-h-[200px]" /> });
+const LazyFeaturedProperties = dynamic(() => import("./featureProperties"), { loading: () => <div className="min-h-[200px]" /> });
+const LazySuccessStoriesSection = dynamic(() => import("./successStoriesSection"), { loading: () => <div className="min-h-[200px]" /> });
+const LazyWorkingSection = dynamic(() => import("./workingSection"), { loading: () => <div className="min-h-[200px]" /> });
+const LazyChannelPartnerSection = dynamic(() => import("./channelPartnerSection"), { loading: () => <div className="min-h-[200px]" /> });
+const LazyAppDownloadSection = dynamic(() => import("./appDownloadSection"), { loading: () => <div className="min-h-[200px]" /> });
+const LazyBlogSection = dynamic(() => import("./blogSection"), { loading: () => <div className="min-h-[200px]" /> });
+const LazyHomeFooter = dynamic(() => import("../footer/homeFooter"), { loading: () => <div className="min-h-[200px]" /> });
 
 export default function Home({ propertyMasterData, propertyCitiesData }) {
   const dispatch = useDispatch()
@@ -49,22 +51,22 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
   });
 
   const { data: explorePropertyList } = useQuery({
-    queryKey: ["explore-list", selectedCity],
+    queryKey: ["explore-list", selectedCity?.id ?? null],
     queryFn: () => {
       const payload: GetExplorePayload = {
-        ...(selectedCity?.id ? { cityId: selectedCity?.id ?? null, } : {}),
-        ...(false ? { cityId: '' } : {}),
-        ...(false ? { cityId: '', } : {}),
+        ...(selectedCity?.id ? { cityId: selectedCity.id } : {}),
       };
       return getExploreApiHanlder(payload);
     },
     select: (response: GetExploreResponse) => {
       return response.propertyTypes;
     },
+    enabled: Boolean(selectedCity?.id),
+    staleTime: 60_000,
   });
 
   const { data } = useQuery({
-    queryKey: ["top-properties-list", selectedCity],
+    queryKey: ["top-properties-list", selectedCity?.id ?? null],
     queryFn: () => {
       const payload: GetTopPropertiesPayload = {
         cityId: selectedCity?.id ?? null
@@ -74,7 +76,8 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
     select: (response: GetTopPropertiesResponse) => {
       return response;
     },
-    enabled: selectedCity ? true : false
+    enabled: Boolean(selectedCity?.id),
+    staleTime: 60_000,
   });
 
   useEffect(() => {
@@ -90,16 +93,19 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
     }
   }, [dispatch, fetchAboutusData, fetchCities, propertyCitiesData])
 
-  const imageSlider = [
-    {
-      imagePath: "/assets/backgroundSlider/background_slider_1.jpg",
-      alt: "Background Image 1",
-    },
-    {
-      imagePath: "/assets/backgroundSlider/background_slider_2.png",
-      alt: "Background Image 2",
-    },
-  ];
+  const imageSlider = useMemo(
+    () => [
+      {
+        imagePath: "/assets/backgroundSlider/background_slider_1.jpg",
+        alt: "Background Image 1",
+      },
+      {
+        imagePath: "/assets/backgroundSlider/background_slider_2.png",
+        alt: "Background Image 2",
+      },
+    ],
+    []
+  );
 
   return (
     <div className="overflow-hidden">
@@ -109,50 +115,50 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
       </div>
       <div className="my-16 flex justify-center overflow-hidden">
         <div className="w-[90%] md:w-[75%]">
-          <NeedSection />
+          <LazyNeedSection />
         </div>
       </div>
       <div className="bg-[#F2F2F2] flex justify-center overflow-hidden">
         <div className="my-16 w-[90%] md:w-[75%]">
-          <RealEstateSection />
+          <LazyRealEstateSection />
         </div>
       </div>
       <div className="relative bg-text-black flex justify-center overflow-hidden">
-        <AboutUsSection />
+        <LazyAboutUsSection />
       </div>
       {Array.isArray(explorePropertyList) && explorePropertyList.length > 0 && <div className="my-16 flex justify-center">
         <div className="w-[90%] md:w-[75%]">
-          <ExploreSection explorePropertyList={explorePropertyList} />
+          <LazyExploreSection explorePropertyList={explorePropertyList} />
         </div>
       </div>}
       {Array.isArray(data?.properties) && data?.properties.length > 0 && <div className="bg-[#F2F2F2] flex justify-center">
         <div className="my-16 w-[90%] md:w-[75%]">
-          <FeaturedProperties topProperties={data?.properties ?? []} />
+          <LazyFeaturedProperties topProperties={data?.properties ?? []} />
         </div>
       </div>}
 
       <div className="relative bg-[#F2F2F2] flex justify-center overflow-hidden">
-        <SuccessStoriesSection />
+        <LazySuccessStoriesSection />
       </div>
 
       <div className="relative bg-text-black flex justify-center overflow-hidden">
-        <WorkingSection />
+        <LazyWorkingSection />
       </div>
       <div className="bg-[#F2F2F2] flex justify-center overflow-hidden">
         <div className="my-16 w-[90%] 2md:w-[75%]">
-          <ChannelPartnerSection selectedCity={selectedCity} />
+          <LazyChannelPartnerSection selectedCity={selectedCity} />
         </div>
       </div>
       <div className="">
-        <AppDownloadSection />
+        <LazyAppDownloadSection />
       </div>
       <div className="flex justify-center overflow-hidden">
         <div className="my-16 w-[90%] 2md:w-[75%]">
-          <BlogSection />
+          <LazyBlogSection />
         </div>
       </div>
       <div className="">
-        <HomeFooter propertyMasterData={propertyMasterData} />
+        <LazyHomeFooter propertyMasterData={propertyMasterData} />
       </div>
     </div>
   );

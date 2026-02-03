@@ -6,20 +6,47 @@ import { useMemo } from "react";
 import Slider from "react-slick";
 import Image from "next/image";
 
-const RenderSliderBody = ({ sliderItem, overlayClass, bannerHeight }) => {
+type SliderItem = { imagePath: string; alt?: string };
+
+const RenderSliderBody = ({
+  sliderItem,
+  overlayClass,
+  bannerHeight,
+  priority,
+}: {
+  sliderItem: SliderItem;
+  overlayClass?: string;
+  bannerHeight?: string;
+  priority?: boolean;
+}) => {
   return (
     <div className={`relative w-[100%] ${bannerHeight}`}>
       <div className="absolute inset-0 gradient-mask">
-        <Image alt='banner' className="" src={sliderItem.imagePath} fill/>
-        <div className={overlayClass}></div>  
+        <Image
+          alt={sliderItem.alt ?? "banner"}
+          className="object-cover"
+          src={sliderItem.imagePath}
+          fill
+          priority={priority}
+          sizes="100vw"
+        />
+        <div className={overlayClass}></div>
       </div>
     </div>
   );
 };
 
-export default function BannerSlider({backgroundImages, overlayClass, bannerHeight}){
+export default function BannerSlider({
+  backgroundImages,
+  overlayClass,
+  bannerHeight,
+}: {
+  backgroundImages: SliderItem[];
+  overlayClass?: string;
+  bannerHeight?: string;
+}) {
 
-    var settings = useMemo(() => {
+  const settings = useMemo(() => {
     return {
       dots: false,
       infinite: true,
@@ -32,17 +59,21 @@ export default function BannerSlider({backgroundImages, overlayClass, bannerHeig
     };
   }, []);
 
-  let sliderImages = useMemo(() => {
-    return backgroundImages
-  }, [backgroundImages]);
-
-    return(
-        <div>
-            <Slider {...settings}>
-                {sliderImages.map((sliderItem, index) => {
-                return <RenderSliderBody bannerHeight={bannerHeight} key={index} sliderItem={sliderItem} overlayClass={overlayClass}/>;
-                })}
-            </Slider>
-        </div>
-    )
+  return (
+    <div>
+      <Slider {...settings}>
+        {backgroundImages.map((sliderItem, index) => {
+          return (
+            <RenderSliderBody
+              bannerHeight={bannerHeight}
+              key={sliderItem.imagePath ?? index}
+              sliderItem={sliderItem}
+              overlayClass={overlayClass}
+              priority={index === 0}
+            />
+          );
+        })}
+      </Slider>
+    </div>
+  );
 }
