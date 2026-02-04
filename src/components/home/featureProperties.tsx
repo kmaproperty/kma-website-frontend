@@ -93,7 +93,7 @@ export default function FeaturedProperties({ topProperties }) {
             return (
               <motion.div
                 key={item?.id ?? index}
-                className="px-1.5 w-[344px] h-[528px]"
+                className="px-1.5 w-[320px] h-[500px]"
                 variants={index == 0 || index == 1 ? topVariant : bottomVariant}
                 animate={isInView ? "visible" : "hidden"}
               >
@@ -107,10 +107,10 @@ export default function FeaturedProperties({ topProperties }) {
                           width={600}
                           height={400}
                           alt="property"
-                          className="h-[230px] w-full object-cover"
+                          className="h-[210px] w-full object-cover"
                         />
                       ) : (
-                        <div className="w-full h-[230px] bg-gradient-to-br from-slate-100 via-slate-50 to-white flex items-center justify-center">
+                        <div className="w-full h-[210px] bg-gradient-to-br from-slate-100 via-slate-50 to-white flex items-center justify-center">
                           <span className="text-slate-400 text-xs font-medium">
                             No Image
                           </span>
@@ -118,7 +118,7 @@ export default function FeaturedProperties({ topProperties }) {
                       )}
 
                       {/* Tag pill */}
-                      <span className="absolute top-3 right-3 rounded-lg px-4 py-2 text-sm font-medium text-white bg-indigo-500 shadow-sm">
+                      <span className="absolute top-3 right-3 rounded-lg px-3 py-1.5 text-xs font-medium text-white bg-indigo-500 shadow-sm">
                         {item?.propertyType}
                       </span>
 
@@ -147,25 +147,25 @@ export default function FeaturedProperties({ topProperties }) {
                             {[...Array(5)].map((_, i) => (
                               <Star
                                 key={i}
-                                className="h-4 w-4"
+                                className="h-3.5 w-3.5"
                                 filled={i < filledStars}
                               />
                             ))}
                           </div>
-                          <span className="text-sm text-text-gray">
+                          <span className="text-xs text-text-gray">
                             {ratingNumber.toFixed(1)}
                           </span>
                         </div>
 
                         <button
                           type="button"
-                          className="rounded-full border border-slate-200 bg-white p-2 shadow-sm transition-colors hover:bg-slate-50"
+                          className="rounded-full border border-slate-200 bg-white p-1.5 shadow-sm transition-colors hover:bg-slate-50"
                           aria-label="Add to favorites"
                         >
                           <Image
                             src={"/assets/property/heart.svg"}
-                            width={18}
-                            height={18}
+                            width={16}
+                            height={16}
                             alt="Like"
                           />
                         </button>
@@ -173,14 +173,14 @@ export default function FeaturedProperties({ topProperties }) {
 
                       {/* Title + Address */}
                       <div className="min-h-[56px]">
-                        <p className="text-xl font-semibold leading-snug text-text-black line-clamp-2">
+                        <p className="text-lg font-semibold leading-snug text-text-black line-clamp-2">
                           {item?.propertyName}
                         </p>
-                        <div className="mt-1 flex items-start gap-2 text-sm text-text-gray">
+                        <div className="mt-1 flex items-start gap-2 text-xs text-text-gray">
                           <Image
                             src={"/assets/location-blue.svg"}
-                            width={16}
-                            height={16}
+                            width={14}
+                            height={14}
                             alt="location"
                             className="mt-0.5"
                           />
@@ -189,15 +189,15 @@ export default function FeaturedProperties({ topProperties }) {
                       </div>
 
                       {/* Price */}
-                      <div className="text-2xl font-bold text-blue">
+                      <div className="text-xl font-bold text-blue">
                         <span>₹ {formattedPrice}</span>
-                        <span className="text-sm font-medium text-text-gray">
+                        <span className="text-xs font-medium text-text-gray">
                           {item?.listingType == "Sale" ? "" : " / Month"}
                         </span>
                       </div>
 
                       {/* Meta */}
-                      <div className="mt-1 border-t border-slate-200 pt-3 text-sm">
+                      <div className="mt-1 border-t border-slate-200 pt-3 text-xs">
                         <div className="flex items-center gap-2">
                           <span className="text-text-gray">Listed on :</span>
                           <span className="text-text-black">25 May 2025</span>
@@ -226,22 +226,22 @@ export default function FeaturedProperties({ topProperties }) {
                             "Agricultural Land",
                           ].includes(item?.propertyType) ? (
                             <>
-                              <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 text-sm text-text-black border border-slate-200">
+                              <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-2.5 py-1.5 text-xs text-text-black border border-slate-200">
                                 <Image
                                   src={"/assets/property/bad.svg"}
-                                  width={18}
-                                  height={18}
+                                  width={16}
+                                  height={16}
                                   alt="bed"
                                 />
                                 <span className="whitespace-nowrap">
                                   {item?.bed} Bed
                                 </span>
                               </div>
-                              <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 text-sm text-text-black border border-slate-200">
+                              <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-2.5 py-1.5 text-xs text-text-black border border-slate-200">
                                 <Image
                                   src={"/assets/property/bathroom.svg"}
-                                  width={18}
-                                  height={18}
+                                  width={16}
+                                  height={16}
                                   alt="bath"
                                 />
                                 <span className="whitespace-nowrap">
@@ -251,18 +251,18 @@ export default function FeaturedProperties({ topProperties }) {
                             </>
                           ) : null}
 
-                          {size ? (
-                            <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 text-sm text-text-black border border-slate-200 max-w-full">
+                          {/* {size ? (
+                            <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-2.5 py-1.5 text-xs text-text-black border border-slate-200 max-w-full">
                               <Image
                                 src={"/assets/property/major-white.svg"}
-                                width={18}
-                                height={18}
+                                width={16}
+                                height={16}
                                 alt="size"
                                 className="invert"
                               />
                               <span className="truncate">{size}</span>
                             </div>
-                          ) : null}
+                          ) : null} */}
                         </div>
                       </div>
                     </div>
@@ -284,29 +284,29 @@ export default function FeaturedProperties({ topProperties }) {
           <button
             type="button"
             onClick={() => sliderRef.current?.slickPrev()}
-            className="bg-blue text-white cursor-pointer w-9 h-9 rounded-full flex justify-center"
+            className="bg-blue text-white cursor-pointer w-8 h-8 rounded-full flex justify-center"
           >
             <Image
               src="/assets/explore/left-arrow.svg"
               alt="left-arrow"
-              width={15}
-              height={15}
+              width={14}
+              height={14}
             />
           </button>
 
           <button
             type="button"
             onClick={() => sliderRef.current?.slickNext()}
-            className="bg-blue text-white cursor-pointer w-9 h-9 rounded-full flex justify-center"
+            className="bg-blue text-white cursor-pointer w-8 h-8 rounded-full flex justify-center"
           >
             <Image
               src="/assets/explore/right-arrow.svg"
               alt="left-arrow"
-              width={15}
-              height={15}
+              width={14}
+              height={14}
             />
           </button>
-          <button className="w-auto text-sm 1xl:text-base animated-button px-8 py-2 border border-blue text-center cursor-pointer">
+          <button className="w-auto text-xs 1xl:text-sm animated-button px-6 py-1.5 border border-blue text-center cursor-pointer">
             <span className="gap-3 relative flex justify-center">
               <p className={`text-nowrap`}>All View</p>
             </span>

@@ -1,8 +1,23 @@
 "use client";
 import BannerSlider from "./bannerSlider";
 import MainHome from "./home";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { AboutusResponse, CitiesResponse, getAboutUsDataAPiHanlder, getCityListApiHandler, getExploreApiHanlder, GetExplorePayload, GetExploreResponse, getTopProperties, GetTopPropertiesPayload, GetTopPropertiesResponse } from "@/services/homeService";
+import {  useMutation, useQuery } from "@tanstack/react-query";
+import {
+  AboutusResponse,
+  ChannelPartner,
+  CitiesResponse,
+  getAboutUsDataAPiHanlder,
+  getChannelPartnerListApiHandler,
+  getCityListApiHandler,
+  getExploreApiHanlder,
+  GetChannelPartnerListPayload,
+  GetChannelPartnerListResponse,
+  GetExplorePayload,
+  GetExploreResponse,
+  getTopProperties,
+  GetTopPropertiesPayload,
+  GetTopPropertiesResponse,
+} from "@/services/homeService";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -80,6 +95,34 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
     staleTime: 60_000,
   });
 
+  const { data: channelPartnerList = [] } = useQuery<
+    GetChannelPartnerListResponse,
+    unknown,
+    ChannelPartner[]
+  >({
+    queryKey: ["channel-partner", selectedCity?.name ?? ""],
+    queryFn: () => {
+      const payload: GetChannelPartnerListPayload = {
+        city: selectedCity?.name ?? "",
+        experience: "",
+        limit: "8",
+        page: "1",
+        search: "",
+      };
+      return getChannelPartnerListApiHandler(payload);
+    },
+    select: (response: GetChannelPartnerListResponse) => response?.data ?? [],
+    enabled: Boolean(selectedCity?.name),
+    // Keep the list stable to avoid UI flicker/refresh feel on remount/refetch.
+    // placeholderData: keepPreviousData,
+    // staleTime: 5 * 60_000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: true,
+  });
+
+  console.log(channelPartnerList, "channelPartnerList");
+
+
   useEffect(() => {
     fetchAboutusData()
     if (propertyCitiesData) {
@@ -144,11 +187,13 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
       <div className="relative bg-text-black flex justify-center overflow-hidden">
         <LazyWorkingSection />
       </div>
-      <div className="bg-[#F2F2F2] flex justify-center overflow-hidden">
-        <div className="my-16 w-[90%] 2md:w-[75%]">
-          <LazyChannelPartnerSection selectedCity={selectedCity} />
+      {Array.isArray(channelPartnerList) && channelPartnerList.length > 0 && (
+        <div className="bg-[#F2F2F2] flex justify-center overflow-hidden">
+          <div className="my-16 w-[90%] 2md:w-[75%]">
+            <LazyChannelPartnerSection channelPartnerList={channelPartnerList} />
+          </div>
         </div>
-      </div>
+      )}
       <div className="">
         <LazyAppDownloadSection />
       </div>

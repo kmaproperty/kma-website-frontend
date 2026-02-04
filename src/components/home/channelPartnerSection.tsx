@@ -3,15 +3,10 @@ import Image from "next/image";
 import SectionHeader from "../common/home/secionHeader";
 import { useId, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
 import {
-  getChannelPartnerListApiHandler,
-  GetChannelPartnerListPayload,
-  GetChannelPartnerListResponse,
+  ChannelPartner,
 } from "@/services/homeService";
 import ContactUsPopup from "../contactUsPopup";
-import { useSelector } from "react-redux";
-import { getSelectedCity } from "@/store/homeHeaderSlice";
 import { joinUrl } from "@/lib/helper";
 
 type SelectedCity = { id?: unknown; name?: string } | null | undefined;
@@ -62,47 +57,24 @@ const rightVariant = {
 };
 
 export default function ChannelPartnerSection({
-  selectedCity: selectedCityProp,
+  channelPartnerList,
 }: {
-  selectedCity?: SelectedCity;
+  channelPartnerList?: ChannelPartner[];
 }) {
-  const selectedCityFromRedux = useSelector(getSelectedCity) as SelectedCity;
-  const selectedCity = selectedCityProp ?? selectedCityFromRedux;
   const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
   const [openContact, setOpenContact] = useState(false);
 
-  const { data: channelPartnerResponse } = useQuery<GetChannelPartnerListResponse>({
-    queryKey: ["channel-partner", selectedCity?.name ?? ""],
-    // Override global defaults (staleTime: 5min, refetchOnWindowFocus: false)
-    // so this section stays in sync when backend data changes.
-    staleTime: 0,
-    refetchOnMount: "always",
-    refetchOnWindowFocus: true,
-    refetchOnReconnect: true,
-    // Keep UI updated even if you stay on the page (polling).
-    // Adjust the interval as needed (ms).
-    refetchInterval: 30_000,
-    refetchIntervalInBackground: false,
-    queryFn: () => {
-      const payload: GetChannelPartnerListPayload = {
-        city: selectedCity?.name ?? "",
-        experience: "",
-        limit: "8",
-        page: "1",
-        // properties: '',
-        search: "",
-      };
-      return getChannelPartnerListApiHandler(payload);
-    },
-  });
 
-  const channelPartnerList = channelPartnerResponse?.data ?? [];
-  if (!Array.isArray(channelPartnerList) || channelPartnerList.length === 0) {
-    return null;
-  }
+  console.log(channelPartnerList, "channelPartnerList");
+
+
+
+  // if (!Array.isArray(channelPartnerList) || channelPartnerList.length === 0) {
+  //   return null;
+  // }
 
   return (
     <div ref={ref} className="">
