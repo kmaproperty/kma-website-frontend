@@ -69,6 +69,7 @@ export interface Project {
 }
 
 export interface ProjectsFilters {
+  searchText: string;
   searchLocality: string;
 
   buildingType: BuildingType;

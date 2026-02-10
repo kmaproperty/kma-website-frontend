@@ -1,13 +1,15 @@
 "use client";
 
 import { useMemo, useTransition } from "react";
-import { Search, RotateCcw } from "lucide-react";
+import { Search, RotateCcw, Check } from "lucide-react";
 import ActiveFilterChips from "./ActiveFilterChips";
 import { useProjectsStore } from "../_store/useProjectsStore";
 import type {
   Amenity,
   BuildingType,
   Furnishing,
+  ProjectsFilters,
+  PostedByTab,
   PossessionStatus,
   PropertyType,
 } from "../_types";
@@ -15,14 +17,19 @@ import { cx } from "../_utils/format";
 
 function Section({
   title,
+  hint,
   children,
 }: {
   title: string;
+  hint?: string;
   children: React.ReactNode;
 }) {
   return (
-    <div className="mt-4">
-      <div className="text-sm font-semibold text-text-black">{title}</div>
+    <div className="py-4">
+      <div className="flex items-end justify-between gap-3">
+        <div className="text-sm font-semibold text-text-black">{title}</div>
+        {hint ? <div className="text-xs text-text-gray">{hint}</div> : null}
+      </div>
       <div className="mt-2">{children}</div>
     </div>
   );
@@ -42,8 +49,13 @@ function CheckboxRow({
   return (
     <label
       className={cx(
-        "flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1 text-sm",
-        disabled ? "cursor-not-allowed opacity-50" : "hover:bg-background-gray"
+        "flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-sm transition",
+        checked ? "border-blue bg-light-purple" : "border-border bg-white",
+        disabled
+          ? "cursor-not-allowed opacity-50"
+          : checked
+            ? "hover:brightness-[0.98]"
+            : "hover:bg-background-gray"
       )}
     >
       <input
@@ -51,14 +63,27 @@ function CheckboxRow({
         checked={checked}
         onChange={onChange}
         disabled={disabled}
-        className="h-4 w-4 accent-blue"
+        className="sr-only"
       />
-      <span className="text-text-gray">{label}</span>
+      <span
+        className={cx(
+          "flex h-5 w-5 items-center justify-center rounded-md border transition",
+          checked ? "border-blue bg-blue text-white" : "border-border bg-white text-transparent"
+        )}
+        aria-hidden
+      >
+        <Check className="h-3.5 w-3.5" />
+      </span>
+      <span className={cx(checked ? "font-medium text-text-black" : "text-text-gray")}>
+        {label}
+      </span>
     </label>
   );
 }
 
 export default function FiltersSidebar() {
+  const tab = useProjectsStore((s) => s.tab);
+  const setTab = useProjectsStore((s) => s.setTab);
   const filters = useProjectsStore((s) => s.filters);
   const resetFilters = useProjectsStore((s) => s.resetFilters);
   const setFilters = useProjectsStore((s) => s.setFilters);
@@ -71,6 +96,13 @@ export default function FiltersSidebar() {
 
   const [isPending, startTransition] = useTransition();
 
+  const patchFilters = <K extends keyof ProjectsFilters>(
+    key: K,
+    value: ProjectsFilters[K]
+  ) => {
+    setFilters({ [key]: value } as Pick<ProjectsFilters, K>);
+  };
+
   const propertyTypeOptions: Array<{ id: PropertyType; label: string }> = useMemo(
     () => [
       { id: "villa", label: "Villa" },
@@ -79,7 +111,7 @@ export default function FiltersSidebar() {
       { id: "penthouse", label: "Penthouse" },
       { id: "apartment", label: "Apartment" },
       { id: "retail_shop", label: "Retail shop" },
-      { id: "office_space", label: "Of Space" },
+      { id: "office_space", label: "Office Space" },
     ],
     []
   );
@@ -114,12 +146,16 @@ export default function FiltersSidebar() {
 
   const setBudget = (key: "minBudget" | "maxBudget", raw: string) => {
     const v = raw === "" ? null : Number(raw);
-    startTransition(() => setFilters({ [key]: Number.isFinite(v as number) ? v : null } as any));
+    startTransition(() =>
+      patchFilters(key, v == null ? null : Number.isFinite(v) ? v : null)
+    );
   };
 
   const setSize = (key: "minSizeSqYd" | "maxSizeSqYd", raw: string) => {
     const v = raw === "" ? null : Number(raw);
-    startTransition(() => setFilters({ [key]: Number.isFinite(v as number) ? v : null } as any));
+    startTransition(() =>
+      patchFilters(key, v == null ? null : Number.isFinite(v) ? v : null)
+    );
   };
 
   const buildingButtons: Array<{ id: BuildingType; label: string }> = useMemo(
@@ -131,197 +167,229 @@ export default function FiltersSidebar() {
   );
 
   return (
-    <div className="rounded-xl border border-border bg-white p-4 shadow-sm">
-      <div className="flex items-center justify-between">
-        <div className="text-base font-semibold text-text-black">Filters</div>
-        <button
-          onClick={() => startTransition(() => resetFilters())}
-          className="flex cursor-pointer items-center gap-1 text-sm font-medium text-blue hover:underline"
-        >
-          <RotateCcw className="h-4 w-4" />
-          Reset
-        </button>
+    <div className="overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
+      <div className="sticky top-0 z-10 border-b border-border bg-white/95 p-4 backdrop-blur">
+        <div className="flex items-center justify-between gap-3">
+          <div className="text-base font-semibold text-text-black">Filters</div>
+          <button
+            onClick={() => startTransition(() => resetFilters())}
+            className="flex cursor-pointer items-center gap-1 rounded-lg px-2 py-1 text-sm font-medium text-blue hover:bg-light-purple hover:underline"
+          >
+            <RotateCcw className="h-4 w-4" />
+            Reset
+          </button>
+        </div>
+
+        <ActiveFilterChips />
+
+        {isPending && (
+          <div className="mt-3 rounded-lg bg-light-purple px-3 py-2 text-xs text-blue">
+            Updating filters…
+          </div>
+        )}
       </div>
 
-      <ActiveFilterChips />
-
-      {isPending && (
-        <div className="mt-3 rounded-lg bg-light-purple px-3 py-2 text-xs text-blue">
-          Updating filters…
-        </div>
-      )}
-
-      <Section title="Budget">
-        <div className="grid grid-cols-2 gap-2">
-          <select
-            value={filters.minBudget ?? ""}
-            onChange={(e) => setBudget("minBudget", e.target.value)}
-            className="h-10 w-full rounded-lg border border-border bg-white px-3 text-sm text-text-gray outline-none focus:border-blue"
-          >
-            <option value="">Min</option>
-            {[0.5, 1, 1.4, 2, 5, 10].map((v) => (
-              <option key={v} value={v}>
-                ₹ {v} Cr
-              </option>
-            ))}
-          </select>
-          <select
-            value={filters.maxBudget ?? ""}
-            onChange={(e) => setBudget("maxBudget", e.target.value)}
-            className="h-10 w-full rounded-lg border border-border bg-white px-3 text-sm text-text-gray outline-none focus:border-blue"
-          >
-            <option value="">Max</option>
-            {[1, 2, 5, 10, 20].map((v) => (
-              <option key={v} value={v}>
-                ₹ {v} Cr
-              </option>
-            ))}
-          </select>
-        </div>
-      </Section>
-
-      <Section title="Size">
-        <div className="grid grid-cols-2 gap-2">
-          <select
-            value={filters.minSizeSqYd ?? ""}
-            onChange={(e) => setSize("minSizeSqYd", e.target.value)}
-            className="h-10 w-full rounded-lg border border-border bg-white px-3 text-sm text-text-gray outline-none focus:border-blue"
-          >
-            <option value="">Min</option>
-            {[50, 100, 119, 150, 200].map((v) => (
-              <option key={v} value={v}>
-                {v} Sq.Yd.
-              </option>
-            ))}
-          </select>
-          <select
-            value={filters.maxSizeSqYd ?? ""}
-            onChange={(e) => setSize("maxSizeSqYd", e.target.value)}
-            className="h-10 w-full rounded-lg border border-border bg-white px-3 text-sm text-text-gray outline-none focus:border-blue"
-          >
-            <option value="">Max</option>
-            {[119, 150, 200, 300].map((v) => (
-              <option key={v} value={v}>
-                {v} Sq.Yd.
-              </option>
-            ))}
-          </select>
-        </div>
-      </Section>
-
-      <Section title="Building Type">
-        <div className="grid grid-cols-2 gap-2">
-          {buildingButtons.map((b) => (
-            <button
-              key={b.id}
-              onClick={() =>
-                startTransition(() => setBuildingType(filters.buildingType === b.id ? "all" : b.id))
+      <div className="divide-y divide-border px-4">
+        <Section title="Localities" hint="Search by area">
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-gray" />
+            <input
+              value={filters.searchLocality}
+              onChange={(e) =>
+                startTransition(() => setFilters({ searchLocality: e.target.value }))
               }
-              className={cx(
-                "h-10 cursor-pointer rounded-lg border text-sm font-medium transition",
-                filters.buildingType === b.id
-                  ? "border-blue bg-blue text-white"
-                  : "border-border bg-white text-text-gray hover:bg-background-gray"
-              )}
-              aria-pressed={filters.buildingType === b.id}
+              placeholder="Search locality..."
+              className="h-10 w-full rounded-xl border border-border bg-white pl-9 pr-3 text-sm text-text-gray outline-none transition focus:border-blue"
+            />
+          </div>
+        </Section>
+
+        <Section title="Posted by">
+          <div className="grid grid-cols-3 gap-2">
+            {(
+              [
+                { id: "all", label: "All" },
+                { id: "owner", label: "Owner" },
+                { id: "channel_partner", label: "Channel Partner" },
+              ] satisfies Array<{ id: PostedByTab; label: string }>
+            ).map((t) => (
+              <button
+                key={t.id}
+                onClick={() => startTransition(() => setTab(t.id))}
+                className={cx(
+                  "h-10 cursor-pointer rounded-xl border text-sm font-medium transition",
+                  tab === t.id
+                    ? "border-blue bg-blue text-white"
+                    : "border-border bg-white text-text-gray hover:bg-background-gray"
+                )}
+                aria-pressed={tab === t.id}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </Section>
+
+        <Section title="Budget" hint="₹ Crore">
+          <div className="grid grid-cols-2 gap-2">
+            <select
+              value={filters.minBudget ?? ""}
+              onChange={(e) => setBudget("minBudget", e.target.value)}
+              className="h-10 w-full cursor-pointer rounded-xl border border-border bg-white px-3 text-sm text-text-gray outline-none transition focus:border-blue"
             >
-              {b.label}
-            </button>
-          ))}
-        </div>
-      </Section>
+              <option value="">Min</option>
+              {[0.5, 1, 1.4, 2, 5, 10].map((v) => (
+                <option key={v} value={v}>
+                  ₹ {v} Cr
+                </option>
+              ))}
+            </select>
+            <select
+              value={filters.maxBudget ?? ""}
+              onChange={(e) => setBudget("maxBudget", e.target.value)}
+              className="h-10 w-full cursor-pointer rounded-xl border border-border bg-white px-3 text-sm text-text-gray outline-none transition focus:border-blue"
+            >
+              <option value="">Max</option>
+              {[1, 2, 5, 10, 20].map((v) => (
+                <option key={v} value={v}>
+                  ₹ {v} Cr
+                </option>
+              ))}
+            </select>
+          </div>
+        </Section>
 
-      <Section title="Property Type">
-        <div className="grid grid-cols-2 gap-1">
-          {propertyTypeOptions.map((p) => (
+        <Section title="Size" hint="Sq. Yd.">
+          <div className="grid grid-cols-2 gap-2">
+            <select
+              value={filters.minSizeSqYd ?? ""}
+              onChange={(e) => setSize("minSizeSqYd", e.target.value)}
+              className="h-10 w-full cursor-pointer rounded-xl border border-border bg-white px-3 text-sm text-text-gray outline-none transition focus:border-blue"
+            >
+              <option value="">Min</option>
+              {[50, 100, 119, 150, 200].map((v) => (
+                <option key={v} value={v}>
+                  {v} Sq.Yd.
+                </option>
+              ))}
+            </select>
+            <select
+              value={filters.maxSizeSqYd ?? ""}
+              onChange={(e) => setSize("maxSizeSqYd", e.target.value)}
+              className="h-10 w-full cursor-pointer rounded-xl border border-border bg-white px-3 text-sm text-text-gray outline-none transition focus:border-blue"
+            >
+              <option value="">Max</option>
+              {[119, 150, 200, 300].map((v) => (
+                <option key={v} value={v}>
+                  {v} Sq.Yd.
+                </option>
+              ))}
+            </select>
+          </div>
+        </Section>
+
+        <Section title="Building Type">
+          <div className="grid grid-cols-2 gap-2">
+            {buildingButtons.map((b) => (
+              <button
+                key={b.id}
+                onClick={() =>
+                  startTransition(() =>
+                    setBuildingType(filters.buildingType === b.id ? "all" : b.id)
+                  )
+                }
+                className={cx(
+                  "h-10 cursor-pointer rounded-xl border text-sm font-medium transition",
+                  filters.buildingType === b.id
+                    ? "border-blue bg-blue text-white"
+                    : "border-border bg-white text-text-gray hover:bg-background-gray"
+                )}
+                aria-pressed={filters.buildingType === b.id}
+              >
+                {b.label}
+              </button>
+            ))}
+          </div>
+        </Section>
+
+        <Section title="Property Type">
+          <div className="grid grid-cols-2 gap-2">
+            {propertyTypeOptions.map((p) => (
+              <CheckboxRow
+                key={p.id}
+                checked={filters.propertyTypes.includes(p.id)}
+                label={p.label}
+                onChange={() => startTransition(() => togglePropertyType(p.id))}
+              />
+            ))}
+          </div>
+        </Section>
+
+        <Section title="Bedroom">
+          <div className="grid grid-cols-2 gap-2">
             <CheckboxRow
-              key={p.id}
-              checked={filters.propertyTypes.includes(p.id)}
-              label={p.label}
-              onChange={() => startTransition(() => togglePropertyType(p.id))}
+              checked={filters.bedrooms.includes(1)}
+              label="1 BHK"
+              onChange={() => startTransition(() => toggleBedroom(1))}
             />
-          ))}
-        </div>
-      </Section>
-
-      <Section title="Bedroom">
-        <div className="grid grid-cols-2 gap-1">
-          <CheckboxRow
-            checked={filters.bedrooms.includes(1)}
-            label="1 BHK"
-            onChange={() => startTransition(() => toggleBedroom(1))}
-          />
-          <CheckboxRow checked={false} label="1.5 BHK" onChange={() => {}} disabled />
-          <CheckboxRow checked={false} label="1 RK" onChange={() => {}} disabled />
-          <CheckboxRow
-            checked={filters.bedrooms.includes(2)}
-            label="2 RK"
-            onChange={() => startTransition(() => toggleBedroom(2))}
-          />
-          <CheckboxRow
-            checked={filters.bedrooms.includes(3)}
-            label="3 RK"
-            onChange={() => startTransition(() => toggleBedroom(3))}
-          />
-        </div>
-      </Section>
-
-      <Section title="Localities">
-        <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-gray" />
-          <input
-            value={filters.searchLocality}
-            onChange={(e) =>
-              startTransition(() => setFilters({ searchLocality: e.target.value }))
-            }
-            placeholder="Search..."
-            className="h-10 w-full rounded-lg border border-border bg-white pl-9 pr-3 text-sm text-text-gray outline-none focus:border-blue"
-          />
-        </div>
-      </Section>
-
-      <Section title="Furnishing Status">
-        <div className="grid grid-cols-2 gap-2">
-          {furnishingOptions.slice(1).map((f) => (
+            <CheckboxRow checked={false} label="1.5 BHK" onChange={() => {}} disabled />
+            <CheckboxRow checked={false} label="1 RK" onChange={() => {}} disabled />
             <CheckboxRow
-              key={f.id}
-              checked={filters.furnishing === f.id}
-              label={f.label}
-              onChange={() =>
-                startTransition(() =>
-                  setFurnishing(filters.furnishing === f.id ? "any" : (f.id as Furnishing))
-                )
-              }
+              checked={filters.bedrooms.includes(2)}
+              label="2 RK"
+              onChange={() => startTransition(() => toggleBedroom(2))}
             />
-          ))}
-        </div>
-      </Section>
-
-      <Section title="Possession Status">
-        <div className="grid grid-cols-2 gap-2">
-          {possessionOptions.map((p) => (
             <CheckboxRow
-              key={p.id}
-              checked={filters.possessionStatuses.includes(p.id)}
-              label={p.label}
-              onChange={() => startTransition(() => togglePossession(p.id))}
+              checked={filters.bedrooms.includes(3)}
+              label="3 RK"
+              onChange={() => startTransition(() => toggleBedroom(3))}
             />
-          ))}
-        </div>
-      </Section>
+          </div>
+        </Section>
 
-      <Section title="Amenities">
-        <div className="grid grid-cols-1 gap-1">
-          {amenityOptions.map((a) => (
-            <CheckboxRow
-              key={a.id}
-              checked={filters.amenities.includes(a.id)}
-              label={a.label}
-              onChange={() => startTransition(() => toggleAmenity(a.id))}
-            />
-          ))}
-        </div>
-      </Section>
+        <Section title="Furnishing Status">
+          <div className="grid grid-cols-2 gap-2">
+            {furnishingOptions.slice(1).map((f) => (
+              <CheckboxRow
+                key={f.id}
+                checked={filters.furnishing === f.id}
+                label={f.label}
+                onChange={() =>
+                  startTransition(() =>
+                    setFurnishing(filters.furnishing === f.id ? "any" : (f.id as Furnishing))
+                  )
+                }
+              />
+            ))}
+          </div>
+        </Section>
+
+        <Section title="Possession Status">
+          <div className="grid grid-cols-2 gap-2">
+            {possessionOptions.map((p) => (
+              <CheckboxRow
+                key={p.id}
+                checked={filters.possessionStatuses.includes(p.id)}
+                label={p.label}
+                onChange={() => startTransition(() => togglePossession(p.id))}
+              />
+            ))}
+          </div>
+        </Section>
+
+        <Section title="Amenities">
+          <div className="grid grid-cols-1 gap-2">
+            {amenityOptions.map((a) => (
+              <CheckboxRow
+                key={a.id}
+                checked={filters.amenities.includes(a.id)}
+                label={a.label}
+                onChange={() => startTransition(() => toggleAmenity(a.id))}
+              />
+            ))}
+          </div>
+        </Section>
+      </div>
     </div>
   );
 }

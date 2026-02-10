@@ -10,7 +10,7 @@ function typeLabel(t: PropertyType) {
     case "retail_shop":
       return "Retail shop";
     case "office_space":
-      return "Of Space";
+      return "Office Space";
     case "ind_floor":
       return "Ind Floor";
     default:
@@ -45,11 +45,11 @@ export default function ActiveFilterChips() {
           key={c.id}
           onClick={() => removeChip(c.id)}
           className={cx(
-            "group flex cursor-pointer items-center gap-2 rounded-lg border border-border bg-white px-3 py-1.5 text-xs text-text-gray transition hover:bg-background-gray"
+            "group flex cursor-pointer items-center gap-2 rounded-md border border-[#C7C6FF] bg-[#F7F7FF] px-3 py-1.5 text-xs text-text-gray transition hover:brightness-[0.98]"
           )}
         >
           <span>{c.label}</span>
-          <span className="rounded-md p-0.5 text-text-gray group-hover:bg-white">
+          <span className="rounded-md p-0.5 text-text-gray group-hover:bg-white/60">
             <X className="h-3.5 w-3.5" />
           </span>
         </button>

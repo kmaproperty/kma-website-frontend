@@ -11,6 +11,7 @@ import type {
 } from "../_types";
 
 const DEFAULT_FILTERS: ProjectsFilters = {
+  searchText: "",
   searchLocality: "",
   buildingType: "all",
   propertyTypes: [],

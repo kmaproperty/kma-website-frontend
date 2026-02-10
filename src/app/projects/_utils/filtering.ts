@@ -19,6 +19,13 @@ export function applyProjectsQuery({
 }) {
   let out = projects;
 
+  if (filters.searchText.trim()) {
+    const q = filters.searchText.trim().toLowerCase();
+    out = out.filter((p) =>
+      `${p.title} ${p.address} ${p.locality ?? ""} ${p.city}`.toLowerCase().includes(q)
+    );
+  }
+
   if (tab !== "all") {
     out = out.filter((p) => p.postedBy === tab);
   }
@@ -39,7 +46,10 @@ export function applyProjectsQuery({
   }
 
   if (filters.bedrooms.length) {
-    out = out.filter((p) => (p.bedrooms ?? 0) && filters.bedrooms.includes(p.bedrooms as any));
+    out = out.filter((p) => {
+      const b = p.bedrooms;
+      return (b === 1 || b === 2 || b === 3) && filters.bedrooms.includes(b);
+    });
   }
 
   if (filters.furnishing !== "any") {

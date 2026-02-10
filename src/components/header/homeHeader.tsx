@@ -34,7 +34,12 @@ const getUserRoleFromLocalStorage = (): string | null => {
   }
 };
 
-export default function HomeHeader({cityData, cityLoader, fetchCities, propertyMasterData}) {
+export default function HomeHeader({
+  cityData = null,
+  cityLoader = false,
+  fetchCities = () => {},
+  propertyMasterData = [],
+}: any = {}) {
   const router = useRouter()
   const selectedCity = useSelector(getSelectedCity)
   const [anchorEl, setanchorEl] = useState(null);
