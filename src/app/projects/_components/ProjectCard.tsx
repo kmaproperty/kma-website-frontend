@@ -49,16 +49,16 @@ export default function ProjectCard({
   const postedBy =
     project.postedBy === "owner"
       ? {
-          label: "Owner",
-          icon: <Leaf className="h-3.5 w-3.5 text-[#16A34A]" />,
-        }
+        label: "Owner",
+        icon: <Leaf className="h-3.5 w-3.5 text-[#16A34A]" />,
+      }
       : {
-          label: "Channel Partner",
-          icon: <Shield className="h-3.5 w-3.5 text-text-black" />,
-        };
+        label: "Channel Partner",
+        icon: <Shield className="h-3.5 w-3.5 text-text-black" />,
+      };
 
   return (
-    <div className="group rounded-2xl border border-border bg-white shadow-sm transition will-change-transform hover:-translate-y-[1px] hover:shadow-md">
+    <div className="group rounded-2xl  bg-[#F2F2F2] shadow-sm transition will-change-transform hover:-translate-y-[1px] hover:shadow-md">
       <div className="grid grid-cols-1 gap-5 p-4 lg:grid-cols-[360px_1fr]">
         <div className="relative h-[240px] w-full lg:h-[220px]">
           <ImageCarousel

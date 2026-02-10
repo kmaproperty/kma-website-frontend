@@ -167,8 +167,8 @@ export default function FiltersSidebar() {
   );
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
-      <div className="sticky top-0 z-10 border-b border-border bg-white/95 p-4 backdrop-blur">
+    <div className="overflow-hidden rounded-2xl  shadow-sm">
+      <div className="sticky top-0 z-10 border-b border-border p-4 backdrop-blur">
         <div className="flex items-center justify-between gap-3">
           <div className="text-base font-semibold text-text-black">Filters</div>
           <button
