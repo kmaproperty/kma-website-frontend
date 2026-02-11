@@ -6,7 +6,7 @@ import CustomCheckbox from "../common/checkbox";
 const QuillEditor = dynamic(() => import("../common/editor"), { ssr: false });
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import { useStepProgress } from "@/hooks/useStepProgress";
+import { useStepProgress } from "@/api/hooks/useStepProgress";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { getActiveStep, setActiveStep, setTotalProgress } from "@/store/postPropertyProgress";

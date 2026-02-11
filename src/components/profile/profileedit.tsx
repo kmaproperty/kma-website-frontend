@@ -21,7 +21,7 @@ import {
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { OptionType } from "../common/select";
 import { MultiValue } from "react-select";
-import { useCitySearch } from "@/hooks/useCitySearch";
+import { useCitySearch } from "@/api/hooks/useCitySearch";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { setFormData, setFormField } from "@/store/createAccountSlice";

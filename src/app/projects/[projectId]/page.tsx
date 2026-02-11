@@ -1,13 +1,19 @@
-import Link from "next/link";
-import { mockProjects } from "../_data/mockProjects";
+ "use client";
 
-export default async function ProjectDetailsPage({
+import Link from "next/link";
+import { usePropertyDetails } from "@/api/hooks/usePropertyDetails";
+
+export default function ProjectDetailsPage({
   params,
 }: {
-  params: Promise<{ projectId: string }>;
+  params: { projectId: string };
 }) {
-  const { projectId } = await params;
-  const project = mockProjects.find((p) => p.id === projectId);
+  const projectId = params?.projectId;
+  const {
+    data: project,
+    isPending,
+    isError,
+  } = usePropertyDetails({ id: projectId });
 
   return (
     <div className="mx-auto w-full max-w-[1200px] px-4 py-8">
@@ -17,14 +23,21 @@ export default async function ProjectDetailsPage({
 
       <div className="mt-6 rounded-xl border border-border bg-white p-6 shadow-sm">
         <h1 className="text-2xl font-semibold text-text-black">
-          {project?.title ?? "Project"}
+          {isPending
+            ? "Loading project..."
+            : project?.propertyName ?? project?.title ?? "Project"}
         </h1>
         <p className="mt-2 text-text-gray">{project?.address ?? ""}</p>
 
-        <p className="mt-4 text-text-gray">
-          This is a placeholder details page so the “Read More” link has a real
-          Next.js route. We can plug in real API data + a full design next.
-        </p>
+        {isError ? (
+          <p className="mt-4 text-sm text-red-600">
+            Could not load project details. Please try again.
+          </p>
+        ) : (
+          <p className="mt-4 text-text-gray">
+            {String(project?.description ?? "No description available.")}
+          </p>
+        )}
       </div>
     </div>
   );

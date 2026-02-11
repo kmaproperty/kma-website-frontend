@@ -1,4 +1,4 @@
-import { getUserCoordinates } from "@/hooks/useGeoloaction";
+import { getUserCoordinates } from "@/api/hooks/useGeoloaction";
 import { getSelectedCity, setSelectedCity } from "@/store/homeHeaderSlice";
 import { InputBase } from "@mui/material";
 import Image from "next/image";

@@ -1,4 +1,4 @@
-import { useStepProgress } from "@/hooks/useStepProgress";
+import { useStepProgress } from "@/api/hooks/useStepProgress";
 import PhotoViewer, { OptionType } from "../common/photoViewer";
 import ImageUpload from "../common/upload";
 import FieldLabel from "./fieldLabel";

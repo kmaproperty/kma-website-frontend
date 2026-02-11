@@ -107,7 +107,11 @@ export default function Filter({propertyMasterData, cityData}) {
     () => (selectedCity ? {...selectedCity, label: selectedCity.name, value:selectedCity.id} : null),
     [selectedCity]
   )
+  
+  console.log(selectedCity?.id);
+  
 
+  
   return (
     <div className="flex flex-col gap-2">
       <div className="flex justify-center font-medium text-blue overflow-auto no-scrollbar">
@@ -214,7 +218,14 @@ export default function Filter({propertyMasterData, cityData}) {
             </div>
           </div>
           <div className="flex-1">
-            <button className="animated-button px-[30px] py-[9px] cursor-pointer ml-2 h-full w-[calc(100%-0.5rem)]">
+            <button
+              className="animated-button px-[30px] py-[9px] cursor-pointer ml-2 h-full w-[calc(100%-0.5rem)]"
+              onClick={() => {
+              if (selectedCity?.id) {
+                window.location.href = `/projects/${selectedCity.id}`;
+              }
+              }}
+            >
               <span className="flex items-center justify-center gap-[6px] relative z-11">
                 <Image
                   src="/assets/white-search.svg"
@@ -223,7 +234,11 @@ export default function Filter({propertyMasterData, cityData}) {
                   alt="Search"
                 />
                 <p className="text-nowrap font-medium text-xs lg:text-sm">
-                  {explorePropertyCount != null ? explorePropertyCount == 0 ? 'No Properties Available' : `View ${explorePropertyCount} Properties`  : 'Search'}
+                  {explorePropertyCount != null
+                    ? explorePropertyCount == 0
+                      ? 'No Properties Available'
+                      : `View ${explorePropertyCount} Properties`
+                    : 'Search'}
                 </p>
               </span>
             </button>

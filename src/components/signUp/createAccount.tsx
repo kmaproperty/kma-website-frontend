@@ -24,7 +24,7 @@ import { clearAuthCookies, createURLSearchParam } from "@/lib/helper";
 import { toast } from "react-toastify";
 import { ValidateChannelPartnerCodeApiHandler, ValidateChannelPartnerCodePayload, ValidateChannelPartnerCodeResponse, validateEmailApiHandler, ValidateEmailPayload, ValidateEmailResponse } from "@/services/userService";
 import DynamicAsyncAutocomplete from "../common/dynamicAsyncSelectMui";
-import { useCitySearch } from "@/hooks/useCitySearch";
+import { useCitySearch } from "@/api/hooks/useCitySearch";
 import Spinner from "../common/spinner";
 import ImageUpload from "../common/upload";
 

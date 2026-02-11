@@ -4,6 +4,7 @@ import axios, {
 } from "axios";
 import { handleRefreshToken } from "./authService";
 import { clearAuthCookies, setAuthCookies } from "@/lib/helper";
+import { useSessionStore } from "@/store/useSessionStore";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -17,9 +18,13 @@ export const axiosInstance = axios.create({
 // Request Interceptor: Attach access token
 axiosInstance.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
+    // const sessionId = useSessionStore.getState().sessionId;
     const res = await fetch("/api/get-token");
     const { accessToken } = await res.json();
     // const accessToken = localStorage.getItem("accessToken");
+    // if (sessionId) {
+    //   config.headers["X-Session-Id"] = sessionId;
+    // }
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
