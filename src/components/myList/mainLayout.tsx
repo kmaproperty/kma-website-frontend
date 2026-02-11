@@ -14,7 +14,7 @@ export default function MainLayout({ children }:{children:React.ReactNode}) {
           
         </div>
         <div className="flex justify-center pt-[10rem] pb-[2rem]  relative z-1 w-full">
-          <div className="w-[80%] xl:w-[85%] min-h-[66dvh] flex">
+          <div className="w-[90%] lg:w-[75%] min-h-[66dvh] flex">
             {children}
           </div>    
         </div>
