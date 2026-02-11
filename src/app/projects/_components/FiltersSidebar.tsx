@@ -49,7 +49,7 @@ function CheckboxRow({
   return (
     <label
       className={cx(
-        "flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-sm transition",
+        "flex min-w-0 cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm transition",
         checked ? "border-blue bg-light-purple" : "border-border bg-white",
         disabled
           ? "cursor-not-allowed opacity-50"
@@ -67,14 +67,19 @@ function CheckboxRow({
       />
       <span
         className={cx(
-          "flex h-5 w-5 items-center justify-center rounded-md border transition",
+          "shrink-0 flex h-5 w-5 items-center justify-center rounded border transition",
           checked ? "border-blue bg-blue text-white" : "border-border bg-white text-transparent"
         )}
         aria-hidden
       >
         <Check className="h-3.5 w-3.5" />
       </span>
-      <span className={cx(checked ? "font-medium text-text-black" : "text-text-gray")}>
+      <span
+        className={cx(
+          "min-w-0 break-words leading-tight",
+          checked ? "font-medium text-text-black" : "text-text-gray"
+        )}
+      >
         {label}
       </span>
     </label>
@@ -167,13 +172,13 @@ export default function FiltersSidebar() {
   );
 
   return (
-    <div className="overflow-hidden rounded-2xl  shadow-sm">
+    <div className="overflow-hidden rounded-xl">
       <div className="sticky top-0 z-10 border-b border-border p-4 backdrop-blur">
         <div className="flex items-center justify-between gap-3">
           <div className="text-base font-semibold text-text-black">Filters</div>
           <button
             onClick={() => startTransition(() => resetFilters())}
-            className="flex cursor-pointer items-center gap-1 rounded-lg px-2 py-1 text-sm font-medium text-blue hover:bg-light-purple hover:underline"
+            className="flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-sm font-medium text-blue hover:bg-light-purple hover:underline"
           >
             <RotateCcw className="h-4 w-4" />
             Reset
@@ -183,7 +188,7 @@ export default function FiltersSidebar() {
         <ActiveFilterChips />
 
         {isPending && (
-          <div className="mt-3 rounded-lg bg-light-purple px-3 py-2 text-xs text-blue">
+          <div className="mt-3 rounded-md bg-light-purple px-3 py-2 text-xs text-blue">
             Updating filters…
           </div>
         )}
@@ -199,7 +204,7 @@ export default function FiltersSidebar() {
                 startTransition(() => setFilters({ searchLocality: e.target.value }))
               }
               placeholder="Search locality..."
-              className="h-10 w-full rounded-xl border border-border bg-white pl-9 pr-3 text-sm text-text-gray outline-none transition focus:border-blue"
+              className="h-10 w-full rounded-lg border border-border bg-white pl-9 pr-3 text-sm text-text-gray outline-none transition focus:border-blue"
             />
           </div>
         </Section>
@@ -217,7 +222,7 @@ export default function FiltersSidebar() {
                 key={t.id}
                 onClick={() => startTransition(() => setTab(t.id))}
                 className={cx(
-                  "h-10 cursor-pointer rounded-xl border text-sm font-medium transition",
+                  "h-10 cursor-pointer rounded-lg border text-sm font-medium transition",
                   tab === t.id
                     ? "border-blue bg-blue text-white"
                     : "border-border bg-white text-text-gray hover:bg-background-gray"
@@ -235,7 +240,7 @@ export default function FiltersSidebar() {
             <select
               value={filters.minBudget ?? ""}
               onChange={(e) => setBudget("minBudget", e.target.value)}
-              className="h-10 w-full cursor-pointer rounded-xl border border-border bg-white px-3 text-sm text-text-gray outline-none transition focus:border-blue"
+              className="h-10 w-full cursor-pointer rounded-lg border border-border bg-white px-3 text-sm text-text-gray outline-none transition focus:border-blue"
             >
               <option value="">Min</option>
               {[0.5, 1, 1.4, 2, 5, 10].map((v) => (
@@ -247,7 +252,7 @@ export default function FiltersSidebar() {
             <select
               value={filters.maxBudget ?? ""}
               onChange={(e) => setBudget("maxBudget", e.target.value)}
-              className="h-10 w-full cursor-pointer rounded-xl border border-border bg-white px-3 text-sm text-text-gray outline-none transition focus:border-blue"
+              className="h-10 w-full cursor-pointer rounded-lg border border-border bg-white px-3 text-sm text-text-gray outline-none transition focus:border-blue"
             >
               <option value="">Max</option>
               {[1, 2, 5, 10, 20].map((v) => (
@@ -264,7 +269,7 @@ export default function FiltersSidebar() {
             <select
               value={filters.minSizeSqYd ?? ""}
               onChange={(e) => setSize("minSizeSqYd", e.target.value)}
-              className="h-10 w-full cursor-pointer rounded-xl border border-border bg-white px-3 text-sm text-text-gray outline-none transition focus:border-blue"
+              className="h-10 w-full cursor-pointer rounded-lg border border-border bg-white px-3 text-sm text-text-gray outline-none transition focus:border-blue"
             >
               <option value="">Min</option>
               {[50, 100, 119, 150, 200].map((v) => (
@@ -276,7 +281,7 @@ export default function FiltersSidebar() {
             <select
               value={filters.maxSizeSqYd ?? ""}
               onChange={(e) => setSize("maxSizeSqYd", e.target.value)}
-              className="h-10 w-full cursor-pointer rounded-xl border border-border bg-white px-3 text-sm text-text-gray outline-none transition focus:border-blue"
+              className="h-10 w-full cursor-pointer rounded-lg border border-border bg-white px-3 text-sm text-text-gray outline-none transition focus:border-blue"
             >
               <option value="">Max</option>
               {[119, 150, 200, 300].map((v) => (
@@ -299,7 +304,7 @@ export default function FiltersSidebar() {
                   )
                 }
                 className={cx(
-                  "h-10 cursor-pointer rounded-xl border text-sm font-medium transition",
+                  "h-10 cursor-pointer rounded-lg border text-sm font-medium transition",
                   filters.buildingType === b.id
                     ? "border-blue bg-blue text-white"
                     : "border-border bg-white text-text-gray hover:bg-background-gray"
@@ -332,8 +337,8 @@ export default function FiltersSidebar() {
               label="1 BHK"
               onChange={() => startTransition(() => toggleBedroom(1))}
             />
-            <CheckboxRow checked={false} label="1.5 BHK" onChange={() => {}} disabled />
-            <CheckboxRow checked={false} label="1 RK" onChange={() => {}} disabled />
+            <CheckboxRow checked={false} label="1.5 BHK" onChange={() => { }} disabled />
+            <CheckboxRow checked={false} label="1 RK" onChange={() => { }} disabled />
             <CheckboxRow
               checked={filters.bedrooms.includes(2)}
               label="2 RK"
