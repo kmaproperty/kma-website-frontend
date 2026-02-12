@@ -78,7 +78,7 @@ const toApiFurnishingType = (value: string) => {
   return value;
 };
 
-export default function ProjectsPageClient() {
+export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
   const tab = useProjectsStore((s) => s.tab);
   const sort = useProjectsStore((s) => s.sort);
   const filters = useProjectsStore((s) => s.filters);
@@ -98,6 +98,7 @@ export default function ProjectsPageClient() {
 
     return {
       search,
+      cityId,
       postedBy:
         deferredTab === "all"
           ? undefined
@@ -143,7 +144,7 @@ export default function ProjectsPageClient() {
     useEndUserProperties(apiQueryParams);
   const { data: totalCount = 0 } = useEndUserPropertiesCount(baseQueryParams);
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
-
+console.log(apiProperties, "apiProperties");
   useEffect(() => {
     setCurrentPage(1);
   }, [paginationResetKey]);
