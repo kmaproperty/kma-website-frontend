@@ -112,6 +112,47 @@ export interface GetEndUserPropertiesCountResponse {
   count?: number;
 }
 
+export interface UpdateEndUserFavoritePayload {
+  propertyId: string;
+  correlationId?: string;
+}
+
+export interface UpdateEndUserFavoriteResponse {
+  success?: boolean;
+  message?: string;
+  data?: unknown;
+}
+
+export interface SendPropertyContactOtpPayload {
+  propertyId: string;
+  phone: string;
+  correlationId?: string;
+}
+
+export interface SendPropertyContactOtpResponse {
+  success?: boolean;
+  message?: string;
+  otp?: string;
+  sessionId?: string;
+}
+
+export interface SubmitPropertyContactPayload {
+  propertyId: string;
+  name: string;
+  email?: string;
+  phone: string;
+  countryCode?: string;
+  otp?: string;
+  sessionId?: string;
+  correlationId?: string;
+}
+
+export interface SubmitPropertyContactResponse {
+  success?: boolean;
+  message?: string;
+  data?: unknown;
+}
+
 const getCorrelationId = () => {
   if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
     return crypto.randomUUID();
@@ -276,6 +317,104 @@ export const getEndUserPropertiesCountAction = async ({
         headers: {
           "x-correlation-id": correlationId ?? getCorrelationId(),
           // ...(xSessionId ? { "X-Session-Id": xSessionId } : {}),
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error: unknown) {
+    throw getErrorPayload(error);
+  }
+};
+
+export const addEndUserFavoriteAction = async ({
+  propertyId,
+  correlationId,
+}: UpdateEndUserFavoritePayload): Promise<UpdateEndUserFavoriteResponse> => {
+  try {
+    const response = await axiosInstance.post<UpdateEndUserFavoriteResponse>(
+      "end-user/favorites",
+      { propertyId },
+      {
+        headers: {
+          "x-correlation-id": correlationId ?? getCorrelationId(),
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error: unknown) {
+    throw getErrorPayload(error);
+  }
+};
+
+export const removeEndUserFavoriteAction = async ({
+  propertyId,
+  correlationId,
+}: UpdateEndUserFavoritePayload): Promise<UpdateEndUserFavoriteResponse> => {
+  try {
+    const response = await axiosInstance.delete<UpdateEndUserFavoriteResponse>(
+      "end-user/favorites",
+      {
+        data: { propertyId },
+        headers: {
+          "x-correlation-id": correlationId ?? getCorrelationId(),
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error: unknown) {
+    throw getErrorPayload(error);
+  }
+};
+
+export const sendEndUserPropertyContactOtpAction = async ({
+  propertyId,
+  phone,
+  correlationId,
+}: SendPropertyContactOtpPayload): Promise<SendPropertyContactOtpResponse> => {
+  try {
+    const response = await axiosInstance.post<SendPropertyContactOtpResponse>(
+      `end-user/properties/${propertyId}/contact/send-otp`,
+      { phone },
+      {
+        headers: {
+          "x-correlation-id": correlationId ?? getCorrelationId(),
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error: unknown) {
+    throw getErrorPayload(error);
+  }
+};
+
+export const submitEndUserPropertyContactAction = async ({
+  propertyId,
+  name,
+  email,
+  phone,
+  countryCode,
+  otp,
+  sessionId,
+  correlationId,
+}: SubmitPropertyContactPayload): Promise<SubmitPropertyContactResponse> => {
+  try {
+    const response = await axiosInstance.post<SubmitPropertyContactResponse>(
+      `end-user/properties/${propertyId}/contact`,
+      {
+        name,
+        phone,
+        ...(email ? { email } : {}),
+        ...(countryCode ? { countryCode } : {}),
+        ...(otp ? { otp } : {}),
+      },
+      {
+        headers: {
+          "x-correlation-id": correlationId ?? getCorrelationId(),
+          ...(sessionId ? { "X-Session-Id": sessionId } : {}),
         },
       }
     );

@@ -189,6 +189,7 @@ export default function ProjectsPageClient() {
         title: (item.propertyName as string) ?? (item.title as string) ?? "Property",
         address: (item.address as string) ?? "",
         city: (item.city as string) ?? "",
+        isFavorite: Boolean(item.isFavorite),
         postedBy: normalizePostedBy(
           (item.postedBy as string | undefined) ??
             (item.owner?.role as string | undefined)

@@ -41,6 +41,7 @@ export interface Project {
   title: string;
   address: string;
   city: string;
+  isFavorite?: boolean;
 
   postedBy: Exclude<PostedByTab, "all">;
   listingIntent: ListingIntent;

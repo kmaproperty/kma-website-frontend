@@ -29,7 +29,7 @@ interface ProjectsState {
   tab: PostedByTab;
   sort: SortOption;
   filters: ProjectsFilters;
-  favorites: Record<string, true>;
+  favorites: Record<string, boolean>;
 
   setTab: (tab: PostedByTab) => void;
   setSort: (sort: SortOption) => void;
@@ -44,6 +44,7 @@ interface ProjectsState {
   toggleAmenity: (value: Amenity) => void;
 
   toggleFavorite: (projectId: string) => void;
+  setFavorite: (projectId: string, isFavorite: boolean) => void;
   removeChip: (chipId: string) => void;
 }
 
@@ -120,8 +121,14 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
   toggleFavorite: (projectId) =>
     set((s) => {
       const next = { ...s.favorites };
-      if (next[projectId]) delete next[projectId];
-      else next[projectId] = true;
+      next[projectId] = !Boolean(next[projectId]);
+      return { favorites: next };
+    }),
+
+  setFavorite: (projectId, isFavorite) =>
+    set((s) => {
+      const next = { ...s.favorites };
+      next[projectId] = isFavorite;
       return { favorites: next };
     }),
 

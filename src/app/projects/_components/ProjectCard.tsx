@@ -1,24 +1,35 @@
 "use client";
 
+import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
 import {
   BedDouble,
   Heart,
-  Leaf,
   Maximize2,
   MessageCircle,
-  Shield,
   Sofa,
   Trees,
   Video,
   Images,
   PhoneCall,
 } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+import {
+  addEndUserFavoriteAction,
+  removeEndUserFavoriteAction,
+  submitEndUserPropertyContactAction,
+} from "@/api/actions/propertyActions";
+import Spinner from "@/components/common/spinner";
+import { useSessionStore } from "@/store/useSessionStore";
 import type { Project } from "../_types";
 import { useProjectsStore } from "../_store/useProjectsStore";
 import { cx } from "../_utils/format";
 import ImageCarousel from "./ImageCarousel";
+import ProjectCallBackModal from "./ProjectCallBackModal";
 
 function FeaturePill({
   icon,
@@ -44,20 +55,146 @@ export default function ProjectCard({
   project: Project;
   priority?: boolean;
 }) {
+  const [isCallBackModalOpen, setIsCallBackModalOpen] = React.useState(false);
+  const [isQuickCallBackModalOpen, setIsQuickCallBackModalOpen] = React.useState(false);
+  const [isAuthChecking, setIsAuthChecking] = React.useState(false);
+  const [userContact, setUserContact] = React.useState<{
+    name: string;
+    email: string;
+    phone: string;
+    countryCode: string;
+  }>({
+    name: "",
+    email: "",
+    phone: "",
+    countryCode: "+91",
+  });
+  const persistedSessionId = useSessionStore((state) => state.sessionId);
   const favorites = useProjectsStore((s) => s.favorites);
-  const toggleFavorite = useProjectsStore((s) => s.toggleFavorite);
-  const isFav = Boolean(favorites[project.id]);
+  const setFavorite = useProjectsStore((s) => s.setFavorite);
+  const favoriteOverride = favorites[project.id];
+  const isFav = favoriteOverride ?? Boolean(project.isFavorite);
 
-  const postedBy =
-    project.postedBy === "owner"
-      ? {
-        label: "Owner",
-        icon: <Leaf className="h-3.5 w-3.5 text-[#16A34A]" />,
+  const { mutate: updateFavorite, isPending: isFavoriteUpdating } = useMutation({
+    mutationFn: async ({
+      propertyId,
+      nextIsFavorite,
+    }: {
+      propertyId: string;
+      nextIsFavorite: boolean;
+    }) => {
+      if (nextIsFavorite) {
+        return addEndUserFavoriteAction({ propertyId });
       }
-      : {
-        label: "Channel Partner",
-        icon: <Shield className="h-3.5 w-3.5 text-text-black" />,
-      };
+
+      return removeEndUserFavoriteAction({ propertyId });
+    },
+    onError: (_error, variables) => {
+      // Revert optimistic update if API fails.
+      setFavorite(variables.propertyId, !variables.nextIsFavorite);
+    },
+  });
+
+  const handleFavoriteClick = () => {
+    if (isFavoriteUpdating) {
+      return;
+    }
+
+    const nextIsFavorite = !isFav;
+    setFavorite(project.id, nextIsFavorite);
+    updateFavorite({
+      propertyId: project.id,
+      nextIsFavorite,
+    });
+  };
+
+  const { mutate: submitContactRequest, isPending: isSubmittingContactRequest } =
+    useMutation({
+      mutationFn: submitEndUserPropertyContactAction,
+      onSuccess: (response) => {
+        toast.success(response?.message ?? "Request submitted successfully");
+        setIsQuickCallBackModalOpen(false);
+      },
+      onError: (error: unknown) => {
+        const maybeMessage =
+          typeof error === "object" && error !== null && "message" in error
+            ? (error as { message?: string | string[] }).message
+            : undefined;
+        const message = Array.isArray(maybeMessage)
+          ? maybeMessage.join(", ")
+          : maybeMessage ?? "Unable to submit request";
+        toast.error(message);
+      },
+    });
+
+  const handleCallBackClick = async () => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    let nextName = "";
+    let nextEmail = "";
+    let nextPhone = "";
+    let nextCountryCode = "+91";
+
+    try {
+      const rawUser = localStorage.getItem("user");
+      if (rawUser) {
+        const parsed = JSON.parse(rawUser) as {
+          name?: string;
+          email?: string;
+          phone?: string;
+          countryCode?: string;
+        };
+        nextName = parsed?.name ?? "";
+        nextEmail = parsed?.email ?? "";
+        nextPhone = parsed?.phone ?? "";
+        nextCountryCode = parsed?.countryCode ?? "+91";
+      }
+    } catch {}
+
+    setUserContact({
+      name: nextName,
+      email: nextEmail,
+      phone: nextPhone,
+      countryCode: nextCountryCode,
+    });
+
+    setIsAuthChecking(true);
+    try {
+      const response = await fetch("/api/get-token");
+      const data = (await response.json()) as { accessToken?: string | null };
+      const isUserLoggedIn = Boolean(data?.accessToken);
+
+      if (isUserLoggedIn && nextName.trim() && nextPhone.trim()) {
+        setIsQuickCallBackModalOpen(true);
+        return;
+      }
+
+      setIsCallBackModalOpen(true);
+    } catch {
+      setIsCallBackModalOpen(true);
+    } finally {
+      setIsAuthChecking(false);
+    }
+  };
+
+  const handleQuickContactNow = () => {
+    if (!userContact.name.trim() || !userContact.phone.trim()) {
+      setIsQuickCallBackModalOpen(false);
+      setIsCallBackModalOpen(true);
+      return;
+    }
+
+    submitContactRequest({
+      propertyId: project.id,
+      name: userContact.name.trim(),
+      email: userContact.email.trim() || undefined,
+      phone: userContact.phone.trim(),
+      countryCode: userContact.countryCode,
+      sessionId: persistedSessionId ?? undefined,
+    });
+  };
 
   return (
     <div className="group overflow-hidden rounded-2xl border border-border bg-[#F2F2F2] shadow-sm transition will-change-transform hover:-translate-y-[1px] hover:shadow-md">
@@ -76,10 +213,12 @@ export default function ProjectCard({
 
           <button
             type="button"
-            onClick={() => toggleFavorite(project.id)}
+            onClick={handleFavoriteClick}
+            disabled={isFavoriteUpdating}
             className={cx(
               "absolute right-3 top-3 rounded-full p-2 backdrop-blur transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/30",
-              isFav ? "text-[#E11D48]" : "text-white"
+              isFav ? "text-[#E11D48]" : "text-white",
+              isFavoriteUpdating && "cursor-not-allowed opacity-70"
             )}
             aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
             // style={{
@@ -224,13 +363,86 @@ export default function ProjectCard({
           </a>
           <button
             type="button"
+            onClick={handleCallBackClick}
+            disabled={isAuthChecking}
             className="inline-flex h-12 items-center gap-2 rounded-xl border border-[#4CAF50] bg-transparent px-6 text-sm font-semibold text-[#2F9E44] transition hover:bg-[#E9F7EE] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1B8836]/25"
           >
             <PhoneCall className="h-5 w-5" />
-            Get a Call Back
+            {isAuthChecking ? <Spinner size={16} /> : "Get a Call Back"}
           </button>
         </div>
       </div>
+      <Dialog
+        open={isQuickCallBackModalOpen}
+        onClose={() => setIsQuickCallBackModalOpen(false)}
+        slotProps={{
+          paper: {
+            sx: {
+              borderRadius: "0.75rem",
+            },
+          },
+        }}
+      >
+        <DialogContent sx={{ padding: 0 }}>
+          <div className="w-full rounded-xl bg-[#EFEFEF] p-4 sm:w-[520px]">
+            <div className="mb-4 flex items-start justify-between gap-3">
+              <h3 className="text-[28px] font-semibold text-[#1E2236]">
+                Contact Our Channel Partners
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsQuickCallBackModalOpen(false)}
+                className="rounded-full p-1 text-[#1E2236] transition hover:bg-black/5"
+                aria-label="Close"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="mb-3 flex items-center justify-between gap-3 rounded-lg bg-[#E3E3E3] px-3 py-2">
+              <div className="flex items-center gap-3">
+                <Image
+                  src={project.agent?.avatarUrl ?? "/assets/app/call-person.svg"}
+                  alt={project.agent?.name ?? "KMA Expert"}
+                  width={40}
+                  height={40}
+                  className="h-10 w-10 rounded-full object-cover"
+                />
+                <div>
+                  <p className="text-sm font-semibold text-text-black">
+                    {project.agent?.name ?? "KMA Expert"}
+                  </p>
+                  {project.agent?.badge ? (
+                    <span className="mt-1 inline-flex rounded-md bg-[#D08A2F] px-2 py-0.5 text-[11px] font-semibold text-white">
+                      {project.agent.badge}
+                    </span>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+
+            <p className="mb-4 rounded-md bg-white px-3 py-2 text-sm text-[#7A7A7A]">
+              Hi {userContact.name || "there"}, would you like to connect with{" "}
+              {project.agent?.name ?? "our channel partner"} for {project.title} in{" "}
+              {project.address}?
+            </p>
+
+            <button
+              type="button"
+              onClick={handleQuickContactNow}
+              disabled={isSubmittingContactRequest}
+              className="inline-flex h-11 w-full items-center justify-center rounded-full bg-[#0A0A63] px-6 text-sm font-semibold text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {isSubmittingContactRequest ? <Spinner size={18} /> : "Contact Now"}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      <ProjectCallBackModal
+        open={isCallBackModalOpen}
+        onClose={() => setIsCallBackModalOpen(false)}
+        project={project}
+      />
     </div>
   );
 }
