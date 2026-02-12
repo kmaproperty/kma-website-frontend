@@ -40,22 +40,32 @@ function CheckboxRow({
   label,
   onChange,
   disabled,
+  compact = false,
 }: {
   checked: boolean;
   label: string;
   onChange: () => void;
   disabled?: boolean;
+  compact?: boolean;
 }) {
   return (
     <label
       className={cx(
-        "flex min-w-0 cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm transition",
-        checked ? "border-blue bg-light-purple" : "border-border bg-white",
+        compact
+          ? "inline-flex min-w-0 max-w-full cursor-pointer items-center gap-2 rounded border px-3 py-1.5 text-sm transition"
+          : "flex min-w-0 cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm transition",
+        checked
+          ? "border-blue bg-light-purple"
+          : compact
+            ? "border-border bg-background-gray"
+            : "border-border bg-white",
         disabled
           ? "cursor-not-allowed opacity-50"
           : checked
             ? "hover:brightness-[0.98]"
-            : "hover:bg-background-gray"
+            : compact
+              ? "hover:bg-white"
+              : "hover:bg-background-gray"
       )}
     >
       <input
@@ -65,15 +75,14 @@ function CheckboxRow({
         disabled={disabled}
         className="sr-only"
       />
-      <span
+      <Check
         className={cx(
-          "shrink-0 flex h-5 w-5 items-center justify-center rounded border transition",
-          checked ? "border-blue bg-blue text-white" : "border-border bg-white text-transparent"
+          "shrink-0 transition",
+          compact ? "h-3 w-3" : "h-3.5 w-3.5",
+          checked ? "text-blue" : "text-text-gray/50"
         )}
         aria-hidden
-      >
-        <Check className="h-3.5 w-3.5" />
-      </span>
+      />
       <span
         className={cx(
           "min-w-0 break-words leading-tight",
@@ -172,13 +181,13 @@ export default function FiltersSidebar() {
   );
 
   return (
-    <div className="overflow-hidden rounded-xl">
+    <div className="overflow-hidden rounded-lg">
       <div className="sticky top-0 z-10 border-b border-border p-4 backdrop-blur">
         <div className="flex items-center justify-between gap-3">
           <div className="text-base font-semibold text-text-black">Filters</div>
           <button
             onClick={() => startTransition(() => resetFilters())}
-            className="flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-sm font-medium text-blue hover:bg-light-purple hover:underline"
+            className="flex cursor-pointer items-center gap-1 rounded px-2 py-1 text-sm font-medium text-blue hover:bg-light-purple hover:underline"
           >
             <RotateCcw className="h-4 w-4" />
             Reset
@@ -188,7 +197,7 @@ export default function FiltersSidebar() {
         <ActiveFilterChips />
 
         {isPending && (
-          <div className="mt-3 rounded-md bg-light-purple px-3 py-2 text-xs text-blue">
+          <div className="mt-3 rounded bg-light-purple px-3 py-2 text-xs text-blue">
             Updating filters…
           </div>
         )}
@@ -204,16 +213,16 @@ export default function FiltersSidebar() {
                 startTransition(() => setFilters({ searchLocality: e.target.value }))
               }
               placeholder="Search locality..."
-              className="h-10 w-full rounded-lg border border-border bg-white pl-9 pr-3 text-sm text-text-gray outline-none transition focus:border-blue"
+              className="h-10 w-full rounded-md border border-border bg-white pl-9 pr-3 text-sm text-text-gray outline-none transition focus:border-blue"
             />
           </div>
         </Section>
 
         <Section title="Posted by">
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-1">
             {(
               [
-                { id: "all", label: "All" },
+                // { id: "all", label: "All" },
                 { id: "owner", label: "Owner" },
                 { id: "channel_partner", label: "Channel Partner" },
               ] satisfies Array<{ id: PostedByTab; label: string }>
@@ -222,7 +231,7 @@ export default function FiltersSidebar() {
                 key={t.id}
                 onClick={() => startTransition(() => setTab(t.id))}
                 className={cx(
-                  "h-10 cursor-pointer rounded-lg border text-sm font-medium transition",
+                  "h-10 cursor-pointer rounded-md border text-xs font-medium transition",
                   tab === t.id
                     ? "border-blue bg-blue text-white"
                     : "border-border bg-white text-text-gray hover:bg-background-gray"
@@ -236,11 +245,11 @@ export default function FiltersSidebar() {
         </Section>
 
         <Section title="Budget" hint="₹ Crore">
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-1">
             <select
               value={filters.minBudget ?? ""}
               onChange={(e) => setBudget("minBudget", e.target.value)}
-              className="h-10 w-full cursor-pointer rounded-lg border border-border bg-white px-3 text-sm text-text-gray outline-none transition focus:border-blue"
+              className="h-10 w-full cursor-pointer rounded-md border border-border bg-white px-3 text-sm text-text-gray outline-none transition focus:border-blue"
             >
               <option value="">Min</option>
               {[0.5, 1, 1.4, 2, 5, 10].map((v) => (
@@ -252,7 +261,7 @@ export default function FiltersSidebar() {
             <select
               value={filters.maxBudget ?? ""}
               onChange={(e) => setBudget("maxBudget", e.target.value)}
-              className="h-10 w-full cursor-pointer rounded-lg border border-border bg-white px-3 text-sm text-text-gray outline-none transition focus:border-blue"
+              className="h-10 w-full cursor-pointer rounded-md border border-border bg-white px-3 text-sm text-text-gray outline-none transition focus:border-blue"
             >
               <option value="">Max</option>
               {[1, 2, 5, 10, 20].map((v) => (
@@ -265,11 +274,11 @@ export default function FiltersSidebar() {
         </Section>
 
         <Section title="Size" hint="Sq. Yd.">
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-1">
             <select
               value={filters.minSizeSqYd ?? ""}
               onChange={(e) => setSize("minSizeSqYd", e.target.value)}
-              className="h-10 w-full cursor-pointer rounded-lg border border-border bg-white px-3 text-sm text-text-gray outline-none transition focus:border-blue"
+              className="h-10 w-full cursor-pointer rounded-md border border-border bg-white px-3 text-sm text-text-gray outline-none transition focus:border-blue"
             >
               <option value="">Min</option>
               {[50, 100, 119, 150, 200].map((v) => (
@@ -281,7 +290,7 @@ export default function FiltersSidebar() {
             <select
               value={filters.maxSizeSqYd ?? ""}
               onChange={(e) => setSize("maxSizeSqYd", e.target.value)}
-              className="h-10 w-full cursor-pointer rounded-lg border border-border bg-white px-3 text-sm text-text-gray outline-none transition focus:border-blue"
+              className="h-10 w-full cursor-pointer rounded-md border border-border bg-white px-3 text-sm text-text-gray outline-none transition focus:border-blue"
             >
               <option value="">Max</option>
               {[119, 150, 200, 300].map((v) => (
@@ -294,7 +303,7 @@ export default function FiltersSidebar() {
         </Section>
 
         <Section title="Building Type">
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-1">
             {buildingButtons.map((b) => (
               <button
                 key={b.id}
@@ -304,7 +313,7 @@ export default function FiltersSidebar() {
                   )
                 }
                 className={cx(
-                  "h-10 cursor-pointer rounded-lg border text-sm font-medium transition",
+                  "h-10 cursor-pointer rounded-md border text-sm font-medium transition",
                   filters.buildingType === b.id
                     ? "border-blue bg-blue text-white"
                     : "border-border bg-white text-text-gray hover:bg-background-gray"
@@ -318,42 +327,58 @@ export default function FiltersSidebar() {
         </Section>
 
         <Section title="Property Type">
-          <div className="grid grid-cols-2 gap-2">
+          <div className="flex flex-wrap gap-1">
             {propertyTypeOptions.map((p) => (
               <CheckboxRow
                 key={p.id}
                 checked={filters.propertyTypes.includes(p.id)}
                 label={p.label}
                 onChange={() => startTransition(() => togglePropertyType(p.id))}
+                compact
               />
             ))}
           </div>
         </Section>
 
         <Section title="Bedroom">
-          <div className="grid grid-cols-2 gap-2">
+          <div className="flex flex-wrap gap-2">
             <CheckboxRow
               checked={filters.bedrooms.includes(1)}
               label="1 BHK"
               onChange={() => startTransition(() => toggleBedroom(1))}
+              compact
             />
-            <CheckboxRow checked={false} label="1.5 BHK" onChange={() => { }} disabled />
-            <CheckboxRow checked={false} label="1 RK" onChange={() => { }} disabled />
+            <CheckboxRow
+              checked={false}
+              label="1.5 BHK"
+              onChange={() => { }}
+              disabled
+              compact
+            />
+            <CheckboxRow
+              checked={false}
+              label="1 RK"
+              onChange={() => { }}
+              disabled
+              compact
+            />
             <CheckboxRow
               checked={filters.bedrooms.includes(2)}
               label="2 RK"
               onChange={() => startTransition(() => toggleBedroom(2))}
+              compact
             />
             <CheckboxRow
               checked={filters.bedrooms.includes(3)}
               label="3 RK"
               onChange={() => startTransition(() => toggleBedroom(3))}
+              compact
             />
           </div>
         </Section>
 
         <Section title="Furnishing Status">
-          <div className="grid grid-cols-2 gap-2">
+          <div className="flex flex-wrap gap-2">
             {furnishingOptions.slice(1).map((f) => (
               <CheckboxRow
                 key={f.id}
@@ -364,32 +389,35 @@ export default function FiltersSidebar() {
                     setFurnishing(filters.furnishing === f.id ? "any" : (f.id as Furnishing))
                   )
                 }
+                compact
               />
             ))}
           </div>
         </Section>
 
         <Section title="Possession Status">
-          <div className="grid grid-cols-2 gap-2">
+          <div className="flex flex-wrap gap-2">
             {possessionOptions.map((p) => (
               <CheckboxRow
                 key={p.id}
                 checked={filters.possessionStatuses.includes(p.id)}
                 label={p.label}
                 onChange={() => startTransition(() => togglePossession(p.id))}
+                compact
               />
             ))}
           </div>
         </Section>
 
         <Section title="Amenities">
-          <div className="grid grid-cols-1 gap-2">
+          <div className="flex flex-wrap gap-2">
             {amenityOptions.map((a) => (
               <CheckboxRow
                 key={a.id}
                 checked={filters.amenities.includes(a.id)}
                 label={a.label}
                 onChange={() => startTransition(() => toggleAmenity(a.id))}
+                compact
               />
             ))}
           </div>

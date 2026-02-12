@@ -73,6 +73,7 @@ export default function HomeMobileHeader({
 
             {headerMenuList.map((item) => (
               <div
+                key={item.value}
                 onClick={() => {
                   if (item.value != "refer_and_earn") {
                     openSubMenu(item.value);

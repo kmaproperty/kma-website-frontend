@@ -8,11 +8,10 @@ export const metadata: Metadata = {
 };
 
 export default async function ProjectsPage() {
-  // Server component: fast first paint + SEO friendly shell.
-  // Interactions (filters/sort/favorite) are handled client-side.
+
   return (
     <MainLayout>
-      <ProjectsPageClient initialProjects={mockProjects} />
+      <ProjectsPageClient  />
     </MainLayout>
   );
 }

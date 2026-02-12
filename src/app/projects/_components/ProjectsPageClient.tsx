@@ -1,36 +1,230 @@
 "use client";
 
-import { useDeferredValue, useMemo } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import type { Project } from "../_types";
-import { applyProjectsQuery } from "../_utils/filtering";
 import FiltersSidebar from "./FiltersSidebar";
 import ProjectsToolbar from "./ProjectsToolbar";
 import ProjectCard from "./ProjectCard";
 import { useProjectsStore } from "../_store/useProjectsStore";
+import {
+  useEndUserProperties,
+  useEndUserPropertiesCount,
+} from "@/api/hooks/useEndUserProperties";
+import ProjectsPagination from "./ProjectsPagination";
 
-export default function ProjectsPageClient({
-  initialProjects,
-}: {
-  initialProjects: Project[];
-}) {
+const awsBaseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
+const fallbackProjectImage = "/assets/properties_pic_1.png";
+const PAGE_SIZE = 20;
+
+const toFullAssetUrl = (value?: string | null) => {
+  if (!value) return "";
+  if (value.startsWith("http://") || value.startsWith("https://")) return value;
+  if (!awsBaseUrl) return value;
+  return `${awsBaseUrl}${value}`;
+};
+
+const parseBedrooms = (value?: string) => {
+  if (!value) return undefined;
+  const match = value.match(/\d+/);
+  if (!match) return undefined;
+  const n = Number(match[0]);
+  return Number.isFinite(n) ? n : undefined;
+};
+
+const formatIndianNumber = (value: number) => {
+  return new Intl.NumberFormat("en-IN", { maximumFractionDigits: 2 }).format(value);
+};
+
+const normalizeProjectType = (value?: string) => {
+  const key = (value ?? "").trim().toLowerCase().replace(/\s+/g, "_");
+  const map: Record<string, Project["propertyType"]> = {
+    villa: "villa",
+    plot: "plot",
+    apartment: "apartment",
+    penthouse: "penthouse",
+    independent_floor: "ind_floor",
+    ind_floor: "ind_floor",
+    retail_shop: "retail_shop",
+    office_space: "office_space",
+  };
+  return map[key];
+};
+
+const normalizeFurnishing = (value?: string) => {
+  const key = (value ?? "").trim().toLowerCase().replace(/[\s-]+/g, "_");
+  if (key === "furnished") return "furnished";
+  if (key === "unfurnished") return "unfurnished";
+  if (key === "semi_furnished") return "semi-furnished";
+  return undefined;
+};
+
+const normalizePostedBy = (value?: string) => {
+  const key = (value ?? "").trim().toLowerCase();
+  if (key === "owner") return "owner";
+  if (key === "channel_partner" || key === "channel partner") {
+    return "channel_partner";
+  }
+  return "owner";
+};
+
+const normalizeListingIntent = (value?: string) => {
+  const key = (value ?? "").trim().toLowerCase();
+  return key === "rent" ? "rent" : "sale";
+};
+
+const toApiFurnishingType = (value: string) => {
+  if (value === "semi-furnished") return "semi_furnished";
+  return value;
+};
+
+export default function ProjectsPageClient() {
   const tab = useProjectsStore((s) => s.tab);
   const sort = useProjectsStore((s) => s.sort);
   const filters = useProjectsStore((s) => s.filters);
   const setFilters = useProjectsStore((s) => s.setFilters);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const deferredFilters = useDeferredValue(filters);
   const deferredSort = useDeferredValue(sort);
   const deferredTab = useDeferredValue(tab);
 
-  const filtered = useMemo(() => {
-    return applyProjectsQuery({
-      projects: initialProjects,
-      tab: deferredTab,
-      filters: deferredFilters,
-      sort: deferredSort,
+  const baseQueryParams = useMemo(() => {
+    const searchParts = [
+      deferredFilters.searchText?.trim(),
+      deferredFilters.searchLocality?.trim(),
+    ].filter(Boolean);
+    const search = searchParts.length ? searchParts.join(" ") : undefined;
+
+    return {
+      search,
+      postedBy:
+        deferredTab === "all"
+          ? undefined
+          : deferredTab === "owner"
+            ? "OWNER"
+            : "CHANNEL_PARTNER",
+      minPrice:
+        deferredFilters.minBudget != null
+          ? Math.round(deferredFilters.minBudget * 10_000_000)
+          : undefined,
+      maxPrice:
+        deferredFilters.maxBudget != null
+          ? Math.round(deferredFilters.maxBudget * 10_000_000)
+          : undefined,
+      furnishingTypes:
+        deferredFilters.furnishing !== "any"
+          ? [toApiFurnishingType(deferredFilters.furnishing)]
+          : undefined,
+      constructionStatuses:
+        deferredFilters.possessionStatuses.length > 0
+          ? deferredFilters.possessionStatuses
+          : undefined,
+      sortBy: "price",
+      sortOrder: deferredSort === "price_low_high" ? "ASC" : "DESC",
+    };
+  }, [deferredFilters, deferredSort, deferredTab]);
+
+  const apiQueryParams = useMemo(
+    () => ({
+      ...baseQueryParams,
+      page: currentPage,
+      limit: PAGE_SIZE,
+    }),
+    [baseQueryParams, currentPage]
+  );
+
+  const paginationResetKey = useMemo(
+    () => JSON.stringify(baseQueryParams),
+    [baseQueryParams]
+  );
+
+  const { data: apiProperties = [], isPending, isError } =
+    useEndUserProperties(apiQueryParams);
+  const { data: totalCount = 0 } = useEndUserPropertiesCount(baseQueryParams);
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [paginationResetKey]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  const initialProjects = useMemo<Project[]>(() => {
+    return apiProperties.map((item) => {
+      const listingIntent = normalizeListingIntent(
+        (item.listingType as string | undefined) ?? undefined
+      );
+      const salePrice = Number(item.price ?? 0);
+      const monthlyRent = Number(item.monthlyRent ?? 0);
+      const priceValue =
+        listingIntent === "rent"
+          ? monthlyRent > 0
+            ? monthlyRent / 100_000
+            : 0
+          : salePrice > 0
+            ? salePrice / 10_000_000
+            : 0;
+
+      const priceLabel =
+        listingIntent === "rent"
+          ? monthlyRent > 0
+            ? `₹ ${formatIndianNumber(monthlyRent)} / month`
+            : "Price on request"
+          : salePrice > 0
+            ? `₹ ${formatIndianNumber(salePrice)}`
+            : "Price on request";
+
+      const imageUrls = (item.images ?? [])
+        .map((media) => toFullAssetUrl(media?.fileKey))
+        .filter(Boolean);
+      const fallbackImage = toFullAssetUrl(item.imageUrl) || fallbackProjectImage;
+
+      return {
+        id: item.id,
+        title: (item.propertyName as string) ?? (item.title as string) ?? "Property",
+        address: (item.address as string) ?? "",
+        city: (item.city as string) ?? "",
+        postedBy: normalizePostedBy(
+          (item.postedBy as string | undefined) ??
+            (item.owner?.role as string | undefined)
+        ),
+        listingIntent,
+        priceValue,
+        priceLabel,
+        plotAreaSqYd: typeof item.plotArea === "number" ? item.plotArea : undefined,
+        bedrooms: parseBedrooms(item.bhkType as string | undefined),
+        view: (item.facing as string) ?? undefined,
+        furnishing: normalizeFurnishing(
+          (item.furnishingType as string | undefined) ??
+            (item.furnishType as string | undefined)
+        ),
+        locality: (item.locality as string) ?? "",
+        propertyType: normalizeProjectType(item.propertyType as string | undefined),
+        buildingType:
+          item.category === "Commercial"
+            ? "commercial"
+            : item.category
+              ? "residential"
+              : undefined,
+        possessionStatus:
+          item.constructionStatus === "under_construction"
+            ? "under_construction"
+            : item.constructionStatus
+              ? "ready_to_move"
+              : undefined,
+        images: imageUrls.length ? imageUrls : [fallbackImage],
+        mediaCounts: {
+          photos: imageUrls.length || 1,
+          videos: Array.isArray(item.videos) ? item.videos.length : 0,
+        },
+      } satisfies Project;
     });
-  }, [initialProjects, deferredFilters, deferredSort, deferredTab]);
+  }, [apiProperties]);
 
   return (
     <div className="w-full">
@@ -47,7 +241,7 @@ export default function ProjectsPageClient({
             All Property List
           </h1>
 
-          <div className="mt-4 flex flex-row space-between gap-3 rounded-[28px]  bg-white p-4  sm:p-5 lg:absolute lg:right-0 lg:top-15 lg:mt-0 lg:w-[80%] lg:max-w-[80%] lg:rounded-[34px_34px_0_0] lg:border-b-0">
+          <div className="mt-4 flex flex-row space-between gap-3 rounded-[28px]  bg-white p-4  sm:p-5 lg:absolute lg:right-0 lg:top-15 lg:mt-0 lg:w-[73%] lg:max-w-[73%] lg:rounded-[34px_34px_0_0] lg:border-b-0">
             <div className="relative w-[80%]">
               <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-text-gray" />
 
@@ -79,20 +273,30 @@ export default function ProjectsPageClient({
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-1 gap-6 rounded-2xl bg-white p-4 lg:mt-20 lg:grid-cols-[300px_1fr]">
-          <aside className="mt-10 rounded-xl bg-background-gray p-4 lg:sticky lg:top-6 lg:mt-0 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:overscroll-contain">
+        <div className="mt-6 grid grid-cols-1 gap-6 rounded-xl bg-white p-4 lg:mt-20 lg:grid-cols-[320px_1fr]">
+          <aside className=" rounded-xl bg-background-gray p-4 lg:sticky lg:top-6 lg:mt-0 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:overscroll-contain">
             <FiltersSidebar />
           </aside>
 
           <main className="min-w-0 mt-8">
             <div className="rounded-2xl p-4  sm:p-5">
               <div>
-                <ProjectsToolbar total={filtered.length} />
+                <ProjectsToolbar total={initialProjects.length} />
 
               </div>
 
               <div className="mt-4 flex flex-col gap-4">
-                {filtered.map((p, idx) => (
+                {isPending && (
+                  <div className="rounded-xl border border-border bg-white p-8 text-center text-text-gray">
+                    Loading properties...
+                  </div>
+                )}
+                {isError && !isPending && (
+                  <div className="rounded-xl border border-border bg-white p-8 text-center text-red-600">
+                    Could not load properties. Please try again.
+                  </div>
+                )}
+                {initialProjects.map((p, idx) => (
                   <div
                     key={p.id}
                     style={{
@@ -104,9 +308,19 @@ export default function ProjectsPageClient({
                   </div>
                 ))}
 
-                {filtered.length === 0 && (
+                {!isPending && !isError && initialProjects.length === 0 && (
                   <div className="rounded-xl border border-border bg-white p-8 text-center text-text-gray">
                     No projects match your filters.
+                  </div>
+                )}
+
+                {!isPending && !isError && totalPages > 0 && (
+                  <div className="flex justify-end">
+                    <ProjectsPagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={setCurrentPage}
+                    />
                   </div>
                 )}
               </div>
