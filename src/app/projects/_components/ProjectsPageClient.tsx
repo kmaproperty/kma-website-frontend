@@ -242,7 +242,7 @@ export default function ProjectsPageClient() {
           </h1>
 
           <div className="mt-4 flex flex-row space-between gap-3 rounded-[28px]  bg-white p-4  sm:p-5 lg:absolute lg:right-0 lg:top-15 lg:mt-0 lg:w-[73%] lg:max-w-[73%] lg:rounded-[34px_34px_0_0] lg:border-b-0">
-            <div className="relative w-[80%]">
+            <div className="relative w-[74%]">
               <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-text-gray" />
 
               <input
@@ -274,7 +274,7 @@ export default function ProjectsPageClient() {
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-6 rounded-xl bg-white p-4 lg:mt-20 lg:grid-cols-[320px_1fr]">
-          <aside className=" rounded-xl bg-background-gray p-4 lg:sticky lg:top-6 lg:mt-0 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:overscroll-contain">
+          <aside className="rounded-xl bg-background-gray p-4 lg:sticky lg:top-6 lg:mt-0 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:overscroll-contain">
             <FiltersSidebar />
           </aside>
 
