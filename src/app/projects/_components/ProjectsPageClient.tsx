@@ -12,6 +12,7 @@ import {
   useEndUserPropertiesCount,
 } from "@/api/hooks/useEndUserProperties";
 import ProjectsPagination from "./ProjectsPagination";
+import { getUserCoordinates } from "@/api/hooks/useGeoloaction";
 
 const awsBaseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
 const fallbackProjectImage = "/assets/properties_pic_1.png";
@@ -44,6 +45,7 @@ const normalizeProjectType = (value?: string) => {
     apartment: "apartment",
     penthouse: "penthouse",
     independent_floor: "ind_floor",
+    independent_house: "ind_floor",
     ind_floor: "ind_floor",
     retail_shop: "retail_shop",
     office_space: "office_space",
@@ -78,12 +80,47 @@ const toApiFurnishingType = (value: string) => {
   return value;
 };
 
+type ListingIntent = "sale" | "rent";
+type BedroomCount = 1 | 2 | 3;
+type PropertyTypeFilter = Exclude<Project["propertyType"], undefined>;
+type BuildingTypeFilter = Exclude<Project["buildingType"], undefined>;
+
+type FilterIdMaps = {
+  listingTypeIdsByIntent: Partial<Record<ListingIntent, string[]>>;
+  propertyTypeIdsByFilter: Partial<Record<PropertyTypeFilter, string[]>>;
+  bhkTypeIdsByBedroom: Partial<Record<BedroomCount, string[]>>;
+  categoryIdsByBuildingType: Partial<Record<BuildingTypeFilter, string[]>>;
+};
+
+const EMPTY_FILTER_ID_MAPS: FilterIdMaps = {
+  listingTypeIdsByIntent: {},
+  propertyTypeIdsByFilter: {},
+  bhkTypeIdsByBedroom: {},
+  categoryIdsByBuildingType: {},
+};
+
+const normalizeBuildingType = (value?: string) => {
+  const key = (value ?? "").trim().toLowerCase();
+  if (key === "commercial") return "commercial";
+  if (key.length > 0) return "residential";
+  return undefined;
+};
+
+const uniqueNonEmpty = (values: Array<string | undefined>) =>
+  Array.from(new Set(values.filter((value): value is string => Boolean(value?.trim()))));
+
 export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
   const tab = useProjectsStore((s) => s.tab);
   const sort = useProjectsStore((s) => s.sort);
   const filters = useProjectsStore((s) => s.filters);
   const setFilters = useProjectsStore((s) => s.setFilters);
   const [currentPage, setCurrentPage] = useState(1);
+  const [filterIdMaps, setFilterIdMaps] = useState<FilterIdMaps>(EMPTY_FILTER_ID_MAPS);
+  const [nearMeCoords, setNearMeCoords] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
 
   const deferredFilters = useDeferredValue(filters);
   const deferredSort = useDeferredValue(sort);
@@ -95,6 +132,27 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
       deferredFilters.searchLocality?.trim(),
     ].filter(Boolean);
     const search = searchParts.length ? searchParts.join(" ") : undefined;
+
+    const selectedPropertyTypeIds = uniqueNonEmpty(
+      deferredFilters.propertyTypes.flatMap(
+        (propertyType) => filterIdMaps.propertyTypeIdsByFilter[propertyType] ?? []
+      )
+    );
+    const selectedBhkTypeIds = uniqueNonEmpty(
+      deferredFilters.bedrooms.flatMap(
+        (bedroom) =>
+          filterIdMaps.bhkTypeIdsByBedroom[bedroom as BedroomCount] ?? []
+      )
+    );
+    const selectedCategoryIds =
+      deferredFilters.buildingType !== "all"
+        ? uniqueNonEmpty(filterIdMaps.categoryIdsByBuildingType[deferredFilters.buildingType] ?? [])
+        : [];
+    // Budget controls are shown in Cr units, so they apply to sale listing types.
+    const selectedListingTypeIds =
+      deferredFilters.minBudget != null || deferredFilters.maxBudget != null
+        ? uniqueNonEmpty(filterIdMaps.listingTypeIdsByIntent.sale ?? [])
+        : [];
 
     return {
       search,
@@ -117,14 +175,22 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
         deferredFilters.furnishing !== "any"
           ? [toApiFurnishingType(deferredFilters.furnishing)]
           : undefined,
+      listingTypeIds:
+        selectedListingTypeIds.length > 0 ? selectedListingTypeIds : undefined,
+      propertyTypeIds:
+        selectedPropertyTypeIds.length > 0 ? selectedPropertyTypeIds : undefined,
+      bhkTypeIds: selectedBhkTypeIds.length > 0 ? selectedBhkTypeIds : undefined,
+      categoryIds: selectedCategoryIds.length > 0 ? selectedCategoryIds : undefined,
       constructionStatuses:
         deferredFilters.possessionStatuses.length > 0
           ? deferredFilters.possessionStatuses
           : undefined,
       sortBy: "price",
       sortOrder: deferredSort === "price_low_high" ? "ASC" : "DESC",
+      latitude: nearMeCoords?.latitude,
+      longitude: nearMeCoords?.longitude,
     };
-  }, [deferredFilters, deferredSort, deferredTab]);
+  }, [cityId, deferredFilters, deferredSort, deferredTab, filterIdMaps, nearMeCoords]);
 
   const apiQueryParams = useMemo(
     () => ({
@@ -144,7 +210,66 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
     useEndUserProperties(apiQueryParams);
   const { data: totalCount = 0 } = useEndUserPropertiesCount(baseQueryParams);
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
-console.log(apiProperties, "apiProperties");
+
+  useEffect(() => {
+    if (!Array.isArray(apiProperties) || apiProperties.length === 0) return;
+
+    setFilterIdMaps((prev) => {
+      const next: FilterIdMaps = {
+        listingTypeIdsByIntent: { ...prev.listingTypeIdsByIntent },
+        propertyTypeIdsByFilter: { ...prev.propertyTypeIdsByFilter },
+        bhkTypeIdsByBedroom: { ...prev.bhkTypeIdsByBedroom },
+        categoryIdsByBuildingType: { ...prev.categoryIdsByBuildingType },
+      };
+
+      for (const item of apiProperties) {
+        const listingTypeId =
+          typeof item.listingTypeId === "string" ? item.listingTypeId : undefined;
+        const propertyTypeId =
+          typeof item.propertyTypeId === "string" ? item.propertyTypeId : undefined;
+        const bhkTypeId = typeof item.bhkTypeId === "string" ? item.bhkTypeId : undefined;
+        const categoryId = typeof item.categoryId === "string" ? item.categoryId : undefined;
+
+        const listingIntent = normalizeListingIntent(item.listingType as string | undefined);
+        if (listingTypeId) {
+          next.listingTypeIdsByIntent[listingIntent] = uniqueNonEmpty([
+            ...(next.listingTypeIdsByIntent[listingIntent] ?? []),
+            listingTypeId,
+          ]);
+        }
+
+        const propertyType = normalizeProjectType(item.propertyType as string | undefined);
+        if (propertyType && propertyTypeId) {
+          next.propertyTypeIdsByFilter[propertyType] = uniqueNonEmpty([
+            ...(next.propertyTypeIdsByFilter[propertyType] ?? []),
+            propertyTypeId,
+          ]);
+        }
+
+        const bedrooms = parseBedrooms(item.bhkType as string | undefined);
+        if (bhkTypeId && bedrooms && [1, 2, 3].includes(bedrooms)) {
+          const bedroom = bedrooms as BedroomCount;
+          next.bhkTypeIdsByBedroom[bedroom] = uniqueNonEmpty([
+            ...(next.bhkTypeIdsByBedroom[bedroom] ?? []),
+            bhkTypeId,
+          ]);
+        }
+
+        const buildingType = normalizeBuildingType(item.category as string | undefined);
+        if (buildingType && categoryId) {
+          next.categoryIdsByBuildingType[buildingType] = uniqueNonEmpty([
+            ...(next.categoryIdsByBuildingType[buildingType] ?? []),
+            categoryId,
+          ]);
+        }
+      }
+
+      const prevSerialized = JSON.stringify(prev);
+      const nextSerialized = JSON.stringify(next);
+      return prevSerialized === nextSerialized ? prev : next;
+    });
+  }, [apiProperties]);
+
   useEffect(() => {
     setCurrentPage(1);
   }, [paginationResetKey]);
@@ -207,12 +332,7 @@ console.log(apiProperties, "apiProperties");
         ),
         locality: (item.locality as string) ?? "",
         propertyType: normalizeProjectType(item.propertyType as string | undefined),
-        buildingType:
-          item.category === "Commercial"
-            ? "commercial"
-            : item.category
-              ? "residential"
-              : undefined,
+        buildingType: normalizeBuildingType(item.category as string | undefined),
         possessionStatus:
           item.constructionStatus === "under_construction"
             ? "under_construction"
@@ -227,6 +347,22 @@ console.log(apiProperties, "apiProperties");
       } satisfies Project;
     });
   }, [apiProperties]);
+
+  const handleNearMeClick = async () => {
+    if (isLocating) return;
+
+    setIsLocating(true);
+    const coordinates = await getUserCoordinates();
+    setIsLocating(false);
+
+    if (!coordinates) return;
+
+    setNearMeCoords({
+      latitude: coordinates.lat,
+      longitude: coordinates.lng,
+    });
+    setCurrentPage(1);
+  };
 
   return (
     <div className="w-full">
@@ -257,6 +393,8 @@ console.log(apiProperties, "apiProperties");
 
             <button
               type="button"
+              onClick={handleNearMeClick}
+              disabled={isLocating}
               className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-border bg-background-gray px-6 text-sm font-medium text-text-gray transition hover:brightness-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/20"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -270,7 +408,7 @@ console.log(apiProperties, "apiProperties");
                 </defs>
               </svg>
 
-              Near Me Properties
+              {isLocating ? "Locating..." : "Near Me Properties"}
             </button>
           </div>
         </div>
