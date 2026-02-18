@@ -3,6 +3,7 @@
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import {
@@ -55,6 +56,8 @@ export default function ProjectCard({
   project: Project;
   priority?: boolean;
 }) {
+  const router = useRouter();
+  const params = useParams<{ projectId?: string | string[] }>();
   const [isCallBackModalOpen, setIsCallBackModalOpen] = React.useState(false);
   const [isQuickCallBackModalOpen, setIsQuickCallBackModalOpen] = React.useState(false);
   const [isAuthChecking, setIsAuthChecking] = React.useState(false);
@@ -196,8 +199,55 @@ export default function ProjectCard({
     });
   };
 
+  const projectIdParam = params?.projectId;
+  const activeProjectId = Array.isArray(projectIdParam)
+    ? projectIdParam[0]
+    : projectIdParam;
+  const detailsHref = activeProjectId
+    ? `/projects/${activeProjectId}/${project.id}`
+    : `/projects/${project.id}`;
+
+  const shouldSkipCardNavigation = (target: EventTarget | null) => {
+    if (!(target instanceof HTMLElement)) {
+      return false;
+    }
+
+    return Boolean(
+      target.closest(
+        'a,button,input,select,textarea,[role="button"],[data-no-card-nav="true"]'
+      )
+    );
+  };
+
+  const handleCardClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (shouldSkipCardNavigation(event.target)) {
+      return;
+    }
+
+    router.push(detailsHref);
+  };
+
+  const handleCardKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== "Enter" && event.key !== " ") {
+      return;
+    }
+    if (shouldSkipCardNavigation(event.target)) {
+      return;
+    }
+
+    event.preventDefault();
+    router.push(detailsHref);
+  };
+
   return (
-    <div className="group overflow-hidden rounded-2xl border border-border bg-[#F2F2F2] shadow-sm transition will-change-transform hover:-translate-y-[1px] hover:shadow-md">
+    <div
+      className="group cursor-pointer overflow-hidden rounded-2xl border border-border bg-[#F2F2F2] shadow-sm transition will-change-transform hover:-translate-y-[1px] hover:shadow-md"
+      role="link"
+      tabIndex={0}
+      onClick={handleCardClick}
+      onKeyDown={handleCardKeyDown}
+      aria-label={`Open details for ${project.title}`}
+    >
       <div className="grid grid-cols-1 gap-0 lg:grid-cols-[350px_1fr]">
         <div className="relative h-[240px] w-full lg:h-[318px]">
           <ImageCarousel
@@ -305,7 +355,7 @@ export default function ProjectCard({
 
           <div className="mt-3">
             <Link
-              href={`/projects/${project.id}`}
+              href={detailsHref}
               className="inline-flex h-9 items-center justify-center rounded-full bg-[#E4E4E8] px-4 text-sm font-semibold text-[#262B58] transition hover:bg-[#d9d9df] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/30"
             >
               Read More

@@ -15,8 +15,8 @@ const DEFAULT_FILTERS: ProjectsFilters = {
   searchLocality: "",
   buildingType: "all",
   propertyTypes: [],
-  minBudget: 1.4, // Cr (default to match screenshot chips)
-  maxBudget: 10, // Cr
+  minBudget: null,
+  maxBudget: null,
   minSizeSqYd: null,
   maxSizeSqYd: null,
   bedrooms: [],
