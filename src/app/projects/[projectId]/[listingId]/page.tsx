@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import {
+  ArrowLeft,
   ArrowRight,
   Bath,
   BedDouble,
@@ -154,6 +155,81 @@ const goodThings = [
 
 const badThings = ["Smaller Room Sizes", "Water supply system issues", "Noise pollution in some areas"];
 
+const reviews = [
+  {
+    id: "r1",
+    name: "Meera",
+    role: "Teacher from India",
+    rating: 5,
+    review: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    avatar: "/assets/profile.png",
+  },
+  {
+    id: "r2",
+    name: "Rahul",
+    role: "Software Engineer from India",
+    rating: 5,
+    review: "Great society with clean surroundings, good security and smooth connectivity.",
+    avatar: "/assets/profile.png",
+  },
+  {
+    id: "r3",
+    name: "Aisha",
+    role: "Consultant from UAE",
+    rating: 4,
+    review: "Amenities are impressive and maintenance quality is consistently reliable.",
+    avatar: "/assets/profile.png",
+  },
+  {
+    id: "r4",
+    name: "Karan",
+    role: "Entrepreneur from India",
+    rating: 5,
+    review: "Spacious layouts, peaceful environment and responsive management team.",
+    avatar: "/assets/profile.png",
+  },
+  {
+    id: "r5",
+    name: "Naina",
+    role: "Designer from India",
+    rating: 4,
+    review: "Location is convenient and there are enough open areas for families.",
+    avatar: "/assets/profile.png",
+  },
+  {
+    id: "r6",
+    name: "Vikram",
+    role: "Analyst from India",
+    rating: 5,
+    review: "Well-connected locality with dependable services and modern facilities.",
+    avatar: "/assets/profile.png",
+  },
+  {
+    id: "r7",
+    name: "Priya",
+    role: "Doctor from India",
+    rating: 4,
+    review: "The neighbourhood feels safe and daily essentials are available nearby.",
+    avatar: "/assets/profile.png",
+  },
+  {
+    id: "r8",
+    name: "Arjun",
+    role: "Architect from India",
+    rating: 5,
+    review: "Good value for the area with excellent community upkeep and support.",
+    avatar: "/assets/profile.png",
+  },
+  {
+    id: "r9",
+    name: "Sara",
+    role: "Researcher from India",
+    rating: 5,
+    review: "A balanced mix of comfort, amenities and accessibility for long-term living.",
+    avatar: "/assets/profile.png",
+  },
+];
+
 const similarProperties = [
   {
     id: "sp1",
@@ -294,6 +370,36 @@ export default function ListingDetailsPage() {
       return [label, match?.[1] ?? fallback] as [string, string];
     });
   }, [propertyDetails]);
+
+  const reviewsPerPage = 3;
+  const totalReviewPages = Math.ceil(reviews.length / reviewsPerPage);
+  const [activeReviewPage, setActiveReviewPage] = useState(0);
+
+  const currentReviews = useMemo(() => {
+    const start = activeReviewPage * reviewsPerPage;
+    return reviews.slice(start, start + reviewsPerPage);
+  }, [activeReviewPage]);
+
+  const goToPrevReviewPage = () => {
+    setActiveReviewPage((prev) => (prev === 0 ? totalReviewPages - 1 : prev - 1));
+  };
+
+  const goToNextReviewPage = () => {
+    setActiveReviewPage((prev) => (prev === totalReviewPages - 1 ? 0 : prev + 1));
+  };
+
+  const similarCarouselRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollSimilarProperties = (direction: "prev" | "next") => {
+    const container = similarCarouselRef.current;
+    if (!container) return;
+
+    const card = container.querySelector<HTMLElement>("[data-similar-card]");
+    const step = card ? card.offsetWidth + 12 : 332;
+    const amount = direction === "next" ? step : -step;
+
+    container.scrollBy({ left: amount, behavior: "smooth" });
+  };
 
   return (
     <MainLayout>
@@ -693,34 +799,228 @@ export default function ListingDetailsPage() {
                           </div>
                         </div>
                       </div>
+
+                      <div className="mt-6 border-t border-[#CFCFD2] pt-6">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                          <h3 className="text-xl font-semibold text-text-black">Reviews</h3>
+                          <div className="flex items-center gap-3">
+                            <button
+                              type="button"
+                              className="rounded-xl border border-blue bg-white px-5 py-2.5 text-sm font-semibold text-blue"
+                            >
+                              Add a Review
+                            </button>
+                            <button
+                              type="button"
+                              className="inline-flex items-center gap-2 rounded-xl bg-[#05085E] px-5 py-2.5 text-sm font-semibold text-white"
+                            >
+                              View All
+                              <ArrowRight className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="mt-5 grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">
+                          {currentReviews.map((review) => (
+                            <article
+                              key={review.id}
+                              className="rounded-xl border border-border bg-[#F8F8F9] p-4"
+                            >
+                              <div className="flex items-start gap-3">
+                                <Image
+                                  src={review.avatar}
+                                  alt={review.name}
+                                  width={46}
+                                  height={46}
+                                  className="h-[46px] w-[46px] rounded-full object-cover"
+                                />
+                                <div>
+                                  <p className="text-sm font-semibold leading-none text-text-black">
+                                    {review.name}
+                                  </p>
+                                  <p className="mt-1 text-xs text-text-gray">{review.role}</p>
+                                </div>
+                              </div>
+
+                              <div className="mt-4 flex items-center gap-1 text-[#F5A524]">
+                                {Array.from({ length: 5 }).map((_, idx) => (
+                                  <Star
+                                    key={`${review.id}-star-${idx}`}
+                                    className="h-5 w-5 fill-[#F5A524] text-[#F5A524]"
+                                  />
+                                ))}
+                              </div>
+
+                              <p className="mt-4 min-h-[78px] text-sm leading-[36px] text-text-gray">
+                                {review.review}
+                              </p>
+
+                              <button
+                                type="button"
+                                className="mt-4 text-xs font-semibold text-[#05085E] underline underline-offset-4"
+                              >
+                                Read More
+                              </button>
+                            </article>
+                          ))}
+                        </div>
+
+                        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="flex items-center gap-4">
+                            <p className="text-[22px] font-semibold leading-none text-[#05085E]">
+                              {String(activeReviewPage + 1).padStart(2, "0")}
+                              <span className="text-text-gray"> / </span>
+                              <span className="text-text-gray">
+                                {String(totalReviewPages).padStart(2, "0")}
+                              </span>
+                            </p>
+                            <div className="h-[3px] w-[220px] overflow-hidden rounded-full bg-[#D4D5D8] sm:w-[320px]">
+                              <div
+                                className="h-full rounded-full bg-[#05085E] transition-all"
+                                style={{
+                                  width: `${((activeReviewPage + 1) / totalReviewPages) * 100}%`,
+                                }}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-3">
+                            <button
+                              type="button"
+                              aria-label="Previous reviews"
+                              onClick={goToPrevReviewPage}
+                              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#05085E] text-[#05085E] transition hover:bg-[#F1F3F9]"
+                            >
+                              <ArrowLeft className="h-5 w-5" />
+                            </button>
+                            <button
+                              type="button"
+                              aria-label="Next reviews"
+                              onClick={goToNextReviewPage}
+                              className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#05085E] text-white transition hover:bg-[#0B127A]"
+                            >
+                              <ArrowRight className="h-5 w-5" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </section>
 
-                  <section className="rounded-xl border border-border p-4">
+                  <section className="rounded-xl p-4">
                     <h2 className="text-xl font-semibold text-text-black">
                       Similar properties in your locality
                     </h2>
-                    <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
-                      {similarProperties.map((item) => (
-                        <article key={item.id} className="overflow-hidden rounded-xl border border-border">
-                          <div className="relative h-[160px]">
+                    <div className="relative mt-3">
+                      <div
+                        ref={similarCarouselRef}
+                        className="flex gap-3 overflow-x-auto pb-1 pr-2 scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                      >
+                        {similarProperties.map((item) => (
+                          <article
+                            key={item.id}
+                            data-similar-card
+                            className=" shrink-0 overflow-hidden rounded-2xl border border-[#D4D5D8] bg-white shadow-[0px_2px_8px_rgba(16,24,40,0.06)]"
+                          >
+                          <div className="relative h-[150px]">
                             <Image src={item.image} alt={item.title} fill className="object-cover" />
-                            <span className="absolute right-3 top-3 rounded-full bg-light-purple px-2 py-1 text-[10px] font-semibold text-blue">
+                            <span className="absolute right-3 top-3 rounded-md bg-[#6950F3] px-3 py-1.5 text-xs font-semibold text-white">
                               Apartment
                             </span>
+                            <div className="absolute -bottom-5 left-4 h-10 w-10 overflow-hidden rounded-full border-2 border-white bg-white">
+                              <Image
+                                src="/assets/profile.png"
+                                alt="Agent"
+                                fill
+                                className="object-cover"
+                              />
+                            </div>
                           </div>
-                          <div className="p-3">
-                            <h3 className="text-base font-semibold text-text-black">{item.title}</h3>
-                            <p className="mt-1 text-xs text-text-gray">{item.address}</p>
-                            <p className="mt-2 text-lg font-semibold text-blue">{item.price}</p>
-                            <div className="mt-2 flex flex-wrap gap-2 text-xs text-text-gray">
-                              <span className="rounded bg-background-gray px-2 py-1">2 Bed</span>
-                              <span className="rounded bg-background-gray px-2 py-1">2 Bath</span>
-                              <span className="rounded bg-background-gray px-2 py-1">350 Sq Ft</span>
+
+                          <div className="p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-1 text-[#F4B400]">
+                                {Array.from({ length: 5 }).map((_, idx) => (
+                                  <Star
+                                    key={`${item.id}-property-star-${idx}`}
+                                    className="h-4 w-4 fill-[#F4B400] text-[#F4B400]"
+                                  />
+                                ))}
+                                <span className="ml-1 text-sm text-text-gray">5.0</span>
+                              </div>
+                              <button
+                                type="button"
+                                aria-label={`Save ${item.title}`}
+                                className="inline-flex h-8 w-8 items-center justify-center rounded-full text-text-light-black hover:bg-background-gray"
+                              >
+                                <Heart className="h-5 w-5" />
+                              </button>
+                            </div>
+
+                            <h3 className="mt-2 text-lg font-semibold leading-tight text-text-black">
+                              {item.title}
+                            </h3>
+                            <p className="mt-1 flex items-center gap-1 text-sm text-text-gray">
+                              <MapPin className="h-4 w-4 shrink-0" />
+                              {item.address}
+                            </p>
+                            <p className="mt-2 text-xl font-semibold leading-none text-[#05085E]">
+                              {item.price}
+                            </p>
+
+                            <div className="mt-4 border-t border-[#D4D5D8] pt-3">
+                              <p className="text-xs text-text-gray">
+                                Listed on : <span className="font-medium text-text-black">25 May 2025</span>
+                              </p>
+                              <p className="mt-1 text-xs text-text-gray">
+                                Possession status:{" "}
+                                <span className="font-medium text-text-black">Ready to move</span>
+                              </p>
+                            </div>
+
+                            <div className="mt-4 border-t border-[#D4D5D8] pt-4">
+                              <div className="grid grid-cols-3 gap-2 text-xs text-text-black">
+                                <div className="inline-flex items-center gap-2">
+                                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#D4D5D8] bg-[#F4F4F5] text-text-gray">
+                                    <BedDouble className="h-4 w-4" />
+                                  </span>
+                                  <span className="text-xs">2 Bed</span>
+                                </div>
+                                <div className="inline-flex items-center gap-2">
+                                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#D4D5D8] bg-[#F4F4F5] text-text-gray">
+                                    <Bath className="h-4 w-4" />
+                                  </span>
+                                  <span className="text-xs">2 Bath</span>
+                                </div>
+                                <div className="inline-flex items-center gap-2">
+                                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#D4D5D8] bg-[#F4F4F5] text-text-gray">
+                                    <House className="h-4 w-4" />
+                                  </span>
+                                  <span className="text-xs">350 Sq Ft</span>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </article>
-                      ))}
+                        ))}
+                      </div>
+
+                      <button
+                        type="button"
+                        aria-label="Previous similar property"
+                        onClick={() => scrollSimilarProperties("prev")}
+                        className="absolute left-2 top-1/2 z-10 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[#D4D5D8] bg-white text-[#05085E] shadow transition hover:bg-[#F8F9FF]"
+                      >
+                        <ArrowLeft className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        aria-label="Next similar property"
+                        onClick={() => scrollSimilarProperties("next")}
+                        className="absolute right-2 top-1/2 z-10 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[#D4D5D8] bg-white text-[#05085E] shadow transition hover:bg-[#F8F9FF]"
+                      >
+                        <ArrowRight className="h-4 w-4" />
+                      </button>
                     </div>
                   </section>
                 </main>
