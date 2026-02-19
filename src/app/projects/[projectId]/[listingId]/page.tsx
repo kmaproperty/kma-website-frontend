@@ -7,6 +7,7 @@ import {
   ArrowLeft,
   ArrowRight,
   Bath,
+  BusFront,
   BedDouble,
   Building2,
   CarFront,
@@ -14,6 +15,7 @@ import {
   CheckCircle2,
   Dumbbell,
   Heart,
+  Hospital,
   House,
   MapPin,
   MessageCircle,
@@ -24,10 +26,11 @@ import {
   Star,
   Trees,
   Tv,
+  UtensilsCrossed,
   WavesLadder,
 } from "lucide-react";
 import { usePropertyDetails } from "@/api/hooks/usePropertyDetails";
-import MainLayout from "@/components/signUp/mainLayout";
+import MainLayout from "@/components/myList/mainLayout";
 
 const galleryImages = [
   "/assets/property/img-1.png",
@@ -104,12 +107,56 @@ const furnishingDetails = [
   { label: "4 Wardrobe", icon: "/assets/wardrobe.png" },
 ];
 
-const nearbyPlaces = [
-  { icon: <School className="h-4 w-4" />, name: "Disneyland Nursery School", time: "0.2 km" },
-  { icon: <CarFront className="h-4 w-4" />, name: "Rapid Bus Stop", time: "0.4 km" },
-  { icon: <ShieldCheck className="h-4 w-4" />, name: "City Hospital", time: "0.8 km" },
-  { icon: <Dumbbell className="h-4 w-4" />, name: "Urban Gym", time: "1.1 km" },
-];
+const localityCategories = [
+  { key: "schools", label: "Schools", icon: School },
+  { key: "busStops", label: "Bus Stops", icon: BusFront },
+  { key: "hospitals", label: "Hospitals", icon: Hospital },
+  { key: "clinics", label: "Clinics", icon: Building2 },
+  { key: "gym", label: "Gym Fitness", icon: Dumbbell },
+  { key: "restaurants", label: "Restaurants", icon: UtensilsCrossed },
+] as const;
+
+const localityPlacesByCategory: Record<
+  (typeof localityCategories)[number]["key"],
+  Array<{ name: string; distance: string }>
+> = {
+  schools: [
+    { name: "Disneyland Nursery School", distance: "0.2km" },
+    { name: "Green Valley Public School", distance: "0.5km" },
+    { name: "Oxford Kids Academy", distance: "0.8km" },
+    { name: "Little Learners School", distance: "1.1km" },
+  ],
+  busStops: [
+    { name: "Rapid Bus Stop", distance: "0.4km" },
+    { name: "Sector 51 Main Stop", distance: "0.7km" },
+    { name: "Orchid Chowk Stop", distance: "1.0km" },
+    { name: "Metro Feeder Point", distance: "1.4km" },
+  ],
+  hospitals: [
+    { name: "City Hospital", distance: "0.8km" },
+    { name: "Apex Multispeciality", distance: "1.3km" },
+    { name: "LifeCare Hospital", distance: "1.8km" },
+    { name: "Sunrise Medical Center", distance: "2.1km" },
+  ],
+  clinics: [
+    { name: "Family Care Clinic", distance: "0.3km" },
+    { name: "Orchid Dental Care", distance: "0.9km" },
+    { name: "Wellness Clinic", distance: "1.2km" },
+    { name: "Prime Health Clinic", distance: "1.6km" },
+  ],
+  gym: [
+    { name: "Urban Gym", distance: "1.1km" },
+    { name: "PowerHouse Fitness", distance: "1.4km" },
+    { name: "Anytime Fitness", distance: "1.9km" },
+    { name: "FitNest Studio", distance: "2.2km" },
+  ],
+  restaurants: [
+    { name: "Spice Junction", distance: "0.6km" },
+    { name: "Olive Bistro", distance: "0.9km" },
+    { name: "The Curry House", distance: "1.5km" },
+    { name: "Garden Dine", distance: "1.8km" },
+  ],
+};
 
 const amenities = [
   { icon: <Dumbbell className="h-5 w-5" />, label: "Gymnasium" },
@@ -401,9 +448,21 @@ export default function ListingDetailsPage() {
     container.scrollBy({ left: amount, behavior: "smooth" });
   };
 
+  const [activeLocalityCategory, setActiveLocalityCategory] = useState<
+    (typeof localityCategories)[number]["key"]
+  >(localityCategories[0].key);
+  const activeLocalityPlaces = localityPlacesByCategory[activeLocalityCategory];
+
   return (
     <MainLayout>
+
       <div className="py-8">
+        <div className="text-sm text-white absolute top-35 left-62">
+        Home / Property for Rent in Gurgaon / Flats for Rent in Gurgaon / Flats for Rent in Sector 49 /  4 Bedroom 2337 Sq.Ft. Apartment in Sector 49 Gurgaon
+        </div>
+        <div className="text-4xl ml-6 mb-5 rounded-lg font-semibold text-white">
+          Property Details
+        </div>
         <div className="mx-auto w-full max-w-[1180px] px-4 lg:px-6">
           <div className="rounded-2xl border border-border bg-white p-4 shadow-sm lg:p-6">
             <div className="flex flex-col gap-4 border-b border-border pb-4 sm:flex-row sm:items-center sm:justify-between">
@@ -479,7 +538,7 @@ export default function ListingDetailsPage() {
               {quickFactsData.map((fact) => (
                 <div
                   key={fact.label}
-                  className="inline-flex items-center gap-2 rounded-lg border border-border bg-background-gray px-3 py-2 text-xs font-medium text-text-black"
+                  className="inline-flex items-center gap-2 rounded-md border border-border bg-background-gray px-3 py-2 text-xs font-medium text-text-black"
                 >
                   <span>{fact.icon}</span>
                   <span>{fact.label}</span>
@@ -502,8 +561,8 @@ export default function ListingDetailsPage() {
                       key={item}
                       type="button"
                       className={`whitespace-nowrap border-b-2 px-6 py-4 font-medium transition ${idx === 0
-                          ? "border-blue bg-white/70 text-text-black"
-                          : "border-transparent text-text-gray hover:text-text-black"
+                        ? "border-blue bg-white/70 text-text-black"
+                        : "border-transparent text-text-gray hover:text-text-black"
                         }`}
                     >
                       {item}
@@ -575,37 +634,66 @@ export default function ListingDetailsPage() {
                     </div>
                   </section>
 
-                  <section className="rounded-xl border border-border p-4">
+                  <section className="rounded-xl p-4">
                     <h2 className="text-xl font-semibold text-text-black">Locality</h2>
-                    <div className="mt-3 relative h-[210px] overflow-hidden rounded-xl bg-[#ECEEF3]">
+                    <div className="mt-3 relative h-[260px] overflow-hidden rounded-xl bg-[#ECEEF3]">
                       <Image
                         src="/assets/city/city1.svg"
                         alt="Locality map"
                         fill
-                        className="object-cover opacity-70"
+                        className="object-cover"
                       />
                       <button
                         type="button"
-                        className="absolute left-1/2 top-1/2 inline-flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full bg-blue px-4 py-2 text-xs font-semibold text-white"
+                        className="absolute left-1/2 top-1/2 inline-flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-lg bg-[#0E1730] px-5 py-2.5 text-base font-medium text-white shadow-sm"
                       >
+                        <MapPin className="h-4 w-4" />
                         Check on Map
-                        <ArrowRight className="h-3.5 w-3.5" />
                       </button>
                     </div>
 
-                    <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                      {nearbyPlaces.map((place) => (
+                    <div className="mt-4 flex gap-1 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                      {localityCategories.map((category) => {
+                        const Icon = category.icon;
+                        const isActive = activeLocalityCategory === category.key;
+
+                        return (
+                          <button
+                            key={category.key}
+                            type="button"
+                            onClick={() => setActiveLocalityCategory(category.key)}
+                            className={`inline-flex shrink-0 items-center gap-2 rounded-md border px-4 py-2.5 text-sm font-medium transition ${isActive
+                              ? "border-[#05085E] bg-[#05085E] text-white"
+                              : "border-[#D4D5D8] bg-[#F8F8F9] text-text-black hover:bg-white"
+                              }`}
+                          >
+                            <Icon className="h-4 w-4" />
+                            {category.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <div className="mt-4 divide-y divide-[#D4D5D8] rounded-lg border border-[#D4D5D8] bg-white px-3">
+                      {activeLocalityPlaces.map((place) => (
                         <div
                           key={place.name}
-                          className="flex items-center justify-between rounded-lg border border-border p-3"
+                          className="grid grid-cols-1 gap-3 py-4 sm:grid-cols-2 sm:gap-6"
                         >
-                          <div className="inline-flex items-center gap-2 text-sm text-text-black">
-                            {place.icon}
-                            {place.name}
+                          <div className="inline-flex items-start gap-3 text-sm text-text-black">
+                            <School className="mt-0.5 h-5 w-5 text-[#05085E]" />
+                            <div>
+                              <p className="font-medium text-text-black">{place.name}</p>
+                              <span className="mt-1 block text-text-light-black">{place.distance}</span>
+                            </div>
                           </div>
-                          <span className="text-xs font-medium text-text-light-gray">
-                            {place.time}
-                          </span>
+                          <div className="inline-flex items-start gap-3 text-sm text-text-black">
+                            <School className="mt-0.5 h-5 w-5 text-[#05085E]" />
+                            <div>
+                              <p className="font-medium text-text-black">{place.name}</p>
+                              <span className="mt-1 block text-text-light-black">{place.distance}</span>
+                            </div>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -671,17 +759,17 @@ export default function ListingDetailsPage() {
 
                       <div className="mt-4 border-t border-[#D4D5D8] pt-5">
                         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                        {[
-                          ["500+", "Buyers Served"],
-                          ["21", "Years of Experience"],
-                          ["44", "Property Holdings"],
-                          ["20+", "Areas of Operation"],
-                        ].map(([value, label]) => (
-                          <div key={label} className="flex items-center  gap-3">
-                            <p className="text-2xl leading-none font-semibold text-[#05085E]">{value}</p>
-                            <p className="max-w-[110px] text-xs leading-5 text-text-black">{label}</p>
-                          </div>
-                        ))}
+                          {[
+                            ["500+", "Buyers Served"],
+                            ["21", "Years of Experience"],
+                            ["44", "Property Holdings"],
+                            ["20+", "Areas of Operation"],
+                          ].map(([value, label]) => (
+                            <div key={label} className="flex items-center  gap-3">
+                              <p className="text-2xl leading-none font-semibold text-[#05085E]">{value}</p>
+                              <p className="max-w-[110px] text-xs leading-5 text-text-black">{label}</p>
+                            </div>
+                          ))}
                         </div>
                       </div>
 
@@ -713,7 +801,7 @@ export default function ListingDetailsPage() {
                     <div className="mt-4 rounded-xl bg-white p-4 sm:p-6">
                       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[220px_1fr]">
                         <div className="lg:border-r lg:border-[#CFCFD2] lg:pr-6  ">
-                          
+
                           <div className="flex flex-col items-center">
                             <p className="text-3xl font-semibold leading-none text-text-black">
                               4.2
@@ -724,7 +812,7 @@ export default function ListingDetailsPage() {
                                 <Star
                                   key={`star-${idx}`}
                                   className="h-5 w-5"
-                                  // fill={idx < 4 ? "currentColor" : "none"}
+                                // fill={idx < 4 ? "currentColor" : "none"}
                                 />
                               ))}
                             </div>
@@ -922,86 +1010,86 @@ export default function ListingDetailsPage() {
                             data-similar-card
                             className=" shrink-0 overflow-hidden rounded-2xl border border-[#D4D5D8] bg-white shadow-[0px_2px_8px_rgba(16,24,40,0.06)]"
                           >
-                          <div className="relative h-[150px]">
-                            <Image src={item.image} alt={item.title} fill className="object-cover" />
-                            <span className="absolute right-3 top-3 rounded-md bg-[#6950F3] px-3 py-1.5 text-xs font-semibold text-white">
-                              Apartment
-                            </span>
-                            <div className="absolute -bottom-5 left-4 h-10 w-10 overflow-hidden rounded-full border-2 border-white bg-white">
-                              <Image
-                                src="/assets/profile.png"
-                                alt="Agent"
-                                fill
-                                className="object-cover"
-                              />
-                            </div>
-                          </div>
-
-                          <div className="p-4">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-1 text-[#F4B400]">
-                                {Array.from({ length: 5 }).map((_, idx) => (
-                                  <Star
-                                    key={`${item.id}-property-star-${idx}`}
-                                    className="h-4 w-4 fill-[#F4B400] text-[#F4B400]"
-                                  />
-                                ))}
-                                <span className="ml-1 text-sm text-text-gray">5.0</span>
-                              </div>
-                              <button
-                                type="button"
-                                aria-label={`Save ${item.title}`}
-                                className="inline-flex h-8 w-8 items-center justify-center rounded-full text-text-light-black hover:bg-background-gray"
-                              >
-                                <Heart className="h-5 w-5" />
-                              </button>
-                            </div>
-
-                            <h3 className="mt-2 text-lg font-semibold leading-tight text-text-black">
-                              {item.title}
-                            </h3>
-                            <p className="mt-1 flex items-center gap-1 text-sm text-text-gray">
-                              <MapPin className="h-4 w-4 shrink-0" />
-                              {item.address}
-                            </p>
-                            <p className="mt-2 text-xl font-semibold leading-none text-[#05085E]">
-                              {item.price}
-                            </p>
-
-                            <div className="mt-4 border-t border-[#D4D5D8] pt-3">
-                              <p className="text-xs text-text-gray">
-                                Listed on : <span className="font-medium text-text-black">25 May 2025</span>
-                              </p>
-                              <p className="mt-1 text-xs text-text-gray">
-                                Possession status:{" "}
-                                <span className="font-medium text-text-black">Ready to move</span>
-                              </p>
-                            </div>
-
-                            <div className="mt-4 border-t border-[#D4D5D8] pt-4">
-                              <div className="grid grid-cols-3 gap-2 text-xs text-text-black">
-                                <div className="inline-flex items-center gap-2">
-                                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#D4D5D8] bg-[#F4F4F5] text-text-gray">
-                                    <BedDouble className="h-4 w-4" />
-                                  </span>
-                                  <span className="text-xs">2 Bed</span>
-                                </div>
-                                <div className="inline-flex items-center gap-2">
-                                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#D4D5D8] bg-[#F4F4F5] text-text-gray">
-                                    <Bath className="h-4 w-4" />
-                                  </span>
-                                  <span className="text-xs">2 Bath</span>
-                                </div>
-                                <div className="inline-flex items-center gap-2">
-                                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#D4D5D8] bg-[#F4F4F5] text-text-gray">
-                                    <House className="h-4 w-4" />
-                                  </span>
-                                  <span className="text-xs">350 Sq Ft</span>
-                                </div>
+                            <div className="relative h-[150px]">
+                              <Image src={item.image} alt={item.title} fill className="object-cover" />
+                              <span className="absolute right-3 top-3 rounded-md bg-[#6950F3] px-3 py-1.5 text-xs font-semibold text-white">
+                                Apartment
+                              </span>
+                              <div className="absolute -bottom-5 left-4 h-10 w-10 overflow-hidden rounded-full border-2 border-white bg-white">
+                                <Image
+                                  src="/assets/profile.png"
+                                  alt="Agent"
+                                  fill
+                                  className="object-cover"
+                                />
                               </div>
                             </div>
-                          </div>
-                        </article>
+
+                            <div className="p-4">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-1 text-[#F4B400]">
+                                  {Array.from({ length: 5 }).map((_, idx) => (
+                                    <Star
+                                      key={`${item.id}-property-star-${idx}`}
+                                      className="h-4 w-4 fill-[#F4B400] text-[#F4B400]"
+                                    />
+                                  ))}
+                                  <span className="ml-1 text-sm text-text-gray">5.0</span>
+                                </div>
+                                <button
+                                  type="button"
+                                  aria-label={`Save ${item.title}`}
+                                  className="inline-flex h-8 w-8 items-center justify-center rounded-full text-text-light-black hover:bg-background-gray"
+                                >
+                                  <Heart className="h-5 w-5" />
+                                </button>
+                              </div>
+
+                              <h3 className="mt-2 text-lg font-semibold leading-tight text-text-black">
+                                {item.title}
+                              </h3>
+                              <p className="mt-1 flex items-center gap-1 text-sm text-text-gray">
+                                <MapPin className="h-4 w-4 shrink-0" />
+                                {item.address}
+                              </p>
+                              <p className="mt-2 text-xl font-semibold leading-none text-[#05085E]">
+                                {item.price}
+                              </p>
+
+                              <div className="mt-4 border-t border-[#D4D5D8] pt-3">
+                                <p className="text-xs text-text-gray">
+                                  Listed on : <span className="font-medium text-text-black">25 May 2025</span>
+                                </p>
+                                <p className="mt-1 text-xs text-text-gray">
+                                  Possession status:{" "}
+                                  <span className="font-medium text-text-black">Ready to move</span>
+                                </p>
+                              </div>
+
+                              <div className="mt-4 border-t border-[#D4D5D8] pt-4">
+                                <div className="grid grid-cols-3 gap-2 text-xs text-text-black">
+                                  <div className="inline-flex items-center gap-2">
+                                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#D4D5D8] bg-[#F4F4F5] text-text-gray">
+                                      <BedDouble className="h-4 w-4" />
+                                    </span>
+                                    <span className="text-xs">2 Bed</span>
+                                  </div>
+                                  <div className="inline-flex items-center gap-2">
+                                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#D4D5D8] bg-[#F4F4F5] text-text-gray">
+                                      <Bath className="h-4 w-4" />
+                                    </span>
+                                    <span className="text-xs">2 Bath</span>
+                                  </div>
+                                  <div className="inline-flex items-center gap-2">
+                                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#D4D5D8] bg-[#F4F4F5] text-text-gray">
+                                      <House className="h-4 w-4" />
+                                    </span>
+                                    <span className="text-xs">350 Sq Ft</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </article>
                         ))}
                       </div>
 
