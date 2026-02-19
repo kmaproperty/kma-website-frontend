@@ -2,6 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
   ArrowLeft,
@@ -525,9 +526,12 @@ export default function ListingDetailsPage() {
                       className="object-cover"
                     />
                     {idx === displayGallery.slice(1).length - 1 ? (
-                      <span className="absolute inset-0 flex items-center justify-center bg-black/45 text-sm font-semibold text-white">
+                      <Link
+                        href={`/projects/${params?.projectId ?? ""}/${listingId || ""}/gallery`}
+                        className="absolute inset-0 flex items-center justify-center bg-black/45 text-sm font-semibold text-white"
+                      >
                         View all 20+
-                      </span>
+                      </Link>
                     ) : null}
                   </div>
                 ))}
