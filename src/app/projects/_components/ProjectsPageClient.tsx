@@ -38,11 +38,13 @@ const formatIndianNumber = (value: number) => {
 };
 
 const normalizeProjectType = (value?: string) => {
-  const key = (value ?? "").trim().toLowerCase().replace(/\s+/g, "_");
+  const raw = (value ?? "").trim().toLowerCase();
+  const key = raw.replace(/\s+/g, "_").replace(/\//g, "_");
   const map: Record<string, Project["propertyType"]> = {
     villa: "villa",
     plot: "plot",
     apartment: "apartment",
+    flat_apartment: "apartment",
     penthouse: "penthouse",
     independent_floor: "ind_floor",
     independent_house: "ind_floor",
@@ -50,7 +52,7 @@ const normalizeProjectType = (value?: string) => {
     retail_shop: "retail_shop",
     office_space: "office_space",
   };
-  return map[key];
+  return map[key] ?? map[raw] ?? undefined;
 };
 
 const normalizeFurnishing = (value?: string) => {
@@ -108,6 +110,80 @@ const normalizeBuildingType = (value?: string) => {
 
 const uniqueNonEmpty = (values: Array<string | undefined>) =>
   Array.from(new Set(values.filter((value): value is string => Boolean(value?.trim()))));
+
+/** Resolve listing type string from API (nested object or string). */
+const resolveListingType = (item: { listingType?: string | { name?: string; code?: string } }) => {
+  const lt = item.listingType;
+  if (typeof lt === "string") return lt;
+  if (lt && typeof lt === "object" && "code" in lt) return lt.code ?? lt.name ?? "";
+  return "";
+};
+
+/** Resolve category string from API (nested object or string). */
+const resolveCategory = (item: { category?: string | { name?: string; code?: string } }) => {
+  const c = item.category;
+  if (typeof c === "string") return c;
+  if (c && typeof c === "object" && "name" in c) return c.name ?? c.code ?? "";
+  return "";
+};
+
+/** Resolve property type string from API (nested object or string). */
+const resolvePropertyType = (item: { propertyType?: string | { name?: string; code?: string } }) => {
+  const pt = item.propertyType;
+  if (typeof pt === "string") return pt;
+  if (pt && typeof pt === "object" && "name" in pt) return pt.name ?? pt.code ?? "";
+  return "";
+};
+
+/** Resolve BHK string from API (nested object or string). */
+const resolveBhkType = (item: { bhkType?: string | { name?: string; code?: string } }) => {
+  const b = item.bhkType;
+  if (typeof b === "string") return b;
+  if (b && typeof b === "object" && "name" in b) return b.name ?? b.code ?? "";
+  return "";
+};
+
+/** Resolve city string from API (nested object or string). */
+const resolveCity = (item: { city?: string | { name?: string } }) => {
+  const c = item.city;
+  if (typeof c === "string") return c;
+  if (c && typeof c === "object" && "name" in c) return c.name ?? "";
+  return "";
+};
+
+/** Resolve locality string from API (nested object or string). */
+const resolveLocality = (item: { locality?: string | { name?: string } }) => {
+  const l = item.locality;
+  if (typeof l === "string") return l;
+  if (l && typeof l === "object" && "name" in l) return l.name ?? "";
+  return "";
+};
+
+/** Build image URLs from photos (prefer cover) or images, then fallback imageUrl. */
+const getImageUrlsFromItem = (
+  item: {
+    photos?: Array<{ fileKey?: string; isCoverImage?: boolean | string }>;
+    images?: Array<{ fileKey?: string }>;
+    imageUrl?: string | null;
+  },
+  toFullUrl: (v?: string | null) => string,
+  fallback: string
+) => {
+  const list = item.photos ?? item.images ?? [];
+  const withCoverFirst = [...list].sort((a, b) => {
+    const aCover = Boolean((a as { isCoverImage?: boolean | string }).isCoverImage);
+    const bCover = Boolean((b as { isCoverImage?: boolean | string }).isCoverImage);
+    if (aCover && !bCover) return -1;
+    if (!aCover && bCover) return 1;
+    return 0;
+  });
+  const urls = withCoverFirst
+    .map((m) => toFullUrl(m?.fileKey))
+    .filter(Boolean) as string[];
+  if (urls.length) return urls;
+  const single = toFullUrl(item.imageUrl);
+  return single ? [single] : [fallback];
+};
 
 export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
   const tab = useProjectsStore((s) => s.tab);
@@ -230,7 +306,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
         const bhkTypeId = typeof item.bhkTypeId === "string" ? item.bhkTypeId : undefined;
         const categoryId = typeof item.categoryId === "string" ? item.categoryId : undefined;
 
-        const listingIntent = normalizeListingIntent(item.listingType as string | undefined);
+        const listingIntent = normalizeListingIntent(resolveListingType(item));
         if (listingTypeId) {
           next.listingTypeIdsByIntent[listingIntent] = uniqueNonEmpty([
             ...(next.listingTypeIdsByIntent[listingIntent] ?? []),
@@ -238,7 +314,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
           ]);
         }
 
-        const propertyType = normalizeProjectType(item.propertyType as string | undefined);
+        const propertyType = normalizeProjectType(resolvePropertyType(item));
         if (propertyType && propertyTypeId) {
           next.propertyTypeIdsByFilter[propertyType] = uniqueNonEmpty([
             ...(next.propertyTypeIdsByFilter[propertyType] ?? []),
@@ -246,7 +322,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
           ]);
         }
 
-        const bedrooms = parseBedrooms(item.bhkType as string | undefined);
+        const bedrooms = parseBedrooms(resolveBhkType(item));
         if (bhkTypeId && bedrooms && [1, 2, 3].includes(bedrooms)) {
           const bedroom = bedrooms as BedroomCount;
           next.bhkTypeIdsByBedroom[bedroom] = uniqueNonEmpty([
@@ -255,7 +331,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
           ]);
         }
 
-        const buildingType = normalizeBuildingType(item.category as string | undefined);
+        const buildingType = normalizeBuildingType(resolveCategory(item));
         if (buildingType && categoryId) {
           next.categoryIdsByBuildingType[buildingType] = uniqueNonEmpty([
             ...(next.categoryIdsByBuildingType[buildingType] ?? []),
@@ -282,9 +358,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
 
   const initialProjects = useMemo<Project[]>(() => {
     return apiProperties.map((item) => {
-      const listingIntent = normalizeListingIntent(
-        (item.listingType as string | undefined) ?? undefined
-      );
+      const listingIntent = normalizeListingIntent(resolveListingType(item));
       const salePrice = Number(item.price ?? 0);
       const monthlyRent = Number(item.monthlyRent ?? 0);
       const priceValue =
@@ -305,41 +379,58 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
             ? `₹ ${formatIndianNumber(salePrice)}`
             : "Price on request";
 
-      const imageUrls = (item.images ?? [])
-        .map((media) => toFullAssetUrl(media?.fileKey))
-        .filter(Boolean);
-      const fallbackImage = toFullAssetUrl(item.imageUrl) || fallbackProjectImage;
+      const imageUrls = getImageUrlsFromItem(item, toFullAssetUrl, fallbackProjectImage);
+      const localityStr = resolveLocality(item);
+      const cityStr = resolveCity(item);
+      const society = item.society;
+      const address =
+        (typeof society === "object" && society?.address) ||
+        (typeof item.address === "string" ? item.address : "") ||
+        "";
+      const titleParts = [
+        resolveBhkType(item),
+        resolvePropertyType(item),
+        typeof society === "object" && society?.name,
+        localityStr,
+      ].filter(Boolean);
+      const title =
+        (typeof item.propertyName === "string" && item.propertyName.trim()) ||
+        (typeof item.title === "string" && item.title.trim()) ||
+        (titleParts.length ? titleParts.join(" in ") : "Property");
+
+      const postedByRole =
+        (typeof item.user === "object" && item.user?.role) ||
+        (typeof item.owner === "object" && item.owner?.role) ||
+        item.postedBy;
+      const furnishingRaw =
+        typeof item.furnishType === "string"
+          ? item.furnishType
+          : (item.furnishingType as string | undefined);
 
       return {
         id: item.id,
-        title: (item.propertyName as string) ?? (item.title as string) ?? "Property",
-        address: (item.address as string) ?? "",
-        city: (item.city as string) ?? "",
+        title,
+        address,
+        city: cityStr,
         isFavorite: Boolean(item.isFavorite),
-        postedBy: normalizePostedBy(
-          (item.postedBy as string | undefined) ??
-            (item.owner?.role as string | undefined)
-        ),
+        postedBy: normalizePostedBy(postedByRole as string | undefined),
         listingIntent,
         priceValue,
         priceLabel,
         plotAreaSqYd: typeof item.plotArea === "number" ? item.plotArea : undefined,
-        bedrooms: parseBedrooms(item.bhkType as string | undefined),
-        view: (item.facing as string) ?? undefined,
-        furnishing: normalizeFurnishing(
-          (item.furnishingType as string | undefined) ??
-            (item.furnishType as string | undefined)
-        ),
-        locality: (item.locality as string) ?? "",
-        propertyType: normalizeProjectType(item.propertyType as string | undefined),
-        buildingType: normalizeBuildingType(item.category as string | undefined),
+        bedrooms: parseBedrooms(resolveBhkType(item)),
+        view: typeof item.facing === "string" ? item.facing : undefined,
+        furnishing: normalizeFurnishing(furnishingRaw),
+        locality: localityStr,
+        propertyType: normalizeProjectType(resolvePropertyType(item)),
+        buildingType: normalizeBuildingType(resolveCategory(item)),
         possessionStatus:
           item.constructionStatus === "under_construction"
             ? "under_construction"
             : item.constructionStatus
               ? "ready_to_move"
               : undefined,
-        images: imageUrls.length ? imageUrls : [fallbackImage],
+        images: imageUrls,
         mediaCounts: {
           photos: imageUrls.length || 1,
           videos: Array.isArray(item.videos) ? item.videos.length : 0,

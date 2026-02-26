@@ -30,8 +30,15 @@ import {
   UtensilsCrossed,
   WavesLadder,
 } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  addEndUserFavoriteAction,
+  removeEndUserFavoriteAction,
+} from "@/api/actions/propertyActions";
 import { usePropertyDetails } from "@/api/hooks/usePropertyDetails";
+import { useSimilarProperties } from "@/api/hooks/useSimilarProperties";
 import MainLayout from "@/components/myList/mainLayout";
+import { useProjectsStore } from "@/app/projects/_store/useProjectsStore";
 
 const galleryImages = [
   "/assets/property/img-1.png",
@@ -278,35 +285,78 @@ const reviews = [
   },
 ];
 
-const similarProperties = [
-  {
-    id: "sp1",
-    image: "/assets/property/img-4.png",
-    title: "Royal Apartment",
-    address: "25, Ville Cresent Apartment",
-    price: "$400.00",
-  },
-  {
-    id: "sp2",
-    image: "/assets/property/img-3.png",
-    title: "Royal Apartment",
-    address: "25, Ville Cresent Apartment",
-    price: "$400.00",
-  },
-  {
-    id: "sp3",
-    image: "/assets/property/img-2.png",
-    title: "Royal Apartment",
-    address: "25, Ville Cresent Apartment",
-    price: "$400.00",
-  },
-];
+const formatListedOn = (dateStr: string) => {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  if (Number.isNaN(d.getTime())) return dateStr;
+  return d.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+};
 
 export default function ListingDetailsPage() {
   const params = useParams<{ projectId: string; listingId: string }>();
   const listingId = params?.listingId ?? "";
   const { data: propertyDetails, isPending, isError } = usePropertyDetails({
     id: listingId,
+  });
+
+  const similarParams = useMemo(() => {
+    const city =
+      propertyDetails?.city && typeof propertyDetails.city === "object"
+        ? (propertyDetails.city as { id?: string })
+        : undefined;
+    const locality =
+      propertyDetails?.locality && typeof propertyDetails.locality === "object"
+        ? (propertyDetails.locality as { cityId?: string })
+        : undefined;
+    const society =
+      propertyDetails?.society && typeof propertyDetails.society === "object"
+        ? (propertyDetails.society as { cityId?: string })
+        : undefined;
+    const cityId =
+      city?.id ?? locality?.cityId ?? society?.cityId ?? (propertyDetails as { cityId?: string })?.cityId ?? "";
+
+    const pType =
+      propertyDetails?.propertyType && typeof propertyDetails.propertyType === "object"
+        ? (propertyDetails.propertyType as { id?: string })
+        : undefined;
+    const propertyTypeId =
+      pType?.id ?? (propertyDetails as { propertyTypeId?: string })?.propertyTypeId ?? undefined;
+
+    return { cityId, propertyTypeId };
+  }, [propertyDetails]);
+
+  const { data: similarProperties = [] } = useSimilarProperties({
+    cityId: similarParams.cityId || null,
+    propertyTypeId: similarParams.propertyTypeId ?? null,
+    limit: 10,
+    enabled: Boolean(similarParams.cityId),
+  });
+
+  const queryClient = useQueryClient();
+  const favorites = useProjectsStore((s) => s.favorites);
+  const setFavorite = useProjectsStore((s) => s.setFavorite);
+  const { mutate: updateSimilarFavorite, isPending: isSimilarFavoriteUpdating } = useMutation({
+    mutationFn: async ({
+      propertyId,
+      nextIsFavorite,
+    }: {
+      propertyId: string;
+      nextIsFavorite: boolean;
+    }) =>
+      nextIsFavorite
+        ? addEndUserFavoriteAction({ propertyId })
+        : removeEndUserFavoriteAction({ propertyId }),
+    onSuccess: (_data, variables) => {
+      setFavorite(variables.propertyId, variables.nextIsFavorite);
+      queryClient.invalidateQueries({ queryKey: ["end-user-properties-similar"] });
+    },
+    onError: (_err, variables) => {
+      setFavorite(variables.propertyId, !variables.nextIsFavorite);
+    },
   });
 
   const resolvedGalleryImages = useMemo(() => {
@@ -902,13 +952,13 @@ export default function ListingDetailsPage() {
                             >
                               Add a Review
                             </button>
-                            <button
-                              type="button"
-                              className="inline-flex items-center gap-2 rounded-xl bg-[#05085E] px-5 py-2.5 text-sm font-semibold text-white"
+                            <Link
+                              href={`/projects/${params?.projectId ?? ""}/${listingId || ""}/reviews`}
+                              className="inline-flex items-center gap-2 rounded-xl bg-[#05085E] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0B127A]"
                             >
                               View All
                               <ArrowRight className="h-4 w-4" />
-                            </button>
+                            </Link>
                           </div>
                         </div>
 
@@ -1008,93 +1058,147 @@ export default function ListingDetailsPage() {
                         ref={similarCarouselRef}
                         className="flex gap-3 overflow-x-auto pb-1 pr-2 scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                       >
-                        {similarProperties.map((item) => (
-                          <article
-                            key={item.id}
-                            data-similar-card
-                            className=" shrink-0 overflow-hidden rounded-2xl border border-[#D4D5D8] bg-white shadow-[0px_2px_8px_rgba(16,24,40,0.06)]"
-                          >
-                            <div className="relative h-[150px]">
-                              <Image src={item.image} alt={item.title} fill className="object-cover" />
-                              <span className="absolute right-3 top-3 rounded-md bg-[#6950F3] px-3 py-1.5 text-xs font-semibold text-white">
-                                Apartment
-                              </span>
-                              <div className="absolute -bottom-5 left-4 h-10 w-10 overflow-hidden rounded-full border-2 border-white bg-white">
-                                <Image
-                                  src="/assets/profile.png"
-                                  alt="Agent"
-                                  fill
-                                  className="object-cover"
-                                />
-                              </div>
-                            </div>
+                        {similarProperties
+                          .filter((item) => item.id !== listingId)
+                          .map((item) => {
+                            const isFav = favorites[item.id] ?? Boolean(item.isFavorite);
+                            const imageSrc = toFullAssetUrl(item.imageUrl) || "/assets/property/img-4.png";
+                            const ownerImage = toFullAssetUrl(item.owner?.profileImage) || "/assets/profile.png";
+                            const rating = Number.isFinite(item.averageRating) ? item.averageRating : 5;
+                            const priceLabel =
+                              item.priceType === "rent"
+                                ? `Rs ${formatInr(item.price)}/mo`
+                                : `Rs ${formatInr(item.price)}`;
 
-                            <div className="p-4">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-1 text-[#F4B400]">
-                                  {Array.from({ length: 5 }).map((_, idx) => (
-                                    <Star
-                                      key={`${item.id}-property-star-${idx}`}
-                                      className="h-4 w-4 fill-[#F4B400] text-[#F4B400]"
-                                    />
-                                  ))}
-                                  <span className="ml-1 text-sm text-text-gray">5.0</span>
-                                </div>
-                                <button
-                                  type="button"
-                                  aria-label={`Save ${item.title}`}
-                                  className="inline-flex h-8 w-8 items-center justify-center rounded-full text-text-light-black hover:bg-background-gray"
+                            return (
+                              <article
+                                key={item.id}
+                                data-similar-card
+                                className="w-[300px] shrink-0 overflow-hidden rounded-2xl border border-[#D4D5D8] bg-white shadow-[0px_2px_8px_rgba(16,24,40,0.06)]"
+                              >
+                                <Link
+                                  href={`/projects/${params?.projectId ?? ""}/${item.id}`}
+                                  className="block"
                                 >
-                                  <Heart className="h-5 w-5" />
-                                </button>
-                              </div>
-
-                              <h3 className="mt-2 text-lg font-semibold leading-tight text-text-black">
-                                {item.title}
-                              </h3>
-                              <p className="mt-1 flex items-center gap-1 text-sm text-text-gray">
-                                <MapPin className="h-4 w-4 shrink-0" />
-                                {item.address}
-                              </p>
-                              <p className="mt-2 text-xl font-semibold leading-none text-[#05085E]">
-                                {item.price}
-                              </p>
-
-                              <div className="mt-4 border-t border-[#D4D5D8] pt-3">
-                                <p className="text-xs text-text-gray">
-                                  Listed on : <span className="font-medium text-text-black">25 May 2025</span>
-                                </p>
-                                <p className="mt-1 text-xs text-text-gray">
-                                  Possession status:{" "}
-                                  <span className="font-medium text-text-black">Ready to move</span>
-                                </p>
-                              </div>
-
-                              <div className="mt-4 border-t border-[#D4D5D8] pt-4">
-                                <div className="grid grid-cols-3 gap-2 text-xs text-text-black">
-                                  <div className="inline-flex items-center gap-2">
-                                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#D4D5D8] bg-[#F4F4F5] text-text-gray">
-                                      <BedDouble className="h-4 w-4" />
+                                  <div className="relative h-[150px]">
+                                    <Image
+                                      src={imageSrc}
+                                      alt={item.title}
+                                      fill
+                                      className="object-cover"
+                                      sizes="300px"
+                                    />
+                                    <span className="absolute right-3 top-3 rounded-md bg-[#6950F3] px-3 py-1.5 text-xs font-semibold text-white">
+                                      {item.propertyType || "Apartment"}
                                     </span>
-                                    <span className="text-xs">2 Bed</span>
+                                    <div className="absolute -bottom-5 left-4 h-10 w-10 overflow-hidden rounded-full border-2 border-white bg-white">
+                                      <Image
+                                        src={ownerImage}
+                                        alt={item.owner?.name ?? "Agent"}
+                                        fill
+                                        className="object-cover"
+                                        sizes="40px"
+                                      />
+                                    </div>
                                   </div>
-                                  <div className="inline-flex items-center gap-2">
-                                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#D4D5D8] bg-[#F4F4F5] text-text-gray">
-                                      <Bath className="h-4 w-4" />
-                                    </span>
-                                    <span className="text-xs">2 Bath</span>
+                                </Link>
+
+                                <div className="p-4">
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-1 text-[#F4B400]">
+                                      {Array.from({ length: 5 }).map((_, idx) => (
+                                        <Star
+                                          key={`${item.id}-property-star-${idx}`}
+                                          className={`h-4 w-4 ${idx < Math.round(rating) ? "fill-[#F4B400] text-[#F4B400]" : "text-[#E5E7EB]"}`}
+                                        />
+                                      ))}
+                                      <span className="ml-1 text-sm text-text-gray">
+                                        {rating.toFixed(1)}
+                                        {item.totalReviews != null && item.totalReviews > 0 && (
+                                          <span className="text-text-gray"> ({item.totalReviews})</span>
+                                        )}
+                                      </span>
+                                    </div>
+                                    <button
+                                      type="button"
+                                      aria-label={isFav ? "Remove from favorites" : "Save"}
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        if (isSimilarFavoriteUpdating) return;
+                                        setFavorite(item.id, !isFav);
+                                        updateSimilarFavorite({
+                                          propertyId: item.id,
+                                          nextIsFavorite: !isFav,
+                                        });
+                                      }}
+                                      disabled={isSimilarFavoriteUpdating}
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full text-text-light-black hover:bg-background-gray disabled:opacity-70"
+                                    >
+                                      <Heart
+                                        className={`h-5 w-5 ${isFav ? "fill-red-500 text-red-500" : ""}`}
+                                      />
+                                    </button>
                                   </div>
-                                  <div className="inline-flex items-center gap-2">
-                                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#D4D5D8] bg-[#F4F4F5] text-text-gray">
-                                      <House className="h-4 w-4" />
-                                    </span>
-                                    <span className="text-xs">350 Sq Ft</span>
+
+                                  <Link
+                                    href={`/projects/${params?.projectId ?? ""}/${item.id}`}
+                                    className="block"
+                                  >
+                                    <h3 className="mt-2 text-lg font-semibold leading-tight text-text-black">
+                                      {item.title}
+                                    </h3>
+                                    <p className="mt-1 flex items-center gap-1 text-sm text-text-gray">
+                                      <MapPin className="h-4 w-4 shrink-0" />
+                                      {item.address}
+                                    </p>
+                                    <p className="mt-2 text-xl font-semibold leading-none text-[#05085E]">
+                                      {priceLabel}
+                                    </p>
+                                  </Link>
+
+                                  <div className="mt-4 border-t border-[#D4D5D8] pt-3">
+                                    <p className="text-xs text-text-gray">
+                                      Listed on :{" "}
+                                      <span className="font-medium text-text-black">
+                                        {item.listedOn ? formatListedOn(item.listedOn) : "—"}
+                                      </span>
+                                    </p>
+                                    <p className="mt-1 text-xs text-text-gray">
+                                      Possession status:{" "}
+                                      <span className="font-medium text-text-black">
+                                        {item.possessionStatus || "—"}
+                                      </span>
+                                    </p>
+                                  </div>
+
+                                  <div className="mt-4 border-t border-[#D4D5D8] pt-4">
+                                    <div className="grid grid-cols-3 gap-2 text-xs text-text-black">
+                                      <div className="inline-flex items-center gap-2">
+                                        <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#D4D5D8] bg-[#F4F4F5] text-text-gray">
+                                          <BedDouble className="h-4 w-4" />
+                                        </span>
+                                        <span className="text-xs">{item.bedrooms ?? 0} Bed</span>
+                                      </div>
+                                      <div className="inline-flex items-center gap-2">
+                                        <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#D4D5D8] bg-[#F4F4F5] text-text-gray">
+                                          <Bath className="h-4 w-4" />
+                                        </span>
+                                        <span className="text-xs">{item.bathrooms ?? 0} Bath</span>
+                                      </div>
+                                      <div className="inline-flex items-center gap-2">
+                                        <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#D4D5D8] bg-[#F4F4F5] text-text-gray">
+                                          <House className="h-4 w-4" />
+                                        </span>
+                                        <span className="text-xs">
+                                          {item.area != null ? `${item.area} ${item.areaUnit || "Sq Ft"}` : "—"}
+                                        </span>
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            </div>
-                          </article>
-                        ))}
+                              </article>
+                            );
+                          })}
                       </div>
 
                       <button

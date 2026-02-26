@@ -31,6 +31,55 @@ export interface GetEndUserPropertyDetailsResponse {
   data?: EndUserPropertyDetails;
 }
 
+/** GET /end-user/properties/{propertyId}/rating-reviews */
+export interface PropertyRatingReviewSummary {
+  averageRating: number;
+  totalReviews: number;
+  starDistribution: Record<string, number>;
+}
+
+export interface PropertyRatingReviewFeatureRatings {
+  connectivity?: number;
+  neighbourhood?: number;
+  safety?: number;
+  livability?: number;
+}
+
+export interface PropertyRatingReviewItem {
+  id: string;
+  reviewerName: string;
+  reviewerProfileImage?: string | null;
+  reviewerDetail?: string | null;
+  overallRating: number;
+  role?: string | null;
+  likeText?: Record<string, unknown>;
+  dislikeText?: Record<string, unknown>;
+  createdAt: string;
+}
+
+export interface GetPropertyRatingReviewsPayload {
+  propertyId: string;
+  page?: number;
+  limit?: number;
+  q?: string;
+  rating?: 1 | 2 | 3 | 4 | 5;
+  sortBy?: "recommended" | "newest" | "oldest" | "highest" | "lowest";
+  correlationId?: string;
+}
+
+export interface GetPropertyRatingReviewsResponse {
+  success: boolean;
+  summary: PropertyRatingReviewSummary;
+  featureRatings: PropertyRatingReviewFeatureRatings;
+  whatsGood: string[];
+  whatsBad: string[];
+  reviews: PropertyRatingReviewItem[];
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
 export interface EndUserPropertySummary {
   id: string;
   propertyName?: string;
@@ -39,26 +88,40 @@ export interface EndUserPropertySummary {
   description?: string;
   imageUrl?: string;
   images?: EndUserPropertyMedia[];
+  photos?: EndUserPropertyMedia[];
   videos?: EndUserPropertyMedia[];
   isFavorite?: boolean;
-  city?: string;
-  locality?: string;
-  category?: string;
-  listingType?: string;
-  propertyType?: string;
-  bhkType?: string;
+  city?: string | { id?: string; name?: string; code?: string; state?: string };
+  locality?: string | { id?: string; name?: string; sector?: string; cityId?: string };
+  category?: string | { id?: string; name?: string; code?: string };
+  listingType?: string | { id?: string; name?: string; code?: string };
+  propertyType?: string | { id?: string; name?: string; code?: string };
+  bhkType?: string | { id?: string; name?: string; code?: string };
+  society?: { id?: string; name?: string; address?: string; localityName?: string; cityId?: string };
   furnishType?: string;
   furnishingType?: string;
   constructionStatus?: string;
-  price?: number;
-  monthlyRent?: number;
-  plotArea?: number;
-  facing?: string;
+  price?: number | null;
+  monthlyRent?: number | null;
+  plotArea?: number | null;
+  builtUpArea?: number | null;
+  carpetArea?: number | null;
+  facing?: string | null;
   postedBy?: string;
   owner?: {
     role?: string;
     [key: string]: unknown;
   };
+  user?: {
+    id?: string;
+    name?: string;
+    role?: string;
+    [key: string]: unknown;
+  };
+  listingTypeId?: string;
+  categoryId?: string;
+  propertyTypeId?: string;
+  bhkTypeId?: string;
   createdAt?: string;
   updatedAt?: string;
   [key: string]: unknown;
@@ -110,6 +173,45 @@ export interface GetEndUserPropertiesCountResponse {
   success?: boolean;
   message?: string;
   count?: number;
+}
+
+/** Similar property item from GET /end-user/properties/similar */
+export interface SimilarProperty {
+  id: string;
+  title: string;
+  address: string;
+  imageUrl: string;
+  propertyType: string;
+  averageRating: number;
+  totalReviews: number;
+  price: number;
+  priceType: "sale" | "rent";
+  listedOn: string;
+  possessionStatus: string;
+  bedrooms: number;
+  bathrooms: number;
+  area: number;
+  areaUnit: string;
+  owner: {
+    id: string;
+    name: string;
+    profileImage?: string | null;
+    role?: string;
+  };
+  isFavorite?: boolean;
+}
+
+export interface GetSimilarPropertiesPayload {
+  cityId: string;
+  propertyTypeId?: string;
+  limit?: number;
+  correlationId?: string;
+}
+
+export interface GetSimilarPropertiesResponse {
+  success: boolean;
+  properties: SimilarProperty[];
+  total: number;
 }
 
 export interface UpdateEndUserFavoritePayload {
@@ -327,6 +429,29 @@ export const getEndUserPropertiesCountAction = async ({
   }
 };
 
+export const getSimilarPropertiesAction = async ({
+  cityId,
+  propertyTypeId,
+  limit = 10,
+  correlationId,
+}: GetSimilarPropertiesPayload): Promise<GetSimilarPropertiesResponse> => {
+  try {
+    const response = await axiosInstance.get<GetSimilarPropertiesResponse>(
+      "end-user/properties/similar",
+      {
+        params: { cityId, propertyTypeId, limit },
+        headers: {
+          "x-correlation-id": correlationId ?? getCorrelationId(),
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error: unknown) {
+    throw getErrorPayload(error);
+  }
+};
+
 export const addEndUserFavoriteAction = async ({
   propertyId,
   correlationId,
@@ -419,6 +544,85 @@ export const submitEndUserPropertyContactAction = async ({
       }
     );
 
+    return response.data;
+  } catch (error: unknown) {
+    throw getErrorPayload(error);
+  }
+};
+
+export const getPropertyRatingReviewsAction = async ({
+  propertyId,
+  page = 1,
+  limit = 10,
+  q,
+  rating,
+  sortBy = "recommended",
+  correlationId,
+}: GetPropertyRatingReviewsPayload): Promise<GetPropertyRatingReviewsResponse> => {
+  try {
+    const response = await axiosInstance.get<GetPropertyRatingReviewsResponse>(
+      `end-user/properties/${propertyId}/rating-reviews`,
+      {
+        params: { page, limit, q, rating, sortBy },
+        headers: {
+          "x-correlation-id": correlationId ?? getCorrelationId(),
+        },
+      }
+    );
+    return response.data;
+  } catch (error: unknown) {
+    throw getErrorPayload(error);
+  }
+};
+
+/** POST /end-user/properties/{propertyId}/rating-review (submit or update review, logged-in users only) */
+export interface SubmitPropertyRatingReviewPayload {
+  propertyId: string;
+  role?: string;
+  connectivityRating: number;
+  neighbourhoodRating: number;
+  safetyRating: number;
+  livabilityRating: number;
+  likeText?: string;
+  dislikeText?: string;
+  correlationId?: string;
+}
+
+export interface SubmitPropertyRatingReviewResponse {
+  success?: boolean;
+  message?: string;
+  data?: unknown;
+}
+
+export const submitPropertyRatingReviewAction = async ({
+  propertyId,
+  role,
+  connectivityRating,
+  neighbourhoodRating,
+  safetyRating,
+  livabilityRating,
+  likeText,
+  dislikeText,
+  correlationId,
+}: SubmitPropertyRatingReviewPayload): Promise<SubmitPropertyRatingReviewResponse> => {
+  try {
+    const response = await axiosInstance.post<SubmitPropertyRatingReviewResponse>(
+      `end-user/properties/${propertyId}/rating-review`,
+      {
+        ...(role ? { role } : {}),
+        connectivityRating,
+        neighbourhoodRating,
+        safetyRating,
+        livabilityRating,
+        ...(likeText != null && likeText !== "" ? { likeText } : {}),
+        ...(dislikeText != null && dislikeText !== "" ? { dislikeText } : {}),
+      },
+      {
+        headers: {
+          "x-correlation-id": correlationId ?? getCorrelationId(),
+        },
+      }
+    );
     return response.data;
   } catch (error: unknown) {
     throw getErrorPayload(error);
