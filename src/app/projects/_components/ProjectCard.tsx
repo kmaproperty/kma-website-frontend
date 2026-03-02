@@ -244,7 +244,7 @@ export default function ProjectCard({
       className="group cursor-pointer overflow-hidden rounded-2xl border border-border bg-[#F2F2F2] shadow-sm transition will-change-transform hover:-translate-y-[1px] hover:shadow-md"
       role="link"
       tabIndex={0}
-      onClick={handleCardClick}
+      
       onKeyDown={handleCardKeyDown}
       aria-label={`Open details for ${project.title}`}
     >
@@ -353,9 +353,10 @@ export default function ProjectCard({
             buying opportunity.
           </p>
 
-          <div className="mt-3">
+          <div className="mt-3" onClick={handleCardClick}>
             <Link
               href={detailsHref}
+              
               className="inline-flex h-9 items-center justify-center rounded-full bg-[#E4E4E8] px-4 text-sm font-semibold text-[#262B58] transition hover:bg-[#d9d9df] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/30"
             >
               Read More

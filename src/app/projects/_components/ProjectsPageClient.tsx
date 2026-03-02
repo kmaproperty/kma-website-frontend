@@ -77,40 +77,6 @@ const normalizeListingIntent = (value?: string) => {
   return key === "rent" ? "rent" : "sale";
 };
 
-const toApiFurnishingType = (value: string) => {
-  if (value === "semi-furnished") return "semi_furnished";
-  return value;
-};
-
-type ListingIntent = "sale" | "rent";
-type BedroomCount = 1 | 2 | 3;
-type PropertyTypeFilter = Exclude<Project["propertyType"], undefined>;
-type BuildingTypeFilter = Exclude<Project["buildingType"], undefined>;
-
-type FilterIdMaps = {
-  listingTypeIdsByIntent: Partial<Record<ListingIntent, string[]>>;
-  propertyTypeIdsByFilter: Partial<Record<PropertyTypeFilter, string[]>>;
-  bhkTypeIdsByBedroom: Partial<Record<BedroomCount, string[]>>;
-  categoryIdsByBuildingType: Partial<Record<BuildingTypeFilter, string[]>>;
-};
-
-const EMPTY_FILTER_ID_MAPS: FilterIdMaps = {
-  listingTypeIdsByIntent: {},
-  propertyTypeIdsByFilter: {},
-  bhkTypeIdsByBedroom: {},
-  categoryIdsByBuildingType: {},
-};
-
-const normalizeBuildingType = (value?: string) => {
-  const key = (value ?? "").trim().toLowerCase();
-  if (key === "commercial") return "commercial";
-  if (key.length > 0) return "residential";
-  return undefined;
-};
-
-const uniqueNonEmpty = (values: Array<string | undefined>) =>
-  Array.from(new Set(values.filter((value): value is string => Boolean(value?.trim()))));
-
 /** Resolve listing type string from API (nested object or string). */
 const resolveListingType = (item: { listingType?: string | { name?: string; code?: string } }) => {
   const lt = item.listingType;
@@ -185,13 +151,22 @@ const getImageUrlsFromItem = (
   return single ? [single] : [fallback];
 };
 
+const uniqueNonEmpty = (values: string[]) =>
+  Array.from(new Set(values.filter((value) => Boolean(value?.trim()))));
+
+const normalizeBuildingType = (value?: string) => {
+  const key = (value ?? "").trim().toLowerCase();
+  if (key === "commercial") return "commercial";
+  if (key.length > 0) return "residential";
+  return undefined;
+};
+
 export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
   const tab = useProjectsStore((s) => s.tab);
   const sort = useProjectsStore((s) => s.sort);
   const filters = useProjectsStore((s) => s.filters);
   const setFilters = useProjectsStore((s) => s.setFilters);
   const [currentPage, setCurrentPage] = useState(1);
-  const [filterIdMaps, setFilterIdMaps] = useState<FilterIdMaps>(EMPTY_FILTER_ID_MAPS);
   const [nearMeCoords, setNearMeCoords] = useState<{
     latitude: number;
     longitude: number;
@@ -208,27 +183,6 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
       deferredFilters.searchLocality?.trim(),
     ].filter(Boolean);
     const search = searchParts.length ? searchParts.join(" ") : undefined;
-
-    const selectedPropertyTypeIds = uniqueNonEmpty(
-      deferredFilters.propertyTypes.flatMap(
-        (propertyType) => filterIdMaps.propertyTypeIdsByFilter[propertyType] ?? []
-      )
-    );
-    const selectedBhkTypeIds = uniqueNonEmpty(
-      deferredFilters.bedrooms.flatMap(
-        (bedroom) =>
-          filterIdMaps.bhkTypeIdsByBedroom[bedroom as BedroomCount] ?? []
-      )
-    );
-    const selectedCategoryIds =
-      deferredFilters.buildingType !== "all"
-        ? uniqueNonEmpty(filterIdMaps.categoryIdsByBuildingType[deferredFilters.buildingType] ?? [])
-        : [];
-    // Budget controls are shown in Cr units, so they apply to sale listing types.
-    const selectedListingTypeIds =
-      deferredFilters.minBudget != null || deferredFilters.maxBudget != null
-        ? uniqueNonEmpty(filterIdMaps.listingTypeIdsByIntent.sale ?? [])
-        : [];
 
     return {
       search,
@@ -247,16 +201,22 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
         deferredFilters.maxBudget != null
           ? Math.round(deferredFilters.maxBudget * 10_000_000)
           : undefined,
-      furnishingTypes:
-        deferredFilters.furnishing !== "any"
-          ? [toApiFurnishingType(deferredFilters.furnishing)]
+      categoryIds:
+        deferredFilters.categoryId != null
+          ? [deferredFilters.categoryId]
           : undefined,
-      listingTypeIds:
-        selectedListingTypeIds.length > 0 ? selectedListingTypeIds : undefined,
       propertyTypeIds:
-        selectedPropertyTypeIds.length > 0 ? selectedPropertyTypeIds : undefined,
-      bhkTypeIds: selectedBhkTypeIds.length > 0 ? selectedBhkTypeIds : undefined,
-      categoryIds: selectedCategoryIds.length > 0 ? selectedCategoryIds : undefined,
+        deferredFilters.propertyTypeIds.length > 0
+          ? uniqueNonEmpty(deferredFilters.propertyTypeIds)
+          : undefined,
+      bhkTypeIds:
+        deferredFilters.bhkTypeIds.length > 0
+          ? uniqueNonEmpty(deferredFilters.bhkTypeIds)
+          : undefined,
+      furnishingTypes:
+        deferredFilters.furnishingTypeId != null
+          ? [deferredFilters.furnishingTypeId]
+          : undefined,
       constructionStatuses:
         deferredFilters.possessionStatuses.length > 0
           ? deferredFilters.possessionStatuses
@@ -266,7 +226,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
       latitude: nearMeCoords?.latitude,
       longitude: nearMeCoords?.longitude,
     };
-  }, [cityId, deferredFilters, deferredSort, deferredTab, filterIdMaps, nearMeCoords]);
+  }, [cityId, deferredFilters, deferredSort, deferredTab, nearMeCoords]);
 
   const apiQueryParams = useMemo(
     () => ({
@@ -286,65 +246,6 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
     useEndUserProperties(apiQueryParams);
   const { data: totalCount = 0 } = useEndUserPropertiesCount(baseQueryParams);
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
-
-  useEffect(() => {
-    if (!Array.isArray(apiProperties) || apiProperties.length === 0) return;
-
-    setFilterIdMaps((prev) => {
-      const next: FilterIdMaps = {
-        listingTypeIdsByIntent: { ...prev.listingTypeIdsByIntent },
-        propertyTypeIdsByFilter: { ...prev.propertyTypeIdsByFilter },
-        bhkTypeIdsByBedroom: { ...prev.bhkTypeIdsByBedroom },
-        categoryIdsByBuildingType: { ...prev.categoryIdsByBuildingType },
-      };
-
-      for (const item of apiProperties) {
-        const listingTypeId =
-          typeof item.listingTypeId === "string" ? item.listingTypeId : undefined;
-        const propertyTypeId =
-          typeof item.propertyTypeId === "string" ? item.propertyTypeId : undefined;
-        const bhkTypeId = typeof item.bhkTypeId === "string" ? item.bhkTypeId : undefined;
-        const categoryId = typeof item.categoryId === "string" ? item.categoryId : undefined;
-
-        const listingIntent = normalizeListingIntent(resolveListingType(item));
-        if (listingTypeId) {
-          next.listingTypeIdsByIntent[listingIntent] = uniqueNonEmpty([
-            ...(next.listingTypeIdsByIntent[listingIntent] ?? []),
-            listingTypeId,
-          ]);
-        }
-
-        const propertyType = normalizeProjectType(resolvePropertyType(item));
-        if (propertyType && propertyTypeId) {
-          next.propertyTypeIdsByFilter[propertyType] = uniqueNonEmpty([
-            ...(next.propertyTypeIdsByFilter[propertyType] ?? []),
-            propertyTypeId,
-          ]);
-        }
-
-        const bedrooms = parseBedrooms(resolveBhkType(item));
-        if (bhkTypeId && bedrooms && [1, 2, 3].includes(bedrooms)) {
-          const bedroom = bedrooms as BedroomCount;
-          next.bhkTypeIdsByBedroom[bedroom] = uniqueNonEmpty([
-            ...(next.bhkTypeIdsByBedroom[bedroom] ?? []),
-            bhkTypeId,
-          ]);
-        }
-
-        const buildingType = normalizeBuildingType(resolveCategory(item));
-        if (buildingType && categoryId) {
-          next.categoryIdsByBuildingType[buildingType] = uniqueNonEmpty([
-            ...(next.categoryIdsByBuildingType[buildingType] ?? []),
-            categoryId,
-          ]);
-        }
-      }
-
-      const prevSerialized = JSON.stringify(prev);
-      const nextSerialized = JSON.stringify(next);
-      return prevSerialized === nextSerialized ? prev : next;
-    });
-  }, [apiProperties]);
 
   useEffect(() => {
     setCurrentPage(1);

@@ -2,32 +2,56 @@
 
 import { X } from "lucide-react";
 import { useProjectsStore } from "../_store/useProjectsStore";
-import type { PropertyType } from "../_types";
-import { cx, titleCase } from "../_utils/format";
+import { useEndUserFilters } from "@/api/hooks/useEndUserFilters";
+import { cx } from "../_utils/format";
 
-function typeLabel(t: PropertyType) {
-  switch (t) {
-    case "retail_shop":
-      return "Retail shop";
-    case "office_space":
-      return "Office Space";
-    case "ind_floor":
-      return "Ind Floor";
-    default:
-      return titleCase(t.replaceAll("_", " "));
-  }
+function findNameById(
+  list: Array<{ id: string; name: string }> | undefined,
+  id: string
+): string {
+  return list?.find((x) => x.id === id)?.name ?? id;
 }
 
 export default function ActiveFilterChips() {
   const filters = useProjectsStore((s) => s.filters);
   const removeChip = useProjectsStore((s) => s.removeChip);
+  const { data: filterOptions } = useEndUserFilters({});
 
-  const chips: Array<{ id: string; label: string }> = [];
+  const chips: Array< { id: string; label: string }> = [];
 
-  // screenshot-like chips
-  for (const t of filters.propertyTypes) {
-    if (t === "retail_shop") chips.push({ id: "chip:retail_shop", label: typeLabel(t) });
-    if (t === "office_space") chips.push({ id: "chip:office_space", label: typeLabel(t) });
+  if (filters.categoryId != null) {
+    chips.push({
+      id: `chip:category:${filters.categoryId}`,
+      label: findNameById(filterOptions?.categories, filters.categoryId),
+    });
+  }
+
+  for (const id of filters.propertyTypeIds) {
+    chips.push({
+      id: `chip:propertyType:${id}`,
+      label: findNameById(filterOptions?.propertyTypes, id),
+    });
+  }
+
+  for (const id of filters.bhkTypeIds) {
+    chips.push({
+      id: `chip:bhk:${id}`,
+      label: findNameById(filterOptions?.bhkTypes, id),
+    });
+  }
+
+  if (filters.furnishingTypeId != null) {
+    chips.push({
+      id: "chip:furnishing:any",
+      label: findNameById(filterOptions?.furnishing, filters.furnishingTypeId),
+    });
+  }
+
+  for (const id of filters.amenityIds) {
+    chips.push({
+      id: `chip:amenity:${id}`,
+      label: findNameById(filterOptions?.amenities, id),
+    });
   }
 
   if (filters.minBudget != null || filters.maxBudget != null) {
@@ -57,4 +81,3 @@ export default function ActiveFilterChips() {
     </div>
   );
 }
-

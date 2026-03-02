@@ -73,8 +73,16 @@ export interface ProjectsFilters {
   searchText: string;
   searchLocality: string;
 
-  buildingType: BuildingType;
-  propertyTypes: PropertyType[];
+  /** Selected category id (building type) from filters API */
+  categoryId: string | null;
+  /** Selected property type ids from filters API */
+  propertyTypeIds: string[];
+  /** Selected BHK type ids from filters API */
+  bhkTypeIds: string[];
+  /** Selected furnishing type id from filters API */
+  furnishingTypeId: string | null;
+  /** Selected amenity ids from filters API */
+  amenityIds: string[];
 
   minBudget: number | null;
   maxBudget: number | null;
@@ -82,9 +90,6 @@ export interface ProjectsFilters {
   minSizeSqYd: number | null;
   maxSizeSqYd: number | null;
 
-  bedrooms: Array<1 | 2 | 3>;
-  furnishing: Furnishing;
   possessionStatuses: PossessionStatus[];
-  amenities: Amenity[];
 }
 

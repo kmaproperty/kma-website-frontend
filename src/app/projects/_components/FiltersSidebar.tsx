@@ -4,15 +4,8 @@ import { useMemo, useTransition } from "react";
 import { Search, RotateCcw, Check } from "lucide-react";
 import ActiveFilterChips from "./ActiveFilterChips";
 import { useProjectsStore } from "../_store/useProjectsStore";
-import type {
-  Amenity,
-  BuildingType,
-  Furnishing,
-  ProjectsFilters,
-  PostedByTab,
-  PossessionStatus,
-  PropertyType,
-} from "../_types";
+import { useEndUserFilters } from "@/api/hooks/useEndUserFilters";
+import type { PostedByTab, ProjectsFilters } from "../_types";
 import { cx } from "../_utils/format";
 
 function Section({
@@ -95,20 +88,35 @@ function CheckboxRow({
   );
 }
 
+const POSTED_BY_OPTIONS: Array<{ id: PostedByTab; label: string }> = [
+  { id: "owner", label: "Owner" },
+  { id: "channel_partner", label: "Channel Partner" },
+];
+
 export default function FiltersSidebar() {
   const tab = useProjectsStore((s) => s.tab);
   const setTab = useProjectsStore((s) => s.setTab);
   const filters = useProjectsStore((s) => s.filters);
   const resetFilters = useProjectsStore((s) => s.resetFilters);
   const setFilters = useProjectsStore((s) => s.setFilters);
-  const setBuildingType = useProjectsStore((s) => s.setBuildingType);
-  const togglePropertyType = useProjectsStore((s) => s.togglePropertyType);
-  const toggleBedroom = useProjectsStore((s) => s.toggleBedroom);
-  const setFurnishing = useProjectsStore((s) => s.setFurnishing);
+  const setCategoryId = useProjectsStore((s) => s.setCategoryId);
+  const togglePropertyTypeId = useProjectsStore((s) => s.togglePropertyTypeId);
+  const toggleBhkTypeId = useProjectsStore((s) => s.toggleBhkTypeId);
+  const setFurnishingTypeId = useProjectsStore((s) => s.setFurnishingTypeId);
   const togglePossession = useProjectsStore((s) => s.togglePossession);
-  const toggleAmenity = useProjectsStore((s) => s.toggleAmenity);
+  const toggleAmenityId = useProjectsStore((s) => s.toggleAmenityId);
 
   const [isPending, startTransition] = useTransition();
+
+  const categoryId = filters.categoryId ?? undefined;
+  const { data: filtersData } = useEndUserFilters({ categoryId });
+
+  const propertyTypeId =
+    filters.propertyTypeIds[0] ?? undefined;
+  const { data: filtersDataWithBhk } = useEndUserFilters(
+    { categoryId, propertyTypeId },
+    { enabled: !!propertyTypeId }
+  );
 
   const patchFilters = <K extends keyof ProjectsFilters>(
     key: K,
@@ -117,46 +125,14 @@ export default function FiltersSidebar() {
     setFilters({ [key]: value } as Pick<ProjectsFilters, K>);
   };
 
-  const propertyTypeOptions: Array<{ id: PropertyType; label: string }> = useMemo(
-    () => [
-      { id: "villa", label: "Villa" },
-      { id: "plot", label: "Plot" },
-      { id: "ind_floor", label: "Ind Floor" },
-      { id: "penthouse", label: "Penthouse" },
-      { id: "apartment", label: "Apartment" },
-      { id: "retail_shop", label: "Retail shop" },
-      { id: "office_space", label: "Office Space" },
-    ],
-    []
-  );
-
-  const furnishingOptions: Array<{ id: Furnishing; label: string }> = useMemo(
-    () => [
-      { id: "any", label: "Any" },
-      { id: "furnished", label: "Furnished" },
-      { id: "unfurnished", label: "Unfurnished" },
-      { id: "semi-furnished", label: "Semi-Furnished" },
-    ],
-    []
-  );
-
-  const possessionOptions: Array<{ id: PossessionStatus; label: string }> =
-    useMemo(
-      () => [
-        { id: "ready_to_move", label: "Ready To Move" },
-        { id: "under_construction", label: "Under Construction" },
-      ],
-      []
-    );
-
-  const amenityOptions: Array<{ id: Amenity; label: string }> = useMemo(
-    () => [
-      { id: "security_24x7", label: "24 x 7 Security" },
-      { id: "power_backup", label: "Power Backup" },
-      { id: "attached_market", label: "Attached Market" },
-    ],
-    []
-  );
+  const categories = filtersData?.categories ?? [];
+  const propertyTypes = filtersData?.propertyTypes ?? [];
+  const bhkTypes =
+    propertyTypeId != null
+      ? (filtersDataWithBhk?.bhkTypes ?? [])
+      : (filtersData?.bhkTypes ?? []);
+  const furnishingList = filtersData?.furnishing ?? [];
+  const amenitiesList = filtersData?.amenities ?? [];
 
   const setBudget = (key: "minBudget" | "maxBudget", raw: string) => {
     const v = raw === "" ? null : Number(raw);
@@ -171,14 +147,6 @@ export default function FiltersSidebar() {
       patchFilters(key, v == null ? null : Number.isFinite(v) ? v : null)
     );
   };
-
-  const buildingButtons: Array<{ id: BuildingType; label: string }> = useMemo(
-    () => [
-      { id: "residential", label: "Residential" },
-      { id: "commercial", label: "Commercial" },
-    ],
-    []
-  );
 
   return (
     <div className="overflow-hidden rounded-lg">
@@ -220,13 +188,7 @@ export default function FiltersSidebar() {
 
         <Section title="Posted by">
           <div className="grid grid-cols-2 gap-1">
-            {(
-              [
-                // { id: "all", label: "All" },
-                { id: "owner", label: "Owner" },
-                { id: "channel_partner", label: "Channel Partner" },
-              ] satisfies Array<{ id: PostedByTab; label: string }>
-            ).map((t) => (
+            {POSTED_BY_OPTIONS.map((t) => (
               <button
                 key={t.id}
                 onClick={() => startTransition(() => setTab(t.id))}
@@ -304,23 +266,35 @@ export default function FiltersSidebar() {
 
         <Section title="Building Type">
           <div className="grid grid-cols-2 gap-1">
-            {buildingButtons.map((b) => (
+            <button
+              onClick={() => startTransition(() => setCategoryId(null))}
+              className={cx(
+                "h-10 cursor-pointer rounded-md border text-sm font-medium transition",
+                filters.categoryId == null
+                  ? "border-blue bg-blue text-white"
+                  : "border-border bg-white text-text-gray hover:bg-background-gray"
+              )}
+              aria-pressed={filters.categoryId == null}
+            >
+              All
+            </button>
+            {categories.map((c) => (
               <button
-                key={b.id}
+                key={c.id}
                 onClick={() =>
                   startTransition(() =>
-                    setBuildingType(filters.buildingType === b.id ? "all" : b.id)
+                    setCategoryId(filters.categoryId === c.id ? null : c.id)
                   )
                 }
                 className={cx(
                   "h-10 cursor-pointer rounded-md border text-sm font-medium transition",
-                  filters.buildingType === b.id
+                  filters.categoryId === c.id
                     ? "border-blue bg-blue text-white"
                     : "border-border bg-white text-text-gray hover:bg-background-gray"
                 )}
-                aria-pressed={filters.buildingType === b.id}
+                aria-pressed={filters.categoryId === c.id}
               >
-                {b.label}
+                {c.name}
               </button>
             ))}
           </div>
@@ -328,12 +302,12 @@ export default function FiltersSidebar() {
 
         <Section title="Property Type">
           <div className="flex flex-wrap gap-1">
-            {propertyTypeOptions.map((p) => (
+            {propertyTypes.map((p) => (
               <CheckboxRow
                 key={p.id}
-                checked={filters.propertyTypes.includes(p.id)}
-                label={p.label}
-                onChange={() => startTransition(() => togglePropertyType(p.id))}
+                checked={filters.propertyTypeIds.includes(p.id)}
+                label={p.name}
+                onChange={() => startTransition(() => togglePropertyTypeId(p.id))}
                 compact
               />
             ))}
@@ -342,51 +316,38 @@ export default function FiltersSidebar() {
 
         <Section title="Bedroom">
           <div className="flex flex-wrap gap-2">
-            <CheckboxRow
-              checked={filters.bedrooms.includes(1)}
-              label="1 BHK"
-              onChange={() => startTransition(() => toggleBedroom(1))}
-              compact
-            />
-            <CheckboxRow
-              checked={false}
-              label="1.5 BHK"
-              onChange={() => { }}
-              disabled
-              compact
-            />
-            <CheckboxRow
-              checked={false}
-              label="1 RK"
-              onChange={() => { }}
-              disabled
-              compact
-            />
-            <CheckboxRow
-              checked={filters.bedrooms.includes(2)}
-              label="2 RK"
-              onChange={() => startTransition(() => toggleBedroom(2))}
-              compact
-            />
-            <CheckboxRow
-              checked={filters.bedrooms.includes(3)}
-              label="3 RK"
-              onChange={() => startTransition(() => toggleBedroom(3))}
-              compact
-            />
+            {bhkTypes.map((b) => (
+              <CheckboxRow
+                key={b.id}
+                checked={filters.bhkTypeIds.includes(b.id)}
+                label={b.name}
+                onChange={() => startTransition(() => toggleBhkTypeId(b.id))}
+                compact
+              />
+            ))}
           </div>
         </Section>
 
         <Section title="Furnishing Status">
           <div className="flex flex-wrap gap-2">
-            {furnishingOptions.slice(1).map((f) => (
+            <CheckboxRow
+              checked={filters.furnishingTypeId == null}
+              label="Any"
+              onChange={() =>
+                startTransition(() => setFurnishingTypeId(null))
+              }
+              compact
+            />
+            {furnishingList.map((f) => (
               <CheckboxRow
                 key={f.id}
-                checked={filters.furnishing === f.id}
-                label={f.label}
+                checked={filters.furnishingTypeId === f.id}
+                label={f.name}
                 onChange={() =>
                   startTransition(() =>
-                    setFurnishing(filters.furnishing === f.id ? "any" : (f.id as Furnishing))
+                    setFurnishingTypeId(
+                      filters.furnishingTypeId === f.id ? null : f.id
+                    )
                   )
                 }
                 compact
@@ -397,7 +358,10 @@ export default function FiltersSidebar() {
 
         <Section title="Possession Status">
           <div className="flex flex-wrap gap-2">
-            {possessionOptions.map((p) => (
+            {[
+              { id: "ready_to_move" as const, label: "Ready To Move" },
+              { id: "under_construction" as const, label: "Under Construction" },
+            ].map((p) => (
               <CheckboxRow
                 key={p.id}
                 checked={filters.possessionStatuses.includes(p.id)}
@@ -411,12 +375,12 @@ export default function FiltersSidebar() {
 
         <Section title="Amenities">
           <div className="flex flex-wrap gap-2">
-            {amenityOptions.map((a) => (
+            {amenitiesList.map((a) => (
               <CheckboxRow
                 key={a.id}
-                checked={filters.amenities.includes(a.id)}
-                label={a.label}
-                onChange={() => startTransition(() => toggleAmenity(a.id))}
+                checked={filters.amenityIds.includes(a.id)}
+                label={a.name}
+                onChange={() => startTransition(() => toggleAmenityId(a.id))}
                 compact
               />
             ))}
@@ -426,4 +390,3 @@ export default function FiltersSidebar() {
     </div>
   );
 }
-

@@ -1,28 +1,24 @@
 import { create } from "zustand";
 import type {
-  Amenity,
-  BuildingType,
-  Furnishing,
   PossessionStatus,
   PostedByTab,
   ProjectsFilters,
-  PropertyType,
   SortOption,
 } from "../_types";
 
 const DEFAULT_FILTERS: ProjectsFilters = {
   searchText: "",
   searchLocality: "",
-  buildingType: "all",
-  propertyTypes: [],
+  categoryId: null,
+  propertyTypeIds: [],
+  bhkTypeIds: [],
+  furnishingTypeId: null,
+  amenityIds: [],
   minBudget: null,
   maxBudget: null,
   minSizeSqYd: null,
   maxSizeSqYd: null,
-  bedrooms: [],
-  furnishing: "any",
   possessionStatuses: [],
-  amenities: [],
 };
 
 interface ProjectsState {
@@ -36,12 +32,12 @@ interface ProjectsState {
   setFilters: (patch: Partial<ProjectsFilters>) => void;
   resetFilters: () => void;
 
-  togglePropertyType: (type: PropertyType) => void;
-  toggleBedroom: (count: 1 | 2 | 3) => void;
-  setBuildingType: (type: BuildingType) => void;
-  setFurnishing: (value: Furnishing) => void;
+  setCategoryId: (id: string | null) => void;
+  togglePropertyTypeId: (id: string) => void;
+  toggleBhkTypeId: (id: string) => void;
+  setFurnishingTypeId: (id: string | null) => void;
+  toggleAmenityId: (id: string) => void;
   togglePossession: (value: PossessionStatus) => void;
-  toggleAmenity: (value: Amenity) => void;
 
   toggleFavorite: (projectId: string) => void;
   setFavorite: (projectId: string, isFavorite: boolean) => void;
@@ -60,37 +56,58 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
     set((s) => ({ filters: { ...s.filters, ...patch } })),
   resetFilters: () => set({ filters: DEFAULT_FILTERS }),
 
-  togglePropertyType: (type) =>
+  setCategoryId: (id) =>
+    set((s) => ({
+      filters: {
+        ...s.filters,
+        categoryId: id,
+        propertyTypeIds: [],
+        bhkTypeIds: [],
+      },
+    })),
+
+  togglePropertyTypeId: (id) =>
     set((s) => {
-      const exists = s.filters.propertyTypes.includes(type);
+      const exists = s.filters.propertyTypeIds.includes(id);
       return {
         filters: {
           ...s.filters,
-          propertyTypes: exists
-            ? s.filters.propertyTypes.filter((t) => t !== type)
-            : [...s.filters.propertyTypes, type],
+          propertyTypeIds: exists
+            ? s.filters.propertyTypeIds.filter((x) => x !== id)
+            : [...s.filters.propertyTypeIds, id],
+          bhkTypeIds: exists ? s.filters.bhkTypeIds : [],
         },
       };
     }),
 
-  toggleBedroom: (count) =>
+  toggleBhkTypeId: (id) =>
     set((s) => {
-      const exists = s.filters.bedrooms.includes(count);
+      const exists = s.filters.bhkTypeIds.includes(id);
       return {
         filters: {
           ...s.filters,
-          bedrooms: exists
-            ? s.filters.bedrooms.filter((b) => b !== count)
-            : [...s.filters.bedrooms, count],
+          bhkTypeIds: exists
+            ? s.filters.bhkTypeIds.filter((x) => x !== id)
+            : [...s.filters.bhkTypeIds, id],
         },
       };
     }),
 
-  setBuildingType: (type) =>
-    set((s) => ({ filters: { ...s.filters, buildingType: type } })),
+  setFurnishingTypeId: (id) =>
+    set((s) => ({ filters: { ...s.filters, furnishingTypeId: id } })),
 
-  setFurnishing: (value) =>
-    set((s) => ({ filters: { ...s.filters, furnishing: value } })),
+  toggleAmenityId: (id) =>
+    set((s) => {
+      const exists = s.filters.amenityIds.includes(id);
+      return {
+        filters: {
+          ...s.filters,
+          amenityIds: exists
+            ? s.filters.amenityIds.filter((x) => x !== id)
+            : [...s.filters.amenityIds, id],
+        },
+      };
+    }),
 
   togglePossession: (value) =>
     set((s) => {
@@ -101,19 +118,6 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
           possessionStatuses: exists
             ? s.filters.possessionStatuses.filter((v) => v !== value)
             : [...s.filters.possessionStatuses, value],
-        },
-      };
-    }),
-
-  toggleAmenity: (value) =>
-    set((s) => {
-      const exists = s.filters.amenities.includes(value);
-      return {
-        filters: {
-          ...s.filters,
-          amenities: exists
-            ? s.filters.amenities.filter((v) => v !== value)
-            : [...s.filters.amenities, value],
         },
       };
     }),
@@ -134,29 +138,46 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
 
   removeChip: (chipId) => {
     const { filters } = get();
-    switch (chipId) {
-      case "chip:retail_shop":
-        set({
-          filters: {
-            ...filters,
-            propertyTypes: filters.propertyTypes.filter((t) => t !== "retail_shop"),
-          },
-        });
-        return;
-      case "chip:office_space":
-        set({
-          filters: {
-            ...filters,
-            propertyTypes: filters.propertyTypes.filter((t) => t !== "office_space"),
-          },
-        });
-        return;
-      case "chip:budget":
-        set({ filters: { ...filters, minBudget: null, maxBudget: null } });
-        return;
-      default:
-        return;
+    if (chipId.startsWith("chip:category:")) {
+      set({ filters: { ...filters, categoryId: null } });
+      return;
+    }
+    if (chipId.startsWith("chip:propertyType:")) {
+      const id = chipId.replace("chip:propertyType:", "");
+      set({
+        filters: {
+          ...filters,
+          propertyTypeIds: filters.propertyTypeIds.filter((x) => x !== id),
+        },
+      });
+      return;
+    }
+    if (chipId.startsWith("chip:bhk:")) {
+      const id = chipId.replace("chip:bhk:", "");
+      set({
+        filters: {
+          ...filters,
+          bhkTypeIds: filters.bhkTypeIds.filter((x) => x !== id),
+        },
+      });
+      return;
+    }
+    if (chipId.startsWith("chip:furnishing:")) {
+      set({ filters: { ...filters, furnishingTypeId: null } });
+      return;
+    }
+    if (chipId.startsWith("chip:amenity:")) {
+      const id = chipId.replace("chip:amenity:", "");
+      set({
+        filters: {
+          ...filters,
+          amenityIds: filters.amenityIds.filter((x) => x !== id),
+        },
+      });
+      return;
+    }
+    if (chipId === "chip:budget") {
+      set({ filters: { ...filters, minBudget: null, maxBudget: null } });
     }
   },
 }));
-

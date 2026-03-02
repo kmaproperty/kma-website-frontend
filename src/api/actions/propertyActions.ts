@@ -129,6 +129,31 @@ export interface EndUserPropertySummary {
 
 type CsvParam = string | string[] | null | undefined;
 
+/** Filter option item from GET /end-user/filters */
+export interface EndUserFilterOption {
+  id: string;
+  name: string;
+  code: string;
+  icon?: string | null;
+}
+
+export interface GetEndUserFiltersPayload {
+  listingTypeId?: string;
+  categoryId?: string;
+  propertyTypeId?: string;
+  correlationId?: string;
+}
+
+export interface GetEndUserFiltersResponse {
+  success?: boolean;
+  listingTypes: EndUserFilterOption[];
+  categories: EndUserFilterOption[];
+  propertyTypes: EndUserFilterOption[];
+  bhkTypes: EndUserFilterOption[];
+  amenities: EndUserFilterOption[];
+  furnishing: EndUserFilterOption[];
+}
+
 export interface GetEndUserPropertiesPayload {
   page?: number;
   limit?: number;
@@ -285,6 +310,42 @@ const getErrorPayload = (error: unknown) => {
     }
   }
   return error;
+};
+
+/** GET /end-user/filters - list property filters for dropdowns */
+export const getEndUserFiltersAction = async ({
+  listingTypeId,
+  categoryId,
+  propertyTypeId,
+  correlationId,
+}: GetEndUserFiltersPayload): Promise<GetEndUserFiltersResponse> => {
+  try {
+    const response = await axiosInstance.get<GetEndUserFiltersResponse>(
+      "end-user/filters",
+      {
+        params: {
+          ...(listingTypeId ? { listingTypeId } : {}),
+          ...(categoryId ? { categoryId } : {}),
+          ...(propertyTypeId ? { propertyTypeId } : {}),
+        },
+        headers: {
+          "x-correlation-id": correlationId ?? getCorrelationId(),
+        },
+      }
+    );
+    const data = response.data;
+    return {
+      success: data?.success ?? true,
+      listingTypes: Array.isArray(data?.listingTypes) ? data.listingTypes : [],
+      categories: Array.isArray(data?.categories) ? data.categories : [],
+      propertyTypes: Array.isArray(data?.propertyTypes) ? data.propertyTypes : [],
+      bhkTypes: Array.isArray(data?.bhkTypes) ? data.bhkTypes : [],
+      amenities: Array.isArray(data?.amenities) ? data.amenities : [],
+      furnishing: Array.isArray(data?.furnishing) ? data.furnishing : [],
+    };
+  } catch (error: unknown) {
+    throw getErrorPayload(error);
+  }
 };
 
 export const getEndUserPropertyDetailsAction = async ({
