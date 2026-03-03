@@ -1,14 +1,12 @@
 "use client";
 import BannerSlider from "./bannerSlider";
 import MainHome from "./home";
-import {  useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   AboutusResponse,
   ChannelPartner,
-  CitiesResponse,
   getAboutUsDataAPiHanlder,
   getChannelPartnerListApiHandler,
-  getCityListApiHandler,
   getExploreApiHanlder,
   GetChannelPartnerListPayload,
   GetChannelPartnerListResponse,
@@ -19,9 +17,11 @@ import {
   GetTopPropertiesResponse,
 } from "@/services/homeService";
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getSelectedCity, setAboutusData, setSelectedCity } from "@/store/homeHeaderSlice";
+import { getSelectedCity, setAboutusData } from "@/store/homeHeaderSlice";
+import HeaderDataSync from "../header/HeaderDataSync";
+import { useHeaderStore } from "@/store/useHeaderStore";
 
 const LazyNeedSection = dynamic(() => import("./needSection"), { loading: () => <div className="min-h-[200px]" /> });
 const LazyRealEstateSection = dynamic(() => import("./realEstetSection"), { loading: () => <div className="min-h-[200px]" /> });
@@ -36,24 +36,9 @@ const LazyBlogSection = dynamic(() => import("./blogSection"), { loading: () => 
 const LazyHomeFooter = dynamic(() => import("../footer/homeFooter"), { loading: () => <div className="min-h-[200px]" /> });
 
 export default function Home({ propertyMasterData, propertyCitiesData }) {
-  const dispatch = useDispatch()
-  const selectedCity = useSelector(getSelectedCity)
-
-  const [cityData, setCityData] = useState(null)
-
-  const {
-    mutate: fetchCities, isPending: cityLoader
-  } = useMutation({
-    mutationFn: getCityListApiHandler,
-    onSuccess: (response: CitiesResponse) => {
-      const findCity = response?.allCities?.find(item => item.name == 'Gurgaon')
-      if (findCity) {
-        dispatch(setSelectedCity(findCity))
-      }
-      setCityData(response)
-    },
-    onError: () => {}
-  });
+  const dispatch = useDispatch();
+  const selectedCity = useSelector(getSelectedCity);
+  const { fetchCities } = useHeaderStore();
 
   const {
     mutate: fetchAboutusData
@@ -124,17 +109,14 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
 
 
   useEffect(() => {
-    fetchAboutusData()
-    if (propertyCitiesData) {
-      const findCity = propertyCitiesData?.allCities?.find(item => item.name == 'Gurgaon')
-      if (findCity) {
-        dispatch(setSelectedCity(findCity))
-      }
-      setCityData(propertyCitiesData)
-    } else {
-      fetchCities({})
+    fetchAboutusData();
+  }, [dispatch, fetchAboutusData]);
+
+  useEffect(() => {
+    if (!propertyCitiesData) {
+      fetchCities({});
     }
-  }, [dispatch, fetchAboutusData, fetchCities, propertyCitiesData])
+  }, [propertyCitiesData, fetchCities]);
 
   const imageSlider = useMemo(
     () => [
@@ -152,9 +134,10 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
 
   return (
     <div className="overflow-hidden">
+      <HeaderDataSync propertyMasterData={propertyMasterData} propertyCitiesData={propertyCitiesData} />
       <div className="relative ">
         <BannerSlider bannerHeight={'min-h-[700px] 2md:min-h-auto 2md:h-[90vh]'} backgroundImages={imageSlider} overlayClass='gradient-overlay' />
-        <MainHome topProperties={data?.properties ?? []} fetchCities={fetchCities} cityLoader={cityLoader} cityData={cityData} propertyMasterData={propertyMasterData} />
+        <MainHome topProperties={data?.properties ?? []} />
       </div>
       <div className="my-16 flex justify-center overflow-hidden">
         <div className="w-[90%] md:w-[75%]">
@@ -203,7 +186,7 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
         </div>
       </div>
       <div className="">
-        <LazyHomeFooter propertyMasterData={propertyMasterData} />
+        <LazyHomeFooter />
       </div>
     </div>
   );

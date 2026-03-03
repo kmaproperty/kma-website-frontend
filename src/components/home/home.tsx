@@ -15,10 +15,6 @@ import ContactInformation from "../contactInformation";
 
 type MainHomeProps = {
   topProperties: unknown[];
-  cityData: unknown;
-  cityLoader: boolean;
-  fetchCities: (payload: unknown) => void;
-  propertyMasterData: unknown;
 };
 
 const dissolve: Variants = {
@@ -29,13 +25,7 @@ const dissolve: Variants = {
   },
 };
 
-export default function MainHome({
-  topProperties,
-  cityData,
-  cityLoader,
-  fetchCities,
-  propertyMasterData,
-}: MainHomeProps) {
+export default function MainHome({ topProperties }: MainHomeProps) {
   const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
   const [show, setShow] = useState(false);
 
@@ -58,12 +48,7 @@ export default function MainHome({
     <>
     <div className="fixed -top-[25px] left-0 right-0 z-[60] flex justify-center pointer-events-none">
       <div className="pointer-events-auto w-full flex justify-center">
-        <HomeHeader
-          cityData={cityData}
-          cityLoader={cityLoader}
-          fetchCities={fetchCities}
-          propertyMasterData={propertyMasterData}
-        />
+        <HomeHeader />
       </div>
     </div>
     <motion.div
@@ -90,7 +75,7 @@ export default function MainHome({
       </div>
       <div className="flex justify-center mt-10">
         <div className="w-[75%] lg:w-[55%]">
-          <Filter cityData={cityData} propertyMasterData={propertyMasterData}/>
+          <Filter />
         </div>
       </div>
       <div>

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ChevronLeft, ImageIcon, MessageCircle, PhoneCall, VideoIcon } from "lucide-react";
 import MainLayout from "@/components/myList/mainLayout";
 import HomeFooter from "@/components/footer/homeFooter";
+import HeaderDataSync from "@/components/header/HeaderDataSync";
 import { fetchPropertyMasterData, fetchPropertyMedia, type PropertyMediaCategory } from "@/app/api/home";
 import { GalleryContent, type GallerySection } from "./GalleryContent";
 
@@ -173,7 +174,8 @@ export default async function ListingGalleryPage({
         </div>
 
         </MainLayout>
-        <HomeFooter propertyMasterData={propertyMasterData} />
+        <HeaderDataSync propertyMasterData={propertyMasterData} />
+        <HomeFooter />
        </>
     );
 }

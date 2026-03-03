@@ -14,10 +14,13 @@ import TransactionByMenu from "../filtermenu/transactionByMenu";
 import { useQuery } from "@tanstack/react-query";
 import { getPropertiesCountApiHandler, GetPropertiesCountPayload, GetPropertiesCountResponse } from "@/services/homeService";
 import { useDispatch, useSelector } from "react-redux";
-import { getSelectedCity, setSelectedCity } from "@/store/homeHeaderSlice";
-export default function Filter({propertyMasterData, cityData}) {
-  const dispatch = useDispatch()
-  const selectedCity = useSelector(getSelectedCity)
+import { getSelectedCity, getCityData, getPropertyMasterData, setSelectedCity } from "@/store/homeHeaderSlice";
+
+export default function Filter() {
+  const dispatch = useDispatch();
+  const selectedCity = useSelector(getSelectedCity);
+  const cityData = useSelector(getCityData);
+  const propertyMasterData = useSelector(getPropertyMasterData);
   
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [popperType, setPopperType] = useState(null)
@@ -92,7 +95,7 @@ export default function Filter({propertyMasterData, cityData}) {
     select: (response: GetPropertiesCountResponse) => {
       return response.count
     },
-    enabled: Boolean(selectedCity?.id) && Array.isArray(propertyMasterData),
+    enabled: Boolean(selectedCity?.id) && Array.isArray(propertyMasterData) && propertyMasterData.length > 0,
     staleTime: 20_000,
   });
 

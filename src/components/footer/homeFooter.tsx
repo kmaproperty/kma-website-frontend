@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { useSelector } from "react-redux";
-import { getAboutusData, getSelectedCity } from "@/store/homeHeaderSlice";
+import { getAboutusData, getSelectedCity, getPropertyMasterData } from "@/store/homeHeaderSlice";
 
 const rightVariant = {
   hidden: { x: "100%", opacity: 0 },
@@ -24,11 +24,10 @@ const topVariant = {
   },
 };
 
-export default function HomeFooter({
-  propertyMasterData,
-}) {
+export default function HomeFooter({ tab }: { tab?: number } = {}) {
   const selectedCity = useSelector(getSelectedCity);
   const aboutusData = useSelector(getAboutusData);
+  const propertyMasterData = useSelector(getPropertyMasterData);
 
   const {
     instagramLink,
@@ -40,7 +39,7 @@ export default function HomeFooter({
   } = aboutusData || {};
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
-  const [footerTab, setFooterTab] = useState("1");
+  const [footerTab, setFooterTab] = useState(String(tab ?? "1"));
   const currentYear = new Date().getFullYear();
 
   const handleTab = (tab) => {

@@ -15,10 +15,12 @@ export default function HomeMobileHeader({
   activeSubMenu,
   openSubMenu,
   closeSubMenu,
-  cityData,
-  cityLoader,
-  fetchCities,
-  propertyMasterData,
+}: {
+  open: boolean;
+  onClose: () => void;
+  activeSubMenu: string | null;
+  openSubMenu: (label: string) => void;
+  closeSubMenu: () => void;
 }) {
   const listMapping = {
     project: projectMenuList,
@@ -165,12 +167,12 @@ export default function HomeMobileHeader({
           )}
           {
            ( activeSubMenu == 'buy' || activeSubMenu == 'rent') && <div>
-                <RentSellHeaderView propertyMasterData={propertyMasterData}  type={activeSubMenu}/>
+                <RentSellHeaderView type={activeSubMenu}/>
             </div>
           }
           {
             activeSubMenu == 'city' && <div>
-                <CityView handleScroll={onClose} cityData={cityData} cityLoader={cityLoader} fetchCities={fetchCities}/>
+                <CityView handleScroll={onClose}/>
             </div>
           }
         </div>

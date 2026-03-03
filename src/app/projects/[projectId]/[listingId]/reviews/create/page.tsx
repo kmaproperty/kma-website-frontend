@@ -11,6 +11,8 @@ import MainLayout from "@/components/myList/mainLayout";
 import HomeFooter from "@/components/footer/homeFooter";
 import { fetchPropertyMasterData } from "@/app/api/home";
 import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { setPropertyMasterData } from "@/store/homeHeaderSlice";
 
 const galleryImages = [
   "/assets/property/img-1.png",
@@ -116,12 +118,15 @@ export default function CreateReviewPage() {
   const listingId = params?.listingId ?? "";
   const { data: propertyDetails } = usePropertyDetails({ id: listingId });
 
+  const dispatch = useDispatch();
   const [propertyMasterData, setPropertyMasterData] = useState<unknown[]>([]);
   useEffect(() => {
     fetchPropertyMasterData().then((response) => {
-      if (response?.success) setPropertyMasterData((response.data as unknown[]) ?? []);
+      const data = response?.success ? ((response.data as unknown[]) ?? []) : [];
+      setPropertyMasterData(data);
+      dispatch(setPropertyMasterData(data));
     });
-  }, []);
+  }, [dispatch]);
 
   const [role, setRole] = useState("owner");
   const [connectivityRating, setConnectivityRating] = useState(0);
@@ -368,7 +373,7 @@ export default function CreateReviewPage() {
           </div>
         </div>
       </MainLayout>
-      <HomeFooter propertyMasterData={propertyMasterData} />
+      <HomeFooter />
 
       {/* Success modal */}
       {successOpen && (

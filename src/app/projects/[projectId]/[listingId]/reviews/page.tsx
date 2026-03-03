@@ -22,6 +22,8 @@ import type { PropertyRatingReviewItem } from "@/api/actions/propertyActions";
 import MainLayout from "@/components/myList/mainLayout";
 import HomeFooter from "@/components/footer/homeFooter";
 import { fetchPropertyMasterData } from "@/app/api/home";
+import { useDispatch } from "react-redux";
+import { setPropertyMasterData } from "@/store/homeHeaderSlice";
 
 const galleryImages = [
   "/assets/property/img-1.png",
@@ -185,12 +187,15 @@ export default function ListingReviewsPage() {
     sortBy,
   });
 
+  const dispatch = useDispatch();
   const [propertyMasterData, setPropertyMasterData] = useState<unknown[]>([]);
   useEffect(() => {
     fetchPropertyMasterData().then((response) => {
-      if (response?.success) setPropertyMasterData((response.data as unknown[]) ?? []);
+      const data = response?.success ? ((response.data as unknown[]) ?? []) : [];
+      setPropertyMasterData(data);
+      dispatch(setPropertyMasterData(data));
     });
-  }, []);
+  }, [dispatch]);
 
   const summary = ratingData?.summary;
   const featureRatingsData = ratingData?.featureRatings;
@@ -601,7 +606,7 @@ export default function ListingReviewsPage() {
           </div>
         </div>
       </MainLayout>
-      <HomeFooter propertyMasterData={propertyMasterData} />
+      <HomeFooter />
     </>
   );
 }

@@ -1,13 +1,15 @@
 import { getUserCoordinates } from "@/api/hooks/useGeoloaction";
 import { getSelectedCity, setSelectedCity } from "@/store/homeHeaderSlice";
+import { useHeaderStore } from "@/store/useHeaderStore";
 import { InputBase } from "@mui/material";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-export default function CityView({ cityData, fetchCities, cityLoader, handleScroll }) {
-  const dispatch = useDispatch()
-  const selectedCity = useSelector(getSelectedCity)
+export default function CityView({ handleScroll }: { handleScroll?: () => void }) {
+  const dispatch = useDispatch();
+  const selectedCity = useSelector(getSelectedCity);
+  const { cityData, fetchCities, cityLoader } = useHeaderStore();
   
   const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
   const [cityInput, setCityInput] = useState("");

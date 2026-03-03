@@ -14,49 +14,25 @@ import Image from "next/image";
 import BlogSection from "@/components/home/blogSection";
 import HomeFooter from "@/components/footer/homeFooter";
 import { FaFacebook, FaLinkedin, FaTwitter, FaYoutube } from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
-import { useMutation } from "@tanstack/react-query";
-import { CitiesResponse, getCityListApiHandler } from "@/services/homeService";
-import { getSelectedCity, setSelectedCity } from "@/store/homeHeaderSlice";
-import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { getSelectedCity } from "@/store/homeHeaderSlice";
+import { useHeaderStore } from "@/store/useHeaderStore";
+import { useEffect } from "react";
 import BannerSlider from "../home/bannerSlider";
+import HeaderDataSync from "@/components/header/HeaderDataSync";
 
 export default function AboutUsComponent({
   propertyMasterData,
   propertyCitiesData,
 }) {
-  const dispatch = useDispatch();
-  const selectedCity = useSelector(getSelectedCity); //to get the selected city
-
-  const [cityData, setCityData] = useState(null);
-
-  const { mutate: fetchCities, isPending: cityLoader } = useMutation({
-    mutationFn: getCityListApiHandler,
-    onSuccess: (response: CitiesResponse) => {
-      let findCity = response?.allCities?.find(
-        (item) => item.name == "Gurgaon"
-      );
-      if (findCity) {
-        dispatch(setSelectedCity(findCity));
-      }
-      setCityData(response);
-    },
-    onError: (error) => {},
-  });
+  const selectedCity = useSelector(getSelectedCity);
+  const { fetchCities } = useHeaderStore();
 
   useEffect(() => {
-    if (propertyCitiesData) {
-      let findCity = propertyCitiesData?.allCities?.find(
-        (item) => item.name == "Gurgaon"
-      );
-      if (findCity) {
-        dispatch(setSelectedCity(findCity));
-      }
-      setCityData(propertyCitiesData);
-    } else {
+    if (!propertyCitiesData) {
       fetchCities({});
     }
-  }, []);
+  }, [propertyCitiesData, fetchCities]);
 
   const breadcrumps = [
     {
@@ -78,15 +54,11 @@ export default function AboutUsComponent({
  
   return (
     <div>
+      <HeaderDataSync propertyMasterData={propertyMasterData} propertyCitiesData={propertyCitiesData} />
       <div className="relative">
         <BannerSlider bannerHeight={'min-h-[600px] 2md:min-h-auto 2md:h-[60vh]'} backgroundImages={sliderImage} overlayClass='about-us-gradient-overlay'/>
         <div className="absolute flex flex-col items-center top-0 w-[100%] ">
-          <HomeHeader
-            fetchCities={fetchCities}
-            cityLoader={cityLoader}
-            cityData={cityData}
-            propertyMasterData={propertyMasterData}
-          />
+          <HomeHeader />
           <div className="mt-[100px]">
           <PageTitle
             title="About Us"
@@ -457,7 +429,7 @@ export default function AboutUsComponent({
         </div>
       </div>
       <div className="">
-          <HomeFooter propertyMasterData={propertyMasterData}/>
+          <HomeFooter />
       </div>
     </div>
   );

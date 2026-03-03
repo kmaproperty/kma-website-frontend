@@ -2,6 +2,7 @@ import MainLayout from "@/components/myList/mainLayout";
 import ProjectsPageClient from "../_components/ProjectsPageClient";
 import { fetchPropertyMasterData } from "@/app/api/home";
 import HomeFooter from "@/components/footer/homeFooter";
+import HeaderDataSync from "@/components/header/HeaderDataSync";
 
 export default async function ProjectDetailsPage({
   params,
@@ -17,10 +18,11 @@ export default async function ProjectDetailsPage({
 
   return (
     <>
+      <HeaderDataSync propertyMasterData={propertyMasterData} />
       <MainLayout>
         <ProjectsPageClient cityId={projectId} />
       </MainLayout>
-      <HomeFooter propertyMasterData={propertyMasterData} />
+      <HomeFooter />
     </>
   );
 }
