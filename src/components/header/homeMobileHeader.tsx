@@ -8,6 +8,7 @@ import {
 import Image from "next/image";
 import RentSellHeaderView from "./rentSellHeaderView";
 import CityView from "./cityView";
+import { useRouter } from "nextjs-toploader/app";
 
 export default function HomeMobileHeader({
   open,
@@ -22,6 +23,8 @@ export default function HomeMobileHeader({
   openSubMenu: (label: string) => void;
   closeSubMenu: () => void;
 }) {
+  const router = useRouter();
+
   const listMapping = {
     project: projectMenuList,
     channel_partner: channelPartnerMenuList,
@@ -154,7 +157,15 @@ export default function HomeMobileHeader({
               {renderSubMenuList().map((item, index) => {
                 return (
                   <>
-                    <p className="text-base text-text-black hover:bg-list-background cursor-pointer px-2 py-1.5 rounded-lg">
+                    <p
+                      onClick={() => {
+                        if (item.label === "Join Us") {
+                          router.push("/channel-parterner");
+                          onClose();
+                        }
+                      }}
+                      className="text-base text-text-black hover:bg-list-background cursor-pointer px-2 py-1.5 rounded-lg"
+                    >
                       {item.label}
                     </p>
                     {index != moreMenuList.length - 1 && (

@@ -124,6 +124,13 @@ const navigateDashboard = () => {
   router.push('/user-dashboard')
 }
 
+const handleHeaderSubMenuClick = (label: string) => {
+  if (label === "Join Us") {
+    router.push("/channel-parterner");
+    setanchorEl(null);
+  }
+}
+
   return (
     <>
     <div className="sticky top-0 z-50 w-full flex justify-center">
@@ -299,7 +306,7 @@ const navigateDashboard = () => {
               {!cityMenu &&
                 (!type ? (
                   <Paper className="w-auto min-w-[180px]! rounded-2xl! px-2 py-2 shadow-xl border border-gray-200 bg-white relative z-[9999]">
-                    {profileMenu != 'profile' ? <ListView menuList={menuList} />
+                    {profileMenu != 'profile' ? <ListView menuList={menuList} onItemClick={handleHeaderSubMenuClick} />
                      : <ProfileView/>}
                   </Paper>
                 ) : (
