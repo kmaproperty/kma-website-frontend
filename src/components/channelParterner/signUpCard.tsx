@@ -31,7 +31,7 @@ export default function SignUpCard() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const mobileNumber = searchParams.get("mobile");
-  const defaultUserType = USER_TYPE.OWNER as UserType;
+  const defaultUserType = USER_TYPE.CHANNEL_PARTNER as UserType;
 
   const [mobileInput, setMobileInput] = useState<MobileState>({
     value: "",

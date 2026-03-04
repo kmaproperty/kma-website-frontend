@@ -76,10 +76,11 @@ export default function SignupOtpCard() {
 
   const verifyOtp = (value: string) => {
     if (ownerType && mobileNumber && value.length == 4) {
-      const payload = {
+      const shouldSendRole = ownerType !== USER_TYPE.OWNER && ownerType !== USER_TYPE.CHANNEL_PARTNER;
+      const payload: ValidateOtpPayload = {
         phone: mobileNumber,
         otp: value,
-        role: ownerType as UserType,
+        ...(shouldSendRole ? { role: ownerType as UserType } : {}),
       };
       setOtpError("");
       handleVerifyOtp(payload);

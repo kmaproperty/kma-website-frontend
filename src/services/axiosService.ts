@@ -7,6 +7,12 @@ import { clearAuthCookies, setAuthCookies } from "@/lib/helper";
 import { useSessionStore } from "@/store/useSessionStore";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const createCorrelationId = () => {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+};
 
 export const axiosInstance = axios.create({
   baseURL: API_URL,
@@ -28,6 +34,7 @@ axiosInstance.interceptors.request.use(
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
+    config.headers["x-correlation-id"] = createCorrelationId();
     return config;
   },
   (error) => {
