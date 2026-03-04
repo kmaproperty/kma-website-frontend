@@ -99,17 +99,21 @@ export default function CityView({ handleScroll }: { handleScroll?: () => void }
         <p className="text-sm text-[#757BEE]">Detect My Location {detecting && <span className="text-text-gray text-xs">(Detecting...)</span>}</p>
       </div>
       <div className="flex flex-wrap gap-1.5 mt-4">
+        
+
+
+
         {
           featuredCity.map(item => {
             return(
               <div onClick={() => handleSelectCity(item)} className={`flex flex-1 flex-col justify-center items-center gap-1.5 bg-[#F3F3F3] rounded-[5px] px-3 sm:px-1 py-3 ${selectedCity?.id == item.id ? 'grayscale-0' : 'grayscale'} hover:grayscale-0 cursor-pointer`}>
-                <Image
+                {/* <Image
                   src={profileBaseUrl + item.icon}
                   width={600}
                   height={600}
                   alt="city"
                   className="w-[45px] h-[34px]"
-                />
+                /> */}
                 <p className="text-xs text-black">{item.name}</p>
               </div>
             )
