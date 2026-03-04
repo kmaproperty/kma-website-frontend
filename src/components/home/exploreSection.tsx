@@ -197,7 +197,7 @@ export default function ExploreSection({explorePropertyList}) {
                 />
 
                 <h3 className="text-lg font-semibold text-black text-center">
-                 abhay {item.name}
+                  {item.name}
                 </h3>
 
                 <p className="text-xs text-text-gray">{item.propertyCount} Properties</p>
