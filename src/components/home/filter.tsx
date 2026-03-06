@@ -15,6 +15,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getPropertiesCountApiHandler, GetPropertiesCountPayload, GetPropertiesCountResponse } from "@/services/homeService";
 import { useDispatch, useSelector } from "react-redux";
 import { getSelectedCity, getCityData, getPropertyMasterData, setSelectedCity } from "@/store/homeHeaderSlice";
+import { toast } from "react-toastify";
 
 export default function Filter() {
   const dispatch = useDispatch();
@@ -39,6 +40,7 @@ export default function Filter() {
   const [selectedProjectStatus, setSelectedProjectStatus] = useState([])
   const [selectedPostedBy, setSelectedPostedBy] = useState([])
   const [transactionBy, setTransactionBy] = useState({name: 'Buy', value: 'sale'})
+  const [citySelectionError, setCitySelectionError] = useState(false)
 
   const handlePopperOpen = (event: React.MouseEvent<HTMLElement>, type) => {
     setAnchorEl(event.currentTarget);
@@ -56,6 +58,17 @@ export default function Filter() {
     setSelectedPostedBy([])
     setTransactionBy({name: 'Buy', value: 'sale'})
     setSearch('')
+  }
+
+  const handleSearchClick = () => {
+    if (!selectedCity?.id) {
+      setCitySelectionError(true)
+      toast.error("Please select a city first")
+      return
+    }
+
+    setCitySelectionError(false)
+    window.location.href = `/projects/${selectedCity.id}`;
   }
 
   const { data: explorePropertyCount } = useQuery({
@@ -111,10 +124,6 @@ export default function Filter() {
     [selectedCity]
   )
   
-  console.log(selectedCity?.id);
-  
-
-  
   return (
     <div className="flex flex-col gap-2">
       <div className="flex justify-center font-medium text-blue overflow-auto no-scrollbar">
@@ -139,10 +148,11 @@ export default function Filter() {
           <div className="flex-1">
             <DynamicAsyncAutocomplete
               isMulti={false}
-              isError={false}
+              isError={citySelectionError && !selectedCity?.id}
               placeholder={"City"}
               onChange={(value) => {
                 dispatch(setSelectedCity(value))
+                setCitySelectionError(false)
               }}
               loadOptions={async (inputValue: string) => {
                 if (!inputValue.trim()) return allCities;
@@ -223,11 +233,7 @@ export default function Filter() {
           <div className="flex-1">
             <button
               className="animated-button px-[30px] py-[9px] cursor-pointer ml-2 h-full w-[calc(100%-0.5rem)]"
-              onClick={() => {
-              if (selectedCity?.id) {
-                window.location.href = `/projects/${selectedCity.id}`;
-              }
-              }}
+              onClick={handleSearchClick}
             >
               <span className="flex items-center justify-center gap-[6px] relative z-11">
                 <Image
@@ -251,10 +257,11 @@ export default function Filter() {
           <div className="flex-1">
             <DynamicAsyncAutocomplete
               isMulti={false}
-              isError={false}
+              isError={citySelectionError && !selectedCity?.id}
               placeholder={"City"}
               onChange={(value) => {
                 dispatch(setSelectedCity(value))
+                setCitySelectionError(false)
               }}
               loadOptions={async (inputValue: string) => {
                 if (!inputValue.trim()) return allCities;
@@ -426,7 +433,7 @@ export default function Filter() {
           </div>}
         </div>
         <div className="2md:hidden flex-1 mt-2">
-            <button className="animated-button px-[30px] py-[9px] cursor-pointer ml-2 h-full w-[calc(100%-0.5rem)]">
+            <button onClick={handleSearchClick} className="animated-button px-[30px] py-[9px] cursor-pointer ml-2 h-full w-[calc(100%-0.5rem)]">
               <span className="flex items-center justify-center gap-[6px] relative z-11">
                 <Image
                   src="/assets/white-search.svg"
