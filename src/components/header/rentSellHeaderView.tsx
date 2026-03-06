@@ -7,9 +7,9 @@ export default function RentSellHeaderView({ type }: { type: string }) {
   const selectedCity = useSelector(getSelectedCity);
   const aboutusData = useSelector(getAboutusData);
   const propertyMasterData = useSelector(getPropertyMasterData);
-  const [categoryType, setCategoryType] = useState('867c2adf-7e01-45a8-a305-74900b24c529'); // residential
-
   const category = (Array.isArray(propertyMasterData) ? propertyMasterData : [])?.find((item: { code: string }) => item.code == type)?.categories ?? [];
+  const defaultCategoryId = category.find((item: { code: string }) => item.code == 'residential')?.id ?? category[0]?.id;
+  const [categoryType, setCategoryType] = useState(defaultCategoryId); // residential
   const propertyList = category?.find(item => item.id == categoryType)?.propertyTypes ?? []
   return (
     <div className="flex  flex-col 2md:flex-row justify-start overflow-hidden rounded-xl h-full 2md:h-[280px]">

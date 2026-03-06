@@ -51,11 +51,11 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
   )?.categories;
   const commercialRentProperty =
     rentCategory?.find(
-      (item) => item.id == "425df69f-8bd3-4050-8db6-b4093ea5d0b2"
+      (item) => item.code == "commercial"
     )?.propertyTypes ?? [];
   const residentialRentProperty =
     rentCategory?.find(
-      (item) => item.id == "867c2adf-7e01-45a8-a305-74900b24c529"
+      (item) => item.code == "residential"
     )?.propertyTypes ?? [];
 
   const saleCategory = propertyMasterData?.find(
@@ -63,11 +63,11 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
   )?.categories;
   const commercialSaleProperty =
     saleCategory?.find(
-      (item) => item.id == "425df69f-8bd3-4050-8db6-b4093ea5d0b2"
+      (item) => item.code == "commercial"
     )?.propertyTypes ?? [];
   const residentialSaleProperty =
     saleCategory?.find(
-      (item) => item.id == "867c2adf-7e01-45a8-a305-74900b24c529"
+      (item) => item.code == "residential"
     )?.propertyTypes ?? [];
 
   const isRentTab = footerTab === "1";
