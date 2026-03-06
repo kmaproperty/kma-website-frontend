@@ -403,7 +403,7 @@ export default function ProjectCard({
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <a
+          {/* <a
             href="https://wa.me/919056580022"
             target="_blank"
             rel="noreferrer"
@@ -411,7 +411,7 @@ export default function ProjectCard({
           >
             <MessageCircle className="h-5 w-5" />
             WhatsApp
-          </a>
+          </a> */}
           <button
             type="button"
             onClick={handleCallBackClick}

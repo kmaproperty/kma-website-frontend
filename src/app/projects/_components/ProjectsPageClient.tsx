@@ -72,6 +72,18 @@ const normalizePostedBy = (value?: string) => {
   return "owner";
 };
 
+const formatRoleBadge = (value?: string) => {
+  if (!value) return undefined;
+  const cleaned = value.trim();
+  if (!cleaned) return undefined;
+  return cleaned
+    .toLowerCase()
+    .split(/[\s_]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+};
+
 const normalizeListingIntent = (value?: string) => {
   const key = (value ?? "").trim().toLowerCase();
   return key === "rent" ? "rent" : "sale";
@@ -153,6 +165,12 @@ const getImageUrlsFromItem = (
 
 const uniqueNonEmpty = (values: string[]) =>
   Array.from(new Set(values.filter((value) => Boolean(value?.trim()))));
+
+const getStringProp = (value: unknown, key: string) => {
+  if (!value || typeof value !== "object") return undefined;
+  const property = (value as Record<string, unknown>)[key];
+  return typeof property === "string" && property.trim() ? property : undefined;
+};
 
 const normalizeBuildingType = (value?: string) => {
   const key = (value ?? "").trim().toLowerCase();
@@ -300,9 +318,15 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
         (titleParts.length ? titleParts.join(" in ") : "Property");
 
       const postedByRole =
-        (typeof item.user === "object" && item.user?.role) ||
-        (typeof item.owner === "object" && item.owner?.role) ||
-        item.postedBy;
+        getStringProp(item.user, "role") ??
+        getStringProp(item.owner, "role") ??
+        (typeof item.postedBy === "string" ? item.postedBy : undefined);
+      const ownerName =
+        getStringProp(item.owner, "name") ?? getStringProp(item.user, "name");
+      const ownerProfileImage =
+        getStringProp(item.owner, "profileImage") ??
+        getStringProp(item.user, "profileImage") ??
+        getStringProp(item.user, "avatar");
       const furnishingRaw =
         typeof item.furnishType === "string"
           ? item.furnishType
@@ -336,6 +360,14 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
           photos: imageUrls.length || 1,
           videos: Array.isArray(item.videos) ? item.videos.length : 0,
         },
+        agent:
+          ownerName || postedByRole || ownerProfileImage
+            ? {
+                name: ownerName ?? "KMA Expert",
+                badge: formatRoleBadge(postedByRole),
+                avatarUrl: toFullAssetUrl(ownerProfileImage),
+              }
+            : undefined,
       } satisfies Project;
     });
   }, [apiProperties]);

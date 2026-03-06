@@ -126,7 +126,7 @@ const navigateDashboard = () => {
 
 const handleHeaderSubMenuClick = (label: string) => {
   if (label === "Join Us") {
-    router.push("/channel-parterner");
+    router.push("/user-flow");
     setanchorEl(null);
   }
 }
@@ -143,7 +143,10 @@ const handleHeaderSubMenuClick = (label: string) => {
             : "bg-white/10 bg-clip-padding backdrop-filter backdrop-blur-[20px] border-[#FFFFFF33]",
         ].join(" ")}
       >
-        <div className="flex items-center px-1.5 shrink-0 cursor-pointer">
+        <div
+          onClick={() => router.push("/")}
+          className="flex items-center px-1.5 shrink-0 cursor-pointer"
+        >
           <Image
             src="/assets/kma-logo-white.svg"
             width={100}

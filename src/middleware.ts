@@ -9,12 +9,13 @@ export default function middleware(req: NextRequest) {
   const isAbooutUsPage = pathname === "/about-us";
   const verifyProperty = pathname === "/verify-post-property";
   const isProjectsPage = pathname === "/projects" || pathname.startsWith("/projects/");
+  const isUserFlowPage = pathname === "/user-flow";
   const isSignupPage = pathname === '/signup';
   const isVerifyOtpPage = pathname === '/verify-otp';
   const event = searchParams.get('event')
 
   // Public pages (no login required)
-  if (isHomePage || isAbooutUsPage || verifyProperty || isProjectsPage) {
+  if (isHomePage || isAbooutUsPage || verifyProperty || isProjectsPage || isUserFlowPage) {
     return NextResponse.next();
   }
 

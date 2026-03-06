@@ -105,12 +105,12 @@ export default function SignupOtpCard() {
       ownerType,
       ...(ownerType == USER_TYPE.OWNER ? { propertyIntent } : ""),
     });
-    router.replace(`/channel-parterner${params}`);
+    router.replace(`/user-flow${params}`);
   };
 
   useEffect(() => {
     if (!mobileNumber || !ownerType) {
-      router.replace("/channel-parterner");
+      router.replace("/user-flow");
       return;
     }
   }, [mobileNumber, ownerType, router]);

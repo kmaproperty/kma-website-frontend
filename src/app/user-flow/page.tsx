@@ -6,7 +6,7 @@ import MainLayout from "@/components/channelParterner/mainLayout";
 import SignUpCard from "@/components/channelParterner/signUpCard";
 import SignupOtpCard from "@/components/channelParterner/signupOtpCard";
 
-interface ChannelParternerPageProps {
+interface UserFlowPageProps {
   searchParams: Promise<{
     isLogin?: string;
     isOtp?: string;
@@ -14,7 +14,7 @@ interface ChannelParternerPageProps {
   }>;
 }
 
-export default async function ChannelParternerPage({ searchParams }: ChannelParternerPageProps) {
+export default async function UserFlowPage({ searchParams }: UserFlowPageProps) {
   const params = await searchParams;
   const isLogin = params?.isLogin === "true";
   const isOtp = params?.isOtp === "true";
