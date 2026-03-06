@@ -241,12 +241,22 @@ const handleHeaderSubMenuClick = (label: string) => {
               </p>
             </span>
           </button>}
-          <div className="flex flex-row gap-[6px] items-center cursor-pointer">
+          <div
+            onMouseEnter={(event) => {
+              setProfileMenu("profile");
+              setanchorEl(event.currentTarget);
+              setCityMenu(false);
+              setType(null);
+            }}
+            className="flex flex-row gap-[6px] items-center cursor-pointer"
+          >
             <Image
-             onMouseEnter={(event) => {
-              setProfileMenu('profile')
-              setanchorEl(event.currentTarget)
-             }}
+              onClick={(event) => {
+                setProfileMenu("profile");
+                setanchorEl(event.currentTarget);
+                setCityMenu(false);
+                setType(null);
+              }}
               src="/assets/profile.png"
               height={40}
               width={40}
@@ -254,6 +264,12 @@ const handleHeaderSubMenuClick = (label: string) => {
               alt="profile"
             />
             <Image
+              onClick={(event) => {
+                setProfileMenu("profile");
+                setanchorEl(event.currentTarget);
+                setCityMenu(false);
+                setType(null);
+              }}
               src="/assets/down-arrow-white.svg"
               width={12}
               height={5}
@@ -280,7 +296,7 @@ const handleHeaderSubMenuClick = (label: string) => {
             {
               name: "offset",
               options: {
-                offset: cityMenu ? [-50, 26] : type ? [-250, 20] : [0, 20],
+                offset: cityMenu ? [-50, 26] : type ? [-250, 20] : profileMenu === "profile" ? [-270, 20] : [0, 20],
               },
             },
             {
@@ -308,9 +324,13 @@ const handleHeaderSubMenuClick = (label: string) => {
             <div>
               {!cityMenu &&
                 (!type ? (
-                  <Paper className="w-auto min-w-[180px]! rounded-2xl! px-2 py-2 shadow-xl border border-gray-200 bg-white relative z-[9999]">
+                  <Paper
+                    className={`rounded-2xl! shadow-xl border border-gray-200 bg-white relative z-[9999] ${
+                      profileMenu === "profile" ? "w-[320px] sm:w-[340px]! p-0!" : "w-auto min-w-[180px]! px-2 py-2"
+                    }`}
+                  >
                     {profileMenu != 'profile' ? <ListView menuList={menuList} onItemClick={handleHeaderSubMenuClick} />
-                     : <ProfileView/>}
+                     : <ProfileView userRole={userRole}/>}
                   </Paper>
                 ) : (
                   <RentSellHeaderView type={type} />

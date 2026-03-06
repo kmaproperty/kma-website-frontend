@@ -141,7 +141,7 @@ export default function CreateAccount({ step }: { step: number }) {
       localStorage.setItem("user", JSON.stringify(response.user));
       dispatch(resetForm())
       toast.success(response.message)
-      router.replace('/post-property')
+      router.replace('/profile')
     },
     onError: (error: any) => {
       if(Array.isArray(error.message)){
