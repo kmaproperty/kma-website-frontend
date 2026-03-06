@@ -27,7 +27,7 @@ type StoredUser = {
 
 const LOGGED_IN_MENU: MenuItem[] = [
   { label: "Recently Search", icon: "/assets/home-search-blue.svg", count: 6, route: "/projects" },
-  { label: "Recently Viewed", icon: "/assets/home-recent-blue.svg", count: 15, route: "/recently-viewed" },
+  { label: "Recently Viewed", icon: "/assets/home-recent-blue.svg", count: 15, route: "/" },
   { label: "Saved Properties", icon: "/assets/home-save-blue.svg", count: 10, route: "/projects" },
   { label: "Contacted Properties", icon: "/assets/home-contact-blue.svg", count: 8, route: "/contact-us" },
   { label: "My Reviews (New)", icon: "/assets/review-blue.svg", route: "/profile" },
@@ -38,7 +38,7 @@ const LOGGED_IN_MENU: MenuItem[] = [
 
 const GUEST_MENU: MenuItem[] = [
   { label: "Recently Search", icon: "/assets/home-search-blue.svg", count: 6 },
-  { label: "Recently Viewed", icon: "/assets/home-recent-blue.svg", count: 15, route: "/recently-viewed" },
+  { label: "Recently Viewed", icon: "/assets/home-recent-blue.svg", count: 15, route: "/" },
   { label: "Saved Properties", icon: "/assets/home-save-blue.svg", count: 0 },
   { label: "Contacted Properties", icon: "/assets/home-contact-blue.svg", count: 8 },
   { label: "My Reviews (New)", icon: "/assets/review-blue.svg" },
