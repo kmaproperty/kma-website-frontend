@@ -27,7 +27,7 @@ type StoredUser = {
 
 const LOGGED_IN_MENU: MenuItem[] = [
   { label: "Recently Search", icon: "/assets/home-search-blue.svg", count: 6, route: "/projects" },
-  { label: "Recently Viewed", icon: "/assets/home-recent-blue.svg", count: 15, route: "/projects" },
+  { label: "Recently Viewed", icon: "/assets/home-recent-blue.svg", count: 15, route: "/recently-viewed" },
   { label: "Saved Properties", icon: "/assets/home-save-blue.svg", count: 10, route: "/projects" },
   { label: "Contacted Properties", icon: "/assets/home-contact-blue.svg", count: 8, route: "/contact-us" },
   { label: "My Reviews (New)", icon: "/assets/review-blue.svg", route: "/profile" },
@@ -38,7 +38,7 @@ const LOGGED_IN_MENU: MenuItem[] = [
 
 const GUEST_MENU: MenuItem[] = [
   { label: "Recently Search", icon: "/assets/home-search-blue.svg", count: 6 },
-  { label: "Recently Viewed", icon: "/assets/home-recent-blue.svg", count: 15 },
+  { label: "Recently Viewed", icon: "/assets/home-recent-blue.svg", count: 15, route: "/recently-viewed" },
   { label: "Saved Properties", icon: "/assets/home-save-blue.svg", count: 0 },
   { label: "Contacted Properties", icon: "/assets/home-contact-blue.svg", count: 8 },
   { label: "My Reviews (New)", icon: "/assets/review-blue.svg" },
@@ -181,7 +181,7 @@ export default function ProfileView({ userRole }: ProfileViewProps) {
           </div>
         )}
 
-        <div className="mt-3 flex flex-col gap-0.5">
+        <div className="mt-3 flex flex-col gap-2">
           {menuItems.map((item) => (
             <MenuRow key={item.label} item={item} onClick={() => handleMenuClick(item)} />
           ))}

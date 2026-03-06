@@ -28,6 +28,7 @@ export default function LoginOtpCard() {
 
   const mobileNumber = searchParams.get("mobile");
   const code = searchParams.get("code");
+  const redirect = searchParams.get("redirect");
 
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState("");
@@ -52,12 +53,19 @@ export default function LoginOtpCard() {
       toast.success(response.message);
       queryClient.clear();
 
+      const safeRedirect =
+        redirect && redirect.startsWith("/") && !redirect.startsWith("//") ? redirect : null;
+      if (safeRedirect) {
+        router.replace(safeRedirect);
+        return;
+      }
+
       if (response.user.role === "CHANNEL_PARTNER" && !response.kycCompleted) {
         router.replace("/profile");
         return;
       }
       if (response.propertyCount === 0) {
-        router.replace("/post-property");
+        router.replace("/profile");
         return;
       }
       router.replace("/user-dashboard");
@@ -81,6 +89,7 @@ export default function LoginOtpCard() {
       mobile: mobileNumber,
       code,
       isLogin: true,
+      ...(redirect ? { redirect } : {}),
     });
     router.replace(`${pathname}${params}`);
   };

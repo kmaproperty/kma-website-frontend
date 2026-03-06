@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "nextjs-toploader/app";
 import { toast } from "react-toastify";
 
@@ -20,7 +20,9 @@ interface MobileState {
 
 export default function LoginCard() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const router = useRouter();
+  const redirect = searchParams.get("redirect");
   const [mobileInput, setMobileInput] = useState<MobileState>({
     value: "",
     code: "+91",
@@ -40,6 +42,7 @@ export default function LoginCard() {
         code: mobileInput.code,
         isOtp: true,
         flow: "login",
+        ...(redirect ? { redirect } : {}),
       });
       toast.success(response.otp);
       router.replace(`${pathname}${params}`);
@@ -63,7 +66,10 @@ export default function LoginCard() {
   };
 
   const handleCreateAccountRedirect = () => {
-    const params = mobileInput.value ? createURLSearchParam({ mobile: mobileInput.value }) : "";
+    const params = createURLSearchParam({
+      ...(mobileInput.value ? { mobile: mobileInput.value } : {}),
+      ...(redirect ? { redirect } : {}),
+    });
     router.replace(`${pathname}${params}`);
   };
 
