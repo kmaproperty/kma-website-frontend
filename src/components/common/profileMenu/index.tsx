@@ -20,9 +20,10 @@ export default function ProfileMenu({ anchorEl, open, handleClose }) {
     mutationFn: async (): Promise<UserLogoutResponse> => {
       return await UserLogoutApiHandler();
     },
-    onSuccess: async (response: UserLogoutResponse) => {
+    onSuccess: async () => {
       localStorage.clear();
       await clearAuthCookies();
+      queryClient.clear();
       router.replace("/signup");
     },
     onError: (error: any) => {
@@ -38,7 +39,6 @@ export default function ProfileMenu({ anchorEl, open, handleClose }) {
 
   const handleLogout = () => {
     handleLogoutApi();
-    queryClient.clear();
   };
 
   return (

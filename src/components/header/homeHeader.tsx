@@ -126,7 +126,7 @@ const navigateDashboard = () => {
 
 const handleHeaderSubMenuClick = (label: string) => {
   if (label === "Join Us") {
-    router.push("/user-flow");
+    router.push("/signup");
     setanchorEl(null);
   }
 }

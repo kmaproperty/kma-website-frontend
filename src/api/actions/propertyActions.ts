@@ -24,11 +24,40 @@ export interface GetEndUserPropertyDetailsPayload {
   correlationId?: string;
 }
 
+/** Location object returned in property details API response */
+export interface PropertyDetailsLocation {
+  latitude?: number;
+  longitude?: number;
+  state?: string;
+  city?: string;
+  society?: string;
+  locality?: string;
+  address?: string;
+}
+
+/** Channel partner / specialist details from property details API */
+export interface PropertyDetailsChannelPartner {
+  id?: string;
+  name?: string | null;
+  firmName?: string | null;
+  profileImage?: string | null;
+  channelPartnerCode?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  buyersServed?: number;
+  yearsOfExperience?: number;
+  propertyHoldings?: number;
+  areasOfOperation?: number;
+  propertyListings?: { rent?: number; sale?: number };
+}
+
 export interface GetEndUserPropertyDetailsResponse {
   success?: boolean;
   message?: string;
   property?: EndUserPropertyDetails;
   data?: EndUserPropertyDetails;
+  location?: PropertyDetailsLocation;
+  channelPartnerDetails?: PropertyDetailsChannelPartner | null;
 }
 
 /** GET /end-user/properties/{propertyId}/rating-reviews */

@@ -1,11 +1,16 @@
 "use client";
 
 import { clearAuthCookies } from "@/lib/helper";
-import { UserLogoutApiHandler, UserLogoutResponse } from "@/services/userService";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  UserLogoutApiHandler,
+  UserLogoutResponse,
+  userProfileApiHandler,
+  UserProfileResponse,
+} from "@/services/userService";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter } from "nextjs-toploader/app";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { toast } from "react-toastify";
 
 type ProfileViewProps = {
@@ -19,15 +24,11 @@ type MenuItem = {
   route?: string;
 };
 
-type StoredUser = {
-  name?: string;
-  phone?: string;
-  profilePhotoUrl?: string;
-};
+const baseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
 
 const LOGGED_IN_MENU: MenuItem[] = [
   { label: "Recently Search", icon: "/assets/home-search-blue.svg", count: 6, route: "/projects" },
-  { label: "Recently Viewed", icon: "/assets/home-recent-blue.svg", count: 15, route: "/" },
+  { label: "Recently Viewed", icon: "/assets/home-recent-blue.svg", count: 15, route: "/recently-viewed" },
   { label: "Saved Properties", icon: "/assets/home-save-blue.svg", count: 10, route: "/projects" },
   { label: "Contacted Properties", icon: "/assets/home-contact-blue.svg", count: 8, route: "/contact-us" },
   { label: "My Reviews (New)", icon: "/assets/review-blue.svg", route: "/profile" },
@@ -38,7 +39,7 @@ const LOGGED_IN_MENU: MenuItem[] = [
 
 const GUEST_MENU: MenuItem[] = [
   { label: "Recently Search", icon: "/assets/home-search-blue.svg", count: 6 },
-  { label: "Recently Viewed", icon: "/assets/home-recent-blue.svg", count: 15, route: "/" },
+  { label: "Recently Viewed", icon: "/assets/home-recent-blue.svg", count: 15, route: "/recently-viewed`  " },
   { label: "Saved Properties", icon: "/assets/home-save-blue.svg", count: 0 },
   { label: "Contacted Properties", icon: "/assets/home-contact-blue.svg", count: 8 },
   { label: "My Reviews (New)", icon: "/assets/review-blue.svg" },
@@ -76,19 +77,15 @@ function MenuRow({ item, onClick }: { item: MenuItem; onClick: () => void }) {
 export default function ProfileView({ userRole }: ProfileViewProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const [user, setUser] = useState<StoredUser | null>(null);
   const isLoggedIn = Boolean(userRole);
 
-  useEffect(() => {
-    const userRaw = localStorage.getItem("user");
-    if (!userRaw) return;
-    try {
-      const parsed: StoredUser = JSON.parse(userRaw);
-      setUser(parsed);
-    } catch {
-      setUser(null);
-    }
-  }, []);
+  const { data: profileResponse } = useQuery({
+    queryKey: ["user-profile"],
+    queryFn: async (): Promise<UserProfileResponse> => userProfileApiHandler(),
+    enabled: isLoggedIn,
+    staleTime: 60 * 1000,
+  });
+  const user = profileResponse?.user;
 
   const { mutate: handleLogoutApi, isPending } = useMutation({
     mutationFn: async (): Promise<UserLogoutResponse> => {
@@ -110,7 +107,11 @@ export default function ProfileView({ userRole }: ProfileViewProps) {
     return isLoggedIn ? LOGGED_IN_MENU : GUEST_MENU;
   }, [isLoggedIn]);
   const profileImage =
-    user?.profilePhotoUrl && /^https?:\/\//.test(user.profilePhotoUrl) ? user.profilePhotoUrl : "/assets/profile.png";
+    user?.profileImage && /^https?:\/\//.test(user.profileImage)
+      ? user.profileImage
+      : user?.profileImage
+        ? `${baseUrl}${user.profileImage}`
+        : "/assets/profile.png";
 
   const navigateToLogin = () => {
     router.push("/user-flow?isLogin=true");
@@ -141,7 +142,7 @@ export default function ProfileView({ userRole }: ProfileViewProps) {
               />
               <div className="min-w-0">
                 <p className="text-[15px] leading-5 font-semibold text-[#101828] truncate">{user?.name || "User"}</p>
-                <p className="text-xs leading-4 text-[#667085] truncate">{user?.phone ? `+91-${user.phone}` : ""}</p>
+                <p className="text-xs leading-4 text-[#667085] truncate">{user?.phone ? `+91 ${user.phone}` : ""}</p>
               </div>
             </div>
             <button

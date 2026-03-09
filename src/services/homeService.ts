@@ -403,7 +403,7 @@ export const getPropertiesCountApiHandler = async ({page,limit,cityId,search,lis
     try{
         const response = await axiosInstance.get<GetPropertiesCountResponse>(
       "end-user/properties/count", {
-        params: {cityId, search, categoryIds, propertyTypeIds,listingTypeIds, bhkTypeIds, furnishingTypes, constructionStatuses, minPrice, maxPrice, latitude, longitude, radius, sortBy, sortOrder, postedBy}
+        params: {cityId, search, categoryIds, propertyTypeIds, bhkTypeIds, furnishingTypes, constructionStatuses, minPrice, maxPrice, latitude, longitude, radius, sortBy, sortOrder, postedBy}
       });
 
     return response.data;

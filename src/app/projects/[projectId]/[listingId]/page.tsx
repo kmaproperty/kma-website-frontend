@@ -383,6 +383,7 @@ export default function ListingDetailsPage() {
     asString(propertyDetails?.title) ??
     "Orchid Petals";
   const propertyAddress =
+    asString(propertyDetails?.location?.address) ??
     asString(propertyDetails?.address) ??
     "9, S Isbloom 189, 3rd floor, Sector 51, Gurgaon";
   const propertyDescription =
@@ -443,10 +444,10 @@ export default function ListingDetailsPage() {
       ["Listing Type", asString(propertyDetails?.listingType)],
       ["Building Type", asString(propertyDetails?.category)],
       ["Property Type", asString(propertyDetails?.propertyType)],
-      ["City", asString(propertyDetails?.city)],
+      ["City", asString(propertyDetails?.location?.city) ?? asString(propertyDetails?.city)],
       ["Micro market", asString(propertyDetails?.microMarket)],
-      ["Locality", asString(propertyDetails?.locality)],
-      ["Project Name", asString(propertyDetails?.projectName)],
+      ["Locality", asString(propertyDetails?.location?.locality) ?? asString(propertyDetails?.locality)],
+      ["Project Name", asString(propertyDetails?.location?.society) ?? asString(propertyDetails?.projectName)],
       [
         "Area",
         asNumber(propertyDetails?.buildUpAreaSqFt)
@@ -1059,7 +1060,7 @@ export default function ListingDetailsPage() {
                         className="flex gap-3 overflow-x-auto pb-1 pr-2 scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                       >
                         {similarProperties
-                          .filter((item) => item.id !== listingId)
+                          // .filter((item) => item.id !== listingId)
                           .map((item) => {
                             const isFav = favorites[item.id] ?? Boolean(item.isFavorite);
                             const imageSrc = toFullAssetUrl(item.imageUrl) || "/assets/property/img-4.png";
@@ -1228,35 +1229,60 @@ export default function ListingDetailsPage() {
                   <p className="mt-1 text-sm text-text-gray">
                     Buy - Sell - Invest with expert advice.
                   </p>
-                  <div className="mt-4 flex items-center gap-3 rounded-lg bg-[#FAFAFB] p-3">
-                    <Image
-                      src="/assets/profile.png"
-                      alt="Specialist"
-                      width={44}
-                      height={44}
-                      className="h-11 w-11 rounded-full object-cover"
-                    />
-                    <div>
-                      <p className="font-semibold text-text-black">Manjeet Skyzen</p>
-                      <p className="text-xs text-text-light-gray">KMA Real Partner</p>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-blue px-4 py-3 text-sm font-semibold text-white"
-                  >
-                    <PhoneCall className="h-4 w-4" />
-                    Contact Now
-                  </button>
-                  <a
-                    href="https://wa.me/919056580022"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-[#1B8836] px-4 py-3 text-sm font-semibold text-[#1B8836]"
-                  >
-                    <MessageCircle className="h-4 w-4" />
-                    WhatsApp Expert
-                  </a>
+                  {(() => {
+                    const cp = propertyDetails?.channelPartnerDetails;
+                    const specialistName = asString(cp?.name) ?? "Manjeet Skyzen";
+                    const specialistFirm = asString(cp?.firmName) ?? "KMA Real Partner";
+                    const specialistImage = toFullAssetUrl(cp?.profileImage) || "/assets/profile.png";
+                    const phone = asString(cp?.phone);
+                    const whatsappHref = phone
+                      ? `https://wa.me/91${phone.replace(/\D/g, "")}`
+                      : "https://wa.me/919056580022";
+                    const telHref = phone ? `tel:+91${phone.replace(/\D/g, "")}` : undefined;
+                    return (
+                      <>
+                        <div className="mt-4 flex items-center gap-3 rounded-lg bg-[#FAFAFB] p-3">
+                          <Image
+                            src={specialistImage}
+                            alt={specialistName}
+                            width={44}
+                            height={44}
+                            className="h-11 w-11 rounded-full object-cover"
+                          />
+                          <div>
+                            <p className="font-semibold text-text-black">{specialistName}</p>
+                            <p className="text-xs text-black">{specialistFirm}</p>
+                          </div>
+                        </div>
+                        {telHref ? (
+                          <a
+                            href={telHref}
+                            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-blue px-4 py-3 text-sm font-semibold text-white"
+                          >
+                            <PhoneCall className="h-4 w-4" />
+                            Contact Now
+                          </a>
+                        ) : (
+                          <button
+                            type="button"
+                            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-blue px-4 py-3 text-sm font-semibold text-white"
+                          >
+                            <PhoneCall className="h-4 w-4" />
+                            Contact Now
+                          </button>
+                        )}
+                        <a
+                          href={whatsappHref}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-[#1B8836] px-4 py-3 text-sm font-semibold text-[#1B8836]"
+                        >
+                          <MessageCircle className="h-4 w-4" />
+                          WhatsApp Expert
+                        </a>
+                      </>
+                    );
+                  })()}
                 </aside>
               </div>
             </div>

@@ -109,7 +109,7 @@ export default function Filter() {
       return response.count
     },
     enabled: Boolean(selectedCity?.id) && Array.isArray(propertyMasterData) && propertyMasterData.length > 0,
-    staleTime: 20_000,
+    // staleTime: 20_000,
   });
 
   const allCities = useMemo(() => {

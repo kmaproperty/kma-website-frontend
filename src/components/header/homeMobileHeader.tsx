@@ -160,7 +160,7 @@ export default function HomeMobileHeader({
                     <p
                       onClick={() => {
                         if (item.label === "Join Us") {
-                          router.push("/user-flow");
+                          router.push("/signup");
                           onClose();
                         }
                       }}
