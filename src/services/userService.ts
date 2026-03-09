@@ -279,3 +279,29 @@ export const uploadProfilePicApiHandler = async (
     throw error.response?.data ?? error;
   }
 };
+
+// GET /end-user/activity-counts - Get Activity Counts (user panel: Recently Search, Recently Viewed, Saved, Contacted)
+export interface ActivityCountsResponse {
+  recentlySearch: number;
+  recentlyViewed: number;
+  savedProperties: number;
+  contactedProperties: number;
+}
+
+export const getActivityCountsApiHandler = async (
+  sessionId?: string | null
+): Promise<ActivityCountsResponse> => {
+  try {
+    const response = await axiosInstance.get<ActivityCountsResponse>(
+      "end-user/activity-counts",
+      {
+        headers: {
+          ...(sessionId ? { "X-Session-Id": sessionId } : {}),
+        },
+      }
+    );
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data ?? error;
+  }
+};

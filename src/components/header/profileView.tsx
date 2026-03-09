@@ -2,11 +2,13 @@
 
 import { clearAuthCookies } from "@/lib/helper";
 import {
+  getActivityCountsApiHandler,
   UserLogoutApiHandler,
   UserLogoutResponse,
   userProfileApiHandler,
   UserProfileResponse,
 } from "@/services/userService";
+import { useSessionStore } from "@/store/useSessionStore";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter } from "nextjs-toploader/app";
@@ -26,22 +28,22 @@ type MenuItem = {
 
 const baseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
 
-const LOGGED_IN_MENU: MenuItem[] = [
-  { label: "Recently Search", icon: "/assets/home-search-blue.svg", count: 6, route: "/projects" },
-  { label: "Recently Viewed", icon: "/assets/home-recent-blue.svg", count: 15, route: "/recently-viewed" },
-  { label: "Saved Properties", icon: "/assets/home-save-blue.svg", count: 10, route: "/projects" },
-  { label: "Contacted Properties", icon: "/assets/home-contact-blue.svg", count: 8, route: "/contact-us" },
+const LOGGED_IN_MENU_BASE: MenuItem[] = [
+  { label: "Recently Search", icon: "/assets/home-search-blue.svg", route: "/projects" },
+  { label: "Recently Viewed", icon: "/assets/home-recent-blue.svg", route: "/recently-viewed" },
+  { label: "Saved Properties", icon: "/assets/home-save-blue.svg", route: "/projects" },
+  { label: "Contacted Properties", icon: "/assets/home-contact-blue.svg", route: "/contact-us" },
   { label: "My Reviews (New)", icon: "/assets/review-blue.svg", route: "/profile" },
   { label: "My Services", icon: "/assets/service-blue.svg", route: "/user-dashboard" },
   { label: "Refer And Earn", icon: "/assets/refer-earn-blue.svg", route: "/user-dashboard" },
   { label: "Help", icon: "/assets/help-blue.svg", route: "/contact-us" },
 ];
 
-const GUEST_MENU: MenuItem[] = [
-  { label: "Recently Search", icon: "/assets/home-search-blue.svg", count: 6 },
-  { label: "Recently Viewed", icon: "/assets/home-recent-blue.svg", count: 15, route: "/recently-viewed`  " },
-  { label: "Saved Properties", icon: "/assets/home-save-blue.svg", count: 0 },
-  { label: "Contacted Properties", icon: "/assets/home-contact-blue.svg", count: 8 },
+const GUEST_MENU_BASE: MenuItem[] = [
+  { label: "Recently Search", icon: "/assets/home-search-blue.svg" },
+  { label: "Recently Viewed", icon: "/assets/home-recent-blue.svg", route: "/recently-viewed" },
+  { label: "Saved Properties", icon: "/assets/home-save-blue.svg" },
+  { label: "Contacted Properties", icon: "/assets/home-contact-blue.svg" },
   { label: "My Reviews (New)", icon: "/assets/review-blue.svg" },
   { label: "My Services", icon: "/assets/service-blue.svg" },
   { label: "Refer And Earn", icon: "/assets/refer-earn-blue.svg" },
@@ -74,10 +76,18 @@ function MenuRow({ item, onClick }: { item: MenuItem; onClick: () => void }) {
   );
 }
 
+const ACTIVITY_COUNT_KEYS = [
+  "recentlySearch",
+  "recentlyViewed",
+  "savedProperties",
+  "contactedProperties",
+] as const;
+
 export default function ProfileView({ userRole }: ProfileViewProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const isLoggedIn = Boolean(userRole);
+  const sessionId = useSessionStore((state) => state.sessionId);
 
   const { data: profileResponse } = useQuery({
     queryKey: ["user-profile"],
@@ -86,6 +96,12 @@ export default function ProfileView({ userRole }: ProfileViewProps) {
     staleTime: 60 * 1000,
   });
   const user = profileResponse?.user;
+
+  const { data: activityCounts } = useQuery({
+    queryKey: ["end-user-activity-counts", isLoggedIn, sessionId ?? null],
+    queryFn: () => getActivityCountsApiHandler(isLoggedIn ? undefined : sessionId ?? undefined),
+    staleTime: 60 * 1000,
+  });
 
   const { mutate: handleLogoutApi, isPending } = useMutation({
     mutationFn: async (): Promise<UserLogoutResponse> => {
@@ -104,8 +120,14 @@ export default function ProfileView({ userRole }: ProfileViewProps) {
   });
 
   const menuItems = useMemo(() => {
-    return isLoggedIn ? LOGGED_IN_MENU : GUEST_MENU;
-  }, [isLoggedIn]);
+    const base = isLoggedIn ? LOGGED_IN_MENU_BASE : GUEST_MENU_BASE;
+    if (!activityCounts) return base;
+    return base.map((item, index) => {
+      const key = ACTIVITY_COUNT_KEYS[index];
+      const count = key ? activityCounts[key] : undefined;
+      return { ...item, count };
+    });
+  }, [isLoggedIn, activityCounts]);
   const profileImage =
     user?.profileImage && /^https?:\/\//.test(user.profileImage)
       ? user.profileImage
