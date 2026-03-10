@@ -688,9 +688,6 @@ export default function ListingDetailsPage() {
 
                   <section className="rounded-xl">
                     <h2 className="text-xl font-semibold text-text-black">Furnishing Details</h2>
-                    <p className="mt-1 text-sm text-text-gray">
-                      {asString(propertyDetails?.furnishType) ?? "Semi-Furnished"}
-                    </p>
                     <div className="mt-4 rounded-lg bg-white p-3 grid grid-cols-1  gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-4">
                       {(Array.isArray(propertyDetails?.furnishingsCounts) && propertyDetails.furnishingsCounts.length > 0
                         ? propertyDetails.furnishingsCounts.map((f: { item: string; count: number }) => ({
@@ -806,7 +803,7 @@ export default function ListingDetailsPage() {
 
                   <section className="rounded-xl">
                     <h2 className="text-xl font-semibold text-text-black">
-                      {apiChannelPartner ? "Channel Partner Details" : "Owner Details"}
+                      Channel Partner Details
                     </h2>
                     <div className="mt-4 rounded-xl bg-white p-4 sm:p-6">
                       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -837,58 +834,52 @@ export default function ListingDetailsPage() {
                             <PhoneCall className="h-4 w-4" />
                             View Number
                           </button>
-                          {apiChannelPartner && (
-                            <button
-                              type="button"
-                              className="inline-flex items-center gap-2 rounded-xl bg-[#05085E] px-4 py-2.5 text-sm font-semibold text-white"
-                            >
-                              Learn More
-                              <ArrowRight className="h-4 w-4" />
-                            </button>
-                          )}
+                          <button
+                            type="button"
+                            className="inline-flex items-center gap-2 rounded-xl bg-[#05085E] px-4 py-2.5 text-sm font-semibold text-white"
+                          >
+                            Learn More
+                            <ArrowRight className="h-4 w-4" />
+                          </button>
                         </div>
                       </div>
 
-                      {apiChannelPartner && (
-                        <>
-                          <div className="mt-4 border-t border-[#D4D5D8] pt-5">
-                            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                              {[
-                                [apiChannelPartner.buyersServed > 0 ? `${apiChannelPartner.buyersServed}+` : "0", "Buyers Served"],
-                                [apiChannelPartner.yearsOfExperience != null ? String(apiChannelPartner.yearsOfExperience) : "—", "Years of Experience"],
-                                [String(apiChannelPartner.propertyHoldings), "Property Holdings"],
-                                [apiChannelPartner.areasOfOperation > 0 ? `${apiChannelPartner.areasOfOperation}+` : "0", "Areas of Operation"],
-                              ].map(([value, label]) => (
-                                <div key={label} className="flex items-center  gap-3">
-                                  <p className="text-2xl leading-none font-semibold text-[#05085E]">{value}</p>
-                                  <p className="max-w-[110px] text-xs leading-5 text-text-black">{label}</p>
-                                </div>
-                              ))}
+                      <div className="mt-4 border-t border-[#D4D5D8] pt-5">
+                        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                          {[
+                            [apiChannelPartner?.buyersServed != null && apiChannelPartner.buyersServed > 0 ? `${apiChannelPartner.buyersServed}+` : "500+", "Buyers Served"],
+                            [apiChannelPartner?.yearsOfExperience != null ? String(apiChannelPartner.yearsOfExperience) : "21", "Years of Experience"],
+                            [apiChannelPartner?.propertyHoldings != null ? String(apiChannelPartner.propertyHoldings) : "44", "Property Holdings"],
+                            [apiChannelPartner?.areasOfOperation != null && apiChannelPartner.areasOfOperation > 0 ? `${apiChannelPartner.areasOfOperation}+` : "20+", "Areas of Operation"],
+                          ].map(([value, label]) => (
+                            <div key={label} className="flex items-center  gap-3">
+                              <p className="text-2xl leading-none font-semibold text-[#05085E]">{value}</p>
+                              <p className="max-w-[110px] text-xs leading-5 text-text-black">{label}</p>
                             </div>
-                          </div>
+                          ))}
+                        </div>
+                      </div>
 
-                          <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                            {[
-                              ["Property for Rent", String(apiChannelPartner.propertyListings.rent)],
-                              ["Property for Sale", String(apiChannelPartner.propertyListings.sale)],
-                            ].map(([label, count]) => (
-                              <button
-                                key={label}
-                                type="button"
-                                className="inline-flex w-full items-center justify-between rounded-lg border border-[#D1D5DB] px-3 py-2.5 text-left hover:bg-white/60 bg-background-gray"
-                              >
-                                <span className="text-sm font-medium text-text-black">{label}</span>
-                                <span className="inline-flex items-center gap-2">
-                                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#D1D5DB] text-sm text-text-gray">
-                                    {count}
-                                  </span>
-                                  <ChevronRight className="h-4 w-4 text-text-light-black" />
-                                </span>
-                              </button>
-                            ))}
-                          </div>
-                        </>
-                      )}
+                      <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        {[
+                          ["Property for Rent", apiChannelPartner?.propertyListings?.rent != null ? String(apiChannelPartner.propertyListings.rent) : "21"],
+                          ["Property for Sale", apiChannelPartner?.propertyListings?.sale != null ? String(apiChannelPartner.propertyListings.sale) : "21"],
+                        ].map(([label, count]) => (
+                          <button
+                            key={label}
+                            type="button"
+                            className="inline-flex w-full items-center justify-between rounded-lg border border-[#D1D5DB] px-3 py-2.5 text-left hover:bg-white/60 bg-background-gray"
+                          >
+                            <span className="text-sm font-medium text-text-black">{label}</span>
+                            <span className="inline-flex items-center gap-2">
+                              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#D1D5DB] text-sm text-text-gray">
+                                {count}
+                              </span>
+                              <ChevronRight className="h-4 w-4 text-text-light-black" />
+                            </span>
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </section>
 
