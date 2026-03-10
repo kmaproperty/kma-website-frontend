@@ -45,10 +45,47 @@ export interface PropertyDetailsChannelPartner {
   phone?: string | null;
   email?: string | null;
   buyersServed?: number;
-  yearsOfExperience?: number;
+  yearsOfExperience?: number | null;
   propertyHoldings?: number;
   areasOfOperation?: number;
   propertyListings?: { rent?: number; sale?: number };
+}
+
+export interface OwnerDetails {
+  id: string;
+  name: string | null;
+  profileImage: string | null;
+  phone: string;
+  email: string | null;
+}
+
+export interface PropertyRatingsAndReviews {
+  totalReviews: number;
+  averageOverallRating: number;
+  starDistribution: Record<string, number>;
+  featureRatings: {
+    connectivity: number;
+    neighbourhood: number;
+    safety: number;
+    livability: number;
+  };
+  likes: string[];
+  dislikes: string[];
+}
+
+export interface PropertySampleReview {
+  id: string;
+  endUserId: string;
+  reviewerName: string | null;
+  role: string;
+  overallRating: number;
+  connectivityRating: number;
+  neighbourhoodRating: number;
+  safetyRating: number;
+  livabilityRating: number;
+  likeText?: string | null;
+  dislikeText?: string | null;
+  createdAt: string;
 }
 
 export interface GetEndUserPropertyDetailsResponse {
@@ -57,7 +94,12 @@ export interface GetEndUserPropertyDetailsResponse {
   property?: EndUserPropertyDetails;
   data?: EndUserPropertyDetails;
   location?: PropertyDetailsLocation;
+  verificationStatus?: string | null;
+  comments?: string | null;
   channelPartnerDetails?: PropertyDetailsChannelPartner | null;
+  ownerDetails?: OwnerDetails;
+  ratingsAndReviews?: PropertyRatingsAndReviews;
+  sampleReviews?: PropertySampleReview[];
 }
 
 /** GET /end-user/properties/{propertyId}/rating-reviews */

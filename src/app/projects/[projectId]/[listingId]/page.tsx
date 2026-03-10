@@ -299,9 +299,14 @@ const formatListedOn = (dateStr: string) => {
 export default function ListingDetailsPage() {
   const params = useParams<{ projectId: string; listingId: string }>();
   const listingId = params?.listingId ?? "";
-  const { data: propertyDetails, isPending, isError } = usePropertyDetails({
+  const { data: detailsResponse, isPending, isError } = usePropertyDetails({
     id: listingId,
   });
+  const propertyDetails = detailsResponse?.property ?? null;
+  const apiChannelPartner = detailsResponse?.channelPartnerDetails;
+  const apiOwnerDetails = detailsResponse?.ownerDetails;
+  const apiRatings = detailsResponse?.ratingsAndReviews;
+  const apiSampleReviews = detailsResponse?.sampleReviews;
 
   const similarParams = useMemo(() => {
     const city =
@@ -383,7 +388,7 @@ export default function ListingDetailsPage() {
     asString(propertyDetails?.title) ??
     "Orchid Petals";
   const propertyAddress =
-    asString(propertyDetails?.location?.address) ??
+    asString(detailsResponse?.location?.address) ??
     asString(propertyDetails?.address) ??
     "9, S Isbloom 189, 3rd floor, Sector 51, Gurgaon";
   const propertyDescription =
@@ -406,19 +411,18 @@ export default function ListingDetailsPage() {
       : "Deposit Amount: Two months";
 
   const quickFactsData = useMemo(() => {
-    const bedrooms = asString(propertyDetails?.bhkType) ?? "4 Bedrooms";
+    const bedrooms = asString(propertyDetails?.bhkTypeName) ?? asString(propertyDetails?.bhkType) ?? "4 Bedrooms";
     const furnishing =
-      asString(propertyDetails?.furnishingType) ??
       asString(propertyDetails?.furnishType) ??
       "Semi-furnished";
     const bathrooms =
       asNumber(propertyDetails?.bathRooms) ??
       asNumber(propertyDetails?.bathrooms) ??
       4;
-    const area = asNumber(propertyDetails?.buildUpAreaSqFt) ?? asNumber(propertyDetails?.area);
+    const area = asNumber(propertyDetails?.buildUpAreaSqFt) ?? asNumber(propertyDetails?.builtUpArea);
     const facing = asString(propertyDetails?.facing) ?? "Park View";
     const floor = asNumber(propertyDetails?.floorNumber);
-    const totalFloors = asNumber(propertyDetails?.totalFloorCount);
+    const totalFloors = asNumber(propertyDetails?.totalFloorCount) ?? asNumber(propertyDetails?.totalFloors);
 
     return [
       { icon: <BedDouble className="h-4 w-4" />, label: bedrooms },
@@ -441,13 +445,13 @@ export default function ListingDetailsPage() {
 
   const propertyInfoData = useMemo(() => {
     const fromApi: Array<[string, string | null]> = [
-      ["Listing Type", asString(propertyDetails?.listingType)],
-      ["Building Type", asString(propertyDetails?.category)],
-      ["Property Type", asString(propertyDetails?.propertyType)],
-      ["City", asString(propertyDetails?.location?.city) ?? asString(propertyDetails?.city)],
-      ["Micro market", asString(propertyDetails?.microMarket)],
-      ["Locality", asString(propertyDetails?.location?.locality) ?? asString(propertyDetails?.locality)],
-      ["Project Name", asString(propertyDetails?.location?.society) ?? asString(propertyDetails?.projectName)],
+      ["Listing Type", asString(propertyDetails?.listingTypeName)],
+      ["Building Type", asString(propertyDetails?.categoryName)],
+      ["Property Type", asString(propertyDetails?.propertyTypeName)],
+      ["City", asString(propertyDetails?.cityName) ?? asString(detailsResponse?.location?.city)],
+      ["Micro market", asString(propertyDetails?.localityName) ?? asString(detailsResponse?.location?.locality)],
+      ["Locality", asString(propertyDetails?.localityName) ?? asString(detailsResponse?.location?.locality)],
+      ["Project Name", asString(propertyDetails?.projectName) ?? asString(detailsResponse?.location?.society)],
       [
         "Area",
         asNumber(propertyDetails?.buildUpAreaSqFt)
@@ -455,10 +459,10 @@ export default function ListingDetailsPage() {
           : null,
       ],
       ["Facing", asString(propertyDetails?.facing)],
-      ["View", asString(propertyDetails?.view)],
-      ["Built in", asString(propertyDetails?.builtIn)],
+      ["View", asString(propertyDetails?.facing)],
+      ["Built in", asString(propertyDetails?.age)],
       ["Age", asString(propertyDetails?.age)],
-      ["Additional Rooms", asString(propertyDetails?.additionalRooms)],
+      ["Additional Rooms", asString(propertyDetails?.additionalRoomsText)],
       ["Total Floor Count", asString(propertyDetails?.totalFloorCount)],
       ["Floor Number", asString(propertyDetails?.floorNumber)],
       ["Tower/Block", asString(propertyDetails?.towerOrBlock)],
@@ -470,14 +474,28 @@ export default function ListingDetailsPage() {
     });
   }, [propertyDetails]);
 
+  const resolvedReviews = useMemo(() => {
+    if (apiSampleReviews && apiSampleReviews.length > 0) {
+      return apiSampleReviews.map((r) => ({
+        id: r.id,
+        name: r.reviewerName || "Anonymous",
+        role: r.role === "owner" ? "Owner" : r.role === "tenant" ? "Tenant" : "Resident",
+        rating: r.overallRating,
+        review: [r.likeText, r.dislikeText].filter(Boolean).join(" ") || "No comment",
+        avatar: "/assets/profile.png",
+      }));
+    }
+    return reviews;
+  }, [apiSampleReviews]);
+
   const reviewsPerPage = 3;
-  const totalReviewPages = Math.ceil(reviews.length / reviewsPerPage);
+  const totalReviewPages = Math.ceil(resolvedReviews.length / reviewsPerPage);
   const [activeReviewPage, setActiveReviewPage] = useState(0);
 
   const currentReviews = useMemo(() => {
     const start = activeReviewPage * reviewsPerPage;
-    return reviews.slice(start, start + reviewsPerPage);
-  }, [activeReviewPage]);
+    return resolvedReviews.slice(start, start + reviewsPerPage);
+  }, [activeReviewPage, resolvedReviews]);
 
   const goToPrevReviewPage = () => {
     setActiveReviewPage((prev) => (prev === 0 ? totalReviewPages - 1 : prev - 1));
@@ -670,8 +688,17 @@ export default function ListingDetailsPage() {
 
                   <section className="rounded-xl">
                     <h2 className="text-xl font-semibold text-text-black">Furnishing Details</h2>
+                    <p className="mt-1 text-sm text-text-gray">
+                      {asString(propertyDetails?.furnishType) ?? "Semi-Furnished"}
+                    </p>
                     <div className="mt-4 rounded-lg bg-white p-3 grid grid-cols-1  gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-4">
-                      {furnishingDetails.map((item) => (
+                      {(Array.isArray(propertyDetails?.furnishingsCounts) && propertyDetails.furnishingsCounts.length > 0
+                        ? propertyDetails.furnishingsCounts.map((f: { item: string; count: number }) => ({
+                            label: `${f.count} ${f.item}`,
+                            icon: "/assets/furnishing-default.png",
+                          }))
+                        : furnishingDetails
+                      ).map((item: { label: string; icon: string }) => (
                         <div
                           key={item.label}
                           className="inline-flex items-center gap-3 leading-none text-text-black"
@@ -757,7 +784,13 @@ export default function ListingDetailsPage() {
                   <section className="rounded-xl">
                     <h2 className="text-xl font-semibold text-text-black">Amenities</h2>
                     <div className="mt-4 rounded-lg bg-white p-3 grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2 lg:grid-cols-4">
-                      {amenities.map((amenity) => (
+                      {(Array.isArray(propertyDetails?.amenitiesList) && propertyDetails.amenitiesList.length > 0
+                        ? propertyDetails.amenitiesList.map((name: string) => ({
+                            icon: <CheckCircle2 className="h-5 w-5" />,
+                            label: name,
+                          }))
+                        : amenities
+                      ).map((amenity: { icon: React.ReactNode; label: string }) => (
                         <div
                           key={amenity.label}
                           className="inline-flex items-center gap-3"
@@ -773,13 +806,13 @@ export default function ListingDetailsPage() {
 
                   <section className="rounded-xl">
                     <h2 className="text-xl font-semibold text-text-black">
-                      Channel Partner Details
+                      {apiChannelPartner ? "Channel Partner Details" : "Owner Details"}
                     </h2>
                     <div className="mt-4 rounded-xl bg-white p-4 sm:p-6">
                       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div className="flex items-center gap-3">
                           <Image
-                            src="/assets/profile.png"
+                            src={apiChannelPartner?.profileImage || apiOwnerDetails?.profileImage || "/assets/profile.png"}
                             alt="Agent avatar"
                             width={52}
                             height={52}
@@ -787,11 +820,13 @@ export default function ListingDetailsPage() {
                           />
                           <div>
                             <p className="text-base font-semibold text-text-black">
-                              Manjeet Skyzen
+                              {apiChannelPartner?.name || apiOwnerDetails?.name || "Property Owner"}
                             </p>
-                            <span className="mt-1 inline-block rounded bg-[#E69D48] px-2 py-1 text-[11px] font-medium text-white">
-                              Channel Partner
-                            </span>
+                            {apiChannelPartner && (
+                              <span className="mt-1 inline-block rounded bg-[#E69D48] px-2 py-1 text-[11px] font-medium text-white">
+                                Channel Partner
+                              </span>
+                            )}
                           </div>
                         </div>
                         <div className="flex flex-wrap gap-2">
@@ -802,52 +837,58 @@ export default function ListingDetailsPage() {
                             <PhoneCall className="h-4 w-4" />
                             View Number
                           </button>
-                          <button
-                            type="button"
-                            className="inline-flex items-center gap-2 rounded-xl bg-[#05085E] px-4 py-2.5 text-sm font-semibold text-white"
-                          >
-                            Learn More
-                            <ArrowRight className="h-4 w-4" />
-                          </button>
+                          {apiChannelPartner && (
+                            <button
+                              type="button"
+                              className="inline-flex items-center gap-2 rounded-xl bg-[#05085E] px-4 py-2.5 text-sm font-semibold text-white"
+                            >
+                              Learn More
+                              <ArrowRight className="h-4 w-4" />
+                            </button>
+                          )}
                         </div>
                       </div>
 
-                      <div className="mt-4 border-t border-[#D4D5D8] pt-5">
-                        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                          {[
-                            ["500+", "Buyers Served"],
-                            ["21", "Years of Experience"],
-                            ["44", "Property Holdings"],
-                            ["20+", "Areas of Operation"],
-                          ].map(([value, label]) => (
-                            <div key={label} className="flex items-center  gap-3">
-                              <p className="text-2xl leading-none font-semibold text-[#05085E]">{value}</p>
-                              <p className="max-w-[110px] text-xs leading-5 text-text-black">{label}</p>
+                      {apiChannelPartner && (
+                        <>
+                          <div className="mt-4 border-t border-[#D4D5D8] pt-5">
+                            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                              {[
+                                [apiChannelPartner.buyersServed > 0 ? `${apiChannelPartner.buyersServed}+` : "0", "Buyers Served"],
+                                [apiChannelPartner.yearsOfExperience != null ? String(apiChannelPartner.yearsOfExperience) : "—", "Years of Experience"],
+                                [String(apiChannelPartner.propertyHoldings), "Property Holdings"],
+                                [apiChannelPartner.areasOfOperation > 0 ? `${apiChannelPartner.areasOfOperation}+` : "0", "Areas of Operation"],
+                              ].map(([value, label]) => (
+                                <div key={label} className="flex items-center  gap-3">
+                                  <p className="text-2xl leading-none font-semibold text-[#05085E]">{value}</p>
+                                  <p className="max-w-[110px] text-xs leading-5 text-text-black">{label}</p>
+                                </div>
+                              ))}
                             </div>
-                          ))}
-                        </div>
-                      </div>
+                          </div>
 
-                      <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        {[
-                          ["Property for Rent", "21"],
-                          ["Property for Sale", "21"],
-                        ].map(([label, count]) => (
-                          <button
-                            key={label}
-                            type="button"
-                            className="inline-flex w-full items-center justify-between rounded-lg border border-[#D1D5DB] px-3 py-2.5 text-left hover:bg-white/60 bg-background-gray"
-                          >
-                            <span className="text-sm font-medium text-text-black">{label}</span>
-                            <span className="inline-flex items-center gap-2">
-                              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#D1D5DB] text-sm text-text-gray">
-                                {count}
-                              </span>
-                              <ChevronRight className="h-4 w-4 text-text-light-black" />
-                            </span>
-                          </button>
-                        ))}
-                      </div>
+                          <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                            {[
+                              ["Property for Rent", String(apiChannelPartner.propertyListings.rent)],
+                              ["Property for Sale", String(apiChannelPartner.propertyListings.sale)],
+                            ].map(([label, count]) => (
+                              <button
+                                key={label}
+                                type="button"
+                                className="inline-flex w-full items-center justify-between rounded-lg border border-[#D1D5DB] px-3 py-2.5 text-left hover:bg-white/60 bg-background-gray"
+                              >
+                                <span className="text-sm font-medium text-text-black">{label}</span>
+                                <span className="inline-flex items-center gap-2">
+                                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#D1D5DB] text-sm text-text-gray">
+                                    {count}
+                                  </span>
+                                  <ChevronRight className="h-4 w-4 text-text-light-black" />
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        </>
+                      )}
                     </div>
                   </section>
 
@@ -859,43 +900,52 @@ export default function ListingDetailsPage() {
 
                           <div className="flex flex-col items-center">
                             <p className="text-3xl font-semibold leading-none text-text-black">
-                              4.2
+                              {apiRatings?.averageOverallRating?.toFixed(1) ?? "4.2"}
                               <span className="ml-1 text-sm font-medium text-text-light-gray">/5</span>
                             </p>
                             <div className="mt-3 flex items-center gap-1 text-[#F4B400]">
                               {Array.from({ length: 5 }).map((_, idx) => (
                                 <Star
                                   key={`star-${idx}`}
-                                  className="h-5 w-5"
-                                // fill={idx < 4 ? "currentColor" : "none"}
+                                  className={`h-5 w-5 ${idx < Math.round(apiRatings?.averageOverallRating ?? 4) ? "fill-[#F4B400] text-[#F4B400]" : ""}`}
                                 />
                               ))}
                             </div>
-                            <p className="mt-1 text-xs text-text-gray">(120 Total Reviews)</p>
+                            <p className="mt-1 text-xs text-text-gray">({apiRatings?.totalReviews ?? 0} Total Reviews)</p>
                           </div>
 
                           <div className="mt-5 space-y-1">
-                            {ratingBreakdown.map((item) => (
-                              <div key={item.stars} className="flex items-center gap-2">
-                                <div className="h-[6px] flex-1 overflow-hidden rounded-full bg-[#E2E2E4]">
-                                  <div
-                                    className="h-full rounded-full bg-[#05085E]"
-                                    style={{ width: item.width }}
-                                  />
+                            {[5, 4, 3, 2, 1].map((star) => {
+                              const count = apiRatings?.starDistribution?.[String(star)] ?? 0;
+                              const total = apiRatings?.totalReviews ?? 1;
+                              const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+                              return (
+                                <div key={star} className="flex items-center gap-2">
+                                  <div className="h-[6px] flex-1 overflow-hidden rounded-full bg-[#E2E2E4]">
+                                    <div
+                                      className="h-full rounded-full bg-[#05085E]"
+                                      style={{ width: `${pct}%` }}
+                                    />
+                                  </div>
+                                  <span className="min-w-10 text-right text-xs text-text-gray">
+                                    {star}
+                                  </span>
+                                  <Star className="h-3.5 w-3.5 fill-[#8D8D91] text-[#8D8D91]" />
                                 </div>
-                                <span className="min-w-10 text-right text-xs text-text-gray">
-                                  {item.stars}
-                                </span>
-                                <Star className="h-3.5 w-3.5 fill-[#8D8D91] text-[#8D8D91]" />
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
                         </div>
 
                         <div>
                           <h3 className="text-md font-semibold text-text-black">Ratings by features</h3>
                           <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 border-b border-[#CFCFD2] pb-4">
-                            {featureRatings.map((feature) => (
+                            {[
+                              { icon: <CarFront className="h-4 w-4" />, label: "Connectivity", score: apiRatings?.featureRatings?.connectivity },
+                              { icon: <MapPin className="h-4 w-4" />, label: "Neighbourhood", score: apiRatings?.featureRatings?.neighbourhood },
+                              { icon: <ShieldCheck className="h-4 w-4" />, label: "Safety", score: apiRatings?.featureRatings?.safety },
+                              { icon: <Trees className="h-4 w-4" />, label: "Livability", score: apiRatings?.featureRatings?.livability },
+                            ].map((feature) => (
                               <div
                                 key={feature.label}
                                 className="inline-flex items-center gap-1"
@@ -906,7 +956,7 @@ export default function ListingDetailsPage() {
                                 <div className="min-w-0 leading-none">
                                   <p className="text-xs text-text-black">{feature.label}</p>
                                   <p className="mt-1 text-xs font-semibold text-[#05085E]">
-                                    {feature.score}
+                                    {feature.score != null ? `${feature.score}/5` : "—"}
                                   </p>
                                 </div>
                               </div>
@@ -916,7 +966,7 @@ export default function ListingDetailsPage() {
                           <div className="border-b border-[#CFCFD2] py-4">
                             <h4 className="text-md font-semibold text-text-black">What&apos;s good</h4>
                             <div className="mt-3 flex flex-wrap gap-2">
-                              {goodThings.map((item) => (
+                              {(apiRatings?.likes?.length ? apiRatings.likes : goodThings).map((item) => (
                                 <span
                                   key={item}
                                   className="rounded-full bg-[#E7E7E9] px-3 py-1.5 text-xs text-text-black"
@@ -930,7 +980,7 @@ export default function ListingDetailsPage() {
                           <div className="pt-4">
                             <h4 className="text-sm font-semibold text-text-black">What&apos;s bad</h4>
                             <div className="mt-3 flex flex-wrap gap-2">
-                              {badThings.map((item) => (
+                              {(apiRatings?.dislikes?.length ? apiRatings.dislikes : badThings).map((item) => (
                                 <span
                                   key={item}
                                   className="rounded-full bg-[#E7E7E9] px-3 py-1.5 text-xs text-text-black"
@@ -1230,7 +1280,7 @@ export default function ListingDetailsPage() {
                     Buy - Sell - Invest with expert advice.
                   </p>
                   {(() => {
-                    const cp = propertyDetails?.channelPartnerDetails;
+                    const cp = apiChannelPartner;
                     const specialistName = asString(cp?.name) ?? "Manjeet Skyzen";
                     const specialistFirm = asString(cp?.firmName) ?? "KMA Real Partner";
                     const specialistImage = toFullAssetUrl(cp?.profileImage) || "/assets/profile.png";
