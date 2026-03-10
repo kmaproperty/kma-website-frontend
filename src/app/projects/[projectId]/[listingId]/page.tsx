@@ -593,9 +593,11 @@ export default function ListingDetailsPage() {
       .finally(() => setNearbyLoading(false));
   }, [activeLocalityCategory, lat, lng]);
 
+  const cachedPlaces = nearbyPlacesCache[activeLocalityCategory];
   const activeLocalityPlaces =
-    nearbyPlacesCache[activeLocalityCategory] ??
-    localityPlacesByCategory[activeLocalityCategory];
+    cachedPlaces && cachedPlaces.length > 0
+      ? cachedPlaces
+      : localityPlacesByCategory[activeLocalityCategory];
 
   return (
     <MainLayout>
