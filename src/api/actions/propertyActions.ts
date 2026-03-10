@@ -229,6 +229,71 @@ export interface GetEndUserPropertiesCountResponse {
   count?: number;
 }
 
+/** GET /end-user/recently-viewed - paginated recently viewed properties */
+export interface GetRecentlyViewedPayload {
+  page?: number;
+  limit?: number;
+  xSessionId?: string;
+  correlationId?: string;
+}
+
+export interface GetRecentlyViewedResponse {
+  success: boolean;
+  properties: EndUserPropertySummary[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+/** GET /end-user/recently-searched - paginated recent search queries with filters */
+export interface RecentSearchItem {
+  id: string;
+  searchQuery: string;
+  location: string;
+  city: string;
+  priceRange: string;
+  filters?: {
+    propertyType?: string;
+    bhk?: string;
+    [key: string]: unknown;
+  };
+  createdAt: string;
+}
+
+export interface GetRecentlySearchedPayload {
+  page?: number;
+  limit?: number;
+  sortBy?: "recent" | "relevance";
+  xSessionId?: string;
+  correlationId?: string;
+}
+
+export interface GetRecentlySearchedResponse {
+  searches: RecentSearchItem[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+/** GET /end-user/contacted-properties - paginated list of properties user has contacted */
+export interface GetContactedPropertiesPayload {
+  page?: number;
+  limit?: number;
+  xSessionId?: string;
+  correlationId?: string;
+}
+
+export interface GetContactedPropertiesResponse {
+  success?: boolean;
+  properties: EndUserPropertySummary[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 /** Similar property item from GET /end-user/properties/similar */
 export interface SimilarProperty {
   id: string;
@@ -416,8 +481,8 @@ export const getEndUserPropertiesAction = async ({
   sortBy,
   sortOrder,
   postedBy,
-  // sessionId,
-  // xSessionId,
+  sessionId,
+  xSessionId,
   correlationId,
 }: GetEndUserPropertiesPayload): Promise<
   GetEndUserPropertiesResponse | EndUserPropertySummary[]
@@ -447,11 +512,11 @@ export const getEndUserPropertiesAction = async ({
           sortBy,
           sortOrder,
           postedBy: toCsvParam(postedBy),
-          // sessionId,
+          sessionId,
         },
         headers: {
           "x-correlation-id": correlationId ?? getCorrelationId(),
-          // ...(xSessionId ? { "X-Session-Id": xSessionId } : {}),
+          ...(sessionId ? { "X-Session-Id": sessionId } : {}),
         },
       }
     );
@@ -479,8 +544,7 @@ export const getEndUserPropertiesCountAction = async ({
   sortBy,
   sortOrder,
   postedBy,
-  // sessionId,
-  xSessionId,
+  sessionId,
   correlationId,
 }: GetEndUserPropertiesPayload): Promise<GetEndUserPropertiesCountResponse> => {
   try {
@@ -504,16 +568,112 @@ export const getEndUserPropertiesCountAction = async ({
           // sortBy,
           // sortOrder,
           postedBy: toCsvParam(postedBy),
-          // sessionId,
+          sessionId,
         },
         headers: {
           "x-correlation-id": correlationId ?? getCorrelationId(),
-          // ...(xSessionId ? { "X-Session-Id": xSessionId } : {}),
+          ...(sessionId ? { "X-Session-Id": sessionId } : {}),
         },
       }
     );
 
     return response.data;
+  } catch (error: unknown) {
+    throw getErrorPayload(error);
+  }
+};
+
+/** GET /end-user/recently-viewed - paginated recently viewed properties (Bearer or X-Session-Id) */
+export const getRecentlyViewedAction = async ({
+  page = 1,
+  limit = 20,
+  xSessionId,
+  correlationId,
+}: GetRecentlyViewedPayload): Promise<GetRecentlyViewedResponse> => {
+  try {
+    const response = await axiosInstance.get<GetRecentlyViewedResponse>(
+      "end-user/recently-viewed",
+      {
+        params: { page, limit },
+        headers: {
+          "x-correlation-id": correlationId ?? getCorrelationId(),
+          ...(xSessionId ? { "X-Session-Id": xSessionId } : {}),
+        },
+      }
+    );
+    const data = response.data;
+    return {
+      success: data?.success ?? true,
+      properties: Array.isArray(data?.properties) ? data.properties : [],
+      total: data?.total ?? 0,
+      page: data?.page ?? page,
+      limit: data?.limit ?? limit,
+      totalPages: data?.totalPages ?? 1,
+    };
+  } catch (error: unknown) {
+    throw getErrorPayload(error);
+  }
+};
+
+/** GET /end-user/recently-searched - paginated recent search queries (Bearer or X-Session-Id) */
+export const getRecentlySearchedAction = async ({
+  page = 1,
+  limit = 10,
+  sortBy = "recent",
+  xSessionId,
+  correlationId,
+}: GetRecentlySearchedPayload): Promise<GetRecentlySearchedResponse> => {
+  try {
+    const response = await axiosInstance.get<GetRecentlySearchedResponse>(
+      "end-user/recently-searched",
+      {
+        params: { page, limit, sortBy },
+        headers: {
+          "x-correlation-id": correlationId ?? getCorrelationId(),
+          ...(xSessionId ? { "X-Session-Id": xSessionId } : {}),
+        },
+      }
+    );
+    const data = response.data;
+    return {
+      searches: Array.isArray(data?.searches) ? data.searches : [],
+      total: data?.total ?? 0,
+      page: data?.page ?? page,
+      limit: data?.limit ?? limit,
+      totalPages: data?.totalPages ?? 1,
+    };
+  } catch (error: unknown) {
+    throw getErrorPayload(error);
+  }
+};
+
+/** GET /end-user/contacted-properties - paginated properties user has contacted (Bearer or X-Session-Id) */
+export const getContactedPropertiesAction = async ({
+  page = 1,
+  limit = 20,
+  xSessionId,
+  correlationId,
+}: GetContactedPropertiesPayload): Promise<GetContactedPropertiesResponse> => {
+  try {
+    const response = await axiosInstance.get<GetContactedPropertiesResponse>(
+      "end-user/contacted-properties",
+      {
+        params: { page, limit },
+        headers: {
+          "x-correlation-id": correlationId ?? getCorrelationId(),
+          ...(xSessionId ? { "X-Session-Id": xSessionId } : {}),
+        },
+      }
+    );
+    const data = response.data;
+    return {
+      success: data?.success ?? true,
+      properties: Array.isArray(data?.properties) ? data.properties : [],
+      total: data?.total ?? 0,
+      page: data?.page ?? page,
+      limit: data?.limit ?? limit,
+      totalPages: data?.totalPages ?? 1,
+    };
   } catch (error: unknown) {
     throw getErrorPayload(error);
   }

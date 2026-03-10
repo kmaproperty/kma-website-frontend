@@ -1,7 +1,7 @@
 "use client";
 import { ClickAwayListener, Paper, Popper } from "@mui/material";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ListView from "./listView";
 import {
   channelPartnerMenuList,
@@ -17,6 +17,10 @@ import ProfileView from "./profileView";
 import { useRouter } from "nextjs-toploader/app";
 import { USER_TYPE } from "@/lib/enums";
 import { useHeaderStore } from "@/store/useHeaderStore";
+import { useQuery } from "@tanstack/react-query";
+import { userProfileApiHandler, UserProfileResponse } from "@/services/userService";
+
+const baseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
 
 export default function HomeHeader() {
   const router = useRouter();
@@ -28,6 +32,21 @@ export default function HomeHeader() {
     propertyMasterData,
     userRole,
   } = useHeaderStore(true);
+  const isLoggedIn = Boolean(userRole === USER_TYPE.CHANNEL_PARTNER || userRole === USER_TYPE.OWNER);
+
+  const { data: profileResponse } = useQuery({
+    queryKey: ["user-profile"],
+    queryFn: async (): Promise<UserProfileResponse> => userProfileApiHandler(),
+    enabled: isLoggedIn,
+    staleTime: 60 * 1000,
+  });
+  const headerAvatarSrc = useMemo(() => {
+    const user = profileResponse?.user;
+    if (!user?.profileImage) return "/assets/profile.png";
+    if (/^https?:\/\//.test(user.profileImage)) return user.profileImage;
+    return `${baseUrl}${user.profileImage}`;
+  }, [profileResponse?.user?.profileImage]);
+
   const [anchorEl, setanchorEl] = useState(null);
   const [menuList, setMenuList] = useState([]);
   const [type, setType] = useState(null);
@@ -257,7 +276,7 @@ const handleHeaderSubMenuClick = (label: string) => {
                 setCityMenu(false);
                 setType(null);
               }}
-              src="/assets/profile.png"
+              src={headerAvatarSrc}
               height={40}
               width={40}
               className="w-[28px] h-[28px] sm:w-[35px] sm:h-[35px] rounded-[50%] object-cover"

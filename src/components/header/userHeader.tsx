@@ -1,13 +1,15 @@
 "use client";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import ProfileMenu from "../common/profileMenu";
 import { useRouter } from "nextjs-toploader/app";
 import { useQuery } from "@tanstack/react-query";
-import { UserDashboardDetailsApiHandler, UserDashboardDetailsResponse } from "@/services/userService";
+import { UserDashboardDetailsApiHandler, UserDashboardDetailsResponse, userProfileApiHandler, UserProfileResponse } from "@/services/userService";
 import { toast } from "react-toastify";
 import { USER_TYPE } from "@/lib/enums";
+
+const baseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
 
 
 export default function UserHeader() {
@@ -47,6 +49,18 @@ export default function UserHeader() {
     staleTime: 0,
     refetchOnMount: true,
   });
+
+  const { data: profileResponse } = useQuery({
+    queryKey: ["user-profile"],
+    queryFn: async (): Promise<UserProfileResponse> => userProfileApiHandler(),
+    staleTime: 60 * 1000,
+  });
+  const headerAvatarSrc = useMemo(() => {
+    const user = profileResponse?.user;
+    if (!user?.profileImage) return "/assets/profile.png";
+    if (/^https?:\/\//.test(user.profileImage)) return user.profileImage;
+    return `${baseUrl}${user.profileImage}`;
+  }, [profileResponse?.user?.profileImage]);
 
   const handleRedirectPostProperty = () => {
     if(userDashboardDetails?.role == USER_TYPE.CHANNEL_PARTNER){
@@ -114,6 +128,22 @@ export default function UserHeader() {
         </div>
       </div>
       <div className="flex items-center justify-start gap-[7px] shrink-0">
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={handleClick}
+          onKeyDown={(e) => e.key === "Enter" && handleClick(e as unknown as React.MouseEvent<HTMLElement>)}
+          className="cursor-pointer rounded-full ring-2 ring-white/30 focus:outline-none focus:ring-2 focus:ring-white"
+          aria-label="Profile menu"
+        >
+          <Image
+            src={headerAvatarSrc}
+            width={36}
+            height={36}
+            alt="profile"
+            className="w-9 h-9 rounded-full object-cover"
+          />
+        </div>
         <button onClick={() => handleRedirectPostProperty()} className="animated-button px-[20px] py-[9px] cursor-pointer">
           <span className="flex items-center justify-between gap-[6px] relative z-11">
             <Image
