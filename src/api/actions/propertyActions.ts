@@ -920,3 +920,42 @@ export const submitPropertyRatingReviewAction = async ({
     throw getErrorPayload(error);
   }
 };
+
+/** GET /end-user/nearby-places */
+export interface NearbyPlace {
+  name: string;
+  distance: string;
+  address: string | null;
+}
+
+export interface GetNearbyPlacesResponse {
+  success: boolean;
+  places: NearbyPlace[];
+}
+
+export const getNearbyPlacesAction = async ({
+  latitude,
+  longitude,
+  type,
+  radius = 2000,
+}: {
+  latitude: number;
+  longitude: number;
+  type: string;
+  radius?: number;
+}): Promise<GetNearbyPlacesResponse> => {
+  try {
+    const response = await axiosInstance.get<GetNearbyPlacesResponse>(
+      "end-user/nearby-places",
+      {
+        params: { latitude, longitude, type, radius },
+        headers: {
+          "x-correlation-id": getCorrelationId(),
+        },
+      }
+    );
+    return response.data;
+  } catch (error: unknown) {
+    throw getErrorPayload(error);
+  }
+};

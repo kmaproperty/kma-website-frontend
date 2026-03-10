@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -34,6 +34,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   addEndUserFavoriteAction,
   removeEndUserFavoriteAction,
+  getNearbyPlacesAction,
+  NearbyPlace,
 } from "@/api/actions/propertyActions";
 import { usePropertyDetails } from "@/api/hooks/usePropertyDetails";
 import { useSimilarProperties } from "@/api/hooks/useSimilarProperties";
@@ -555,7 +557,45 @@ export default function ListingDetailsPage() {
   const [activeLocalityCategory, setActiveLocalityCategory] = useState<
     (typeof localityCategories)[number]["key"]
   >(localityCategories[0].key);
-  const activeLocalityPlaces = localityPlacesByCategory[activeLocalityCategory];
+
+  const categoryToApiType: Record<string, string> = {
+    schools: "school",
+    busStops: "bus_stop",
+    hospitals: "hospital",
+    clinics: "clinic",
+    gym: "gym",
+    restaurants: "restaurant",
+  };
+
+  const lat = detailsResponse?.location?.latitude;
+  const lng = detailsResponse?.location?.longitude;
+
+  const [nearbyPlacesCache, setNearbyPlacesCache] = useState<
+    Record<string, Array<{ name: string; distance: string }>>
+  >({});
+  const [nearbyLoading, setNearbyLoading] = useState(false);
+
+  useEffect(() => {
+    if (!lat || !lng) return;
+    const apiType = categoryToApiType[activeLocalityCategory];
+    if (!apiType) return;
+    if (nearbyPlacesCache[activeLocalityCategory]) return;
+
+    setNearbyLoading(true);
+    getNearbyPlacesAction({ latitude: lat, longitude: lng, type: apiType })
+      .then((res) => {
+        setNearbyPlacesCache((prev) => ({
+          ...prev,
+          [activeLocalityCategory]: res.places?.map((p) => ({ name: p.name, distance: p.distance })) ?? [],
+        }));
+      })
+      .catch(() => {})
+      .finally(() => setNearbyLoading(false));
+  }, [activeLocalityCategory, lat, lng]);
+
+  const activeLocalityPlaces =
+    nearbyPlacesCache[activeLocalityCategory] ??
+    localityPlacesByCategory[activeLocalityCategory];
 
   return (
     <MainLayout>
