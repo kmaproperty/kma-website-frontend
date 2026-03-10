@@ -115,6 +115,40 @@ const furnishingDetails = [
   { label: "4 Wardrobe", icon: "/assets/wardrobe.png" },
 ];
 
+const furnishingIconMap: Record<string, string> = {
+  "water purifier": "/assets/water-purifier.png",
+  fan: "/assets/fan.png",
+  "exhaust fan": "/assets/external-fan.png",
+  geyser: "/assets/geyser.png",
+  stove: "/assets/stove.png",
+  light: "/assets/light.png",
+  curtains: "/assets/curtains.png",
+  curtain: "/assets/curtains.png",
+  "modular kitchen": "/assets/kitchen.png",
+  kitchen: "/assets/kitchen.png",
+  chimney: "/assets/chimeny.png",
+  ac: "/assets/air-conditioner.png",
+  "air conditioner": "/assets/air-conditioner.png",
+  wardrobe: "/assets/wardrobe.png",
+  bed: "/assets/bed.png",
+  sofa: "/assets/sofa.png",
+  fridge: "/assets/fridge.png",
+  refrigerator: "/assets/fridge.png",
+  "washing machine": "/assets/washing-machine.png",
+  microwave: "/assets/microwave.png",
+  "dining table": "/assets/dining.png",
+  dining: "/assets/dining.png",
+  tv: "/assets/sofa.png",
+  chair: "/assets/chair.png",
+  "coffee machine": "/assets/coffee_machine.png",
+  "printing machine": "/assets/printing-machine.png",
+};
+
+const getFurnishingIcon = (itemName: string): string => {
+  const lower = itemName.toLowerCase().trim();
+  return furnishingIconMap[lower] ?? "/assets/sofa.png";
+};
+
 const localityCategories = [
   { key: "schools", label: "Schools", icon: School },
   { key: "busStops", label: "Bus Stops", icon: BusFront },
@@ -692,7 +726,7 @@ export default function ListingDetailsPage() {
                       {(Array.isArray(propertyDetails?.furnishingsCounts) && propertyDetails.furnishingsCounts.length > 0
                         ? propertyDetails.furnishingsCounts.map((f: { item: string; count: number }) => ({
                             label: `${f.count} ${f.item}`,
-                            icon: "/assets/furnishing-default.png",
+                            icon: getFurnishingIcon(f.item),
                           }))
                         : furnishingDetails
                       ).map((item: { label: string; icon: string }) => (
