@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
@@ -129,11 +130,13 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
               ) : (
                 <ul className="mt-1 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
                   {residentialList.map((item) => (
-                    <li
-                      key={item.id}
-                      className="text-[#fffc] text-[13px] leading-5 cursor-pointer hover:underline hover:text-white"
-                    >
-                      {item.name} for {propertyVerb} {citySuffix ? ` ${citySuffix}` : ""}
+                    <li key={item.id}>
+                      <Link
+                        href={selectedCity?.id ? `/projects/${selectedCity.id}` : "/projects"}
+                        className="text-[#fffc] text-[13px] leading-5 cursor-pointer hover:underline hover:text-white"
+                      >
+                        {item.name} for {propertyVerb} {citySuffix ? ` ${citySuffix}` : ""}
+                      </Link>
                     </li>
                   ))}
                 </ul>
@@ -151,11 +154,13 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
               ) : (
                 <ul className="mt-1 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
                   {commercialList.map((item) => (
-                    <li
-                      key={item.id}
-                      className="text-[#fffc] text-[13px] leading-5 cursor-pointer hover:underline hover:text-white"
-                    >
-                      {item.name} for {propertyVerb} {citySuffix ? ` ${citySuffix}` : ""}
+                    <li key={item.id}>
+                      <Link
+                        href={selectedCity?.id ? `/projects/${selectedCity.id}` : "/projects"}
+                        className="text-[#fffc] text-[13px] leading-5 cursor-pointer hover:underline hover:text-white"
+                      >
+                        {item.name} for {propertyVerb} {citySuffix ? ` ${citySuffix}` : ""}
+                      </Link>
                     </li>
                   ))}
                 </ul>
@@ -237,18 +242,20 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
               </h3>
               <ul className="space-y-3 text-[13px] text-white/90">
                 {[
-                  "About Us",
-                  "Careers",
-                  "Services",
-                  "Contact Us",
-                  "Terms & Conditions",
-                  "Privacy Policy",
-                ].map((label) => (
-                  <li
-                    key={label}
-                    className="text-[#fffc] hover:text-white hover:underline cursor-pointer"
-                  >
-                    {label}
+                  { label: "About Us", href: "/about-us" },
+                  { label: "Careers", href: "/about-us" },
+                  { label: "Services", href: "/about-us" },
+                  { label: "Contact Us", href: "/contact-us" },
+                  { label: "Terms & Conditions", href: "/about-us" },
+                  { label: "Privacy Policy", href: "/about-us" },
+                ].map((item) => (
+                  <li key={item.label}>
+                    <Link
+                      href={item.href}
+                      className="text-[#fffc] hover:text-white hover:underline cursor-pointer"
+                    >
+                      {item.label}
+                    </Link>
                   </li>
                 ))}
               </ul>

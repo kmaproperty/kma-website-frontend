@@ -24,13 +24,12 @@ export const axiosInstance = axios.create({
 // Request Interceptor: Attach access token
 axiosInstance.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
-    // const sessionId = useSessionStore.getState().sessionId;
+    const sessionId = useSessionStore.getState().sessionId;
     const res = await fetch("/api/get-token");
     const { accessToken } = await res.json();
-    // const accessToken = localStorage.getItem("accessToken");
-    // if (sessionId) {
-    //   config.headers["X-Session-Id"] = sessionId;
-    // }
+    if (sessionId) {
+      config.headers["X-Session-Id"] = sessionId;
+    }
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
