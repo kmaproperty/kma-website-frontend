@@ -9,6 +9,9 @@ export default async function HomeDashboard() {
     propertyMasterData = [];
   }
 
+  console.log(propertyMasterData, "propertyMasterData");
+
+
   let propertyCitiesData: any = await fetchPropertyCitiesData();
   return <Home propertyMasterData={propertyMasterData} propertyCitiesData={propertyCitiesData}/>;
 }

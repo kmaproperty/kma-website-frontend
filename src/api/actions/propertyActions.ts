@@ -530,6 +530,7 @@ export const getEndUserPropertiesAction = async ({
   GetEndUserPropertiesResponse | EndUserPropertySummary[]
 > => {
   try {
+    
     const response = await axiosInstance.get<
       GetEndUserPropertiesResponse | EndUserPropertySummary[]
     >(
