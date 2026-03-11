@@ -11,6 +11,8 @@ import {
   useEndUserProperties,
   useEndUserPropertiesCount,
 } from "@/api/hooks/useEndUserProperties";
+import { useHeaderStore } from "@/store/useHeaderStore";
+import { USER_TYPE } from "@/lib/enums";
 import ProjectsPagination from "./ProjectsPagination";
 import { getUserCoordinates } from "@/api/hooks/useGeoloaction";
 
@@ -184,6 +186,10 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
   const sort = useProjectsStore((s) => s.sort);
   const filters = useProjectsStore((s) => s.filters);
   const setFilters = useProjectsStore((s) => s.setFilters);
+  const { userRole } = useHeaderStore(true);
+  const isLoggedIn = Boolean(
+    userRole === USER_TYPE.CHANNEL_PARTNER || userRole === USER_TYPE.OWNER
+  );
   const [currentPage, setCurrentPage] = useState(1);
   const [nearMeCoords, setNearMeCoords] = useState<{
     latitude: number;
@@ -260,9 +266,18 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
     [baseQueryParams]
   );
 
-  const { data: apiProperties = [], isPending, isError } =
-    useEndUserProperties(apiQueryParams);
-  const { data: totalCount = 0 } = useEndUserPropertiesCount(baseQueryParams);
+  const {
+    data: listResult,
+    isPending,
+    isError,
+  } = useEndUserProperties(apiQueryParams);
+  const apiProperties = listResult?.list ?? [];
+  const totalCountFromHeader = listResult?.totalCountFromHeader;
+  const { data: countFromApi = 0 } = useEndUserPropertiesCount(baseQueryParams, {
+    enabled: isLoggedIn,
+  });
+  const totalCount =
+    totalCountFromHeader != null ? totalCountFromHeader : countFromApi;
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
   useEffect(() => {
@@ -445,7 +460,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
           <main className="min-w-0 mt-8">
             <div className="rounded-2xl p-4  sm:p-5">
               <div>
-                <ProjectsToolbar total={initialProjects.length} />
+                <ProjectsToolbar total={totalCount} />
 
               </div>
 

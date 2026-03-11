@@ -4,7 +4,7 @@ import {
   getEndUserPropertiesCountAction,
   GetEndUserPropertiesCountResponse,
   GetEndUserPropertiesPayload,
-  GetEndUserPropertiesResponse,
+  GetEndUserPropertiesResult,
 } from "@/api/actions/propertyActions";
 import { useSessionStore } from "@/store/useSessionStore";
 import { useQuery } from "@tanstack/react-query";
@@ -18,6 +18,11 @@ type EndUserPropertiesQueryParams = Omit<
   "xSessionId" | "correlationId"
 >;
 
+export type EndUserPropertiesListResult = {
+  list: EndUserPropertySummary[];
+  totalCountFromHeader?: number;
+};
+
 export const useEndUserProperties = (
   params: EndUserPropertiesQueryParams = {},
   options: UseEndUserPropertiesOptions = {}
@@ -25,21 +30,25 @@ export const useEndUserProperties = (
   const sessionId = useSessionStore((state) => state.sessionId);
 
   return useQuery<
-    GetEndUserPropertiesResponse | EndUserPropertySummary[],
+    GetEndUserPropertiesResult,
     unknown,
-    EndUserPropertySummary[]
+    EndUserPropertiesListResult
   >({
     queryKey: ["end-user-properties", params, sessionId ?? null],
     queryFn: () =>
       getEndUserPropertiesAction({
         ...params,
-        // xSessionId: sessionId ?? undefined,
+        xSessionId: sessionId ?? undefined,
       }),
     select: (response) => {
-      if (Array.isArray(response)) {
-        return response;
-      }
-      return response?.properties ?? response?.data ?? [];
+      const res = response as GetEndUserPropertiesResult;
+      const list = Array.isArray(response)
+        ? response
+        : ((res as { properties?: EndUserPropertySummary[] }).properties ??
+           (res as { data?: EndUserPropertySummary[] }).data ??
+           []);
+      const totalCountFromHeader = res._totalCountHeader;
+      return { list, totalCountFromHeader };
     },
     enabled: options.enabled ?? true,
     staleTime: 60_000,

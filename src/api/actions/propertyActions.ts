@@ -504,6 +504,11 @@ export const getEndUserPropertyDetailsAction = async ({
   }
 };
 
+/** Result from list API; may include total count from response header (e.g. when user is not logged in). */
+export type GetEndUserPropertiesResult =
+  | (GetEndUserPropertiesResponse | EndUserPropertySummary[])
+  & { _totalCountHeader?: number };
+
 export const getEndUserPropertiesAction = async ({
   page = 1,
   limit = 20,
@@ -526,11 +531,10 @@ export const getEndUserPropertiesAction = async ({
   sessionId,
   xSessionId,
   correlationId,
-}: GetEndUserPropertiesPayload): Promise<
-  GetEndUserPropertiesResponse | EndUserPropertySummary[]
-> => {
+}: GetEndUserPropertiesPayload): Promise<GetEndUserPropertiesResult> => {
   try {
-    
+    const sessionIdForHeader = xSessionId ?? sessionId;
+
     const response = await axiosInstance.get<
       GetEndUserPropertiesResponse | EndUserPropertySummary[]
     >(
@@ -555,16 +559,31 @@ export const getEndUserPropertiesAction = async ({
           sortBy,
           sortOrder,
           postedBy: toCsvParam(postedBy),
-          sessionId,
+          ...(sessionIdForHeader ? { sessionId: sessionIdForHeader } : {}),
         },
         headers: {
           "x-correlation-id": correlationId ?? getCorrelationId(),
-          ...(sessionId ? { "X-Session-Id": sessionId } : {}),
+          ...(sessionIdForHeader ? { "X-Session-Id": sessionIdForHeader } : {}),
         },
       }
     );
 
-    return response.data;
+    const totalCountHeader = response.headers["x-total-count"];
+    const totalCountFromHeader =
+      totalCountHeader != null && totalCountHeader !== ""
+        ? Number(totalCountHeader)
+        : undefined;
+    const count =
+      Number.isFinite(totalCountFromHeader) && totalCountFromHeader! >= 0
+        ? totalCountFromHeader
+        : undefined;
+
+    const data = response.data;
+    if (count == null) return data as GetEndUserPropertiesResult;
+    if (Array.isArray(data)) {
+      return Object.assign([...data], { _totalCountHeader: count }) as GetEndUserPropertiesResult;
+    }
+    return { ...(data as object), _totalCountHeader: count } as GetEndUserPropertiesResult;
   } catch (error: unknown) {
     throw getErrorPayload(error);
   }
@@ -588,9 +607,11 @@ export const getEndUserPropertiesCountAction = async ({
   sortOrder,
   postedBy,
   sessionId,
+  xSessionId,
   correlationId,
 }: GetEndUserPropertiesPayload): Promise<GetEndUserPropertiesCountResponse> => {
   try {
+    const sessionIdForHeader = xSessionId ?? sessionId;
     const response = await axiosInstance.get<GetEndUserPropertiesCountResponse>(
       "end-user/properties/count",
       {
@@ -611,11 +632,11 @@ export const getEndUserPropertiesCountAction = async ({
           // sortBy,
           // sortOrder,
           postedBy: toCsvParam(postedBy),
-          sessionId,
+          ...(sessionIdForHeader ? { sessionId: sessionIdForHeader } : {}),
         },
         headers: {
           "x-correlation-id": correlationId ?? getCorrelationId(),
-          ...(sessionId ? { "X-Session-Id": sessionId } : {}),
+          ...(sessionIdForHeader ? { "X-Session-Id": sessionIdForHeader } : {}),
         },
       }
     );

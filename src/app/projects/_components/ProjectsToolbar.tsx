@@ -68,7 +68,7 @@ export default function ProjectsToolbar({ total }: { total: number }) {
           <span className="font-semibold text-blue">{total} Property</span>
         </span>
         <span>|</span>
-        <span className="text-text-gray">New Projects in Chandigarh</span>
+        {/* <span className="text-text-gray">New Projects in {initialProjects[0]?.city}</span> */}
         {isPending ? (
           <span className="ml-1 rounded-full bg-light-purple px-2 py-0.5 text-xs font-medium text-blue">
             Updating…
