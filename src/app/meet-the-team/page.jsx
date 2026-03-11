@@ -6,6 +6,7 @@ import { TbBulb } from "react-icons/tb";
 import SectionHeading from '@/components/common/SectionHeading';
 import Image from 'next/image';
 import BlogSection from '@/components/home/blogSection';
+import HomdeHeader from '@/components/header/homeHeader'
 import HomeFooter from '@/components/footer/homeFooter';
 import { FaFacebook, FaLinkedin, FaTwitter, FaYoutube } from 'react-icons/fa';
 import ContactFormComponent from '@/components/contactUs/contactForm';
@@ -68,9 +69,7 @@ const MeetTheTeam = () => {
     return (
         <div>
             <div className="relative pt-[25px] h-[100vh] max-h-[600px]" style={{ backgroundImage: 'url(assets/team/meet-the-team-herobg.png)', backgroundSize: 'cover', backgroundPosition: 'bottom' }}>
-                <div className="w-[75%] mx-auto">
-                    {/* <HomdeHeader /> */}
-                </div>
+                    <HomdeHeader />
                 <div className="w-[75%] max-w-[600px] mx-auto mt-[140px]">
                     <PageTitle
                         title="Meet our dedicated team"
@@ -155,13 +154,13 @@ const MeetTheTeam = () => {
                         foundersDetails.map((founder, index) => (
                             <div key={index} className='w-[50%] max-w-[468px] rounded-lg overflow-hidden'>
                                 <Image src={founder.image} width={500} height={500} className='w-full aspect-square' />
-                                <div className='bg-white px-5 py-4'>
+                                <div className='bg-white px-5 py-4 flex items-center justify-center flex-col'>
                                     <h3 className='text-[28px] font-semibold text-text-black mb-1'>{founder.name}</h3>
-                                    <i className='text-md font-medium text-text-black'>{founder.position}</i>
-                                    <div className='flex flex-col my-1'>
+                                    <i className='text-md font-regular text-[#888]'>{founder.position}</i>
+                                    {/* <div className='flex flex-col my-1'>
                                         <a href={`tel:${founder.number}`} className='text-md font-normal text-[#7575BC] no-underline'>{founder.number}</a>
                                         <a href={`mailto:${founder.mail}`} className='text-md font-normal text-[#7575BC] no-underline'>{founder.mail}</a>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         ))
@@ -186,13 +185,13 @@ const MeetTheTeam = () => {
                         teamDetails.map((founder, index) => (
                             <div key={index} className='w-[33.33%] max-w-[468px] rounded-lg overflow-hidden'>
                                 <Image src={founder.image} width={500} height={500} className='w-full aspect-square' />
-                                <div className='bg-white px-5 py-4'>
+                                <div className='bg-white px-5 py-4 flex items-center justify-center flex-col'>
                                     <h3 className='text-[28px] font-semibold text-text-black mb-1'>{founder.name}</h3>
-                                    <i className='text-md font-medium text-text-black'>{founder.position}</i>
-                                    <div className='flex flex-col my-1'>
+                                    <i className='text-md font-regular text-[#888]'>{founder.position}</i>
+                                    {/* <div className='flex flex-col my-1'>
                                         <a href={`tel:${founder.number}`} className='text-md font-normal text-[#7575BC] no-underline'>{founder.number}</a>
                                         <a href={`mailto:${founder.mail}`} className='text-md font-normal text-[#7575BC] no-underline'>{founder.mail}</a>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         ))

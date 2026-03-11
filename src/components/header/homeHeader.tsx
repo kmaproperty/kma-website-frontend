@@ -128,7 +128,7 @@ const navigateDashboard = () => {
 
   return (
     <>
-    <div className="w-[90%] lg:w-[75%] mt-[25px]">
+    <div className="w-[90%] lg:w-[75%] mt-[25px] mx-auto">
       <div className="bg-white/10 rounded-[200px] bg-clip-padding backdrop-filter  backdrop-blur-[20px] h-[50px] 2md:h-[63px] px-3 lg:px-7 pt-[4px] flex justify-between items-center border border-1 border-[#FFFFFF33]">
         <div className="flex items-center px-1.5 shrink-0 cursor-pointer">
           <Image

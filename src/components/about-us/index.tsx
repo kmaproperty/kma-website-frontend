@@ -79,7 +79,7 @@ export default function AboutUsComponent({
   return (
     <div>
       <div className="relative">
-        <BannerSlider bannerHeight={'min-h-[600px] 2md:min-h-auto 2md:h-[60vh]'} backgroundImages={sliderImage} overlayClass='about-us-gradient-overlay'/>
+        <BannerSlider bannerHeight={'min-h-[600px] 2md:h-[60vh]'} backgroundImages={sliderImage} overlayClass='about-us-gradient-overlay'/>
         <div className="absolute flex flex-col items-center top-0 w-[100%] ">
           <HomdeHeader
             fetchCities={fetchCities}
@@ -87,7 +87,7 @@ export default function AboutUsComponent({
             cityData={cityData}
             propertyMasterData={propertyMasterData}
           />
-          <div className="mt-[100px]">
+          <div className="mt-[150px]">
           <PageTitle
             title="About Us"
             description="Discover who we are, what we stand for, and how we make your real estate journey smooth and successful."
@@ -97,16 +97,16 @@ export default function AboutUsComponent({
         </div>
         
       </div>
-      <div className="w-full py-[100px] px-[50px]">
+      <div className="w-full py-[120px] px-[50px]">
         <div className="flex items-center justify-between gap-6 max-w-[1444px] mx-auto">
           <div className="w-[50%]">
             <SectionHeading
               title="Who We Are"
-              subtitle="Innovating Luxury Real Estate in Gurugram"
+              subtitle="About KMA Properties"
               type={"left"}
               description="KMA Property Group, established on January 1, 2025, is a beacon of excellence in Gurugram’s high-end property market. We specialize in the sale, purchase, and rental of luxury properties, offering personalized experiences to clients who demand sophistication, trust, and lasting value."
             />
-            <div className="grid grid-cols-2 grid-rows-2 gap-x-8 gap-y-4 mt-5 w-fit">
+            <div className="grid grid-cols-2 grid-rows-2 gap-x-8 gap-y-4 mt-6 w-fit">
               <div className="flex items-center gap-2">
                 <CircleCheckBig className="w-5 h-5 text-[#010048]" />
                 <p className={`text-[#5C727D] text-md leading-7 font-normal`}>
@@ -132,30 +132,69 @@ export default function AboutUsComponent({
                 </p>
               </div>
             </div>
-            <div className="w-fit px-10 py-3 rounded-lg border border-dashed border-gray-400 flex gap-14 mt-10">
+            <div className="w-full  px-8 py-3 rounded-lg border border-dashed border-gray-400 grid grid-cols-4 gap-10 justify-between mt-7">
               <div>
-                <h3 className="text-[40px] font-semibold text-[#010048]">
-                  250+
+                <h3 className="text-[36px] font-semibold text-[#010048]">
+                  10Lac+
                 </h3>
-                <p className={`text-[#5C727D] text-md leading-7 font-medium`}>
-                  Premium Properties
+                <p className={`text-[#5C727D] text-md leading-7 font-normal`}>
+                  Active Listing
                 </p>
               </div>
               <div>
-                <h3 className="text-[40px] font-semibold text-[#010048]">
-                  100+
+                <h3 className="text-[36px] font-semibold text-[#010048]">
+                  15,000
                 </h3>
-                <p className={`text-[#5C727D] text-md leading-7 font-medium`}>
-                  Projects
+                <p className={`text-[#5C727D] text-md leading-7 font-normal`}>
+                  Projects across India
                 </p>
               </div>
               <div>
-                <h3 className="text-[40px] font-semibold text-[#010048]">
-                  75+
+                <h3 className="text-[36px] font-semibold text-[#010048]">
+                  10,000+
                 </h3>
-                <p className={`text-[#5C727D] text-md leading-7 font-medium`}>
-                  Satisfied Clients
+                <p className={`text-[#5C727D] text-md leading-7 font-normal`}>
+                  Happy Customers
                 </p>
+              </div>
+              <div>
+                <h3 className="text-[36px] font-semibold text-[#010048]">
+                  500+
+                </h3>
+                <p className={`text-[#5C727D] text-md leading-7 font-normal`}>
+                  Channel Partner across India.
+                </p>
+              </div>
+            </div>
+            <div className="mt-8">
+              <h2 className={`text-[28px] leading-11 font-semibold text-[#010048]`}>Founder’s Profile</h2>
+              <div className="flex items-center gap-3 mt-4">
+                <div className="px-5 py-2 border border-gray-200 flex items-center gap-4 rounded-lg">
+                  <Image
+                    src="/assets/aboutUs/avatar.png"
+                    alt="About Us"
+                    className="w-[60px] object-cover rounded-full"
+                    width={60}
+                    height={60}
+                  />
+                  <div className="space-y-1.5">
+                    <h3 className="text-[16px] font-medium text-[#010048]">Dwayne Douglas</h3>
+                    <p className="text-[13px] font-medium text-[#fff] w-fit px-3 py-0.5 rounded-sm" style={{background: "linear-gradient(90deg, #C75C10 0%, #CE9554 100%)"}}>Founder</p>
+                  </div>
+                </div>
+                <div className="px-5 py-2 border border-gray-200 flex items-center gap-4 rounded-lg">
+                  <Image
+                    src="/assets/aboutUs/avatar.png"
+                    alt="About Us"
+                    className="w-[60px] object-cover rounded-full"
+                    width={60}
+                    height={60}
+                  />
+                  <div className="space-y-1.5">
+                    <h3 className="text-[16px] font-medium text-[#010048]">Dwayne Douglas</h3>
+                    <p className="text-[13px] font-medium text-[#fff] w-fit px-3 py-0.5 rounded-sm" style={{background: "linear-gradient(90deg, #C75C10 0%, #CE9554 100%)"}}>Founder</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -203,12 +242,7 @@ export default function AboutUsComponent({
       </div>
       <div className="w-full px-[50px] py-[100px]">
         <div className="max-w-[1444px] mx-auto ">
-          <SectionHeading
-            title="Why Choose Us?"
-            subtitle="A Service You Can Trust and Feel Confident In"
-            type={"center"}
-            description=""
-          />
+          <h2 className={`text-[28px] leading-11 font-semibold text-[#010048] text-center`}>A Service You Can Trust and Feel Confident In</h2>
           <div className="grid grid-cols-4 gap-x-8 gap-y-4 mt-10 items-center">
             <div className="bg-[#F2F2F2] px-8 py-5 rounded-lg flex flex-col gap-1 h-full justify-center">
               <div className="bg-white w-[60px] h-[60px] flex items-center justify-center rounded-lg mb-2">

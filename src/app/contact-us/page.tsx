@@ -9,8 +9,19 @@ import HomeFooter from '@/components/footer/homeFooter';
 import { FaFacebook, FaLinkedin, FaTwitter, FaYoutube } from 'react-icons/fa';
 import ContactFormComponent from '@/components/contactUs/contactForm';
 import Link from 'next/link';
+import { fetchPropertyCitiesData, fetchPropertyMasterData } from '../api/home';
+import BannerSlider from '@/components/home/bannerSlider';
 
-const ContactUs = () => {
+const ContactUs = async () => {
+
+    let propertyMasterData: any = await fetchPropertyMasterData();
+    if (propertyMasterData?.success) {
+        propertyMasterData = propertyMasterData.data;
+    } else {
+        propertyMasterData = [];
+    }
+
+    let propertyCitiesData: any = await fetchPropertyCitiesData();
 
     const breadcrumps = [
         {
@@ -22,19 +33,25 @@ const ContactUs = () => {
             name: 'Contact Us',
         }
     ]
+    const sliderImage = [
+        {
+            imagePath: '/assets/contact-hero-bg.png',
+            alt: "Background Image 1",
+        },
+    ]
     return (
         <div>
-            <div className="relative pt-[25px] h-[100vh] max-h-[600px]" style={{ backgroundImage: 'url(assets/About-bg.jpg)', backgroundSize: 'cover' }}>
-                <div className="flex justify-center">
-                    <HomdeHeader />
-                </div>
-                <div className="w-[75%] max-w-[600px] mx-auto mt-[100px]">
-                    <PageTitle
-                        title="Let’s Connect"
-                        description="Let our team of real estate specialists assist you with bespoke solutions for buying, selling, or renting luxury properties in Gurugram."
-                        breadcrumps={breadcrumps}
-                    />
-
+            <div className="relative ">
+                <BannerSlider bannerHeight={'min-h-[600px] 2md:h-[60vh]'} backgroundImages={sliderImage} overlayClass='about-us-gradient-overlay' />
+                <div className="absolute flex flex-col items-center top-0 w-[100%] ">
+                    <HomdeHeader/>
+                    <div className="mt-[150px]">
+                        <PageTitle
+                            title="Let’s Connect"
+                            description="Let our team of real estate specialists assist you with bespoke solutions for buying, selling, or renting luxury properties in Gurugram."
+                            breadcrumps={breadcrumps}
+                        />
+                    </div>
                 </div>
             </div>
             <div className='w-full py-[100px] px-[50px]'>
@@ -116,7 +133,7 @@ const ContactUs = () => {
             </div>
             <div className="bg-text-black flex justify-center">
                 <div className="my-13 w-[75%]">
-                    <HomeFooter tab={1} />
+                    <HomeFooter />
                 </div>
             </div>
         </div>

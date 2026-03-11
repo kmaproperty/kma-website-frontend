@@ -100,6 +100,7 @@ body {
 
 .about-us-gradient-overlay {
   position: absolute;
+  min-height: 600px;
   inset: 0; 
   background: linear-gradient(
     to left,
