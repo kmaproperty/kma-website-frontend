@@ -172,3 +172,60 @@ export const clearAuthCookies = async () => {
     console.error("Failed to clear cookies:", error);
   }
 };
+
+export function joinUrl(
+  base?: string | null,
+  path?: string | null
+): string | null {
+  if (!path) return null;
+  if (path.startsWith("http://") || path.startsWith("https://")) return path;
+  if (!base) return null;
+
+  const safeBase = base.replace(/\/+$/, "");
+  const safePath = path.replace(/^\/+/, "");
+  return `${safeBase}/${safePath}`;
+}
+
+export function numberToWordsIndian(num) {
+  if(!num) return ''
+  if (num === 0) return "Zero Rupees";
+
+  const ones = [
+    "", "One", "Two", "Three", "Four", "Five",
+    "Six", "Seven", "Eight", "Nine", "Ten",
+    "Eleven", "Twelve", "Thirteen", "Fourteen",
+    "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"
+  ];
+
+  const tens = [
+    "", "", "Twenty", "Thirty", "Forty",
+    "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"
+  ];
+
+  function twoDigits(n) {
+    if (n < 20) return ones[n];
+    return tens[Math.floor(n / 10)] + (n % 10 ? " " + ones[n % 10] : "");
+  }
+
+  let result = "";
+
+  const crore = Math.floor(num / 10000000);
+  num %= 10000000;
+
+  const lakh = Math.floor(num / 100000);
+  num %= 100000;
+
+  const thousand = Math.floor(num / 1000);
+  num %= 1000;
+
+  const hundred = Math.floor(num / 100);
+  num %= 100;
+
+  if (crore) result += twoDigits(crore) + " Crore ";
+  if (lakh) result += twoDigits(lakh) + " Lakh ";
+  if (thousand) result += twoDigits(thousand) + " Thousand ";
+  if (hundred) result += ones[hundred] + " Hundred ";
+  if (num) result += twoDigits(num) + " ";
+
+  return result.trim() + " Rupees";
+}

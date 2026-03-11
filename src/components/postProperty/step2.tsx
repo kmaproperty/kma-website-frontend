@@ -4,14 +4,14 @@ import ChipTag from "../common/chipTag";
 import { useEffect, useRef, useState } from "react";
 import { BACHELOR_PREFERENCE, BROKRAGE_CHARGE, CONSTRUCTION_TYPE, CUSTOM_SECTION_NAME, FACING_LIST, FIELD_NAME, LIFTS, LOCK_IN_PERIOD, MAINTENANCE_CHARGES, PROPERTY_POSSESSION_STATUS, RENT_AVAILABEL_FROM, RENT_SUITABLE_FOR, SECURITY_CHARGES, TRANSACTION_TYPE_LIST, TRUTY_LIST } from "@/lib/enums";
 import DynamicSelect from "../common/select";
-import { generateFloors, generateLockInPeriod } from "@/lib/helper";
+import { generateFloors, generateLockInPeriod, numberToWordsIndian } from "@/lib/helper";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Step1DetailsResponse, step1PostPropertyDetailsApiHandler, Step2DetailsResponse, step2PostPropertyCreateApiHandler, step2PostPropertyDetailsApiHandler, Step2PostPropertyPayload, Step2PostPropertyResponse } from "@/services/postProperty";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import CustomCheckbox from "../common/checkbox";
 import { useDispatch, useSelector } from "react-redux";
 import { getActiveStep, setActiveStep, setTotalProgress } from "@/store/postPropertyProgress";
-import { useStepProgress } from "@/hooks/useStepProgress";
+import { useStepProgress } from "@/api/hooks/useStepProgress";
 import DynamicInput from "../common/dynamicInputLeft";
 import dynamic from "next/dynamic";
 import { toast } from "react-toastify";
@@ -99,7 +99,6 @@ export default function Step2({containerRef}) {
 
   const [errors, setErrors] = useState<any>({})
 
-  console.log('step2 state details', dynamicFieldDetails, errors)
 
   const renderFirstSectionLabel = () => {
     const isResidential = basicStaticDetail.propertyCategory?.code == 'residential'
@@ -909,7 +908,6 @@ export default function Step2({containerRef}) {
       //   hasError = true;
       // }
     }
-    console.log('step2 validation error', updatedError)
     setErrors(updatedError)
     return {hasError: hasError, errorData: updatedError};
   }
@@ -1007,7 +1005,6 @@ export default function Step2({containerRef}) {
       return await step2PostPropertyCreateApiHandler(payload);
     },
     onSuccess: (response: Step2PostPropertyResponse) => {
-      console.log("step2 success response", response);
       const propertyType = basicStaticDetail.propertyType?.code
       const isStep3Skipped = ['res-sale-plot', 'res-sale-agri-land', 'com-rent-warehouse', 'com-sale-warehouse', 'com-rent-plot', 'com-sale-plot'].includes(propertyType ?? '')
       if(isStep3Skipped){
@@ -1017,7 +1014,6 @@ export default function Step2({containerRef}) {
       }
     },
     onError: (error: any) => {
-      console.log("step2 error response", error);
       if(Array.isArray(error.message)){
         error.message.map((item: string) => {
           toast.error(item)
@@ -1034,7 +1030,6 @@ export default function Step2({containerRef}) {
       return step1PostPropertyDetailsApiHandler(String(params?.propertyId ?? ''));
     },
     select: (resposne: Step1DetailsResponse) => {
-      console.log('step1 details',resposne)
       return resposne
     },
     enabled: params?.propertyId ? true : false,
@@ -1048,7 +1043,6 @@ export default function Step2({containerRef}) {
       return step2PostPropertyDetailsApiHandler(String(params?.propertyId ?? ''));
     },
     select: (resposne: Step2DetailsResponse) => {
-      console.log('step2 details',resposne)
       return resposne
     },
     enabled: params?.propertyId ? true : false,
@@ -1830,6 +1824,7 @@ export default function Step2({containerRef}) {
             dropdownValue={'Per month'}
             disabled={true}
            />
+           {numberToWordsIndian(dynamicFieldDetails?.rent) && <p className="pt-1 text-text-gray text-xs">{numberToWordsIndian(dynamicFieldDetails?.rent)}</p>}
           {errors?.rent && <p className="pt-1 text-red-500 text-xs">{errors.rent}</p>}
         </div>}
 
@@ -1956,6 +1951,7 @@ export default function Step2({containerRef}) {
                 className: "placeholder-gray",
               }}
             />
+            {numberToWordsIndian(dynamicFieldDetails?.plotPrice) && <p className="pt-1 text-text-gray text-xs">{numberToWordsIndian(dynamicFieldDetails?.plotPrice)}</p>}
           {errors?.plotPrice && <p className="pt-1 text-red-500 text-xs">{errors.plotPrice}</p>}
         </div>}
 
@@ -1981,6 +1977,7 @@ export default function Step2({containerRef}) {
               className: "placeholder-gray",
             }}
            />
+           {numberToWordsIndian(dynamicFieldDetails?.price) && <p className="pt-1 text-text-gray text-xs">{numberToWordsIndian(dynamicFieldDetails?.price)}</p>}
           {errors?.price && <p className="pt-1 text-red-500 text-xs">{errors.price}</p>}
         </div>}
 
@@ -2014,13 +2011,14 @@ export default function Step2({containerRef}) {
                 const isOnlyDigits = /^\d*$/.test(value);
                 if (!isOnlyDigits) return;
                 if(Number(value) > 99999) return 
-              setDynamicFieldDetails((pre) => ({...pre, otherMaintenanceCharges: value,}))
-              setErrors((pre) => ({...pre, otherMaintenanceCharges: ''}))
+                setDynamicFieldDetails((pre) => ({...pre, otherMaintenanceCharges: value,}))
+                setErrors((pre) => ({...pre, otherMaintenanceCharges: ''}))
               }}
               value={dynamicFieldDetails.otherMaintenanceCharges ?? ''}
               dropdownValue={'Per month'}
               disabled={true}
-            />
+              />
+          {numberToWordsIndian(dynamicFieldDetails?.otherMaintenanceCharges) && <p className="pt-1 text-text-gray text-xs">{numberToWordsIndian(dynamicFieldDetails?.otherMaintenanceCharges)}</p>}
           {errors?.otherMaintenanceCharges && <p className="pt-1 text-red-500 text-xs">{errors.otherMaintenanceCharges}</p>}
           </div>}
         </div>}
@@ -2062,6 +2060,7 @@ export default function Step2({containerRef}) {
               dropdownValue={'Per month'}
               disabled={true}
             />
+            {numberToWordsIndian(dynamicFieldDetails?.otherSecurityDeposite) && <p className="pt-1 text-text-gray text-xs">{numberToWordsIndian(dynamicFieldDetails?.otherSecurityDeposite)}</p>}
             {errors?.otherSecurityDeposite && <p className="pt-1 text-red-500 text-xs">{errors.otherSecurityDeposite}</p>}
           </div>}
         </div>}
@@ -2153,6 +2152,7 @@ export default function Step2({containerRef}) {
                 className: "placeholder-gray",
               }}
             />  
+            {numberToWordsIndian(dynamicFieldDetails?.otherBrokerageCharge) && <p className="pt-1 text-text-gray text-xs">{numberToWordsIndian(dynamicFieldDetails?.otherBrokerageCharge)}</p>}
           {errors?.otherBrokerageCharge && <p className="pt-1 text-red-500 text-xs">{errors.otherBrokerageCharge}</p>}
             </div>}
           {renderShowField(FIELD_NAME.NEGOTIABLE_BROKERAGE) && <div className="mt-2" onClick={() => {
@@ -2260,6 +2260,7 @@ export default function Step2({containerRef}) {
               className: "placeholder-gray",
             }}
           />
+          {numberToWordsIndian(dynamicFieldDetails?.price) && <p className="pt-1 text-text-gray text-xs">{numberToWordsIndian(dynamicFieldDetails?.price)}</p>}
           {errors?.price && <p className="pt-1 text-red-500 text-xs">{errors.price}</p>}
         </div>}
 
@@ -2483,7 +2484,8 @@ export default function Step2({containerRef}) {
               inputProps={{
                 className: "placeholder-gray",
               }}
-            />  
+              />  
+              {numberToWordsIndian(dynamicFieldDetails?.otherBrokerageCharge) && <p className="pt-1 text-text-gray text-xs">{numberToWordsIndian(dynamicFieldDetails?.otherBrokerageCharge)}</p>}
           {errors?.otherBrokerageCharge && <p className="pt-1 text-red-500 text-xs">{errors.otherBrokerageCharge}</p>}
             </div>}
           {renderShowField(FIELD_NAME.NEGOTIABLE_BROKERAGE) && <div className="mt-2" onClick={() => {

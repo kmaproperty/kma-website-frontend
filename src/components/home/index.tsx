@@ -1,103 +1,125 @@
 "use client";
-import AboutUsSection from "./aboutUsSection";
 import BannerSlider from "./bannerSlider";
-import NeedSection from "./needSection";
-import RealEstateSection from "./realEstetSection";
-import ExploreSection from "./exploreSection";
-import BlogSection from "./blogSection";
-import FeaturedProperties from "./featureProperties";
-import SuccessStoriesSection from "./successStoriesSection";
-import WorkingSection from "./workingSection";
-import ChannelPartnerSection from "./channelPartnerSection";
-import AppDownloadSection from "./appDownloadSection";
-import HomeFooter from "../footer/homeFooter";
 import MainHome from "./home";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { AboutusResponse, CitiesResponse, getAboutUsDataAPiHanlder, getCityListApiHandler, getExploreApiHanlder, GetExplorePayload, GetExploreResponse, getTopProperties, GetTopPropertiesPayload, GetTopPropertiesResponse } from "@/services/homeService";
-import { useEffect, useState } from "react";
+import {
+  AboutusResponse,
+  ChannelPartner,
+  getAboutUsDataAPiHanlder,
+  getChannelPartnerListApiHandler,
+  getExploreApiHanlder,
+  GetChannelPartnerListPayload,
+  GetChannelPartnerListResponse,
+  GetExplorePayload,
+  GetExploreResponse,
+  getTopProperties,
+  GetTopPropertiesPayload,
+  GetTopPropertiesResponse,
+} from "@/services/homeService";
+import dynamic from "next/dynamic";
+import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAboutusData, getSelectedCity, setAboutusData, setSelectedCity } from "@/store/homeHeaderSlice";
+import { getSelectedCity, setAboutusData } from "@/store/homeHeaderSlice";
+import HeaderDataSync from "../header/HeaderDataSync";
+import { useHeaderStore } from "@/store/useHeaderStore";
+
+const LazyNeedSection = dynamic(() => import("./needSection"), { loading: () => <div className="min-h-[200px]" /> });
+const LazyRealEstateSection = dynamic(() => import("./realEstetSection"), { loading: () => <div className="min-h-[200px]" /> });
+const LazyAboutUsSection = dynamic(() => import("./aboutUsSection"), { loading: () => <div className="min-h-[200px]" /> });
+const LazyExploreSection = dynamic(() => import("./exploreSection"), { loading: () => <div className="min-h-[200px]" /> });
+const LazyFeaturedProperties = dynamic(() => import("./featureProperties"), { loading: () => <div className="min-h-[200px]" /> });
+const LazySuccessStoriesSection = dynamic(() => import("./successStoriesSection"), { loading: () => <div className="min-h-[200px]" /> });
+const LazyWorkingSection = dynamic(() => import("./workingSection"), { loading: () => <div className="min-h-[200px]" /> });
+const LazyChannelPartnerSection = dynamic(() => import("./channelPartnerSection"), { loading: () => <div className="min-h-[200px]" /> });
+const LazyAppDownloadSection = dynamic(() => import("./appDownloadSection"), { loading: () => <div className="min-h-[200px]" /> });
+const LazyBlogSection = dynamic(() => import("./blogSection"), { loading: () => <div className="min-h-[200px]" /> });
+const LazyHomeFooter = dynamic(() => import("../footer/homeFooter"), { loading: () => <div className="min-h-[200px]" /> });
 
 export default function Home({ propertyMasterData, propertyCitiesData }) {
-  const dispatch = useDispatch()
-  const selectedCity = useSelector(getSelectedCity)
-  const aboutusData = useSelector(getAboutusData)
-
-  const [cityData, setCityData] = useState(null)
+  const dispatch = useDispatch();
+  const selectedCity = useSelector(getSelectedCity);
+  const { fetchCities } = useHeaderStore();
 
   const {
-    mutate: fetchCities, isPending: cityLoader
-  } = useMutation({
-    mutationFn: getCityListApiHandler,
-    onSuccess: (response: CitiesResponse) => {
-      let findCity = response?.allCities?.find(item => item.name == 'Gurgaon')
-      if(findCity){
-        dispatch(setSelectedCity(findCity))
-      }
-      setCityData(response)
-    },
-    onError: (error) => {
-
-    }
-  });
-
-  const {
-    mutate: fetchAboutusData, isPending: aboutusLoader
+    mutate: fetchAboutusData
   } = useMutation({
     mutationFn: getAboutUsDataAPiHanlder,
     onSuccess: (response: AboutusResponse) => {
       dispatch(setAboutusData(response?.configuration))
     },
-    onError: (error) => {
-
-    }
+    onError: () => {}
   });
 
   const { data: explorePropertyList } = useQuery({
-    queryKey: ["explore-list", selectedCity],
+    queryKey: ["explore-list", selectedCity?.id ?? null],
     queryFn: () => {
-      let payload: GetExplorePayload = {
-        ...(selectedCity?.id ? {cityId: selectedCity?.id ?? null,} : {}),
-        ...(false ? {cityId: ''} : {}),
-        ...(false ? {cityId: '',} : {}),
+      const payload: GetExplorePayload = {
+        ...(selectedCity?.id ? { cityId: selectedCity.id } : {}),
       };
       return getExploreApiHanlder(payload);
     },
     select: (response: GetExploreResponse) => {
-      console.log("response", response);
       return response.propertyTypes;
     },
+    enabled: Boolean(selectedCity?.id),
+    staleTime: 60_000,
   });
 
   const { data } = useQuery({
-    queryKey: ["top-properties-list", selectedCity],
+    queryKey: ["top-properties-list", selectedCity?.id ?? null],
     queryFn: () => {
-      let payload: GetTopPropertiesPayload = {
+      const payload: GetTopPropertiesPayload = {
         cityId: selectedCity?.id ?? null
       };
       return getTopProperties(payload);
     },
     select: (response: GetTopPropertiesResponse) => {
-      console.log("response", response);
       return response;
     },
-    enabled: selectedCity ? true : false
+    enabled: Boolean(selectedCity?.id),
+    staleTime: 60_000,
   });
 
-  useEffect(() => {
-    fetchAboutusData()
-    if(propertyCitiesData){
-      let findCity = propertyCitiesData?.allCities?.find(item => item.name == 'Gurgaon')
-      if(findCity){
-        dispatch(setSelectedCity(findCity))
-      }
-      setCityData(propertyCitiesData)
-    }else{
-      fetchCities({})
-    }
-  },[])
+  const { data: channelPartnerList = [] } = useQuery<
+    GetChannelPartnerListResponse,
+    unknown,
+    ChannelPartner[]
+  >({
+    queryKey: ["channel-partner", selectedCity?.name ?? ""],
+    queryFn: () => {
+      const payload: GetChannelPartnerListPayload = {
+        city: selectedCity?.name ?? "",
+        experience: "",
+        limit: "8",
+        page: "1",
+        search: "",
+      };
+      return getChannelPartnerListApiHandler(payload);
+    },
+    select: (response: GetChannelPartnerListResponse) => response?.data ?? [],
+    enabled: Boolean(selectedCity?.name),
+    // Keep the list stable to avoid UI flicker/refresh feel on remount/refetch.
+    // placeholderData: keepPreviousData,
+    // staleTime: 5 * 60_000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: true,
+  });
 
-  const imageSlider =  [
+  console.log(channelPartnerList, "channelPartnerList");
+
+
+  useEffect(() => {
+    fetchAboutusData();
+  }, [dispatch, fetchAboutusData]);
+
+  useEffect(() => {
+    if (!propertyCitiesData) {
+      fetchCities({});
+    }
+  }, [propertyCitiesData, fetchCities]);
+
+  const imageSlider = useMemo(
+    () => [
       {
         imagePath: "/assets/backgroundSlider/background_slider_1.jpg",
         alt: "Background Image 1",
@@ -106,58 +128,65 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
         imagePath: "/assets/backgroundSlider/background_slider_2.png",
         alt: "Background Image 2",
       },
-    ];
+    ],
+    []
+  );
 
   return (
     <div className="overflow-hidden">
+      <HeaderDataSync propertyMasterData={propertyMasterData} propertyCitiesData={propertyCitiesData} />
       <div className="relative ">
-        <BannerSlider bannerHeight={'min-h-[700px] 2md:min-h-auto 2md:h-[90vh]'} backgroundImages={imageSlider} overlayClass='gradient-overlay'/>
-        <MainHome topProperties={data?.properties ?? []} fetchCities={fetchCities} cityLoader={cityLoader} cityData={cityData} propertyMasterData={propertyMasterData} />
+        <BannerSlider bannerHeight={'min-h-[700px] 2md:min-h-auto 2md:h-[90vh]'} backgroundImages={imageSlider} overlayClass='gradient-overlay' />
+        <MainHome topProperties={data?.properties ?? []} />
       </div>
       <div className="my-16 flex justify-center overflow-hidden">
         <div className="w-[90%] md:w-[75%]">
-          <NeedSection />
+          <LazyNeedSection />
         </div>
       </div>
       <div className="bg-[#F2F2F2] flex justify-center overflow-hidden">
         <div className="my-16 w-[90%] md:w-[75%]">
-          <RealEstateSection />
+          <LazyRealEstateSection />
         </div>
       </div>
       <div className="relative bg-text-black flex justify-center overflow-hidden">
-        <AboutUsSection />
+        <LazyAboutUsSection />
       </div>
       {Array.isArray(explorePropertyList) && explorePropertyList.length > 0 && <div className="my-16 flex justify-center">
         <div className="w-[90%] md:w-[75%]">
-          <ExploreSection explorePropertyList={explorePropertyList}/>
+          <LazyExploreSection explorePropertyList={explorePropertyList} />
         </div>
       </div>}
       {Array.isArray(data?.properties) && data?.properties.length > 0 && <div className="bg-[#F2F2F2] flex justify-center">
         <div className="my-16 w-[90%] md:w-[75%]">
-          <FeaturedProperties topProperties={data?.properties ?? []}/>
+          <LazyFeaturedProperties topProperties={data?.properties ?? []} />
         </div>
       </div>}
-      <div className="relative bg-text-black flex justify-center overflow-hidden">
-        <WorkingSection />
-      </div>
+
       <div className="relative bg-[#F2F2F2] flex justify-center overflow-hidden">
-        <SuccessStoriesSection />
+        <LazySuccessStoriesSection />
+      </div>
+
+      <div className="relative bg-text-black flex justify-center overflow-hidden">
+        <LazyWorkingSection />
+      </div>
+      {Array.isArray(channelPartnerList) && channelPartnerList.length > 0 && (
+        <div className="bg-[#F2F2F2] flex justify-center overflow-hidden">
+          <div className="my-16 w-[90%] 2md:w-[75%]">
+            <LazyChannelPartnerSection channelPartnerList={channelPartnerList} />
+          </div>
+        </div>
+      )}
+      <div className="">
+        <LazyAppDownloadSection />
       </div>
       <div className="flex justify-center overflow-hidden">
         <div className="my-16 w-[90%] 2md:w-[75%]">
-          <BlogSection />
+          <LazyBlogSection />
         </div>
       </div>
-      <div className="bg-[#F2F2F2] flex justify-center overflow-hidden">
-        <div className="my-16 w-[90%] 2md:w-[75%]">
-          <ChannelPartnerSection/>
-        </div>
-      </div>
-      {aboutusData?.mobileAppAvailable && <div className="">
-        <AppDownloadSection />
-      </div>}
       <div className="">
-        <HomeFooter propertyMasterData={propertyMasterData}/>
+        <LazyHomeFooter />
       </div>
     </div>
   );

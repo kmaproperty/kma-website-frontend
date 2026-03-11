@@ -1,13 +1,15 @@
-import { getUserCoordinates } from "@/hooks/useGeoloaction";
+import { getUserCoordinates } from "@/api/hooks/useGeoloaction";
 import { getSelectedCity, setSelectedCity } from "@/store/homeHeaderSlice";
+import { useHeaderStore } from "@/store/useHeaderStore";
 import { InputBase } from "@mui/material";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-export default function CityView({ cityData, fetchCities, cityLoader, handleScroll }) {
-  const dispatch = useDispatch()
-  const selectedCity = useSelector(getSelectedCity)
+export default function CityView({ handleScroll }: { handleScroll?: () => void }) {
+  const dispatch = useDispatch();
+  const selectedCity = useSelector(getSelectedCity);
+  const { cityData, fetchCities, cityLoader } = useHeaderStore();
   
   const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
   const [cityInput, setCityInput] = useState("");
@@ -18,7 +20,6 @@ export default function CityView({ cityData, fetchCities, cityLoader, handleScro
 
   const fetchLocation = async () => {
     const location = await getUserCoordinates();
-    console.log("location", location);
     if (location) {
       setDetecting(true)
       fetchCities({
@@ -26,7 +27,6 @@ export default function CityView({ cityData, fetchCities, cityLoader, handleScro
         longitude: String(location?.lng ?? ""),
       });
     } else {
-      console.log("Permission denied or unavailable");
     }
   };
 
@@ -99,17 +99,21 @@ export default function CityView({ cityData, fetchCities, cityLoader, handleScro
         <p className="text-sm text-[#757BEE]">Detect My Location {detecting && <span className="text-text-gray text-xs">(Detecting...)</span>}</p>
       </div>
       <div className="flex flex-wrap gap-1.5 mt-4">
+        
+
+
+
         {
           featuredCity.map(item => {
             return(
               <div onClick={() => handleSelectCity(item)} className={`flex flex-1 flex-col justify-center items-center gap-1.5 bg-[#F3F3F3] rounded-[5px] px-3 sm:px-1 py-3 ${selectedCity?.id == item.id ? 'grayscale-0' : 'grayscale'} hover:grayscale-0 cursor-pointer`}>
-                <Image
+                {/* <Image
                   src={profileBaseUrl + item.icon}
                   width={600}
                   height={600}
                   alt="city"
                   className="w-[45px] h-[34px]"
-                />
+                /> */}
                 <p className="text-xs text-black">{item.name}</p>
               </div>
             )

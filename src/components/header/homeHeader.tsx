@@ -1,7 +1,7 @@
 "use client";
 import { ClickAwayListener, Paper, Popper } from "@mui/material";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ListView from "./listView";
 import {
   channelPartnerMenuList,
@@ -16,13 +16,37 @@ import HomeMobileHeader from "./homeMobileHeader";
 import ProfileView from "./profileView";
 import { useRouter } from "nextjs-toploader/app";
 import { USER_TYPE } from "@/lib/enums";
-import { useDispatch, useSelector } from "react-redux";
-import { getSelectedCity } from "@/store/homeHeaderSlice";
+import { useHeaderStore } from "@/store/useHeaderStore";
+import { useQuery } from "@tanstack/react-query";
+import { userProfileApiHandler, UserProfileResponse } from "@/services/userService";
 
-export default function HomdeHeader({cityData, cityLoader, fetchCities, propertyMasterData}) {
-  const router = useRouter()
-  const dispatch = useDispatch()
-  const selectedCity = useSelector(getSelectedCity)
+const baseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
+
+export default function HomeHeader() {
+  const router = useRouter();
+  const {
+    selectedCity,
+    cityData,
+    cityLoader,
+    fetchCities,
+    propertyMasterData,
+    userRole,
+  } = useHeaderStore(true);
+  const isLoggedIn = Boolean(userRole === USER_TYPE.CHANNEL_PARTNER || userRole === USER_TYPE.OWNER);
+
+  const { data: profileResponse } = useQuery({
+    queryKey: ["user-profile"],
+    queryFn: async (): Promise<UserProfileResponse> => userProfileApiHandler(),
+    enabled: isLoggedIn,
+    staleTime: 60 * 1000,
+  });
+  const headerAvatarSrc = useMemo(() => {
+    const user = profileResponse?.user;
+    if (!user?.profileImage) return "/assets/profile.png";
+    if (/^https?:\/\//.test(user.profileImage)) return user.profileImage;
+    return `${baseUrl}${user.profileImage}`;
+  }, [profileResponse?.user?.profileImage]);
+
   const [anchorEl, setanchorEl] = useState(null);
   const [menuList, setMenuList] = useState([]);
   const [type, setType] = useState(null);
@@ -30,8 +54,7 @@ export default function HomdeHeader({cityData, cityLoader, fetchCities, property
   const [profileMenu, setProfileMenu] = useState(null)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [activeSubMenu, setActiveSubMenu] = useState(null);
-
-  const [userRole, setUserRole] = useState(null)
+  const [isScrolled, setIsScrolled] = useState(false);
  
 
   const toggleDrawer = () => {
@@ -90,6 +113,16 @@ export default function HomdeHeader({cityData, cityLoader, fetchCities, property
     setType(null)
   };
 
+  // Make header clearly visible on scroll by switching to a solid theme color background.
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 20);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, []);
+
   useEffect(() => {
   if (!openType) return;
   window.addEventListener("scroll", handleScroll, { passive: true });
@@ -99,22 +132,6 @@ export default function HomdeHeader({cityData, cityLoader, fetchCities, property
   };
 }, [openType]);
 
-const returnUserRole = () => {
-  let userData: any = localStorage.getItem('user')
-  if(userData){
-    userData = JSON.parse(userData)
-    return userData?.role
-  }else{
-    return null
-  }
-}
-
-useEffect(() => {
-  const userData = localStorage.getItem('user')
-  if(userData){
-    setUserRole(returnUserRole())
-  }
-},[])
 
 
 
@@ -126,11 +143,29 @@ const navigateDashboard = () => {
   router.push('/user-dashboard')
 }
 
+const handleHeaderSubMenuClick = (label: string) => {
+  if (label === "Join Us") {
+    router.push("/signup");
+    setanchorEl(null);
+  }
+}
+
   return (
     <>
-    <div className="w-[90%] lg:w-[75%] mt-[25px] mx-auto">
-      <div className="bg-white/10 rounded-[200px] bg-clip-padding backdrop-filter  backdrop-blur-[20px] h-[50px] 2md:h-[63px] px-3 lg:px-7 pt-[4px] flex justify-between items-center border border-1 border-[#FFFFFF33]">
-        <div className="flex items-center px-1.5 shrink-0 cursor-pointer">
+    <div className="sticky top-0 z-50 w-full flex justify-center">
+    <div className="w-[90%] lg:w-[75%] mt-[25px]">
+      <div
+        className={[
+          "rounded-[200px] h-[50px] 2md:h-[63px] px-3 lg:px-7 pt-[4px] flex justify-between items-center border border-1 transition-colors duration-300",
+          isScrolled
+            ? "bg-blue shadow-xl border-[#FFFFFF1F]"
+            : "bg-white/10 bg-clip-padding backdrop-filter backdrop-blur-[20px] border-[#FFFFFF33]",
+        ].join(" ")}
+      >
+        <div
+          onClick={() => router.push("/")}
+          className="flex items-center px-1.5 shrink-0 cursor-pointer"
+        >
           <Image
             src="/assets/kma-logo-white.svg"
             width={100}
@@ -225,19 +260,35 @@ const navigateDashboard = () => {
               </p>
             </span>
           </button>}
-          <div className="flex flex-row gap-[6px] items-center cursor-pointer">
+          <div
+            onMouseEnter={(event) => {
+              setProfileMenu("profile");
+              setanchorEl(event.currentTarget);
+              setCityMenu(false);
+              setType(null);
+            }}
+            className="flex flex-row gap-[6px] items-center cursor-pointer"
+          >
             <Image
-             onMouseEnter={(event) => {
-              setProfileMenu('profile')
-              setanchorEl(event.currentTarget)
-             }}
-              src="/assets/profile.png"
+              onClick={(event) => {
+                setProfileMenu("profile");
+                setanchorEl(event.currentTarget);
+                setCityMenu(false);
+                setType(null);
+              }}
+              src={headerAvatarSrc}
               height={40}
               width={40}
               className="w-[28px] h-[28px] sm:w-[35px] sm:h-[35px] rounded-[50%] object-cover"
               alt="profile"
             />
             <Image
+              onClick={(event) => {
+                setProfileMenu("profile");
+                setanchorEl(event.currentTarget);
+                setCityMenu(false);
+                setType(null);
+              }}
               src="/assets/down-arrow-white.svg"
               width={12}
               height={5}
@@ -259,11 +310,24 @@ const navigateDashboard = () => {
           open={openType}
           anchorEl={anchorEl}
           placement="bottom-start"
+          sx={{ zIndex: 9999 }}
           modifiers={[
             {
               name: "offset",
               options: {
-                offset: cityMenu ? [-50, 26] : type ? [-250, 20] : [0, 20],
+                offset: cityMenu ? [-50, 26] : type ? [-250, 20] : profileMenu === "profile" ? [-270, 20] : [0, 20],
+              },
+            },
+            {
+              name: "preventOverflow",
+              options: {
+                padding: 8,
+              },
+            },
+            {
+              name: "flip",
+              options: {
+                padding: 8,
               },
             },
           ]}
@@ -279,16 +343,20 @@ const navigateDashboard = () => {
             <div>
               {!cityMenu &&
                 (!type ? (
-                  <Paper className="w-auto min-w-[180px]! rounded-2xl! px-2 py-2 shadow-xl border border-gray-200">
-                    {profileMenu != 'profile' ? <ListView menuList={menuList} />
-                     : <ProfileView/>}
+                  <Paper
+                    className={`rounded-2xl! shadow-xl border border-gray-200 bg-white relative z-[9999] ${
+                      profileMenu === "profile" ? "w-[320px] sm:w-[340px]! p-0!" : "w-auto min-w-[180px]! px-2 py-2"
+                    }`}
+                  >
+                    {profileMenu != 'profile' ? <ListView menuList={menuList} onItemClick={handleHeaderSubMenuClick} />
+                     : <ProfileView userRole={userRole}/>}
                   </Paper>
                 ) : (
-                  <RentSellHeaderView propertyMasterData={propertyMasterData} type={type} />
+                  <RentSellHeaderView type={type} />
                 ))}
               {cityMenu && (
-                <Paper className="w-auto min-w-[180px]! rounded-2xl! px-2 py-2 shadow-xl border border-gray-200">
-                    <CityView cityData={cityData} cityLoader={cityLoader} fetchCities={fetchCities} handleScroll={handleScroll}/>
+                <Paper className="w-auto min-w-[180px]! rounded-2xl! px-2 py-2 shadow-xl border border-gray-200 bg-white relative z-[9999]">
+                    <CityView handleScroll={handleScroll}/>
                 </Paper>
               )}
             </div>
@@ -296,7 +364,8 @@ const navigateDashboard = () => {
         </Popper>
       </div>
     </div>
-    <HomeMobileHeader propertyMasterData={propertyMasterData} cityData={cityData} cityLoader={cityLoader} fetchCities={fetchCities} open={isDrawerOpen} onClose={toggleDrawer} activeSubMenu={activeSubMenu} openSubMenu={openSubMenu} closeSubMenu={closeSubMenu}/>
+    </div>
+    <HomeMobileHeader open={isDrawerOpen} onClose={toggleDrawer} activeSubMenu={activeSubMenu} openSubMenu={openSubMenu} closeSubMenu={closeSubMenu}/>
     </>
   );
 }

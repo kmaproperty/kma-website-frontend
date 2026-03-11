@@ -15,9 +15,9 @@ import Plot from "@/assets/plot-transparent.svg";
 import Agriculture from "@/assets/agriculture-transparent.svg";
 import PlotCommercial from "@/assets/plot-commercial-transparent.svg";
 import DynamicInput from "../common/dynamicInput";
-import { useCitySearch } from "@/hooks/useCitySearch";
+import { useCitySearch } from "@/api/hooks/useCitySearch";
 import { useEffect, useRef, useState } from "react";
-import { useBuildingSearch } from "@/hooks/useBuildingSearch";
+import { useBuildingSearch } from "@/api/hooks/useBuildingSearch";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { BhkResponse, getBhkApiHandler, getPropertyCategoryApiHandler, getPropertyListApiHandler, getPropertyTypeApiHandler, PropertyCategoryResponse, PropertyListResponse, PropertyTypePayload, PropertyTypeResponse } from "@/services/masterService";
 import { PropertyCategory, PropertyList, PropertyType } from "@/types/postProperty";
@@ -31,14 +31,14 @@ import { gerUserCurrentCityApiHandler, GetUserCurrentCityPayload, GetUserCurrent
 import { toast } from "react-toastify";
 import { useParams, useSearchParams } from "next/navigation";
 import { useRouter } from 'nextjs-toploader/app';
-import { useStepProgress } from "@/hooks/useStepProgress";
+import { useStepProgress } from "@/api/hooks/useStepProgress";
 import DynamicAsyncAutocomplete from "../common/dynamicAsyncSelectMui";
 import { InputBase } from "@mui/material";
 import RenderSectionName from "./renderSecitonName";
-import { useLocalitySearch } from "@/hooks/useLocalitySearch";
+import { useLocalitySearch } from "@/api/hooks/useLocalitySearch";
 import ConfirmationDailog from "../common/confirmationDailog";
 import { setStep1Data } from "@/store/postPropertySlice";
-import { getUserCoordinates } from "@/hooks/useGeoloaction";
+import { getUserCoordinates } from "@/api/hooks/useGeoloaction";
 import FullscreenSpinner from "../common/spinner/fullScreenSpinner";
 import Spinner from "../common/spinner";
 
@@ -134,7 +134,6 @@ export default function Step1({containerRef}) {
   //Other list
   const [bhkList, setBhkList] = useState(generateBHKList(false))
 
-  console.log('step1 state', basicStaticDetails, dynamicFieldDetails, errors)
 
   //Master APIS
   const { data: propertyTypeList } = useQuery({
@@ -251,7 +250,6 @@ export default function Step1({containerRef}) {
     })
     return bhkList as unknown as OptionType[]
   }
-console.log('renderOtherBhk', renderOtherBhk())
   const renderBHKAmeneties = () => {
     if(dynamicFieldDetails.bhk?.id == 'other' && dynamicFieldDetails.otherBhk?.value){
       return generateBHKAmeneties(dynamicFieldDetails.otherBhk?.bhk)
@@ -891,7 +889,6 @@ console.log('renderOtherBhk', renderOtherBhk())
 
     }
 
-    console.log('step1 validation error', updatedError)
     setErrors(updatedError)
     return {hasError: hasError, errorData: updatedError};
   }
@@ -965,11 +962,9 @@ console.log('renderOtherBhk', renderOtherBhk())
       return await resetPostPropertyApiHandler(payload);
     },
     onSuccess: (response: resetAPIResponse) => {
-      console.log("step1 create response", response);
       dispatch(setTotalProgress({progress: Number(response.progressPercentage ?? 0)}))
     },
     onError: (error: any) => {
-      console.log("step2 error response", error);
       if(Array.isArray(error.message)){
         error.message.map((item: string) => {
           toast.error(item)
@@ -1113,13 +1108,11 @@ console.log('renderOtherBhk', renderOtherBhk())
       return await step1PostPropertyCreateApiHandler(payload);
     },
     onSuccess: (response: Step1PostPropertyResponse) => {
-      console.log("step1 create response", response);
       let propertyId = response.id
       dispatch(setActiveStep({step: activeStep + 1}))
       router.push(`/post-property/${propertyId}`)
     },
     onError: (error: any) => {
-      console.log("step2 error response", error);
       if(Array.isArray(error.message)){
         error.message.map((item: string) => {
           toast.error(item)
@@ -1136,14 +1129,12 @@ console.log('renderOtherBhk', renderOtherBhk())
       return step1PostPropertyDetailsApiHandler(String(params?.propertyId ?? ''));
     },
     select: (resposne: Step1DetailsResponse) => {
-      console.log('step1 details',resposne)
       return resposne
     },
     enabled: params?.propertyId ? true : false,
     staleTime: 0,
     refetchOnMount: true
   });
-console.log('step1DetailsLoader',step1DetailsLoader)
   useEffect(() => {
     if(step1Details){
       setBasicStaticDetails((pre) => ({
@@ -1236,17 +1227,14 @@ console.log('step1DetailsLoader',step1DetailsLoader)
         }
     },
     onError: (error: any) => {
-      console.log("location detect error", error);
     },
   });
 
   const fetchLocation = async () => {
       const location = await getUserCoordinates();
-      console.log('location', location)
       if (location) {
         getUserCurrentCity({latitude: String(location?.lat ?? ''),longitude: String(location?.lng ?? '')})
       } else {
-        console.log("Permission denied or unavailable");
       }
   };
 
@@ -2541,7 +2529,6 @@ console.log('step1DetailsLoader',step1DetailsLoader)
                 return
               }
               let payload = generatePayload()
-              console.log('payload', payload)
               handleStep1Submit(payload)
             }
           }} className="w-full md:w-[130px] text-sm 1xl:text-base animated-button px-12 py-3 border border-blue text-center cursor-pointer">

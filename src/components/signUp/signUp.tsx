@@ -101,7 +101,6 @@ export default function SignUp() {
       return await sendSignUpOtpApiHandler(payload);
     },
     onSuccess: (response: SendOtpResponse) => {
-      console.log('response', response)
       const params = createURLSearchParam({
         mobile: mobileInput.value,
         code: mobileInput.code,
@@ -112,7 +111,6 @@ export default function SignUp() {
       router.push(`/verify-otp${params}`)
     },
     onError: (error: any) => {
-      console.log('error', error)
       if(Array.isArray(error.message)){
         error.message.map((item: string) => {
           toast.error(item)

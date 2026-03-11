@@ -47,7 +47,14 @@ export const livePhotoGetApiHandler = async (): Promise<LivePhotoGetResponse> =>
 
 export interface AadharVerifyPayload {
    aadhaar_number: string,
-   otp: string;
+   digilocker_clientid: string,
+   digilocker_metadata: {
+    name: string,
+    gender: string,
+    dob: string,
+    mobile_number: string,
+   },
+   isVerified: boolean
 }
 
 export interface AadharVerifyResponse {

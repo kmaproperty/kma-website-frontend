@@ -109,7 +109,6 @@ export default function ContactInformation({isEndUser = false}: {isEndUser?: boo
         return await CreateContactDetailsApiHandler(payload);
       },
       onSuccess: (response: ContactDetailsResponse) => {
-        console.log('response', response)
         toast.success(response.message)
         resetForm()
         router.replace(`${pathname}`);

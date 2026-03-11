@@ -36,7 +36,6 @@ export default function UserKyc({tabName, event}) {
       return getKycStatusApiHandler();
     },
     select: (resposne: KycStatusResponse) => {
-      console.log("kyc", resposne);
       return resposne;
     },
     staleTime: 0,

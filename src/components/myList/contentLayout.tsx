@@ -42,7 +42,6 @@ export default function ContentLayout() {
   const [search, setSearch] = useState('')
   const [topStatusFilter, setTopStatusFilter] = useState('')
 
-  console.log('filters', filters, sorting, search, pagination)
  
   const { data: propertyList,  refetch: fetchPropertyList, isLoading: propertyListLoader } = useQuery({
       queryKey: ["property-list", filters, sorting, search],
@@ -80,7 +79,6 @@ export default function ContentLayout() {
       const query = params.get("filters");
       if (query) {
           const parsed = decodeFilters(query);
-          console.log('parsed', parsed)
           if (parsed) setFilters(parsed);
       }
       setEnable(true)

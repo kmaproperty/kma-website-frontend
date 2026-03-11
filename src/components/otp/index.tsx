@@ -61,7 +61,6 @@ export default function Otp() {
     mutationFn: (payload: OtpPayload): Promise<SendOtpResponse> =>
       resendOtpApiHandler(payload),
     onSuccess: (res) => {
-      console.log("Resent OTP:", res);
       toast.success(res.otp)
     },
     onError: (err: any) => {
@@ -92,15 +91,7 @@ export default function Otp() {
       setOtp('')
       toast.success(res.message)
       queryClient.clear();
-      if(res.user.role == 'CHANNEL_PARTNER' && !res.kycCompleted){
-        router.replace('/profile')
-      }else{
-        if(res.propertyCount == 0){
-          router.replace("/post-property");
-        }else{
-          router.replace('/user-dashboard');
-        }
-      }
+      router.replace('/profile')
     },
     onError: (err: any) => {
       console.error("OTP Verify Error:", err);

@@ -4,16 +4,18 @@ export default function middleware(req: NextRequest) {
   const { pathname, searchParams } = req.nextUrl;
   const accessToken = req.cookies.get("accessToken")?.value;
   const refreshToken = req.cookies.get("refreshToken")?.value;
-  console.log('accesstoken', accessToken,refreshToken, pathname, searchParams.get('event'))
 
   const isHomePage = pathname === "/";
   const isAbooutUsPage = pathname === "/about-us";
   const verifyProperty = pathname === "/verify-post-property";
+  const isProjectsPage = pathname === "/projects" || pathname.startsWith("/projects/");
+  const isUserFlowPage = pathname === "/user-flow";
   const isSignupPage = pathname === '/signup';
   const isVerifyOtpPage = pathname === '/verify-otp';
   const event = searchParams.get('event')
 
-  if (isHomePage || isAbooutUsPage || verifyProperty) {
+  // Public pages (no login required)
+  if (isHomePage || isAbooutUsPage || verifyProperty || isProjectsPage || isUserFlowPage) {
     return NextResponse.next();
   }
 

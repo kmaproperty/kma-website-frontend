@@ -1,5 +1,5 @@
 "use client";
-import { useStepProgress } from "@/hooks/useStepProgress";
+import { useStepProgress } from "@/api/hooks/useStepProgress";
 import styled from "@emotion/styled";
 import { LinearProgress, linearProgressClasses } from "@mui/material";
 

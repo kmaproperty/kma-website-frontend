@@ -88,6 +88,10 @@ export interface UserDashboardDetailsResponse {
       commercial: number;
     };
   };
+  listingsSummary: {
+    commercial: number;
+    residential: number;
+  }
 }
 
 export const UserDashboardDetailsApiHandler = async () : Promise<UserDashboardDetailsResponse> => {
@@ -235,3 +239,69 @@ export const userProfileUpdateApiHandler = async (payload: UserProfileUpdatePayl
         throw error.response?.data ?? error;
     }
 }
+
+// GET /users/profile-pic - Get profile picture
+export interface GetProfilePicResponse {
+  success: boolean;
+  profile_pic_url: string;
+}
+
+export const getProfilePicApiHandler = async (): Promise<GetProfilePicResponse> => {
+  try {
+    const response = await axiosInstance.get<GetProfilePicResponse>("users/profile-pic");
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data ?? error;
+  }
+};
+
+// POST /users/profile-pic - Upload profile picture (by URL)
+export interface UploadProfilePicPayload {
+  profile_pic_url: string;
+}
+
+export interface UploadProfilePicResponse {
+  success: boolean;
+  message: string;
+  profile_pic_url: string;
+}
+
+export const uploadProfilePicApiHandler = async (
+  payload: UploadProfilePicPayload
+): Promise<UploadProfilePicResponse> => {
+  try {
+    const response = await axiosInstance.post<UploadProfilePicResponse>(
+      "users/profile-pic",
+      payload
+    );
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data ?? error;
+  }
+};
+
+// GET /end-user/activity-counts - Get Activity Counts (user panel: Recently Search, Recently Viewed, Saved, Contacted)
+export interface ActivityCountsResponse {
+  recentlySearch: number;
+  recentlyViewed: number;
+  savedProperties: number;
+  contactedProperties: number;
+}
+
+export const getActivityCountsApiHandler = async (
+  sessionId?: string | null
+): Promise<ActivityCountsResponse> => {
+  try {
+    const response = await axiosInstance.get<ActivityCountsResponse>(
+      "end-user/activity-counts",
+      {
+        headers: {
+          ...(sessionId ? { "X-Session-Id": sessionId } : {}),
+        },
+      }
+    );
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data ?? error;
+  }
+};

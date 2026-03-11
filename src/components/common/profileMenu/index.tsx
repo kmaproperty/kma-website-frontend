@@ -20,14 +20,13 @@ export default function ProfileMenu({ anchorEl, open, handleClose }) {
     mutationFn: async (): Promise<UserLogoutResponse> => {
       return await UserLogoutApiHandler();
     },
-    onSuccess: async (response: UserLogoutResponse) => {
-      console.log("response", response);
+    onSuccess: async () => {
       localStorage.clear();
       await clearAuthCookies();
+      queryClient.clear();
       router.replace("/signup");
     },
     onError: (error: any) => {
-      console.log("error", error);
       if (Array.isArray(error.message)) {
         error.message.map((item: string) => {
           toast.error(item);
@@ -40,7 +39,6 @@ export default function ProfileMenu({ anchorEl, open, handleClose }) {
 
   const handleLogout = () => {
     handleLogoutApi();
-    queryClient.clear();
   };
 
   return (

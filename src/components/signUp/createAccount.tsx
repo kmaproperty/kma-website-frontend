@@ -24,7 +24,7 @@ import { clearAuthCookies, createURLSearchParam } from "@/lib/helper";
 import { toast } from "react-toastify";
 import { ValidateChannelPartnerCodeApiHandler, ValidateChannelPartnerCodePayload, ValidateChannelPartnerCodeResponse, validateEmailApiHandler, ValidateEmailPayload, ValidateEmailResponse } from "@/services/userService";
 import DynamicAsyncAutocomplete from "../common/dynamicAsyncSelectMui";
-import { useCitySearch } from "@/hooks/useCitySearch";
+import { useCitySearch } from "@/api/hooks/useCitySearch";
 import Spinner from "../common/spinner";
 import ImageUpload from "../common/upload";
 
@@ -60,7 +60,6 @@ export default function CreateAccount({ step }: { step: number }) {
   const [codeError, setCodeError] = useState(false)
   const [emailError, setEmailError] = useState(false)
   // const [step, setStep] = useState<number>(1); // 1 = initial, 2 = extended
-  console.log("data", formData);
   const { data } = useQuery<CitiesResponse, Error, string[]>({
     queryKey: ["cities"],
     queryFn: getCityApiHandler,
@@ -139,14 +138,12 @@ export default function CreateAccount({ step }: { step: number }) {
       return await createOwnerApiHandler(payload);
     },
     onSuccess: (response: CreateOwnerResponse) => {
-      console.log("create owner response", response);
       localStorage.setItem("user", JSON.stringify(response.user));
       dispatch(resetForm())
       toast.success(response.message)
-      router.replace('/post-property')
+      router.replace('/profile')
     },
     onError: (error: any) => {
-      console.log("owner create error", error);
       if(Array.isArray(error.message)){
         error.message.map((item: string) => {
           toast.error(item)
@@ -167,14 +164,12 @@ export default function CreateAccount({ step }: { step: number }) {
       return await createChannelPartnerApiHandler(payload);
     },
     onSuccess: (response: CreateOwnerResponse) => {
-      console.log("create owner response", response);
       localStorage.setItem("user", JSON.stringify(response.user));
       dispatch(resetForm())
       toast.success(response.message)
       router.push('/profile')
     },
     onError: (error: any) => {
-      console.log("owner create error", error);
       if(Array.isArray(error.message)){
         error.message.map((item: string) => {
           toast.error(item)
@@ -194,7 +189,6 @@ export default function CreateAccount({ step }: { step: number }) {
       return await validateEmailApiHandler(payload);
     },
     onSuccess: (response: ValidateEmailResponse) => {
-      console.log("email duplicate response", response);
       if(response?.success){
         setFormErrors((pre) => ({...pre, email: ''}))
         setEmailError(false)
@@ -204,7 +198,6 @@ export default function CreateAccount({ step }: { step: number }) {
       }
     },
     onError: (error: any) => {
-      console.log("channel partner error", error);
       if(error?.success){
         setFormErrors((pre) => ({...pre, email: ''}))
         setEmailError(false)
@@ -224,7 +217,6 @@ export default function CreateAccount({ step }: { step: number }) {
       return await ValidateChannelPartnerCodeApiHandler(payload);
     },
     onSuccess: (response: ValidateChannelPartnerCodeResponse) => {
-      console.log("channel partner response", response);
       if(response?.valid){
         setFormErrors((pre) => ({...pre, partnerCode: ''}))
         setCodeError(false)
@@ -234,7 +226,6 @@ export default function CreateAccount({ step }: { step: number }) {
       }
     },
     onError: (error: any) => {
-      console.log("channel partner error", error);
     },
   });
 
@@ -245,7 +236,6 @@ export default function CreateAccount({ step }: { step: number }) {
         return await uploadFileToS3ApiHandler(payload);
       },
       onError: (error: any) => {
-        console.log("file upload s3 api", error);
         if (Array.isArray(error.message)) {
           error.message.map((item: string) => {
             toast.error(item);
@@ -263,7 +253,6 @@ export default function CreateAccount({ step }: { step: number }) {
         return await getFileUploadUrlApiHandler(payload);
       },
       onError: (error: any) => {
-        console.log("get file url api", error);
         if (Array.isArray(error.message)) {
           error.message.map((item: string) => {
             toast.error(item);

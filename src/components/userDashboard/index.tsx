@@ -46,14 +46,12 @@ export default function UserDashboard() {
         return await UpgreadOwnerToChannelPartnerApiHandler(payload);
       },
       onSuccess: (response: UpgreadOwnerToChannelPartnerResponse) => {
-        console.log('response', response)
         setOpenCodePopup(false)
         toast.success('Upgraded to Channel Partner successfully')
         getUpdatedDashboardDetails()
         window.location.reload();
       },
       onError: (error: any) => {
-        console.log('error', error)
         if(Array.isArray(error.message)){
         error.message.map((item: string) => {
           toast.error(item)
@@ -220,7 +218,7 @@ export default function UserDashboard() {
                   className="min-w-[40px] flex-shrink-0 font-semibold text-base
                                     border-l border-[#E7E7E7] text-center p-2"
                 >
-                  {renderPropertyCount() ? renderPropertyCount().residential : '00'}
+                  {userDashboardDetails?.listingsSummary?.residential ? userDashboardDetails?.listingsSummary?.residential : '00'}
                 </div>
               </div>
               <div className="flex flex-row items-center rounded-xl bg-white flex-1">
@@ -244,7 +242,7 @@ export default function UserDashboard() {
                   className="min-w-[40px] flex-shrink-0 font-semibold text-base
                                     border-l border-[#E7E7E7] text-center p-2"
                 >
-                  {renderPropertyCount() ? renderPropertyCount().commercial : '00'}
+                  {userDashboardDetails?.listingsSummary?.commercial ? userDashboardDetails?.listingsSummary?.commercial : '00'}
                 </div>
               </div>
             </div>

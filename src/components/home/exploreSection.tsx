@@ -94,6 +94,8 @@ const topVariant = {
 };
 
 export default function ExploreSection({explorePropertyList}) {
+  console.log(explorePropertyList);
+  
   const sliderRef = useRef<Slider | null>(null);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });

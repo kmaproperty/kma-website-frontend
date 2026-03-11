@@ -8,6 +8,7 @@ import {
 import Image from "next/image";
 import RentSellHeaderView from "./rentSellHeaderView";
 import CityView from "./cityView";
+import { useRouter } from "nextjs-toploader/app";
 
 export default function HomeMobileHeader({
   open,
@@ -15,11 +16,15 @@ export default function HomeMobileHeader({
   activeSubMenu,
   openSubMenu,
   closeSubMenu,
-  cityData,
-  cityLoader,
-  fetchCities,
-  propertyMasterData,
+}: {
+  open: boolean;
+  onClose: () => void;
+  activeSubMenu: string | null;
+  openSubMenu: (label: string) => void;
+  closeSubMenu: () => void;
 }) {
+  const router = useRouter();
+
   const listMapping = {
     project: projectMenuList,
     channel_partner: channelPartnerMenuList,
@@ -73,6 +78,7 @@ export default function HomeMobileHeader({
 
             {headerMenuList.map((item) => (
               <div
+                key={item.value}
                 onClick={() => {
                   if (item.value != "refer_and_earn") {
                     openSubMenu(item.value);
@@ -151,7 +157,15 @@ export default function HomeMobileHeader({
               {renderSubMenuList().map((item, index) => {
                 return (
                   <>
-                    <p className="text-base text-text-black hover:bg-list-background cursor-pointer px-2 py-1.5 rounded-lg">
+                    <p
+                      onClick={() => {
+                        if (item.label === "Join Us") {
+                          router.push("/signup");
+                          onClose();
+                        }
+                      }}
+                      className="text-base text-text-black hover:bg-list-background cursor-pointer px-2 py-1.5 rounded-lg"
+                    >
                       {item.label}
                     </p>
                     {index != moreMenuList.length - 1 && (
@@ -164,12 +178,12 @@ export default function HomeMobileHeader({
           )}
           {
            ( activeSubMenu == 'buy' || activeSubMenu == 'rent') && <div>
-                <RentSellHeaderView propertyMasterData={propertyMasterData}  type={activeSubMenu}/>
+                <RentSellHeaderView type={activeSubMenu}/>
             </div>
           }
           {
             activeSubMenu == 'city' && <div>
-                <CityView handleScroll={onClose} cityData={cityData} cityLoader={cityLoader} fetchCities={fetchCities}/>
+                <CityView handleScroll={onClose}/>
             </div>
           }
         </div>

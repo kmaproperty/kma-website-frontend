@@ -4,8 +4,15 @@ import axios, {
 } from "axios";
 import { handleRefreshToken } from "./authService";
 import { clearAuthCookies, setAuthCookies } from "@/lib/helper";
+import { useSessionStore } from "@/store/useSessionStore";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const createCorrelationId = () => {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+};
 
 export const axiosInstance = axios.create({
   baseURL: API_URL,
@@ -17,16 +24,20 @@ export const axiosInstance = axios.create({
 // Request Interceptor: Attach access token
 axiosInstance.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
+    // const sessionId = useSessionStore.getState().sessionId;
     const res = await fetch("/api/get-token");
     const { accessToken } = await res.json();
     // const accessToken = localStorage.getItem("accessToken");
+    // if (sessionId) {
+    //   config.headers["X-Session-Id"] = sessionId;
+    // }
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
+    config.headers["x-correlation-id"] = createCorrelationId();
     return config;
   },
   (error) => {
-    console.log('error', error)
     return Promise.reject(error);
   }
 );
@@ -41,7 +52,6 @@ axiosInstance.interceptors.response.use(
     // const { refreshToken } = await res.json();
 
     // Prevent infinite retry loop
-    console.log('error',error)
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
@@ -70,7 +80,6 @@ axiosInstance.interceptors.response.use(
       clearAuthCookies()
       window.location.href = "/signup"
     }
-    console.log('error in reject', error)
     return Promise.reject(error?.response?.data ?? error);
   }
 );

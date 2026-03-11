@@ -3,7 +3,7 @@ import Image from "next/image";
 import DynamicAsyncAutocomplete from "../common/dynamicAsyncSelectMui";
 import { ClickAwayListener, InputBase, Popper } from "@mui/material";
 import PropertyTypeMenu from "../filtermenu/propertyTypeMenu";
-import { useEffect, useState } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
 import PriceRangeMenu from "../filtermenu/budgetTypeMenu";
 import { filterTypeList } from "@/lib/constants";
 import PossessionStatusMenu from "../filtermenu/possesionStatusMenu";
@@ -14,21 +14,24 @@ import TransactionByMenu from "../filtermenu/transactionByMenu";
 import { useQuery } from "@tanstack/react-query";
 import { getPropertiesCountApiHandler, GetPropertiesCountPayload, GetPropertiesCountResponse } from "@/services/homeService";
 import { useDispatch, useSelector } from "react-redux";
-import { getSelectedCity, setSelectedCity } from "@/store/homeHeaderSlice";
-export default function Filter({propertyMasterData, cityData}) {
-  const dispatch = useDispatch()
-  const selectedCity = useSelector(getSelectedCity)
+import { getSelectedCity, getCityData, getPropertyMasterData, setSelectedCity } from "@/store/homeHeaderSlice";
+import { toast } from "react-toastify";
+
+export default function Filter() {
+  const dispatch = useDispatch();
+  const selectedCity = useSelector(getSelectedCity);
+  const cityData = useSelector(getCityData);
+  const propertyMasterData = useSelector(getPropertyMasterData);
   
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [popperType, setPopperType] = useState(null)
 
   const openType = Boolean(anchorEl);
 
-  const [searchCount, setSearchCount] = useState(null)
-
   //Filter state 
   const [filterType, setFilterType] = useState('sale')
   const [search, setSearch] = useState('')
+  const deferredSearch = useDeferredValue(search)
   const [selectedMinBudget, setSelectedMinBudget] = useState(null)
   const [selectedMaxBudget, setSelectedMaxBudget] = useState(null)
   const [selectedPropertyType, setSelectedPropertyType] = useState([])
@@ -37,6 +40,7 @@ export default function Filter({propertyMasterData, cityData}) {
   const [selectedProjectStatus, setSelectedProjectStatus] = useState([])
   const [selectedPostedBy, setSelectedPostedBy] = useState([])
   const [transactionBy, setTransactionBy] = useState({name: 'Buy', value: 'sale'})
+  const [citySelectionError, setCitySelectionError] = useState(false)
 
   const handlePopperOpen = (event: React.MouseEvent<HTMLElement>, type) => {
     setAnchorEl(event.currentTarget);
@@ -52,20 +56,45 @@ export default function Filter({propertyMasterData, cityData}) {
     setSelectedFurnishType([])
     setSelectedProjectStatus([])
     setSelectedPostedBy([])
-    setTransactionBy({name: 'Buy', value: 'rent'})
+    setTransactionBy({name: 'Buy', value: 'sale'})
     setSearch('')
-    setSearchCount(null)
+  }
+
+  const handleSearchClick = () => {
+    if (!selectedCity?.id) {
+      setCitySelectionError(true)
+      toast.error("Please select a city first")
+      return
+    }
+
+    setCitySelectionError(false)
+    window.location.href = `/projects/${selectedCity.id}`;
   }
 
   const { data: explorePropertyCount } = useQuery({
-    queryKey: ["explore-list", selectedCity, search, selectedMinBudget, selectedMaxBudget, selectedPropertyType, selectedPossessionStatus, selectedFurnishType, selectedProjectStatus, selectedPostedBy, transactionBy],
+    queryKey: [
+      "properties-count",
+      selectedCity?.id ?? null,
+      filterType,
+      deferredSearch,
+      selectedMinBudget?.value ?? null,
+      selectedMaxBudget?.value ?? null,
+      selectedPropertyType.map((i) => i?.id).join(","),
+      selectedPossessionStatus.map((i) => i?.value).join(","),
+      selectedFurnishType.map((i) => i?.value).join(","),
+      selectedProjectStatus.map((i) => i?.value).join(","),
+      selectedPostedBy.map((i) => i?.value).join(","),
+      transactionBy?.value ?? null,
+    ],
     queryFn: () => {
-      const listId = propertyMasterData.find(item => item.code == filterType)?.id
+      const listId = Array.isArray(propertyMasterData)
+        ? propertyMasterData.find(item => item.code == filterType)?.id
+        : null
       let payload: GetPropertiesCountPayload = {
         page: '1',
         limit: '5',
         ...(selectedCity?.id ? {cityId: selectedCity?.id ?? null,} : {}),
-        ...(search ? {search: search ?? null,} : {}),
+        ...(deferredSearch ? {search: deferredSearch ?? null,} : {}),
         ...(listId ? {listingTypeIds: listId ?? null,} : {}),
         ...(selectedPropertyType.length > 0 ? {propertyTypeIds: selectedPropertyType.map(item => item.id).join(',') ?? '',} : {}),
         ...(selectedFurnishType.length > 0 ? {furnishingTypes: selectedFurnishType.map(item => item.value).join(',') ?? '',} : {}),
@@ -77,29 +106,31 @@ export default function Filter({propertyMasterData, cityData}) {
       return getPropertiesCountApiHandler(payload);
     },
     select: (response: GetPropertiesCountResponse) => {
-      console.log("response", response);
       return response.count
     },
+    enabled: Boolean(selectedCity?.id) && Array.isArray(propertyMasterData) && propertyMasterData.length > 0,
+    // staleTime: 20_000,
   });
 
-  let allCities = cityData?.allCities ?? []
-  allCities = allCities.map((item => ({...item, label: item.name, value: item.id})))
+  const allCities = useMemo(() => {
+    const cities = cityData?.allCities ?? []
+    return Array.isArray(cities)
+      ? cities.map((item => ({...item, label: item.name, value: item.id})))
+      : []
+  }, [cityData])
 
-  const selectedCityValye = selectedCity ? {...selectedCity, label: selectedCity.name, value:selectedCity.id} : null
-
-  useEffect(() => {
-    if(explorePropertyCount != null){
-      setSearchCount(explorePropertyCount)
-    }
-  },[explorePropertyCount])
-
+  const selectedCityValue = useMemo(
+    () => (selectedCity ? {...selectedCity, label: selectedCity.name, value:selectedCity.id} : null),
+    [selectedCity]
+  )
+  
   return (
     <div className="flex flex-col gap-2">
       <div className="flex justify-center font-medium text-blue overflow-auto no-scrollbar">
         {
           filterTypeList.map((item, index) => {
             return(
-              <button onClick={() => handleFilterType(item.value)} className={`w-fit 2md:w-[110px] ${index == 0 ? '' : 'ml-2'} flex-shrink-0 ${filterType == item.value ? 'animated-button' : 'animated-button-white'} px-5 2md:px-8 py-1 2md:py-2 border border-transparent text-center cursor-pointer`}>
+              <button key={item.value} onClick={() => handleFilterType(item.value)} className={`w-fit 2md:w-[110px] ${index == 0 ? '' : 'ml-2'} flex-shrink-0 ${filterType == item.value ? 'animated-button' : 'animated-button-white'} px-5 2md:px-8 py-1 2md:py-2 border border-transparent text-center cursor-pointer`}>
           <span className="gap-3 relative flex justify-center">
             <p className={`text-nowrap text-xs 2md:text-sm 1xl:text-base`}>
               {item.label}
@@ -117,10 +148,11 @@ export default function Filter({propertyMasterData, cityData}) {
           <div className="flex-1">
             <DynamicAsyncAutocomplete
               isMulti={false}
-              isError={false}
+              isError={citySelectionError && !selectedCity?.id}
               placeholder={"City"}
               onChange={(value) => {
                 dispatch(setSelectedCity(value))
+                setCitySelectionError(false)
               }}
               loadOptions={async (inputValue: string) => {
                 if (!inputValue.trim()) return allCities;
@@ -131,7 +163,7 @@ export default function Filter({propertyMasterData, cityData}) {
                   )
                 );
               }}
-              value={selectedCityValye}
+              value={selectedCityValue}
               minHeight={"35px"}
               styles={{
                 "& .MuiOutlinedInput-root": {
@@ -199,7 +231,10 @@ export default function Filter({propertyMasterData, cityData}) {
             </div>
           </div>
           <div className="flex-1">
-            <button className="animated-button px-[30px] py-[9px] cursor-pointer ml-2 h-full w-[calc(100%-0.5rem)]">
+            <button
+              className="animated-button px-[30px] py-[9px] cursor-pointer ml-2 h-full w-[calc(100%-0.5rem)]"
+              onClick={handleSearchClick}
+            >
               <span className="flex items-center justify-center gap-[6px] relative z-11">
                 <Image
                   src="/assets/white-search.svg"
@@ -208,7 +243,11 @@ export default function Filter({propertyMasterData, cityData}) {
                   alt="Search"
                 />
                 <p className="text-nowrap font-medium text-xs lg:text-sm">
-                  {searchCount != null ? searchCount == 0 ? 'No Properties Availabel' : `View ${searchCount} Properties`  : 'Search'}
+                  {explorePropertyCount != null
+                    ? explorePropertyCount == 0
+                      ? 'No Properties Available'
+                      : `View ${explorePropertyCount} Properties`
+                    : 'Search'}
                 </p>
               </span>
             </button>
@@ -218,13 +257,14 @@ export default function Filter({propertyMasterData, cityData}) {
           <div className="flex-1">
             <DynamicAsyncAutocomplete
               isMulti={false}
-              isError={false}
+              isError={citySelectionError && !selectedCity?.id}
               placeholder={"City"}
               onChange={(value) => {
                 dispatch(setSelectedCity(value))
+                setCitySelectionError(false)
               }}
               loadOptions={async (inputValue: string) => {
-                if (!inputValue.trim()) return [];
+                if (!inputValue.trim()) return allCities;
 
                 return Promise.resolve(
                   allCities.filter(city =>
@@ -232,7 +272,7 @@ export default function Filter({propertyMasterData, cityData}) {
                   )
                 );
               }}
-              value={selectedCityValye}
+              value={selectedCityValue}
               minHeight={"35px"}
               styles={{
                 "& .MuiOutlinedInput-root": {
@@ -393,7 +433,7 @@ export default function Filter({propertyMasterData, cityData}) {
           </div>}
         </div>
         <div className="2md:hidden flex-1 mt-2">
-            <button className="animated-button px-[30px] py-[9px] cursor-pointer ml-2 h-full w-[calc(100%-0.5rem)]">
+            <button onClick={handleSearchClick} className="animated-button px-[30px] py-[9px] cursor-pointer ml-2 h-full w-[calc(100%-0.5rem)]">
               <span className="flex items-center justify-center gap-[6px] relative z-11">
                 <Image
                   src="/assets/white-search.svg"

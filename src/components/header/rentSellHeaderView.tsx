@@ -1,15 +1,15 @@
-import { getAboutusData, getSelectedCity } from "@/store/homeHeaderSlice";
+import { getAboutusData, getPropertyMasterData, getSelectedCity } from "@/store/homeHeaderSlice";
 import Image from "next/image";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 
-export default function RentSellHeaderView({propertyMasterData, type}) {
-  const selectedCity = useSelector(getSelectedCity)
-  const aboutusData = useSelector(getAboutusData)
-  console.log('propertyMasterData', propertyMasterData)
-  const [categoryType, setCategoryType] = useState('867c2adf-7e01-45a8-a305-74900b24c529') //residential
-
-  const category = propertyMasterData?.find(item => item.code == type)?.categories ?? []
+export default function RentSellHeaderView({ type }: { type: string }) {
+  const selectedCity = useSelector(getSelectedCity);
+  const aboutusData = useSelector(getAboutusData);
+  const propertyMasterData = useSelector(getPropertyMasterData);
+  const category = (Array.isArray(propertyMasterData) ? propertyMasterData : [])?.find((item: { code: string }) => item.code == type)?.categories ?? [];
+  const defaultCategoryId = category.find((item: { code: string }) => item.code == 'residential')?.id ?? category[0]?.id;
+  const [categoryType, setCategoryType] = useState(defaultCategoryId); // residential
   const propertyList = category?.find(item => item.id == categoryType)?.propertyTypes ?? []
   return (
     <div className="flex  flex-col 2md:flex-row justify-start overflow-hidden rounded-xl h-full 2md:h-[280px]">

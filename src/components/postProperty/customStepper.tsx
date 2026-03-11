@@ -1,5 +1,5 @@
 "use client";
-import { useStepProgress } from "@/hooks/useStepProgress";
+import { useStepProgress } from "@/api/hooks/useStepProgress";
 import { Step1DetailsResponse, step1PostPropertyDetailsApiHandler } from "@/services/postProperty";
 import { getActiveStep, getStepList, setActiveStep, step, updateStepProgress } from "@/store/postPropertyProgress";
 import { step1Data } from "@/store/postPropertySlice";

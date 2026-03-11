@@ -6,7 +6,7 @@ import CustomCheckbox from "../common/checkbox";
 const QuillEditor = dynamic(() => import("../common/editor"), { ssr: false });
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import { useStepProgress } from "@/hooks/useStepProgress";
+import { useStepProgress } from "@/api/hooks/useStepProgress";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { getActiveStep, setActiveStep, setTotalProgress } from "@/store/postPropertyProgress";
@@ -84,7 +84,6 @@ export default function Step3({containerRef}) {
   const [errors, setErrors] = useState<any>({});
   const [popupOpen, setPopupOpen] = useState(false);
   const [openAmenitiesPopup, setOpenAmenitiesPopup] = useState(false)
-  console.log('step3 state details', dynamicFieldDetails,errors)
 
   const handleUpdateFurnishedCount = (name: string, value: number) => {
     let updatedData = [...dynamicFieldDetails.furnishingsCounts];
@@ -399,7 +398,6 @@ export default function Step3({containerRef}) {
         hasError = true;
       }
     }
-    console.log('step3 validation error', updatedError)
     setErrors(updatedError)
     return {hasError: hasError, errorData: updatedError};
   }
@@ -449,7 +447,6 @@ export default function Step3({containerRef}) {
     return step3PostPropertyDetailsApiHandler(String(params?.propertyId ?? ''));
   },
   select: (resposne: Step3DetailsResponse) => {
-    console.log('step3 details',resposne)
     return resposne
   },
   enabled: params?.propertyId ? true : false,
@@ -482,7 +479,6 @@ const { data: amenitiesList } = useQuery({
     let updatedData = resposne?.map(item => {
       return item.name
     }) ?? []
-    console.log('amenities list',updatedData)
     return updatedData
   },
   staleTime: 0,
@@ -521,11 +517,9 @@ const { data: amenitiesList } = useQuery({
       return await step3PostPropertyCreateApiHandler(payload);
     },
     onSuccess: (response: Step3PostPropertyResponse) => {
-      console.log("step3 success response", response);
       dispatch(setActiveStep({step: activeStep + 1}))
     },
     onError: (error: any) => {
-      console.log("step3 error response", error);
       if(Array.isArray(error.message)){
         error.message.map((item: string) => {
           toast.error(item)

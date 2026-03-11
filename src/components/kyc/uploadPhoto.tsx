@@ -40,7 +40,6 @@ export default function UploadPhoto() {
       video: true,
     }); 
 
-    console.log('mediaStream',mediaStream)
     setStream(mediaStream);
     setShowCamera(true);
 
@@ -84,7 +83,6 @@ export default function UploadPhoto() {
       return await uploadFileToS3ApiHandler(payload);
     },
     onError: (error: any) => {
-      console.log("file upload s3 api", error);
       if (Array.isArray(error.message)) {
         error.message.map((item: string) => {
           toast.error(item);
@@ -102,7 +100,6 @@ export default function UploadPhoto() {
       return await getFileUploadUrlApiHandler(payload);
     },
     onError: (error: any) => {
-      console.log("get file url api", error);
       if (Array.isArray(error.message)) {
         error.message.map((item: string) => {
           toast.error(item);
@@ -140,7 +137,6 @@ export default function UploadPhoto() {
       return livePhotoGetApiHandler();
     },
     select: (resposne: LivePhotoGetResponse) => {
-      console.log("uploadDetails", resposne);
       return resposne;
     },
     staleTime: 0,
@@ -294,7 +290,7 @@ export default function UploadPhoto() {
           disabled={ownerLoader || uploadLoader}
         >
           <span className="gap-3 relative flex justify-center">
-                <p className={`text-nowrap`}>Submit</p>
+                <p className={`text-nowrap`}>{'Submit'}</p>
             </span>
         </button>}
       </div>

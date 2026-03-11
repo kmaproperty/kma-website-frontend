@@ -19,14 +19,12 @@ export default function DocumentSigned() {
     return await ChannelPartnerAgreementApiHandler(url);
     },
     onSuccess: (response: ChannelPartnerAgreementResponse) => {
-    console.log("agreement response", response);
     if (response.url) {
         window.open(response.url, "_blank");
     }
 
     },
     onError: (error: any) => {
-    console.log("owner create error", error);
     if(Array.isArray(error.message)){
         error.message.map((item: string) => {
         toast.error(item)

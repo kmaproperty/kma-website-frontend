@@ -2,24 +2,37 @@
 import Image from "next/image";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Slider from "react-slick";
+import { joinUrl } from "@/lib/helper";
+
+const NON_RESIDENTIAL_TYPES = new Set([
+  "Office",
+  "Plot",
+  "Retail Shop",
+  "Warehouse",
+  "Showroom",
+  "Agricultural Land",
+]);
 
 export default function TopProperties({ topProperties }) {
-  const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
+  const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
   const sliderRef = useRef(null);
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const settings = {
-    vertical: true,
-    verticalSwiping: true,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    infinite: false,
-    arrows: false,
-    speed: 400,
-    beforeChange: (_, next) => setCurrentSlide(next),
-  };
+  const settings = useMemo(
+    () => ({
+      vertical: true,
+      verticalSwiping: true,
+      slidesToShow: 1,
+      slidesToScroll: 1,
+      infinite: false,
+      arrows: false,
+      speed: 400,
+      beforeChange: (_: unknown, next: number) => setCurrentSlide(next),
+    }),
+    []
+  );
 
   const isFirst = currentSlide === 0;
   const isLast = currentSlide === topProperties.length - 1;
@@ -35,19 +48,21 @@ export default function TopProperties({ topProperties }) {
         <div className="flex-1 min-w-0">
           <Slider ref={sliderRef} {...settings}>
             {topProperties.map((item, index) => {
-              const img =
-                item.images.length > 0 ? item.images[0]?.fileKey : null;
+              const img = item?.images?.length > 0 ? item.images[0]?.fileKey : null;
+              const imgSrc = img ? joinUrl(profileBaseUrl, img) : "";
+              const isResidential = !NON_RESIDENTIAL_TYPES.has(item?.propertyType);
               return (
-                <div key={index}>
+                <div key={item?.id ?? item?.propertyId ?? index}>
                   <div className="flex justify-start gap-2 2md:gap-3">
                     <div className="w-[110px] flex-shrink-0">
-                      {img ? (
+                      {imgSrc ? (
                         <Image
-                          src={profileBaseUrl + img}
+                          src={imgSrc}
                           width={100}
                           height={100}
                           alt="property"
                           className="rounded-[8px] w-[110px] h-[110px] object-cover"
+                          sizes="110px"
                         />
                       ) : (
                         <div className="w-[110px] h-[110px] rounded-[8px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 flex items-center justify-center">
@@ -76,14 +91,7 @@ export default function TopProperties({ topProperties }) {
                       </p>
 
                       <div className="flex flex-col 2md:flex-row gap-3 2md:items-center">
-                        {![
-                          "Office",
-                          "Plot",
-                          "Retail Shop",
-                          "Warehouse",
-                          "Showroom",
-                          "Agricultural Land",
-                        ].includes(item.propertyType) && (
+                        {isResidential && (
                           <div className="flex gap-1">
                             <Image
                               alt="bed"
@@ -98,14 +106,7 @@ export default function TopProperties({ topProperties }) {
                           </div>
                         )}
 
-                        {![
-                          "Office",
-                          "Plot",
-                          "Retail Shop",
-                          "Warehouse",
-                          "Showroom",
-                          "Agricultural Land",
-                        ].includes(item.propertyType) && (
+                        {isResidential && (
                           <div className="flex gap-1">
                             <Image
                               alt="bath"

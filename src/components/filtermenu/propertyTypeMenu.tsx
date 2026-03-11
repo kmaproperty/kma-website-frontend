@@ -2,9 +2,11 @@ import { Checkbox } from "@mui/material";
 import { useState } from "react";
 
 export default function PropertyTypeMenu({isCommercial = false, propertyMasterData, filterType, selectedPropertyType, setSelectedPropertyType}){
-  const [category, setCategory] = useState(isCommercial ? '425df69f-8bd3-4050-8db6-b4093ea5d0b2' : '867c2adf-7e01-45a8-a305-74900b24c529')
-
   const categoryList = propertyMasterData.find(item => item.code == filterType)?.categories ?? []
+  const defaultCategory = isCommercial
+    ? categoryList.find(item => item.code == 'commercial')?.id
+    : categoryList.find(item => item.code == 'residential')?.id
+  const [category, setCategory] = useState(defaultCategory ?? categoryList[0]?.id)
   const propertyTypeList = categoryList.find(item => item.id == category)?.propertyTypes ?? []
   
   return(
