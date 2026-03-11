@@ -244,8 +244,6 @@ export interface GetEndUserPropertiesPayload {
   sortBy?: "price" | "createdAt" | "updatedAt" | string;
   sortOrder?: "ASC" | "DESC" | string;
   postedBy?: CsvParam;
-  sessionId?: string;
-  xSessionId?: string;
   correlationId?: string;
 }
 
@@ -523,8 +521,6 @@ export const getEndUserPropertiesAction = async ({
   sortBy,
   sortOrder,
   postedBy,
-  sessionId,
-  xSessionId,
   correlationId,
 }: GetEndUserPropertiesPayload): Promise<
   GetEndUserPropertiesResponse | EndUserPropertySummary[]
@@ -554,11 +550,9 @@ export const getEndUserPropertiesAction = async ({
           sortBy,
           sortOrder,
           postedBy: toCsvParam(postedBy),
-          sessionId,
         },
         headers: {
           "x-correlation-id": correlationId ?? getCorrelationId(),
-          ...(sessionId ? { "X-Session-Id": sessionId } : {}),
         },
       }
     );
@@ -586,7 +580,6 @@ export const getEndUserPropertiesCountAction = async ({
   sortBy,
   sortOrder,
   postedBy,
-  sessionId,
   correlationId,
 }: GetEndUserPropertiesPayload): Promise<GetEndUserPropertiesCountResponse> => {
   try {
@@ -607,14 +600,10 @@ export const getEndUserPropertiesCountAction = async ({
           latitude,
           longitude,
           radius,
-          // sortBy,
-          // sortOrder,
           postedBy: toCsvParam(postedBy),
-          sessionId,
         },
         headers: {
           "x-correlation-id": correlationId ?? getCorrelationId(),
-          ...(sessionId ? { "X-Session-Id": sessionId } : {}),
         },
       }
     );

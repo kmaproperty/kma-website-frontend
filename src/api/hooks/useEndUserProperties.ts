@@ -6,7 +6,6 @@ import {
   GetEndUserPropertiesPayload,
   GetEndUserPropertiesResponse,
 } from "@/api/actions/propertyActions";
-import { useSessionStore } from "@/store/useSessionStore";
 import { useQuery } from "@tanstack/react-query";
 
 interface UseEndUserPropertiesOptions {
@@ -15,26 +14,20 @@ interface UseEndUserPropertiesOptions {
 
 type EndUserPropertiesQueryParams = Omit<
   GetEndUserPropertiesPayload,
-  "xSessionId" | "correlationId"
+  "correlationId"
 >;
 
 export const useEndUserProperties = (
   params: EndUserPropertiesQueryParams = {},
   options: UseEndUserPropertiesOptions = {}
 ) => {
-  const sessionId = useSessionStore((state) => state.sessionId);
-
   return useQuery<
     GetEndUserPropertiesResponse | EndUserPropertySummary[],
     unknown,
     EndUserPropertySummary[]
   >({
-    queryKey: ["end-user-properties", params, sessionId ?? null],
-    queryFn: () =>
-      getEndUserPropertiesAction({
-        ...params,
-        // xSessionId: sessionId ?? undefined,
-      }),
+    queryKey: ["end-user-properties", params],
+    queryFn: () => getEndUserPropertiesAction(params),
     select: (response) => {
       if (Array.isArray(response)) {
         return response;
@@ -50,15 +43,9 @@ export const useEndUserPropertiesCount = (
   params: EndUserPropertiesQueryParams = {},
   options: UseEndUserPropertiesOptions = {}
 ) => {
-  const sessionId = useSessionStore((state) => state.sessionId);
-
   return useQuery<GetEndUserPropertiesCountResponse, unknown, number>({
-    queryKey: ["end-user-properties-count", params, sessionId ?? null],
-    queryFn: () =>
-      getEndUserPropertiesCountAction({
-        ...params,
-        xSessionId: sessionId ?? undefined,
-      }),
+    queryKey: ["end-user-properties-count", params],
+    queryFn: () => getEndUserPropertiesCountAction(params),
     select: (response) => response?.count ?? 0,
     enabled: options.enabled ?? true,
     staleTime: 60_000,
