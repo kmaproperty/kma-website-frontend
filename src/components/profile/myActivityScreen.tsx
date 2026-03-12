@@ -2,11 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, Maximize2, Search } from "lucide-react";
+import { ChevronDown, Heart, Maximize2, Search } from "lucide-react";
 import { useMemo, useState, useEffect } from "react";
 import { useRecentlyViewedProperties } from "@/api/hooks/useRecentlyViewedProperties";
 import { useRecentlySearched } from "@/api/hooks/useRecentlySearched";
 import { useContactedProperties } from "@/api/hooks/useContactedProperties";
+import { useFavoriteProperties } from "@/api/hooks/useFavoriteProperties";
 import type { RecentSearchItem } from "@/api/actions/propertyActions";
 import type { Project } from "@/app/projects/_types";
 import { mapApiPropertyToProject } from "@/app/projects/_utils/mapApiPropertyToProject";
@@ -25,6 +26,7 @@ const toFullAssetUrl = (value?: string | null) => {
 
 type ActivitySection = "recentSearch" | "saved" | "contacted" | "recentlyViewed";
 type PropertyIntent = "buy" | "rent" | "commercial";
+type SortType = "latest" | "price_low_high" | "price_high_low";
 
 const ACTIVITY_TABS: Array<{ key: ActivitySection; label: string; icon: string }> = [
   { key: "recentSearch", label: "Recently Search", icon: "/assets/home-search-blue.svg" },
@@ -142,25 +144,16 @@ function RecentSearchCardRow({ search }: { search: RecentSearchItem }) {
   );
 }
 
-const mockSavedCards = Array.from({ length: 6 }).map((_, index) => ({
-  id: index + 1,
-  title: "Royal Apartment",
-  address: "25, Willow Crest Apartment",
-  listedOn: "25 May 2025",
-  possession: "Ready to move",
-  rating: "5.0",
-  price: "₹ 40,000",
-  type: "Apartment",
-  intent: (index % 3 === 0 ? "rent" : index % 2 === 0 ? "commercial" : "buy") as PropertyIntent,
-  beds: 2,
-  baths: 2,
-  area: "350 Sq Ft",
-}));
-
 export default function MyActivityScreen() {
   const [activeSection, setActiveSection] = useState<ActivitySection>("recentlyViewed");
   const [activeIntent, setActiveIntent] = useState<PropertyIntent>("buy");
+  const [sortBy, setSortBy] = useState<SortType>("latest");
+  const [searchSortBy, setSearchSortBy] = useState<"recent" | "relevance">("recent");
   const [currentPage, setCurrentPage] = useState(1);
+
+  const listingTypeApi = activeIntent === "buy" ? "sale" : activeIntent === "rent" ? "rent" : undefined;
+  const sortApi: "newest" | "oldest" | "price_high" | "price_low" | undefined =
+    sortBy === "latest" ? "newest" : sortBy === "price_low_high" ? "price_low" : sortBy === "price_high_low" ? "price_high" : "newest";
 
   const {
     properties: apiRecentlyViewed,
@@ -171,6 +164,8 @@ export default function MyActivityScreen() {
   } = useRecentlyViewedProperties({
     page: currentPage,
     limit: PAGE_SIZE,
+    listingType: listingTypeApi,
+    sort: sortApi,
     enabled: activeSection === "recentlyViewed",
   });
 
@@ -183,7 +178,7 @@ export default function MyActivityScreen() {
   } = useRecentlySearched({
     page: currentPage,
     limit: RECENT_SEARCH_PAGE_SIZE,
-    sortBy: "recent",
+    sortBy: searchSortBy,
     enabled: activeSection === "recentSearch",
   });
 
@@ -196,7 +191,23 @@ export default function MyActivityScreen() {
   } = useContactedProperties({
     page: currentPage,
     limit: PAGE_SIZE,
+    listingType: listingTypeApi,
+    sort: sortApi,
     enabled: activeSection === "contacted",
+  });
+
+  const {
+    properties: favoriteProperties,
+    total: favoritesTotal,
+    totalPages: favoritesTotalPages,
+    isPending: isFavoritesLoading,
+    isError: isFavoritesError,
+  } = useFavoriteProperties({
+    page: currentPage,
+    limit: PAGE_SIZE,
+    listingType: listingTypeApi,
+    sort: sortApi,
+    enabled: activeSection === "saved",
   });
 
   const mapOptions = useMemo(() => ({ toFullAssetUrl, fallbackImage }), []);
@@ -209,10 +220,9 @@ export default function MyActivityScreen() {
     return contactedProperties.map((item) => mapApiPropertyToProject(item, mapOptions));
   }, [contactedProperties, mapOptions]);
 
-  const filteredMockSaved = useMemo(
-    () => mockSavedCards.filter((card) => card.intent === activeIntent),
-    [activeIntent]
-  );
+  const savedProjects = useMemo<Project[]>(() => {
+    return favoriteProperties.map((item) => mapApiPropertyToProject(item, mapOptions));
+  }, [favoriteProperties, mapOptions]);
 
   const activityTabsWithCount = useMemo(
     () =>
@@ -225,16 +235,19 @@ export default function MyActivityScreen() {
               ? String(recentlySearchedTotal)
               : tab.key === "contacted"
                 ? String(contactedTotal)
-                : String(mockSavedCards.length),
+                : tab.key === "saved"
+                  ? String(favoritesTotal)
+                  : "0",
       })),
-    [recentlyViewedTotal, recentlySearchedTotal, contactedTotal]
+    [recentlyViewedTotal, recentlySearchedTotal, contactedTotal, favoritesTotal]
   );
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeSection]);
+  }, [activeSection, activeIntent, sortBy, searchSortBy]);
 
-  const showIntentFilter = activeSection === "saved";
+  const showIntentFilter = activeSection === "saved" || activeSection === "recentlyViewed" || activeSection === "contacted";
+  const showSortFilter = activeSection === "recentlyViewed" || activeSection === "contacted" || activeSection === "saved" || activeSection === "recentSearch";
 
   return (
     <div className="rounded-2xl bg-white p-4 sm:p-4.5 lg:p-5">
@@ -283,6 +296,39 @@ export default function MyActivityScreen() {
               </label>
             );
           })}
+        </div>
+      )}
+
+      {showSortFilter && (
+        <div className="mt-4 flex flex-wrap items-center justify-end gap-2">
+          <label htmlFor="activity-sort" className="text-sm font-medium text-[#343A4F]">
+            Sort By :
+          </label>
+          <div className="relative">
+            {activeSection === "recentSearch" ? (
+              <select
+                id="activity-sort"
+                value={searchSortBy}
+                onChange={(e) => setSearchSortBy(e.target.value as "recent" | "relevance")}
+                className="h-9 min-w-[140px] appearance-none rounded border border-[#E3E6EF] bg-[#F8F9FC] pl-3 pr-8 text-sm text-[#6B7280] outline-none"
+              >
+                <option value="recent">Most recent</option>
+                <option value="relevance">Relevance</option>
+              </select>
+            ) : (
+              <select
+                id="activity-sort"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as SortType)}
+                className="h-9 min-w-[140px] appearance-none rounded border border-[#E3E6EF] bg-[#F8F9FC] pl-3 pr-8 text-sm text-[#6B7280] outline-none"
+              >
+                <option value="latest">Relevance</option>
+                <option value="price_low_high">Price: Low to High</option>
+                <option value="price_high_low">Price: High to Low</option>
+              </select>
+            )}
+            <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9CA3AF]" />
+          </div>
         </div>
       )}
 
@@ -445,71 +491,57 @@ export default function MyActivityScreen() {
         </>
       )}
 
-      {/* Saved (mock) */}
+      {/* Saved (favorites API) */}
       {activeSection === "saved" && (
-        <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {filteredMockSaved.map((card) => (
-            <article
-              key={card.id}
-              className="overflow-hidden rounded-xl border border-[#E4E7EE] bg-white shadow-[0_2px_10px_rgba(17,24,39,0.05)]"
-            >
-              <div className="relative h-[145px] bg-gradient-to-tr from-[#8097d9] via-[#9fb2e6] to-[#f0c49e] px-2.5 pt-2.5">
-                <span className="absolute right-2.5 top-2.5 rounded-md bg-[#7659FF] px-2 py-[3px] text-[10px] font-medium text-white">
-                  {card.type}
-                </span>
-                <div className="absolute left-2.5 top-2.5 inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/70 bg-white/80 text-[11px] font-semibold text-[#0C145E]">
-                  P
-                </div>
+        <>
+          {isFavoritesLoading && (
+            <div className="mt-4 flex min-h-[200px] items-center justify-center rounded-xl border border-border bg-[#F5F6FA] py-12">
+              <p className="text-sm text-text-gray">Loading saved properties…</p>
+            </div>
+          )}
+          {isFavoritesError && !isFavoritesLoading && (
+            <div className="mt-4 rounded-xl border border-border bg-[#F5F6FA] p-8 text-center text-sm text-text-gray">
+              Unable to load saved properties. Please try again later.
+            </div>
+          )}
+          {!isFavoritesLoading && !isFavoritesError && savedProjects.length === 0 && (
+            <div className="mt-4 rounded-xl border border-border bg-white p-8 text-center text-text-gray">
+              No saved properties yet.
+            </div>
+          )}
+          {!isFavoritesLoading && !isFavoritesError && savedProjects.length > 0 && (
+            <>
+              <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+                {savedProjects.map((project) => (
+                  <ActivityPropertyCard key={project.id} project={project} />
+                ))}
               </div>
-
-              <div className="p-3">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="flex items-center gap-1 text-xs text-[#FFB300]">
-                      <span>★★★★★</span>
-                      <span className="text-text-gray">{card.rating}</span>
-                    </div>
-                    <h3 className="mt-1 text-[16px] leading-[1.1] font-semibold text-text-black">{card.title}</h3>
-                  </div>
-                  <button type="button" className="mt-1 text-text-gray transition hover:text-blue" aria-label="Add to favourites">
-                    <Heart className="h-3.5 w-3.5" />
+              {favoritesTotalPages > 1 && (
+                <div className="mt-4 flex justify-end gap-2">
+                  <button
+                    type="button"
+                    disabled={currentPage <= 1}
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    className="rounded-lg border border-border bg-white px-3 py-1.5 text-sm disabled:opacity-50"
+                  >
+                    Previous
+                  </button>
+                  <span className="flex items-center px-2 text-sm text-text-gray">
+                    {currentPage} / {favoritesTotalPages}
+                  </span>
+                  <button
+                    type="button"
+                    disabled={currentPage >= favoritesTotalPages}
+                    onClick={() => setCurrentPage((p) => p + 1)}
+                    className="rounded-lg border border-border bg-white px-3 py-1.5 text-sm disabled:opacity-50"
+                  >
+                    Next
                   </button>
                 </div>
-
-                <p className="mt-1.5 flex items-center gap-1 text-xs text-text-gray">
-                  <Image src="/assets/location-blue.svg" width={11} height={11} alt="location" />
-                  <span>{card.address}</span>
-                </p>
-
-                <p className="mt-1.5 text-[18px] leading-none font-semibold text-[#111A67]">{card.price}</p>
-
-                <div className="mt-2 border-t border-border pt-2 text-xs text-text-gray">
-                  <p>
-                    Listed on : <span className="text-text-black">{card.listedOn}</span>
-                  </p>
-                  <p className="mt-1">
-                    Possession status: <span className="text-text-black">{card.possession}</span>
-                  </p>
-                </div>
-
-                <div className="mt-2.5 flex items-center gap-1.5 border-t border-border pt-2.5">
-                  <div className="inline-flex items-center gap-1 rounded-md border border-border px-1.5 py-1 text-[11px] text-text-black">
-                    <Image src="/assets/bed.svg" width={11} height={11} alt="bed" />
-                    <span>{card.beds} Bed</span>
-                  </div>
-                  <div className="inline-flex items-center gap-1 rounded-md border border-border px-1.5 py-1 text-[11px] text-text-black">
-                    <Image src="/assets/bath.svg" width={11} height={11} alt="bath" />
-                    <span>{card.baths} Bath</span>
-                  </div>
-                  <div className="inline-flex items-center gap-1 rounded-md border border-border px-1.5 py-1 text-[11px] text-text-black">
-                    <Maximize2 className="h-[10px] w-[10px] text-text-gray" />
-                    <span>{card.area}</span>
-                  </div>
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
+              )}
+            </>
+          )}
+        </>
       )}
     </div>
   );

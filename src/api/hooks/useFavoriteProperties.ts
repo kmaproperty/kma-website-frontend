@@ -1,13 +1,12 @@
 import {
-  getRecentlyViewedAction,
-  GetRecentlyViewedResponse,
+  getFavoritePropertiesAction,
+  GetFavoritePropertiesResponse,
 } from "@/api/actions/propertyActions";
-import { useSessionStore } from "@/store/useSessionStore";
 import { useQuery } from "@tanstack/react-query";
 
-export const RECENTLY_VIEWED_QUERY_KEY = "end-user-recently-viewed";
+export const FAVORITE_PROPERTIES_QUERY_KEY = "end-user-favorites";
 
-interface UseRecentlyViewedPropertiesParams {
+interface UseFavoritePropertiesParams {
   page?: number;
   limit?: number;
   listingType?: "sale" | "rent";
@@ -15,24 +14,21 @@ interface UseRecentlyViewedPropertiesParams {
   enabled?: boolean;
 }
 
-export function useRecentlyViewedProperties({
+export function useFavoriteProperties({
   page = 1,
   limit = 20,
   listingType,
   sort,
   enabled = true,
-}: UseRecentlyViewedPropertiesParams = {}) {
-  const sessionId = useSessionStore((state) => state.sessionId);
-
-  const query = useQuery<GetRecentlyViewedResponse>({
-    queryKey: [RECENTLY_VIEWED_QUERY_KEY, page, limit, listingType ?? null, sort ?? null, sessionId ?? null],
+}: UseFavoritePropertiesParams = {}) {
+  const query = useQuery<GetFavoritePropertiesResponse>({
+    queryKey: [FAVORITE_PROPERTIES_QUERY_KEY, page, limit, listingType ?? null, sort ?? null],
     queryFn: () =>
-      getRecentlyViewedAction({
+      getFavoritePropertiesAction({
         page,
         limit,
         listingType,
         sort,
-        xSessionId: sessionId ?? undefined,
       }),
     enabled,
     staleTime: 60_000,

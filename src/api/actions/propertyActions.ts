@@ -273,6 +273,8 @@ export interface GetEndUserPropertiesCountResponse {
 export interface GetRecentlyViewedPayload {
   page?: number;
   limit?: number;
+  listingType?: "sale" | "rent";
+  sort?: "newest" | "oldest" | "price_high" | "price_low";
   xSessionId?: string;
   correlationId?: string;
 }
@@ -321,11 +323,31 @@ export interface GetRecentlySearchedResponse {
 export interface GetContactedPropertiesPayload {
   page?: number;
   limit?: number;
+  listingType?: "sale" | "rent";
+  sort?: "newest" | "oldest" | "price_high" | "price_low";
   xSessionId?: string;
   correlationId?: string;
 }
 
 export interface GetContactedPropertiesResponse {
+  success?: boolean;
+  properties: EndUserPropertySummary[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+/** GET /end-user/favorites - paginated list of properties favorited by the logged-in user */
+export interface GetFavoritePropertiesPayload {
+  page?: number;
+  limit?: number;
+  listingType?: "sale" | "rent";
+  sort?: "newest" | "oldest" | "price_high" | "price_low";
+  correlationId?: string;
+}
+
+export interface GetFavoritePropertiesResponse {
   success?: boolean;
   properties: EndUserPropertySummary[];
   total: number;
@@ -618,6 +640,8 @@ export const getEndUserPropertiesCountAction = async ({
 export const getRecentlyViewedAction = async ({
   page = 1,
   limit = 20,
+  listingType,
+  sort,
   xSessionId,
   correlationId,
 }: GetRecentlyViewedPayload): Promise<GetRecentlyViewedResponse> => {
@@ -625,7 +649,12 @@ export const getRecentlyViewedAction = async ({
     const response = await axiosInstance.get<GetRecentlyViewedResponse>(
       "end-user/recently-viewed",
       {
-        params: { page, limit },
+        params: {
+          page,
+          limit,
+          ...(listingType ? { listingType } : {}),
+          ...(sort ? { sort } : {}),
+        },
         headers: {
           "x-correlation-id": correlationId ?? getCorrelationId(),
           ...(xSessionId ? { "X-Session-Id": xSessionId } : {}),
@@ -682,6 +711,8 @@ export const getRecentlySearchedAction = async ({
 export const getContactedPropertiesAction = async ({
   page = 1,
   limit = 20,
+  listingType,
+  sort,
   xSessionId,
   correlationId,
 }: GetContactedPropertiesPayload): Promise<GetContactedPropertiesResponse> => {
@@ -689,10 +720,52 @@ export const getContactedPropertiesAction = async ({
     const response = await axiosInstance.get<GetContactedPropertiesResponse>(
       "end-user/contacted-properties",
       {
-        params: { page, limit },
+        params: {
+          page,
+          limit,
+          ...(listingType ? { listingType } : {}),
+          ...(sort ? { sort } : {}),
+        },
         headers: {
           "x-correlation-id": correlationId ?? getCorrelationId(),
           ...(xSessionId ? { "X-Session-Id": xSessionId } : {}),
+        },
+      }
+    );
+    const data = response.data;
+    return {
+      success: data?.success ?? true,
+      properties: Array.isArray(data?.properties) ? data.properties : [],
+      total: data?.total ?? 0,
+      page: data?.page ?? page,
+      limit: data?.limit ?? limit,
+      totalPages: data?.totalPages ?? 1,
+    };
+  } catch (error: unknown) {
+    throw getErrorPayload(error);
+  }
+};
+
+/** GET /end-user/favorites - paginated list of properties favorited by the logged-in user */
+export const getFavoritePropertiesAction = async ({
+  page = 1,
+  limit = 20,
+  listingType,
+  sort,
+  correlationId,
+}: GetFavoritePropertiesPayload): Promise<GetFavoritePropertiesResponse> => {
+  try {
+    const response = await axiosInstance.get<GetFavoritePropertiesResponse>(
+      "end-user/favorites",
+      {
+        params: {
+          page,
+          limit,
+          ...(listingType ? { listingType } : {}),
+          ...(sort ? { sort } : {}),
+        },
+        headers: {
+          "x-correlation-id": correlationId ?? getCorrelationId(),
         },
       }
     );
