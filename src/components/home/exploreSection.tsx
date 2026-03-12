@@ -188,10 +188,10 @@ export default function ExploreSection({explorePropertyList}) {
                 animate={isInView ? 'visible' : 'hidden'}
               >
               <div
-                className={`h-[180px] rounded-xl ${dummyData.bg} flex flex-col items-center justify-center`}
+                className={`h-[180px] rounded-xl ${dummyData?.bg} flex flex-col items-center justify-center`}
               >
                 <img
-                  src={dummyData.icon}
+                  src={dummyData?.icon}
                   alt={item.name}
                   className="w-14 h-14 mb-6"
                 />

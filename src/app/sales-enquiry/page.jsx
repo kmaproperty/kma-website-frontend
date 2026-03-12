@@ -1,4 +1,4 @@
-// import HomdeHeader from '@/components/header/homeHeader'
+import HomdeHeader from '@/components/header/homeHeader'
 import { BadgePercent, CircleCheckBig, House, Lightbulb, ListCheck, ListChecks, Mail, MapPin, Phone, PhoneCall, PhoneIncoming, Section } from 'lucide-react';
 import PageTitle from '@/components/common/PageTitle';
 import { TbBulb } from "react-icons/tb";
@@ -27,7 +27,7 @@ const SalesEnquiry = () => {
         <div>
             <div className="relative pt-[25px] h-[100vh] max-h-[600px]" style={{ backgroundImage: 'url(assets/app/sales-enquiry-bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'bottom' }}>
                 <div className="w-[75%] mx-auto">
-                    {/* <HomdeHeader /> */}
+                    <HomdeHeader />
                 </div>
                 <div className="w-[75%] max-w-[600px] mx-auto mt-[150px]">
                     <PageTitle
@@ -58,7 +58,7 @@ const SalesEnquiry = () => {
                     </span>
                 </button>
             </div>
-            <div className='w-full py-[100px] px-[50px]'>
+            <div className='w-full py-[80px] px-[50px]'>
                 <div className='max-w-[1444px] mx-auto'>
                     <SectionHeading title="" subtitle="KMA Headquarters" type={'left'} color='' lineTop={false}
                         description=""
@@ -69,11 +69,11 @@ const SalesEnquiry = () => {
                     </div>
                     <div className='flex items-center gap-3 mt-3'>
                         <Phone className='w-5 h-5 text-[#7575BC]' />
-                        <a href='tel:+919876543210' className='text-md font-normal text-[#888888] mb-0'>+91 9876543210</a>
+                        <a href='tel:+919876543210' className='text-md font-normal text-[#0D1520] mb-0'>+91 9876543210</a>
                     </div>
                     <div className='flex items-center gap-3 mt-3'>
                         <Mail className='w-5 h-5 text-[#7575BC]' />
-                        <a href='mailto:info@kma.com' className='text-md font-normal text-[#888888] mb-0'>info@kma.com</a>
+                        <a href='mailto:info@kma.com' className='text-md font-normal text-[#0D1520] mb-0'>info@kma.com</a>
                     </div>
                 </div>
             </div>

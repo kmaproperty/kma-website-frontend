@@ -17,7 +17,7 @@ import { FaFacebook, FaLinkedin, FaTwitter, FaYoutube } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { getSelectedCity } from "@/store/homeHeaderSlice";
 import { useHeaderStore } from "@/store/useHeaderStore";
-import { useEffect } from "react";
+import { use, useEffect, useState } from "react";
 import BannerSlider from "../home/bannerSlider";
 import HeaderDataSync from "@/components/header/HeaderDataSync";
 
@@ -27,6 +27,24 @@ export default function AboutUsComponent({
 }) {
   const selectedCity = useSelector(getSelectedCity);
   const { fetchCities } = useHeaderStore();
+  const [companyStats, setCompanyStats] = useState([
+    {
+      title: "Active Listing",
+      value: "10Lac+",
+    },
+    {
+      title: "Projects across India",
+      value: "15,000",
+    },
+    {
+      title: "Happy Customers",
+      value: "10,000+",
+    },
+    {
+      title: "Channel Partners accross India",
+      value: "500+",
+    },
+  ])
 
   useEffect(() => {
     if (!propertyCitiesData) {
@@ -104,43 +122,23 @@ export default function AboutUsComponent({
                 </p>
               </div>
             </div>
-            <div className="w-full  px-8 py-3 rounded-lg border border-dashed border-gray-400 grid grid-cols-4 gap-10 justify-between mt-7">
-              <div>
-                <h3 className="text-[36px] font-semibold text-[#010048]">
-                  10Lac+
-                </h3>
-                <p className={`text-[#5C727D] text-md leading-7 font-normal`}>
-                  Active Listing
-                </p>
-              </div>
-              <div>
-                <h3 className="text-[36px] font-semibold text-[#010048]">
-                  15,000
-                </h3>
-                <p className={`text-[#5C727D] text-md leading-7 font-normal`}>
-                  Projects across India
-                </p>
-              </div>
-              <div>
-                <h3 className="text-[36px] font-semibold text-[#010048]">
-                  10,000+
-                </h3>
-                <p className={`text-[#5C727D] text-md leading-7 font-normal`}>
-                  Happy Customers
-                </p>
-              </div>
-              <div>
-                <h3 className="text-[36px] font-semibold text-[#010048]">
-                  500+
-                </h3>
-                <p className={`text-[#5C727D] text-md leading-7 font-normal`}>
-                  Channel Partner across India.
-                </p>
-              </div>
+            <div className="w-full  px-8 py-3 rounded-lg border border-dashed border-gray-400 grid grid-cols-4 gap-10 justify-between mt-10">
+              {
+                companyStats.map((stat) => (
+                  <div key={stat.title}>
+                    <h3 className="text-[36px] font-semibold text-[#010048]">
+                      {stat.value}
+                    </h3>
+                    <p className={`text-[#5C727D] text-md leading-7 font-normal`}>
+                      {stat.title}
+                    </p>
+                  </div>
+                ))
+              }
             </div>
             <div className="mt-8">
               <h2 className={`text-[28px] leading-11 font-semibold text-[#010048]`}>Founder’s Profile</h2>
-              <div className="flex items-center gap-3 mt-4">
+              <div className="flex items-center gap-3 mt-5">
                 <div className="px-5 py-2 border border-gray-200 flex items-center gap-4 rounded-lg">
                   <Image
                     src="/assets/aboutUs/avatar.png"
@@ -151,7 +149,7 @@ export default function AboutUsComponent({
                   />
                   <div className="space-y-1.5">
                     <h3 className="text-[16px] font-medium text-[#010048]">Dwayne Douglas</h3>
-                    <p className="text-[13px] font-medium text-[#fff] w-fit px-3 py-0.5 rounded-sm" style={{background: "linear-gradient(90deg, #C75C10 0%, #CE9554 100%)"}}>Founder</p>
+                    <p className="text-[13px] font-medium text-[#fff] w-full text-center px-3 py-0.5 rounded-sm" style={{background: "linear-gradient(90deg, #C75C10 0%, #CE9554 100%)"}}>Founder</p>
                   </div>
                 </div>
                 <div className="px-5 py-2 border border-gray-200 flex items-center gap-4 rounded-lg">
@@ -164,7 +162,7 @@ export default function AboutUsComponent({
                   />
                   <div className="space-y-1.5">
                     <h3 className="text-[16px] font-medium text-[#010048]">Dwayne Douglas</h3>
-                    <p className="text-[13px] font-medium text-[#fff] w-fit px-3 py-0.5 rounded-sm" style={{background: "linear-gradient(90deg, #C75C10 0%, #CE9554 100%)"}}>Founder</p>
+                    <p className="text-[13px] w-full text-center font-medium text-[#fff] px-3 py-0.5 rounded-sm" style={{background: "linear-gradient(90deg, #C75C10 0%, #CE9554 100%)"}}>CO-Founder</p>
                   </div>
                 </div>
               </div>
@@ -274,17 +272,14 @@ export default function AboutUsComponent({
           />
           <div className="w-[40%] space-y-3">
             <SectionHeading
-              title="Our Story"
+              title="Why Choose Us?"
               lineTop
-              subtitle="Shaping Gurugram’s Skyline, One Icon at a Time"
+              subtitle="The Innovative Creations of KMA"
               type={"left"}
               color="white"
-              description="KMA Property Group was founded to redefine real estate through elegance, trust, and innovation — blending decades of expertise with a deep understanding of today’s luxury market."
+              description="MA Property Group is continuously pushing the boundaries of luxury real estate in Gurugram. With a visionary team and a tech-enabled platform, we deliver bespoke property experiences that blend architectural brilliance, modern amenities, and timeless elegance."
             />
-            <p className={`text-[#d5d5d5] text-md leading-7`}>
-              We also offer customized real estate solutions for buyers,
-              investors, and developers seeking high-end villas, commercial
-              hubs, or rental properties tailored to their lifestyle.
+            <p className={`text-[#d5d5d5] text-md leading-7`}>We also offer customized real estate solutions for buyers, investors, and developers seeking high-end villas, commercial hubs, or rental properties tailored to their lifestyle.
             </p>
           </div>
         </div>
@@ -457,11 +452,11 @@ export default function AboutUsComponent({
           </div>
         </div>
       </div>
-      <div className="flex justify-center overflow-hidden">
+      {/* <div className="flex justify-center overflow-hidden">
         <div className="my-16 w-[90%] 2md:w-[75%]">
           <BlogSection />
         </div>
-      </div>
+      </div> */}
       <div className="">
           <HomeFooter />
       </div>

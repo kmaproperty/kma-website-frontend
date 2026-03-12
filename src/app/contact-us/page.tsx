@@ -1,5 +1,6 @@
+"use client"
 import HomdeHeader from '@/components/header/homeHeader'
-import { BadgePercent, CircleCheckBig, House, Lightbulb, ListCheck, ListChecks, PhoneCall, Section } from 'lucide-react';
+import { BadgePercent, CircleCheckBig, House, Lightbulb, ListCheck, ListChecks, MailOpen, MapPinned, PhoneCall, Section } from 'lucide-react';
 import PageTitle from '@/components/common/PageTitle';
 import { TbBulb } from "react-icons/tb";
 import SectionHeading from '@/components/common/SectionHeading';
@@ -11,9 +12,32 @@ import ContactFormComponent from '@/components/contactUs/contactForm';
 import Link from 'next/link';
 import { fetchPropertyCitiesData, fetchPropertyMasterData } from '../api/home';
 import BannerSlider from '@/components/home/bannerSlider';
+import { useState } from 'react';
 
 const ContactUs = async () => {
-
+    const [contactInformation, setContactInformation] = useState([
+        {
+            title: 'Phone',
+            subTitle: 'Need help or have questions? Call us.',
+            icon: <PhoneCall className='w-8 h-8 text-[#010048]' />,
+            description: '+91-9056580022',
+            link: 'tel:+919056580022'
+        },
+        {
+            title: 'Send us an email',
+            subTitle: 'Got questions? Drop us a message.',
+            icon: <MailOpen className='w-8 h-8 text-[#010048]' />,
+            description: 'info.gurufram@gmail.com',
+            link: 'mailto:info.gurufram@gmail.com'
+        },
+        {
+            title: 'Visit our office',
+            subTitle: 'Visit our office with your project in your mind.',
+            icon: <MapPinned className='w-8 h-8 text-[#010048]' />,
+            description: 'GG, Gurugram, Haryana 122016',
+            link: 'https://www.google.com/maps/place/Gurugram,+Haryana/@28.4594965,76.9904873,12z/data=!3m1!4b1!4m6!3m5!1s0x390d19d582e38859:0x2cf5fe8e5c64b1e!8m2!3d28.4594965!4d77.0266383!16zL20vMDVfMjg0?entry=ttu'
+        }
+    ]);
     let propertyMasterData: any = await fetchPropertyMasterData();
     if (propertyMasterData?.success) {
         propertyMasterData = propertyMasterData.data;
@@ -44,7 +68,7 @@ const ContactUs = async () => {
             <div className="relative ">
                 <BannerSlider bannerHeight={'min-h-[600px] 2md:h-[60vh]'} backgroundImages={sliderImage} overlayClass='about-us-gradient-overlay' />
                 <div className="absolute flex flex-col items-center top-0 w-[100%] ">
-                    <HomdeHeader/>
+                    <HomdeHeader />
                     <div className="mt-[150px]">
                         <PageTitle
                             title="Let’s Connect"
@@ -56,12 +80,26 @@ const ContactUs = async () => {
             </div>
             <div className='w-full py-[100px] px-[50px]'>
                 <div className='max-w-[1444px] mx-auto'>
-                    <SectionHeading title="Get in Touch" subtitle="Do you have some questions for us?" type={'center'} color='' lineTop={false}
+                    <SectionHeading title="" subtitle="Do you have some questions for us?" type={'center'} color='' lineTop={false}
                         description="Whether you're buying, selling, or just exploring—we’ve got answers."
                     />
                     <div className='grid grid-cols-3 gap-x-8 mt-12 items-center'>
-                        <div className='bg-[#F2F2F2] px-10 py-6 rounded-lg flex flex-col gap-2 h-full justify-center'>
-                            <div className='flex gap-4'>
+                        {
+                            contactInformation.map((item, index) => (
+                                <div className='bg-[#F2F2F2] px-10 py-6 rounded-lg flex flex-col gap-2 h-full justify-center'>
+                                    <div className='flex gap-4 items-center'>
+                                        <div className='bg-white min-w-[60px] w-[60px] h-[60px] flex items-center justify-center rounded-lg mb-2'>{item.icon}</div>
+                                        <div>
+                                            <h3 className='text-[#010048] text-[20px] leading-6 font-medium mb-0'>{item.title}</h3>
+                                            <p className='text-[#5C727D] text-md leading-7'>{item.subTitle}</p>
+                                        </div>
+                                    </div>
+                                    <a href={item.link} className='text-[#010048] text-[18px] leading-6 font-medium'>{item.description}</a>
+                                </div>
+                            ))
+                        }
+                        {/* <div className='bg-[#F2F2F2] px-10 py-6 rounded-lg flex flex-col gap-2 h-full justify-center'>
+                            <div className='flex gap-4 items-center'>
                                 <div className='bg-white min-w-[60px] w-[60px] h-[60px] flex items-center justify-center rounded-lg mb-2'><PhoneCall className='w-8 h-8 text-[#010048]' /></div>
                                 <div>
                                     <h3 className='text-[#010048] text-[20px] leading-6 font-medium mb-0'>Give us a call</h3>
@@ -71,7 +109,7 @@ const ContactUs = async () => {
                             <a href='tel:+919056580022' className='text-[#010048] text-[18px] leading-6 font-medium'>+91- 9056580022</a>
                         </div>
                         <div className='bg-[#F2F2F2] px-10 py-6 rounded-lg flex flex-col gap-2 h-full justify-center'>
-                            <div className='flex gap-4'>
+                            <div className='flex gap-4 items-center'>
                                 <div className='bg-white min-w-[60px] w-[60px] h-[60px] flex items-center justify-center rounded-lg mb-2'><PhoneCall className='w-8 h-8 text-[#010048]' /></div>
                                 <div>
                                     <h3 className='text-[#010048] text-[20px] leading-6 font-medium mb-0'>Send us an email</h3>
@@ -81,7 +119,7 @@ const ContactUs = async () => {
                             <a href='mailto:kmaproperty22@gmail.com' className='text-[#010048] text-[18px] leading-6 font-medium'>kmaproperty22@gmail.com</a>
                         </div>
                         <div className='bg-[#F2F2F2] px-10 py-6 rounded-lg flex flex-col gap-2 h-full justify-center'>
-                            <div className='flex gap-4'>
+                            <div className='flex gap-4 items-center'>
                                 <div className='bg-white min-w-[60px] w-[60px] h-[60px] flex items-center justify-center rounded-lg mb-2'><PhoneCall className='w-8 h-8 text-[#010048]' /></div>
                                 <div>
                                     <h3 className='text-[#010048] text-[20px] leading-6 font-medium mb-0'>Visit our office</h3>
@@ -89,7 +127,7 @@ const ContactUs = async () => {
                                 </div>
                             </div>
                             <a href='https://maps.app.goo.gl/RfEn4XmFPCPAfNrT7' target='_blank' className='text-[#010048] text-[18px] leading-6 font-medium'>GG, Gurugram, Haryana 122016</a>
-                        </div>
+                        </div> */}
                     </div>
                     <div className='mt-12 flex items-center border border-[#D9D9D9] rounded-lg'>
                         <div className='w-[50%] h-[568px]'>

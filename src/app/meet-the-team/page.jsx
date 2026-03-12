@@ -123,7 +123,7 @@ const MeetTheTeam = () => {
                     </div>
                 </div>
             </div>
-            <div className='w-full py-[100px] px-[50px]' style={{ backgroundImage: 'url(assets/team/work-with-us-bg.jpg)' }}>
+            <div className='w-full py-[120px] px-[50px]' style={{ backgroundImage: 'url(assets/team/work-with-us-bg.jpg)' }}>
                 <div className='max-w-[800px] mx-auto space-y-6 flex flex-col items-center'>
                     <h2 className={`text-[28px] leading-9 text-center font-semibold text-white`}>Work With Us</h2>
                     <p className='text-center text-md leading-6 font-normal text-white'>We are committed to building lasting trust by delivering transparent, tech-enabled, and customer-first real estate experiences across India.</p>
