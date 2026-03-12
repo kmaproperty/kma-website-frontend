@@ -17,13 +17,14 @@ import {
   Images,
   PhoneCall,
 } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import {
   addEndUserFavoriteAction,
   removeEndUserFavoriteAction,
   submitEndUserPropertyContactAction,
 } from "@/api/actions/propertyActions";
+import { FAVORITE_PROPERTIES_QUERY_KEY } from "@/api/hooks/useFavoriteProperties";
 import Spinner from "@/components/common/spinner";
 import { useSessionStore } from "@/store/useSessionStore";
 import type { Project } from "../_types";
@@ -78,6 +79,7 @@ export default function ProjectCard({
   const favoriteOverride = favorites[project.id];
   const isFav = favoriteOverride ?? Boolean(project.isFavorite);
 
+  const queryClient = useQueryClient();
   const { mutate: updateFavorite, isPending: isFavoriteUpdating } = useMutation({
     mutationFn: async ({
       propertyId,
@@ -91,6 +93,9 @@ export default function ProjectCard({
       }
 
       return removeEndUserFavoriteAction({ propertyId });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [FAVORITE_PROPERTIES_QUERY_KEY] });
     },
     onError: (_error, variables) => {
       // Revert optimistic update if API fails.
