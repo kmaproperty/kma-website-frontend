@@ -4,6 +4,7 @@ import { ChevronLeft, ImageIcon, MessageCircle, PhoneCall, VideoIcon } from "luc
 import MainLayout from "@/components/myList/mainLayout";
 import HomeFooter from "@/components/footer/homeFooter";
 import HeaderDataSync from "@/components/header/HeaderDataSync";
+import AboutusDataSync from "@/components/footer/AboutusDataSync";
 import { fetchPropertyMasterData, fetchPropertyMedia, type PropertyMediaCategory } from "@/app/api/home";
 import { GalleryContent, type GallerySection } from "./GalleryContent";
 
@@ -175,6 +176,7 @@ export default async function ListingGalleryPage({
 
         </MainLayout>
         <HeaderDataSync propertyMasterData={propertyMasterData} />
+        <AboutusDataSync />
         <HomeFooter />
        </>
     );

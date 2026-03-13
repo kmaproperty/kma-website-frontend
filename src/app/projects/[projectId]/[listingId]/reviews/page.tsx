@@ -24,6 +24,7 @@ import HomeFooter from "@/components/footer/homeFooter";
 import { fetchPropertyMasterData } from "@/app/api/home";
 import { useDispatch } from "react-redux";
 import { setPropertyMasterData } from "@/store/homeHeaderSlice";
+import AboutusDataSync from "@/components/footer/AboutusDataSync";
 
 const galleryImages = [
   "/assets/property/img-1.png",
@@ -606,6 +607,7 @@ export default function ListingReviewsPage() {
           </div>
         </div>
       </MainLayout>
+      <AboutusDataSync />
       <HomeFooter />
     </>
   );
