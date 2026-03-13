@@ -2,6 +2,7 @@ export async function GET(request: Request,{ params }: { params: { client_id: st
   try {
     const tokenFromEnv = process.env.SUREPASS_BEARER_TOKEN;
     const baseUrl = process.env.SUREPASS_BASE_URL;
+    
 
     if (!tokenFromEnv || !baseUrl) {
       return Response.json(
