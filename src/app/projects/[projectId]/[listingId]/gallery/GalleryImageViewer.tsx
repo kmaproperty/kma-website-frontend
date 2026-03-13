@@ -88,7 +88,7 @@ export function GalleryImageViewer({
         <span className="text-sm font-medium text-white sm:text-base">
           {currentNumber}/{total}
         </span>
-        <div className="flex items-center gap-2">
+        {/* <div className="flex items-center gap-2">
           <button
             type="button"
             className="flex h-10 w-10 items-center justify-center rounded-full text-white hover:bg-white/10"
@@ -104,7 +104,7 @@ export function GalleryImageViewer({
           >
             <Share2 className="h-5 w-5" />
           </button>
-        </div>
+        </div> */}
       </header>
 
       {/* Main image area with side arrows */}
