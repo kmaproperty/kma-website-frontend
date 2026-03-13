@@ -17,7 +17,7 @@ import { FaFacebook, FaLinkedin, FaTwitter, FaYoutube } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { getSelectedCity } from "@/store/homeHeaderSlice";
 import { useHeaderStore } from "@/store/useHeaderStore";
-import { useEffect } from "react";
+import { use, useEffect, useState } from "react";
 import BannerSlider from "../home/bannerSlider";
 import HeaderDataSync from "@/components/header/HeaderDataSync";
 
@@ -27,6 +27,24 @@ export default function AboutUsComponent({
 }) {
   const selectedCity = useSelector(getSelectedCity);
   const { fetchCities } = useHeaderStore();
+  const [companyStats, setCompanyStats] = useState([
+    {
+      title: "Active Listing",
+      value: "10Lac+",
+    },
+    {
+      title: "Projects across India",
+      value: "15,000",
+    },
+    {
+      title: "Happy Customers",
+      value: "10,000+",
+    },
+    {
+      title: "Channel Partners accross India",
+      value: "500+",
+    },
+  ])
 
   useEffect(() => {
     if (!propertyCitiesData) {
@@ -56,10 +74,10 @@ export default function AboutUsComponent({
     <div>
       <HeaderDataSync propertyMasterData={propertyMasterData} propertyCitiesData={propertyCitiesData} />
       <div className="relative">
-        <BannerSlider bannerHeight={'min-h-[600px] 2md:min-h-auto 2md:h-[60vh]'} backgroundImages={sliderImage} overlayClass='about-us-gradient-overlay'/>
+        <BannerSlider bannerHeight={'min-h-[600px] 2md:h-[60vh]'} backgroundImages={sliderImage} overlayClass='about-us-gradient-overlay'/>
         <div className="absolute flex flex-col items-center top-0 w-[100%] ">
           <HomeHeader />
-          <div className="mt-[100px]">
+          <div className="mt-[150px]">
           <PageTitle
             title="About Us"
             description="Discover who we are, what we stand for, and how we make your real estate journey smooth and successful."
@@ -69,16 +87,16 @@ export default function AboutUsComponent({
         </div>
         
       </div>
-      <div className="w-full py-[100px] px-[50px]">
+      <div className="w-full py-[120px] px-[50px]">
         <div className="flex items-center justify-between gap-6 max-w-[1444px] mx-auto">
           <div className="w-[50%]">
             <SectionHeading
               title="Who We Are"
-              subtitle="Innovating Luxury Real Estate in Gurugram"
+              subtitle="About KMA Properties"
               type={"left"}
               description="KMA Property Group, established on January 1, 2025, is a beacon of excellence in Gurugram’s high-end property market. We specialize in the sale, purchase, and rental of luxury properties, offering personalized experiences to clients who demand sophistication, trust, and lasting value."
             />
-            <div className="grid grid-cols-2 grid-rows-2 gap-x-8 gap-y-4 mt-5 w-fit">
+            <div className="grid grid-cols-2 grid-rows-2 gap-x-8 gap-y-4 mt-6 w-fit">
               <div className="flex items-center gap-2">
                 <CircleCheckBig className="w-5 h-5 text-[#010048]" />
                 <p className={`text-[#5C727D] text-md leading-7 font-normal`}>
@@ -104,30 +122,49 @@ export default function AboutUsComponent({
                 </p>
               </div>
             </div>
-            <div className="w-fit px-10 py-3 rounded-lg border border-dashed border-gray-400 flex gap-14 mt-10">
-              <div>
-                <h3 className="text-[40px] font-semibold text-[#010048]">
-                  250+
-                </h3>
-                <p className={`text-[#5C727D] text-md leading-7 font-medium`}>
-                  Premium Properties
-                </p>
-              </div>
-              <div>
-                <h3 className="text-[40px] font-semibold text-[#010048]">
-                  100+
-                </h3>
-                <p className={`text-[#5C727D] text-md leading-7 font-medium`}>
-                  Projects
-                </p>
-              </div>
-              <div>
-                <h3 className="text-[40px] font-semibold text-[#010048]">
-                  75+
-                </h3>
-                <p className={`text-[#5C727D] text-md leading-7 font-medium`}>
-                  Satisfied Clients
-                </p>
+            <div className="w-full  px-8 py-3 rounded-lg border border-dashed border-gray-400 grid grid-cols-4 gap-10 justify-between mt-10">
+              {
+                companyStats.map((stat) => (
+                  <div key={stat.title}>
+                    <h3 className="text-[36px] font-semibold text-[#010048]">
+                      {stat.value}
+                    </h3>
+                    <p className={`text-[#5C727D] text-md leading-7 font-normal`}>
+                      {stat.title}
+                    </p>
+                  </div>
+                ))
+              }
+            </div>
+            <div className="mt-8">
+              <h2 className={`text-[28px] leading-11 font-semibold text-[#010048]`}>Founder’s Profile</h2>
+              <div className="flex items-center gap-3 mt-5">
+                <div className="px-5 py-2 border border-gray-200 flex items-center gap-4 rounded-lg">
+                  <Image
+                    src="/assets/aboutUs/avatar.png"
+                    alt="About Us"
+                    className="w-[60px] object-cover rounded-full"
+                    width={60}
+                    height={60}
+                  />
+                  <div className="space-y-1.5">
+                    <h3 className="text-[16px] font-medium text-[#010048]">Dwayne Douglas</h3>
+                    <p className="text-[13px] font-medium text-[#fff] w-full text-center px-3 py-0.5 rounded-sm" style={{background: "linear-gradient(90deg, #C75C10 0%, #CE9554 100%)"}}>Founder</p>
+                  </div>
+                </div>
+                <div className="px-5 py-2 border border-gray-200 flex items-center gap-4 rounded-lg">
+                  <Image
+                    src="/assets/aboutUs/avatar.png"
+                    alt="About Us"
+                    className="w-[60px] object-cover rounded-full"
+                    width={60}
+                    height={60}
+                  />
+                  <div className="space-y-1.5">
+                    <h3 className="text-[16px] font-medium text-[#010048]">Dwayne Douglas</h3>
+                    <p className="text-[13px] w-full text-center font-medium text-[#fff] px-3 py-0.5 rounded-sm" style={{background: "linear-gradient(90deg, #C75C10 0%, #CE9554 100%)"}}>CO-Founder</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -175,12 +212,7 @@ export default function AboutUsComponent({
       </div>
       <div className="w-full px-[50px] py-[100px]">
         <div className="max-w-[1444px] mx-auto ">
-          <SectionHeading
-            title="Why Choose Us?"
-            subtitle="A Service You Can Trust and Feel Confident In"
-            type={"center"}
-            description=""
-          />
+          <h2 className={`text-[28px] leading-11 font-semibold text-[#010048] text-center`}>A Service You Can Trust and Feel Confident In</h2>
           <div className="grid grid-cols-4 gap-x-8 gap-y-4 mt-10 items-center">
             <div className="bg-[#F2F2F2] px-8 py-5 rounded-lg flex flex-col gap-1 h-full justify-center">
               <div className="bg-white w-[60px] h-[60px] flex items-center justify-center rounded-lg mb-2">
@@ -240,17 +272,14 @@ export default function AboutUsComponent({
           />
           <div className="w-[40%] space-y-3">
             <SectionHeading
-              title="Our Story"
+              title="Why Choose Us?"
               lineTop
-              subtitle="Shaping Gurugram’s Skyline, One Icon at a Time"
+              subtitle="The Innovative Creations of KMA"
               type={"left"}
               color="white"
-              description="KMA Property Group was founded to redefine real estate through elegance, trust, and innovation — blending decades of expertise with a deep understanding of today’s luxury market."
+              description="MA Property Group is continuously pushing the boundaries of luxury real estate in Gurugram. With a visionary team and a tech-enabled platform, we deliver bespoke property experiences that blend architectural brilliance, modern amenities, and timeless elegance."
             />
-            <p className={`text-[#d5d5d5] text-md leading-7`}>
-              We also offer customized real estate solutions for buyers,
-              investors, and developers seeking high-end villas, commercial
-              hubs, or rental properties tailored to their lifestyle.
+            <p className={`text-[#d5d5d5] text-md leading-7`}>We also offer customized real estate solutions for buyers, investors, and developers seeking high-end villas, commercial hubs, or rental properties tailored to their lifestyle.
             </p>
           </div>
         </div>
@@ -423,11 +452,11 @@ export default function AboutUsComponent({
           </div>
         </div>
       </div>
-      <div className="flex justify-center overflow-hidden">
+      {/* <div className="flex justify-center overflow-hidden">
         <div className="my-16 w-[90%] 2md:w-[75%]">
           <BlogSection />
         </div>
-      </div>
+      </div> */}
       <div className="">
           <HomeFooter />
       </div>

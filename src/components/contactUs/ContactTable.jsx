@@ -1,3 +1,27 @@
+const dummyData = [
+  {
+    sno: 1,
+    city: "Noida",
+    address: "Rahul Mehta (Sales Consultant) KMA Realty, Sector 62",
+    phone: "+91 98765 43210",
+    email: "rahul.mehta@kma.in"
+  },
+  {
+    sno: 2,
+    city: "Delhi",
+    address: "Nidhi Sharma (Partner Onboarding) KMA Partner Team",
+    phone: "+91 91234 56789",
+    email: "nidhi.sharma@kma.in"
+  },
+  {
+    sno: 3,
+    city: "Lucknow",
+    address: "Mohit Verma (Support) KMA Channel Desk",
+    phone: "+91 90012 34567",
+    email: "mohit.verma@kma.in"
+  },
+]
+
 const ContactTable = () => {
   return (
     <div className="w-full text-sm mt-6">
@@ -10,38 +34,21 @@ const ContactTable = () => {
         <p className="w-[20%] px-2 text-[#888]">Email</p>
       </div>
 
-      {/* Row 1 */}
-      <div className="flex border-b border-gray-200 py-3">
-        <p className="w-[6%] px-2">01</p>
-        <p className="w-[12%] px-2">Noida</p>
-        <p className="w-[42%] px-2">
-          <b>Rahul Mehta</b> (Sales Consultant) KMA Realty, Sector 62
-        </p>
-        <p className="w-[20%] px-2">+91 98765 43210</p>
-        <p className="w-[20%] px-2">rahul.mehta@kma.in</p>
-      </div>
-
-      {/* Row 2 */}
-      <div className="flex border-b border-gray-200 py-3">
-        <p className="w-[6%] px-2">02</p>
-        <p className="w-[12%] px-2">Delhi</p>
-        <p className="w-[42%] px-2">
-          <b>Nidhi Sharma</b> (Partner Onboarding) KMA Partner Team
-        </p>
-        <p className="w-[20%] px-2">+91 91234 56789</p>
-        <p className="w-[20%] px-2">nidhi.sharma@kma.in</p>
-      </div>
-
-      {/* Row 3 */}
-      <div className="flex border-b border-gray-200 py-3">
-        <p className="w-[6%] px-2">03</p>
-        <p className="w-[12%] px-2">Lucknow</p>
-        <p className="w-[42%] px-2">
-          <b>Mohit Verma</b> (Support) KMA Channel Desk
-        </p>
-        <p className="w-[20%] px-2">+91 90012 34567</p>
-        <p className="w-[20%] px-2">mohit.verma@kma.in</p>
-      </div>
+      {
+        dummyData.map((item, index) => (
+          <div key={index} className="flex border-b border-gray-200 py-3">
+            <p className="w-[6%] px-2">{item.sno}</p>
+            <p className="w-[12%] px-2">{item.city}</p>
+            <p className="w-[42%] px-2">
+              <b>{item.address.split(" ")[0]}</b> {item.address.split(" ").slice(1).join(" ")}
+            </p>
+            <p className="w-[20%] px-2">{item.phone}</p>
+            <p className="w-[20%] px-2">{item.email}</p>
+          </div>
+        ))
+      }
+      
+      
     </div>
   );
 };
