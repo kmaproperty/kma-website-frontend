@@ -410,7 +410,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
               <input
                 value={filters.searchText}
                 onChange={(e) => setFilters({ searchText: e.target.value })}
-                placeholder="Search by Project Name, Neighborhood, or Builder...."
+                placeholder="Search by Neighborhood...."
                 className="h-12 w-full rounded-full border border-border bg-white px-12 pr-4 text-sm text-text-black outline-none transition focus:border-blue"
               />
             </div>

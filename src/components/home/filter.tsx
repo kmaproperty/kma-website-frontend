@@ -208,7 +208,7 @@ export default function Filter() {
                 alt="search"
               />
               <InputBase
-                placeholder="Search by Project, Locality, or Builder"
+                placeholder="Search by Locality"
                 fullWidth
                 value={search}
                 onChange={(event) => {
@@ -316,7 +316,7 @@ export default function Filter() {
                 alt="search"
               />
               <InputBase
-                placeholder="Search by Project, Locality, or Builder"
+                placeholder="Search by Locality"
                 fullWidth
                 value={search}
                 onChange={(event) => {
