@@ -22,7 +22,7 @@ const SectionHeading = ({ title, subtitle, description, type, color, lineTop }) 
 
   return (
     <div
-      className={`flex flex-col gap-2 ${
+      className={`flex flex-col gap-1.5 ${
         isCenter ? "items-center" : "items-start"
       }`}
     >
@@ -34,7 +34,7 @@ const SectionHeading = ({ title, subtitle, description, type, color, lineTop }) 
         }`}
       >
         {!lineTop && <Line />}
-        {title && <h3 className={`text-[20px] font-normal ${isCenter ? "text-center" : "text-left"}`} style={{ color: mainColor }}>{title}</h3>}
+        {title && <h3 className={`text-[18px] font-medium ${isCenter ? "text-center" : "text-left"}`} style={{ color: mainColor }}>{title}</h3>}
       </div>
 
       <h2
@@ -48,7 +48,7 @@ const SectionHeading = ({ title, subtitle, description, type, color, lineTop }) 
 
       {description && (
         <p
-          className={`text-md leading-6 font-normal ${
+          className={`text-md mt-1 leading-6 font-normal ${
             isCenter ? "text-center" : "text-left"
           }`}
           style={{ color: descColor }}

@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useMemo, useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { GalleryImageViewer, type ViewerImage } from "./GalleryImageViewer";
 
 export interface GallerySection {
   name: string;
@@ -12,12 +13,22 @@ interface GalleryContentProps {
   tabs: string[];
   sections: GallerySection[];
   videoUrls: string[];
+  propertyName?: string;
   children?: React.ReactNode;
 }
 
-export function GalleryContent({ tabs, sections, videoUrls, children }: GalleryContentProps) {
+export function GalleryContent({ tabs, sections, videoUrls, propertyName = "Property", children }: GalleryContentProps) {
   const [activeTabIndex, setActiveTabIndex] = useState(0);
+  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
+
+  const flatImages: ViewerImage[] = useMemo(
+    () =>
+      sections.flatMap((section) =>
+        section.imageUrls.map((url) => ({ url, sectionName: section.name }))
+      ),
+    [sections]
+  );
 
   const totalSections = sections.length + (videoUrls.length > 0 ? 1 : 0);
 
@@ -97,20 +108,28 @@ export function GalleryContent({ tabs, sections, videoUrls, children }: GalleryC
               <div className="mt-4 rounded-lg border border-[#D7D8DC] p-4">
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                   {section.imageUrls.length > 0 ? (
-                    section.imageUrls.map((src, idx) => (
-                      <div
-                        key={`${section.name}-${idx}`}
-                        className="relative h-[170px] overflow-hidden rounded-lg"
-                      >
-                        <Image
-                          src={src}
-                          alt={`${section.name} ${idx + 1}`}
-                          fill
-                          className="object-cover"
-                          unoptimized={!src.startsWith("/")}
-                        />
-                      </div>
-                    ))
+                    section.imageUrls.map((src, idx) => {
+                      const globalIndex =
+                        sections
+                          .slice(0, sectionIdx)
+                          .reduce((sum, sec) => sum + sec.imageUrls.length, 0) + idx;
+                      return (
+                        <button
+                          type="button"
+                          key={`${section.name}-${idx}`}
+                          className="relative h-[170px] overflow-hidden rounded-lg text-left focus:outline-none focus:ring-2 focus:ring-[#05085E] focus:ring-offset-2"
+                          onClick={() => setViewerIndex(globalIndex)}
+                        >
+                          <Image
+                            src={src}
+                            alt={`${section.name} ${idx + 1}`}
+                            fill
+                            className="object-cover"
+                            unoptimized={!src.startsWith("/")}
+                          />
+                        </button>
+                      );
+                    })
                   ) : (
                     <p className="col-span-full text-sm text-text-gray">No photos in this category.</p>
                   )}
@@ -150,6 +169,16 @@ export function GalleryContent({ tabs, sections, videoUrls, children }: GalleryC
         </main>
         {children}
       </div>
+
+      {viewerIndex !== null && flatImages.length > 0 && (
+        <GalleryImageViewer
+          images={flatImages}
+          currentIndex={viewerIndex}
+          propertyName={propertyName}
+          onClose={() => setViewerIndex(null)}
+          onIndexChange={setViewerIndex}
+        />
+      )}
     </>
   );
 }

@@ -6,7 +6,7 @@ export default async function AboutUs(){
       if (propertyMasterData?.success) {
         propertyMasterData = propertyMasterData.data;
       } else {
-        propertyMasterData = [];
+        propertyMasterData = []
       }
     
       let propertyCitiesData: any = await fetchPropertyCitiesData();

@@ -56,7 +56,7 @@ const ContactFormComponent = () => {
           <input type="number" name="mobile" value={formValue.mobile} onChange={handleChange} placeholder='Your phone number' className='w-full border border-[#D9D9D9] rounded-full px-4 py-3' />
         </div>
         <input type="email" name="email" value={formValue.email} onChange={handleChange} placeholder='Email' className='w-full border border-[#D9D9D9] rounded-full px-4 py-3' />
-        <textarea name="message" id="" value={formValue.message} placeholder='Your message' onChange={handleChange} className='w-full border border-[#D9D9D9] rounded-xl px-4 py-3'></textarea>
+        <textarea name="message" rows={4} id="" value={formValue.message} placeholder='Your message' onChange={handleChange} className='w-full border border-[#D9D9D9] rounded-xl px-4 py-3'></textarea>
         <button
           type='submit'
           className="w-fit text-sm 1xl:text-base animated-button px-10 py-3 border border-blue text-center cursor-pointer"
