@@ -26,9 +26,7 @@ const SalesEnquiry = () => {
     return (
         <div>
             <div className="relative pt-[25px] h-[100vh] max-h-[600px]" style={{ backgroundImage: 'url(assets/app/sales-enquiry-bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'bottom' }}>
-                <div className="w-[75%] mx-auto">
-                    <HomdeHeader />
-                </div>
+                <HomdeHeader />
                 <div className="w-[75%] max-w-[600px] mx-auto mt-[150px]">
                     <PageTitle
                         title="Contact KMA"

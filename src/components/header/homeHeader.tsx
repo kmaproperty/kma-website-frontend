@@ -156,7 +156,7 @@ const handleHeaderSubMenuClick = (label: string) => {
   setProfileMenu(null);
   switch (label) {
     case "Join Us":
-      router.push("/signup");
+      router.push("/join-us");
       break;
     case "Sales Enquiry":
       router.push("/sales-enquiry");
@@ -165,7 +165,7 @@ const handleHeaderSubMenuClick = (label: string) => {
       router.push("/meet-the-team");
       break;
     case "Help Center":
-      router.push("/contact-us");
+      router.push("/help-center");
       break;
     case "Find an agent":
       router.push("/projects");
