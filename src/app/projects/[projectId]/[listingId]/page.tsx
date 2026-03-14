@@ -39,6 +39,7 @@ import {
 } from "@/api/actions/propertyActions";
 import { usePropertyDetails } from "@/api/hooks/usePropertyDetails";
 import { useSimilarProperties } from "@/api/hooks/useSimilarProperties";
+import { FAVORITE_PROPERTIES_QUERY_KEY } from "@/api/hooks/useFavoriteProperties";
 import MainLayout from "@/components/myList/mainLayout";
 import { useProjectsStore } from "@/app/projects/_store/useProjectsStore";
 
@@ -394,6 +395,7 @@ export default function ListingDetailsPage() {
     onSuccess: (_data, variables) => {
       setFavorite(variables.propertyId, variables.nextIsFavorite);
       queryClient.invalidateQueries({ queryKey: ["end-user-properties-similar"] });
+      queryClient.invalidateQueries({ queryKey: [FAVORITE_PROPERTIES_QUERY_KEY] });
     },
     onError: (_err, variables) => {
       setFavorite(variables.propertyId, !variables.nextIsFavorite);

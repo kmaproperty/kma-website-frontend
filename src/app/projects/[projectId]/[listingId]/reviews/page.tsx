@@ -24,6 +24,7 @@ import HomeFooter from "@/components/footer/homeFooter";
 import { fetchPropertyMasterData } from "@/app/api/home";
 import { useDispatch } from "react-redux";
 import { setPropertyMasterData } from "@/store/homeHeaderSlice";
+import AboutusDataSync from "@/components/footer/AboutusDataSync";
 
 const galleryImages = [
   "/assets/property/img-1.png",
@@ -559,7 +560,7 @@ export default function ListingReviewsPage() {
                     </div>
                   </main>
 
-                  <aside className="h-fit rounded-xl border border-[#D2D3D7] bg-[#F9F9FA] p-5 xl:sticky xl:top-4">
+                  {/* <aside className="h-fit rounded-xl border border-[#D2D3D7] bg-[#F9F9FA] p-5 xl:sticky xl:top-4">
                   <h3 className="text-sm font-semibold leading-tight text-text-black">
                     Talk to Our Real Estate Specialists
                   </h3>
@@ -599,13 +600,14 @@ export default function ListingReviewsPage() {
                     <MessageCircle className="h-5 w-5" />
                     WhatsApp Expert
                   </a>
-                </aside>
+                </aside> */}
                 </div>
               </div>
             </div>
           </div>
         </div>
       </MainLayout>
+      <AboutusDataSync />
       <HomeFooter />
     </>
   );

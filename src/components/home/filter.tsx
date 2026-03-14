@@ -208,7 +208,7 @@ export default function Filter() {
                 alt="search"
               />
               <InputBase
-                placeholder="Search by Project, Locality, or Builder"
+                placeholder="Search by Locality"
                 fullWidth
                 value={search}
                 onChange={(event) => {
@@ -316,7 +316,7 @@ export default function Filter() {
                 alt="search"
               />
               <InputBase
-                placeholder="Search by Project, Locality, or Builder"
+                placeholder="Search by Locality"
                 fullWidth
                 value={search}
                 onChange={(event) => {
@@ -392,7 +392,7 @@ export default function Filter() {
               className="mt-1"
             />
           </div>}
-          {['rent'].includes(filterType) && <div
+          {['sale'].includes(filterType) && <div
             onClick={(event) => handlePopperOpen(event, 'possessionstatus')}
             className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
           >
@@ -405,7 +405,7 @@ export default function Filter() {
               className="mt-1"
             />
           </div>}
-          {['sale'].includes(filterType) && <div
+          {['rent'].includes(filterType) && <div
             onClick={(event) => handlePopperOpen(event, 'furnishType')}
             className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
           >

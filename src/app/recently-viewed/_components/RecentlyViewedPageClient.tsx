@@ -10,6 +10,7 @@ import { useRouter } from "nextjs-toploader/app";
 import { useRecentlyViewedProperties } from "@/api/hooks/useRecentlyViewedProperties";
 import { useRecentlySearched } from "@/api/hooks/useRecentlySearched";
 import { useContactedProperties } from "@/api/hooks/useContactedProperties";
+import { useFavoriteProperties } from "@/api/hooks/useFavoriteProperties";
 import type { RecentSearchItem } from "@/api/actions/propertyActions";
 import { mapApiPropertyToProject } from "@/app/projects/_utils/mapApiPropertyToProject";
 import { Search } from "lucide-react";
@@ -307,6 +308,10 @@ export default function RecentlyViewedPageClient() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const guestPreviewCount = 8;
 
+  const listingTypeApi = activeIntent === "buy" ? "sale" : activeIntent === "rent" ? "rent" : undefined;
+  const sortApi: "newest" | "oldest" | "price_high" | "price_low" | undefined =
+    sortBy === "latest" ? "newest" : sortBy === "price_low_high" ? "price_low" : sortBy === "price_high_low" ? "price_high" : "newest";
+
   const {
     properties: apiRecentlyViewed,
     total: recentlyViewedTotal,
@@ -316,6 +321,8 @@ export default function RecentlyViewedPageClient() {
   } = useRecentlyViewedProperties({
     page: currentPage,
     limit: PAGE_SIZE,
+    listingType: listingTypeApi,
+    sort: sortApi,
     enabled: activeSection === "recentlyViewed",
   });
 
@@ -341,7 +348,23 @@ export default function RecentlyViewedPageClient() {
   } = useContactedProperties({
     page: currentPage,
     limit: PAGE_SIZE,
+    listingType: listingTypeApi,
+    sort: sortApi,
     enabled: activeSection === "contacted",
+  });
+
+  const {
+    properties: favoriteProperties,
+    total: favoritesTotal,
+    totalPages: favoritesTotalPages,
+    isPending: isFavoritesLoading,
+    isError: isFavoritesError,
+  } = useFavoriteProperties({
+    page: currentPage,
+    limit: PAGE_SIZE,
+    listingType: listingTypeApi,
+    sort: sortApi,
+    enabled: activeSection === "saved" && isLoggedIn,
   });
 
   const recentlyViewedAsActivityProjects = useMemo<ActivityProject[]>(() => {
@@ -368,6 +391,18 @@ export default function RecentlyViewedPageClient() {
     });
   }, [contactedProperties]);
 
+  const savedAsActivityProjects = useMemo<ActivityProject[]>(() => {
+    const mapOptions = { toFullAssetUrl, fallbackImage: fallbackProjectImage };
+    return favoriteProperties.map((item) => {
+      const project = mapApiPropertyToProject(item, mapOptions);
+      return {
+        ...project,
+        activitySection: "saved" as const,
+        viewedAt: "",
+      };
+    });
+  }, [favoriteProperties]);
+
   const filteredMockProjects = useMemo(() => {
     const bySection = allActivityProjects.filter((project) => project.activitySection === activeSection);
     const byIntent = bySection.filter((project) => {
@@ -386,6 +421,7 @@ export default function RecentlyViewedPageClient() {
   const isRecentlyViewedTab = activeSection === "recentlyViewed";
   const isRecentSearchTab = activeSection === "recentSearch";
   const isContactedTab = activeSection === "contacted";
+  const isSavedTab = activeSection === "saved";
   const mockTotalPages = Math.max(1, Math.ceil(filteredMockProjects.length / PAGE_SIZE));
   const totalPages = isRecentlyViewedTab
     ? apiTotalPages
@@ -393,7 +429,9 @@ export default function RecentlyViewedPageClient() {
       ? recentSearchTotalPages
       : isContactedTab
         ? contactedTotalPages
-        : mockTotalPages;
+        : isSavedTab
+          ? favoritesTotalPages
+          : mockTotalPages;
   const paginatedMock = useMemo(() => {
     const start = (currentPage - 1) * PAGE_SIZE;
     return filteredMockProjects.slice(start, start + PAGE_SIZE);
@@ -402,9 +440,11 @@ export default function RecentlyViewedPageClient() {
     ? recentlyViewedAsActivityProjects
     : isContactedTab
       ? contactedAsActivityProjects
-      : isLoggedIn
-        ? paginatedMock
-        : filteredMockProjects.slice(0, guestPreviewCount);
+      : isSavedTab
+        ? savedAsActivityProjects
+        : isLoggedIn
+          ? paginatedMock
+          : filteredMockProjects.slice(0, guestPreviewCount);
 
   const showingCount = isRecentSearchTab
     ? recentSearches.length
@@ -415,7 +455,9 @@ export default function RecentlyViewedPageClient() {
       ? recentlyViewedTotal
       : isContactedTab
         ? contactedTotal
-        : filteredMockProjects.length;
+        : isSavedTab
+          ? favoritesTotal
+          : filteredMockProjects.length;
   const rangeStart =
     showingCount > 0
       ? (currentPage - 1) * (isRecentSearchTab ? RECENT_SEARCH_PAGE_SIZE : PAGE_SIZE) + 1
@@ -433,9 +475,11 @@ export default function RecentlyViewedPageClient() {
               ? String(recentlySearchedTotal)
               : tab.key === "contacted"
                 ? String(contactedTotal)
-                : "18",
+                : tab.key === "saved"
+                  ? String(favoritesTotal)
+                  : "0",
       })),
-    [recentlyViewedTotal, recentlySearchedTotal, contactedTotal]
+    [recentlyViewedTotal, recentlySearchedTotal, contactedTotal, favoritesTotal]
   );
 
   useEffect(() => {
@@ -560,14 +604,18 @@ export default function RecentlyViewedPageClient() {
                   ? "Recently Searched"
                   : isContactedTab
                     ? "Contacted Properties"
-                    : "Your Activity"}
+                    : isSavedTab
+                      ? "Saved Properties"
+                      : "Your Activity"}
             </h2>
             <p className="mt-1 text-sm text-[#8A90A2]">
               {isRecentSearchTab
                 ? "Your recent search queries. Search again to see current results."
                 : isContactedTab
                   ? "Properties you have contacted or inquired about."
-                  : "A quick look at the properties that caught your eye."}
+                  : isSavedTab
+                    ? "Properties you have saved as favorites."
+                    : "A quick look at the properties that caught your eye."}
             </p>
           </div>
 
@@ -649,6 +697,16 @@ export default function RecentlyViewedPageClient() {
               Unable to load contacted properties. Please try again later.
             </div>
           )}
+          {isSavedTab && isFavoritesLoading && (
+            <div className="flex min-h-[200px] items-center justify-center rounded-xl border border-[#E6E8EF] bg-[#F8F9FC] py-12">
+              <p className="text-sm text-[#6B7280]">Loading saved properties…</p>
+            </div>
+          )}
+          {isSavedTab && isFavoritesError && !isFavoritesLoading && (
+            <div className="rounded-xl border border-[#E6E8EF] bg-[#F8F9FC] p-8 text-center text-sm text-[#6B7280]">
+              Unable to load saved properties. Please try again later.
+            </div>
+          )}
           {isRecentSearchTab && !isRecentlySearchedLoading && !isRecentlySearchedError && (
             <div className="space-y-3">
               {recentSearches.map((search) => (
@@ -662,7 +720,8 @@ export default function RecentlyViewedPageClient() {
           )}
           {!isRecentSearchTab &&
             !(isRecentlyViewedTab && (isRecentlyViewedLoading || isRecentlyViewedError)) &&
-            !(isContactedTab && (isContactedLoading || isContactedError)) && (
+            !(isContactedTab && (isContactedLoading || isContactedError)) &&
+            !(isSavedTab && (isFavoritesLoading || isFavoritesError)) && (
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {visibleProjects.map((project, index) => {
               const blurForGuest = !isLoggedIn && index >= 4;
@@ -712,7 +771,8 @@ export default function RecentlyViewedPageClient() {
         {((isRecentSearchTab && recentSearches.length === 0) || (!isRecentSearchTab && visibleProjects.length === 0)) &&
           !isRecentlyViewedLoading &&
           !isRecentlySearchedLoading &&
-          !isContactedLoading && (
+          !isContactedLoading &&
+          !isFavoritesLoading && (
             <div className="mt-4 rounded-xl border border-border bg-white p-8 text-center text-text-gray">
               {isRecentlyViewedTab
                 ? "No recently viewed properties yet."
@@ -720,7 +780,11 @@ export default function RecentlyViewedPageClient() {
                   ? "No recent searches yet."
                   : isContactedTab
                     ? "No contacted properties yet."
-                    : "No properties available for this filter."}
+                    : isSavedTab
+                      ? isLoggedIn
+                        ? "No saved properties yet."
+                        : "Login to view your saved properties."
+                      : "No properties available for this filter."}
             </div>
           )}
 

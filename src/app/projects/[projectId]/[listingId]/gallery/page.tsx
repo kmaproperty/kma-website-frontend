@@ -4,6 +4,7 @@ import { ChevronLeft, ImageIcon, MessageCircle, PhoneCall, VideoIcon } from "luc
 import MainLayout from "@/components/myList/mainLayout";
 import HomeFooter from "@/components/footer/homeFooter";
 import HeaderDataSync from "@/components/header/HeaderDataSync";
+import AboutusDataSync from "@/components/footer/AboutusDataSync";
 import { fetchPropertyMasterData, fetchPropertyMedia, type PropertyMediaCategory } from "@/app/api/home";
 import { GalleryContent, type GallerySection } from "./GalleryContent";
 
@@ -125,8 +126,13 @@ export default async function ListingGalleryPage({
                   </span>
                 </div>
 
-                <GalleryContent tabs={categoryTabs} sections={sections} videoUrls={videoUrls}>
-                  <aside className="h-fit min-h-0 overflow-visible rounded-xl border border-[#D2D3D7] bg-[#F9F9FA] p-5 xl:sticky xl:top-4 xl:self-start">
+                <GalleryContent
+                  tabs={categoryTabs}
+                  sections={sections}
+                  videoUrls={videoUrls}
+                  propertyName={property?.name ?? "Property"}
+                >
+                  {/* <aside className="h-fit min-h-0 overflow-visible rounded-xl border border-[#D2D3D7] bg-[#F9F9FA] p-5 xl:sticky xl:top-4 xl:self-start">
                                     <h3 className="text-sm font-semibold leading-tight text-text-black ">
                                         Talk to Our Real Estate Specialists
                                     </h3>
@@ -166,7 +172,7 @@ export default async function ListingGalleryPage({
                                         <MessageCircle className="h-5 w-5" />
                                         WhatsApp Expert
                                     </a>
-                  </aside>
+                  </aside> */}
                 </GalleryContent>
               </div>
             </div>
@@ -175,6 +181,7 @@ export default async function ListingGalleryPage({
 
         </MainLayout>
         <HeaderDataSync propertyMasterData={propertyMasterData} />
+        <AboutusDataSync />
         <HomeFooter />
        </>
     );
