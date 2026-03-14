@@ -48,7 +48,7 @@ const JoinUs = () => {
 
                 </div>
             </div>
-            <div className='relative flex items-center justify-between w-[90%] mx-auto max-w-[1440px] bg-white rounded-lg shadow-lg px-12 py-12 gap-8' style={{ transform: 'translateY(-40%)' }}>
+            <div className='relative flex items-center justify-between w-[90%] mx-auto max-w-[1440px] bg-white rounded-lg shadow-lg px-12 py-12 gap-8' style={{ transform: 'translateY(-25%)' }}>
                 <div className='flex items-center justify-between gap-8'>
                     <h3 className='text-[28px] font-bold text-black mb-0 w-[30%]'>A KMA partner unlocks growth with unlimited listings and exclusive access.</h3>
                     <div className='w-[50%]'>
@@ -56,7 +56,7 @@ const JoinUs = () => {
                     </div>
                 </div>
             </div>
-            <div className='w-full pb-[80px] pt-10 px-[50px]'>
+            <div className='w-full pb-[150px] pt-16 px-[50px]'>
                 <div className='max-w-[1444px] mx-auto'>
                     <div className='flex gap-10 justify-between items-center'>
                         <div className='space-y-6 w-[55%]'>
