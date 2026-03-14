@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import MainLayout from "@/components/myList/mainLayout";
 import HomeFooter from "@/components/footer/homeFooter";
+import AboutusDataSync from "@/components/footer/AboutusDataSync";
 import HeaderDataSync from "@/components/header/HeaderDataSync";
 import { fetchPropertyMasterData } from "@/app/api/home";
 import ChannelPartnerPageClient from "./_components/ChannelPartnerPageClient";
@@ -28,6 +29,7 @@ export default async function ChannelPartnerPage() {
       <MainLayout>
         <ChannelPartnerPageClient />
       </MainLayout>
+      <AboutusDataSync />
       <HomeFooter />
     </>
   );
