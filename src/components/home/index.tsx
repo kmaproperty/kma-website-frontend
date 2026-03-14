@@ -62,8 +62,11 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
       return response.propertyTypes;
     },
     enabled: Boolean(selectedCity?.id),
-    staleTime: 60_000,
-  });
+    // staleTime: 60_000,
+  }); 
+
+  console.log(explorePropertyList, "explorePropertyList");
+  
 
   const { data } = useQuery({
     queryKey: ["top-properties-list", selectedCity?.id ?? null],
@@ -152,11 +155,13 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
       <div className="relative bg-text-black flex justify-center overflow-hidden">
         <LazyAboutUsSection />
       </div>
-      {Array.isArray(explorePropertyList) && explorePropertyList.length > 0 && <div className="my-16 flex justify-center">
-        <div className="w-[90%] md:w-[75%]">
-          <LazyExploreSection explorePropertyList={explorePropertyList} />
+      {(Array.isArray(explorePropertyList) && explorePropertyList.length > 0 && typeof explorePropertyList[0] !== "undefined") && (
+        <div className="my-16 flex justify-center">
+          <div className="w-[90%] md:w-[75%]">
+            <LazyExploreSection explorePropertyList={explorePropertyList} />
+          </div>
         </div>
-      </div>}
+      )}
       {Array.isArray(data?.properties) && data?.properties.length > 0 && <div className="bg-[#F2F2F2] flex justify-center">
         <div className="my-16 w-[90%] md:w-[75%]">
           <LazyFeaturedProperties topProperties={data?.properties ?? []} />

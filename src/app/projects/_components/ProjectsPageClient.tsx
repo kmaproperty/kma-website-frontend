@@ -393,7 +393,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="text-xs font-medium text-text-light-gray">
           Home <span className="px-1">/</span>
-          <span className="text-white"> New Project in Chandigarh</span>
+          <span className="text-white"> New Project in {initialProjects[0]?.city}</span>
         </div>
       </div>
 

@@ -2,8 +2,10 @@ import { getAboutusData, getPropertyMasterData, getSelectedCity } from "@/store/
 import Image from "next/image";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { useRouter } from "nextjs-toploader/app";
 
 export default function RentSellHeaderView({ type }: { type: string }) {
+  const router = useRouter();
   const selectedCity = useSelector(getSelectedCity);
   const aboutusData = useSelector(getAboutusData);
   const propertyMasterData = useSelector(getPropertyMasterData);
@@ -41,10 +43,20 @@ export default function RentSellHeaderView({ type }: { type: string }) {
               {
                 propertyList.map(item => {
                   return(
-                    <p className="cursor-pointer text-sm mt-1  text-text-black break-inside-avoid hover:underline">
+                    <p
+                      key={item.id}
+                      onClick={() => {
+                        if (selectedCity?.id) {
+                          router.push(`/projects/${selectedCity.id}`);
+                        } else {
+                          router.push("/projects");
+                        }
+                      }}
+                      className="cursor-pointer text-sm mt-1  text-text-black break-inside-avoid hover:underline"
+                    >
                       {item.name} {selectedCity ? `in ${selectedCity?.name}` : ''}
                     </p>
-                  ) 
+                  )
                 })
               }
 

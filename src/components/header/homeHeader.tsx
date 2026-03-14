@@ -98,6 +98,12 @@ export default function HomeHeader() {
         setMenuList([]);
         setanchorEl(event.currentTarget);
         break;
+      case "refer_and_earn":
+        setMenuList([]);
+        setType(null);
+        setanchorEl(null);
+        router.push("/about-us");
+        break;
       default:
         setMenuList([]);
         setType(null);
@@ -144,9 +150,26 @@ const navigateDashboard = () => {
 }
 
 const handleHeaderSubMenuClick = (label: string) => {
-  if (label === "Join Us") {
-    router.push("/signup");
-    setanchorEl(null);
+  setanchorEl(null);
+  setCityMenu(false);
+  setType(null);
+  setProfileMenu(null);
+  switch (label) {
+    case "Join Us":
+      router.push("/signup");
+      break;
+    case "Sales Enquiry":
+      router.push("/sales-enquiry");
+      break;
+    case "Meet The Team":
+      router.push("/meet-the-team");
+      break;
+    case "Help Center":
+      router.push("/contact-us");
+      break;
+    case "Find an agent":
+      router.push("/projects");
+      break;
   }
 }
 

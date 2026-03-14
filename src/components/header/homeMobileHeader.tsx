@@ -80,7 +80,10 @@ export default function HomeMobileHeader({
               <div
                 key={item.value}
                 onClick={() => {
-                  if (item.value != "refer_and_earn") {
+                  if (item.value === "refer_and_earn") {
+                    router.push("/about-us");
+                    onClose();
+                  } else {
                     openSubMenu(item.value);
                   }
                 }}
@@ -159,8 +162,16 @@ export default function HomeMobileHeader({
                   <>
                     <p
                       onClick={() => {
-                        if (item.label === "Join Us") {
-                          router.push("/signup");
+                        const routes: Record<string, string> = {
+                          "Join Us": "/signup",
+                          "Sales Enquiry": "/sales-enquiry",
+                          "Meet The Team": "/meet-the-team",
+                          "Help Center": "/contact-us",
+                          "Find an agent": "/projects",
+                        };
+                        const route = routes[item.label];
+                        if (route) {
+                          router.push(route);
                           onClose();
                         }
                       }}
