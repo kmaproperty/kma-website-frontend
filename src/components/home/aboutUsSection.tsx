@@ -6,6 +6,7 @@ import { useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getAboutUsSectionDataApiResponse, GetAboutUsSectionResponse } from "@/services/homeService";
 import CountUp from 'react-countup';
+import Link from "next/link";
 
 const leftVariant = {
   hidden: { x: "-100%", opacity: 0 },
@@ -83,11 +84,11 @@ export default function AboutUsSection() {
               </p>
             </div>
             <div className="flex gap-4 mt-2">
-              <button className="w-auto text-sm 1xl:text-base text-white! hover:text-text-black! animated-button-white px-8 py-2 border border-white bg-transparent! text-center cursor-pointer">
+              <Link href="/contact-us" className="w-auto text-sm 1xl:text-base text-white! hover:text-text-black! animated-button-white px-8 py-2 border border-white bg-transparent! text-center cursor-pointer">
                 <span className="gap-3 relative flex justify-center">
                   <p className={`text-nowrap`}>Contact Us</p>
                 </span>
-              </button>
+              </Link>
             </div>
           </motion.div>
           <motion.div

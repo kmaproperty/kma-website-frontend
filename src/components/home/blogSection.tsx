@@ -53,7 +53,7 @@ export default function BlogSection() {
       />
       <div className="grid grid-cols-1 2md:grid-cols-2 gap-4 mt-10">
         <motion.div
-            className="hidden 2md:block relative bg-white rounded-[8px] border border-border"
+            className="hidden 2md:block relative bg-white rounded-[8px] border border-border cursor-pointer hover:shadow-md transition-shadow"
             ref={ref}
             variants={leftVariant}
             animate={isInView ? 'visible' : 'hidden'}
@@ -89,7 +89,7 @@ export default function BlogSection() {
         </motion.div>
         <div className="flex flex-col justify-between gap-4 h-full">
           <motion.div
-            className="flex relative bg-white rounded-[8px] flex-1 border border-border"
+            className="flex relative bg-white rounded-[8px] flex-1 border border-border cursor-pointer hover:shadow-md transition-shadow"
             ref={ref}
             variants={topVariant}
             animate={isInView ? 'visible' : 'hidden'}
@@ -130,7 +130,7 @@ export default function BlogSection() {
               </div>
           </motion.div>
           <motion.div
-            className="flex relative bg-white rounded-[8px] flex-1 border border-border"
+            className="flex relative bg-white rounded-[8px] flex-1 border border-border cursor-pointer hover:shadow-md transition-shadow"
             ref={ref}
             variants={bottomVariant}
             animate={isInView ? 'visible' : 'hidden'}

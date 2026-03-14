@@ -6,6 +6,7 @@ import Slider from "react-slick";
 import { motion, useInView } from "framer-motion";
 import SectionHeader from "../common/home/secionHeader";
 import Image from "next/image";
+import { useRouter } from "nextjs-toploader/app";
 
 const bottomVariant = {
   hidden: { y: "100%", opacity: 0 },
@@ -46,6 +47,7 @@ function Star({
 }
 
 export default function FeaturedProperties({ topProperties }) {
+  const router = useRouter();
   const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
   const sliderRef = useRef(null);
   const ref = useRef(null);
@@ -97,7 +99,7 @@ export default function FeaturedProperties({ topProperties }) {
                 variants={index == 0 || index == 1 ? topVariant : bottomVariant}
                 animate={isInView ? "visible" : "hidden"}
               >
-                <div className="h-full w-full rounded-[10px] border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 overflow-hidden">
+                <div onClick={() => item?.cityId && item?.id ? router.push(`/projects/${item.cityId}/${item.id}`) : null} className="h-full w-full rounded-[10px] border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 overflow-hidden cursor-pointer">
                   <div className="h-full flex flex-col">
                     {/* IMAGE */}
                     <div className="relative">
@@ -306,7 +308,7 @@ export default function FeaturedProperties({ topProperties }) {
               height={14}
             />
           </button>
-          <button className="w-auto text-xs 1xl:text-sm animated-button px-6 py-1.5 border border-blue text-center cursor-pointer">
+          <button onClick={() => router.push('/projects')} className="w-auto text-xs 1xl:text-sm animated-button px-6 py-1.5 border border-blue text-center cursor-pointer">
             <span className="gap-3 relative flex justify-center">
               <p className={`text-nowrap`}>All View</p>
             </span>

@@ -5,8 +5,10 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { topCitiesApiHandler, TopCitiesResponse } from "@/services/homeService";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "nextjs-toploader/app";
 
 type CityItem = {
+  id?: string;
   name: string;
   propertyCount: number;
   imageUrl?: string | null;
@@ -54,18 +56,22 @@ function resolveCityImageSrc(imageUrl?: string | null) {
 }
 
 function ExploreCard({
+  id,
   name,
   properties,
   image,
 }: {
+  id?: string;
   name: string;
   properties: number;
   image?: string | null;
 }) {
+  const router = useRouter();
   const resolvedSrc = resolveCityImageSrc(image);
 
   return (
     <motion.div
+      onClick={() => router.push(id ? `/projects/${id}` : '/projects')}
       whileHover={{ y: -4 }}
       transition={{ type: "spring", stiffness: 260, damping: 20 }}
       className="relative isolate overflow-hidden rounded-2xl bg-slate-200 shadow-[0_10px_30px_rgba(0,0,0,0.10)] ring-1 ring-black/5 group"
@@ -158,6 +164,7 @@ export default function RealEstateSection() {
 
   const cities: CityItem[] =
     citiList?.map((c) => ({
+      id: c.id,
       name: c.name,
       propertyCount: c.propertyCount ?? 0,
       imageUrl: c.imageUrl,
@@ -180,6 +187,7 @@ export default function RealEstateSection() {
           {cities.slice(0, 3).map((exploreDetail) => (
             <ExploreCard
               key={exploreDetail.name}
+              id={exploreDetail.id}
               name={exploreDetail.name}
               image={exploreDetail.imageUrl}
               properties={exploreDetail.propertyCount}
@@ -195,6 +203,7 @@ export default function RealEstateSection() {
           {cities.slice(3).map((exploreDetail) => (
             <ExploreCard
               key={exploreDetail.name}
+              id={exploreDetail.id}
               name={exploreDetail.name}
               image={exploreDetail.imageUrl}
               properties={exploreDetail.propertyCount}

@@ -3,6 +3,7 @@ import { Easing, useInView, Variants } from "framer-motion";
 import SectionHeader from "../common/home/secionHeader";
 import { motion } from "framer-motion";
 import { useRef, useState } from "react";
+import { useRouter } from "nextjs-toploader/app";
 
 const featureDetails = [
   {
@@ -29,6 +30,7 @@ const featureDetails = [
 ];
 
 export default function NeedSection() {
+  const router = useRouter();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
   const smartTransition = {
@@ -74,6 +76,7 @@ export default function NeedSection() {
           return (
             <motion.div
               key={index}
+              onClick={() => router.push('/contact-us')}
               className="rounded-[8px] p-5 flex-1 cursor-pointer transition-all duration-500 ease-out
              hover:-translate-y-2 "
               style={{ background: item.background }}

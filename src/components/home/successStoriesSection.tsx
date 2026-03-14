@@ -8,6 +8,7 @@ import {
   getUserReviewApiHandler,
   GetUserReviewApiHandlerResponse,
 } from "@/services/homeService";
+import Link from "next/link";
 
 function Star({
   fill = 100,
@@ -121,11 +122,11 @@ export default function SuccessStoriesSection() {
                 subHeading="Read what our satisfied clients have to say about their experiences with our platform."
               />
             </div>
-            <button className="w-fit text-sm 1xl:text-base animated-button px-8 py-2 border border-blue text-center cursor-pointer">
+            <Link href="/about-us" className="w-fit text-sm 1xl:text-base animated-button px-8 py-2 border border-blue text-center cursor-pointer">
               <span className="gap-3 relative flex justify-center">
                 <p className={`text-nowrap`}>View More</p>
               </span>
-            </button>
+            </Link>
             <div className="flex gap-3">
               <div className="flex flex-col gap-1">
                 <p className="text-text-black text-base font-medium">
