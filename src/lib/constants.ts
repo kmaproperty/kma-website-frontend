@@ -8,10 +8,10 @@ export const headerMenuList = [
         label: 'Buy',
         value: 'sale'
     },
-    {
-        label: 'Projects',
-        value: 'project'
-    },
+    // {
+    //     label: 'Projects',
+    //     value: 'project'
+    // },
     {
         label: 'Channel Partner',
         value: 'channel_partner'

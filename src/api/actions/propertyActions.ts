@@ -356,6 +356,53 @@ export interface GetFavoritePropertiesResponse {
   totalPages: number;
 }
 
+/** GET /end-user/my-reviews - paginated list of property reviews submitted by the logged-in user */
+export interface MyReviewItem {
+  id: string;
+  propertyId: string;
+  projectId?: string;
+  listingId?: string;
+  propertyName?: string;
+  propertyAddress?: string;
+  propertyImageUrl?: string | null;
+  title?: string;
+  address?: string;
+  overallRating?: number;
+  connectivityRating?: number;
+  neighbourhoodRating?: number;
+  safetyRating?: number;
+  livabilityRating?: number;
+  likeText?: string | null;
+  dislikeText?: string | null;
+  reviewText?: string | null;
+  role?: string;
+  createdAt?: string;
+  property?: {
+    id?: string;
+    propertyName?: string;
+    title?: string;
+    address?: string;
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
+}
+
+export interface GetMyReviewsPayload {
+  page?: number;
+  limit?: number;
+  sortBy?: "newest" | "oldest";
+  correlationId?: string;
+}
+
+export interface GetMyReviewsResponse {
+  success?: boolean;
+  reviews: MyReviewItem[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 /** Similar property item from GET /end-user/properties/similar */
 export interface SimilarProperty {
   id: string;
@@ -777,6 +824,34 @@ export const getFavoritePropertiesAction = async ({
       page: data?.page ?? page,
       limit: data?.limit ?? limit,
       totalPages: data?.totalPages ?? 1,
+    };
+  } catch (error: unknown) {
+    throw getErrorPayload(error);
+  }
+};
+
+/** GET /end-user/my-reviews - Get all property reviews submitted by the logged-in user */
+export const getMyReviewsAction = async ({
+  page = 1,
+  limit = 10,
+  sortBy = "newest",
+  correlationId,
+}: GetMyReviewsPayload): Promise<GetMyReviewsResponse> => {
+  try {
+    const response = await axiosInstance.get<GetMyReviewsResponse>("end-user/my-reviews", {
+      params: { page, limit, sortBy },
+      headers: {
+        "x-correlation-id": correlationId ?? getCorrelationId(),
+      },
+    });
+    const data = response.data;
+    return {
+      success: data?.success ?? true,
+      reviews: Array.isArray(data?.reviews) ? data.reviews : [],
+      total: Number(data?.total) ?? 0,
+      page: Number(data?.page) || page,
+      limit: Number(data?.limit) || limit,
+      totalPages: Number(data?.totalPages) || 1,
     };
   } catch (error: unknown) {
     throw getErrorPayload(error);
