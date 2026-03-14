@@ -8,6 +8,7 @@ import {
 } from "@/services/homeService";
 import ContactUsPopup from "../contactUsPopup";
 import { joinUrl } from "@/lib/helper";
+import { useRouter } from "nextjs-toploader/app";
 
 type SelectedCity = { id?: unknown; name?: string } | null | undefined;
 
@@ -61,14 +62,12 @@ export default function ChannelPartnerSection({
 }: {
   channelPartnerList?: ChannelPartner[];
 }) {
+  const router = useRouter();
   const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
   const [openContact, setOpenContact] = useState(false);
-
-
-  console.log(channelPartnerList, "channelPartnerList");
 
 
 
@@ -101,6 +100,7 @@ export default function ChannelPartnerSection({
             return (
               <motion.div
                 key={item?.id ?? `${item?.name ?? "partner"}-${index}`}
+                onClick={() => router.push('/channel-partner')}
                 className="cursor-pointer bg-white p-5 flex flex-col rounded-2xl border border-[#EEF0F4] shadow-[0_6px_24px_rgba(0,0,0,0.06)]"
                 variants={
                   [0, 1, 2, 3].includes(index) ? leftVariant : rightVariant
@@ -160,7 +160,7 @@ export default function ChannelPartnerSection({
                 )}
 
                 <button
-                  onClick={() => setOpenContact(true)}
+                  onClick={(e) => { e.stopPropagation(); setOpenContact(true); }}
                   className="animated-button mt-4 w-full py-3 px-6 cursor-pointer"
                 >
                   <span className="flex items-center justify-center gap-2 relative z-11">

@@ -1,12 +1,13 @@
 "use client";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Slider from "react-slick";
 import { motion, useInView } from "framer-motion";
 import SectionHeader from "../common/home/secionHeader";
 import Image from "next/image";
 import { useRouter } from "nextjs-toploader/app";
+import { addEndUserFavoriteAction, removeEndUserFavoriteAction } from "@/api/actions/propertyActions";
 
 const bottomVariant = {
   hidden: { y: "100%", opacity: 0 },
@@ -52,6 +53,24 @@ export default function FeaturedProperties({ topProperties }) {
   const sliderRef = useRef(null);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
+  const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
+
+  const toggleFavorite = async (e: React.MouseEvent, propertyId: string) => {
+    e.stopPropagation();
+    if (!propertyId) return;
+    const isFav = favoriteIds.has(propertyId);
+    try {
+      if (isFav) {
+        await removeEndUserFavoriteAction({ propertyId });
+        setFavoriteIds((prev) => { const next = new Set(prev); next.delete(propertyId); return next; });
+      } else {
+        await addEndUserFavoriteAction({ propertyId });
+        setFavoriteIds((prev) => new Set(prev).add(propertyId));
+      }
+    } catch {
+      // 401 will auto-redirect to signup via axios interceptor
+    }
+  };
 
   const slidesCount = topProperties?.length ?? 0;
   const settings = {
@@ -161,15 +180,22 @@ export default function FeaturedProperties({ topProperties }) {
 
                         <button
                           type="button"
-                          className="rounded-full border border-slate-200 bg-white p-1.5 shadow-sm transition-colors hover:bg-slate-50"
-                          aria-label="Add to favorites"
+                          onClick={(e) => toggleFavorite(e, item?.id)}
+                          className={`rounded-full border border-slate-200 p-1.5 shadow-sm transition-colors hover:bg-slate-50 ${favoriteIds.has(item?.id) ? 'bg-red-50' : 'bg-white'}`}
+                          aria-label={favoriteIds.has(item?.id) ? "Remove from favorites" : "Add to favorites"}
                         >
-                          <Image
-                            src={"/assets/property/heart.svg"}
-                            width={16}
-                            height={16}
-                            alt="Like"
-                          />
+                          {favoriteIds.has(item?.id) ? (
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#ef4444" stroke="#ef4444" strokeWidth="2">
+                              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                            </svg>
+                          ) : (
+                            <Image
+                              src={"/assets/property/heart.svg"}
+                              width={16}
+                              height={16}
+                              alt="Like"
+                            />
+                          )}
                         </button>
                       </div>
 
