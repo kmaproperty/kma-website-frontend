@@ -76,7 +76,7 @@ export default function ExploreSection({ explorePropertyList = [] }: ExploreSect
   const settings = {
       dots: false,
       arrows: false,
-      infinite: true, 
+      infinite: list.length > 4,
       speed: 600,
       slidesToShow: 4,
       slidesToScroll: 1,
