@@ -176,6 +176,7 @@ export default function RealEstateSection() {
         isInView={isInView}
         heading="Explore Top Real Estate Opportunities Across India"
         subHeading="Smart property choices in India's leading cities."
+        hideButton={true}
       />
       <div className="mt-10" ref={ref}>
         {/* First Row */}

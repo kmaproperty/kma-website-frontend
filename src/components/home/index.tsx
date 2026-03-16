@@ -65,7 +65,6 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
     // staleTime: 60_000,
   }); 
 
-  console.log(explorePropertyList, "explorePropertyList");
   
 
   const { data } = useQuery({
@@ -108,7 +107,6 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
     refetchOnReconnect: true,
   });
 
-  console.log(channelPartnerList, "channelPartnerList");
 
 
   useEffect(() => {
