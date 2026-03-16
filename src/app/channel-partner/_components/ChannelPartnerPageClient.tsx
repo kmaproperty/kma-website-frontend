@@ -157,7 +157,7 @@ export default function ChannelPartnerPageClient() {
 
   const payload: GetChannelPartnerListPayload = {
     search: search || null,
-    city: filterCity || selectedCity?.name ?? null,
+    city: filterCity || (selectedCity?.name ?? null),
     experience: filterExperience.trim() || null,
     properties: filterProperties || null,
     page: String(page),
