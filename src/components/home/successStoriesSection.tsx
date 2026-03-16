@@ -210,7 +210,7 @@ export default function SuccessStoriesSection() {
                         height={5}
                         alt="dot"
                       />
-                      <p className="text-text-gray text-sm">South Africa</p>
+                      <p className="text-text-gray text-sm">India</p>
                     </div>
                   </motion.div>
                 );
@@ -271,7 +271,7 @@ export default function SuccessStoriesSection() {
                         height={5}
                         alt="dot"
                       />
-                      <p className="text-text-gray text-sm">South Africa</p>
+                      <p className="text-text-gray text-sm">India</p>
                     </div>
                   </motion.div>
                 );
