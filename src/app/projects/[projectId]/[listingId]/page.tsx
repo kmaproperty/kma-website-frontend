@@ -1117,12 +1117,14 @@ export default function ListingDetailsPage() {
                                 {review.review}
                               </p>
 
-                              <button
-                                type="button"
-                                className="mt-4 text-xs font-semibold text-[#05085E] underline underline-offset-4"
+                              <Link
+                                href={`/projects/${params?.projectId ?? ""}/${listingId || ""}/reviews`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="mt-4 inline-block text-xs font-semibold text-[#05085E] underline underline-offset-4"
                               >
                                 Read More
-                              </button>
+                              </Link>
                             </article>
                           ))}
                         </div>

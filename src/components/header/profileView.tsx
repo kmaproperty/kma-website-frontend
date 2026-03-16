@@ -111,7 +111,7 @@ export default function ProfileView({ userRole }: ProfileViewProps) {
       localStorage.clear();
       await clearAuthCookies();
       queryClient.clear();
-      router.replace("/signup");
+      router.replace("/");
     },
     onError: (error: any) => {
       const message = Array.isArray(error?.message) ? error.message.join(", ") : error?.message ?? "Unable to logout";

@@ -246,7 +246,7 @@ export default function EditProfileScreen() {
       localStorage.clear();
       await clearAuthCookies();
       queryClient.clear();
-      router.replace("/signup");
+      router.replace("/");
     },
     onError: (error: unknown) => {
       const err = error as { message?: string | string[] };
