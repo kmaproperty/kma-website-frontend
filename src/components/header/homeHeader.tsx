@@ -102,7 +102,6 @@ export default function HomeHeader() {
         setMenuList([]);
         setType(null);
         setanchorEl(null);
-        router.push("/about-us");
         break;
       default:
         setMenuList([]);
@@ -233,7 +232,10 @@ const handleHeaderSubMenuClick = (label: string) => {
           {headerMenuList.map((item) => (
             <p
               onMouseEnter={(event) => handleOpenMenu(event, item.value)}
-              onClick={(event) => handleOpenMenu(event, item.value)}
+              onClick={(event) => {
+                handleOpenMenu(event, item.value);
+                if (item.value === "refer_and_earn") router.push("/about-us");
+              }}
               key={item.value}
               className="hidden 2md:block mt-2 text-gray-100 break-word text-xs xl:text-sm nowrap w-max border-b-2 border-transparent hover:border-blue transition-colors duration-200 cursor-pointer px-1.5  pb-1"
             >
