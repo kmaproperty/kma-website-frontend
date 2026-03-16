@@ -14,6 +14,8 @@ import { ContactDetailsPayload, ContactDetailsResponse, CreateContactDetailsApiH
 import { toast } from "react-toastify";
 import { contactUsHomeOtpApiHandler, ContactUsHomeOtpPayload, ContactUsHOmeOtpResponse, submitHomeContactApiHandler, SubmitHomeContactPayload, SubmitHomeContactResponse } from "@/services/contactService";
 import { createURLSearchParam } from "@/lib/helper";
+import { useSelector } from "react-redux";
+import { getAboutusData } from "@/store/homeHeaderSlice";
 
 interface FormValues {
   firstName: string;
@@ -34,6 +36,7 @@ export default function ContactInformation({isEndUser = false}: {isEndUser?: boo
     const isContactInformation = searchParams.get('isContactInformation')
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const aboutusData: any = useSelector(getAboutusData);
 
   const [formData, setFormData] = React.useState<FormValues>({
     firstName: "",
@@ -49,7 +52,6 @@ export default function ContactInformation({isEndUser = false}: {isEndUser?: boo
     const newErrors: FormErrors = {};
 
     if (!formData.firstName.trim()) newErrors.firstName = "First name is required";
-    if (!formData.lastName.trim()) newErrors.lastName = "Last name is required";
 
     if (formData.email.trim() && !/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(formData.email)) {
       newErrors.email = "Invalid email format";
@@ -58,6 +60,8 @@ export default function ContactInformation({isEndUser = false}: {isEndUser?: boo
     if(msg){
       newErrors.phone = msg
     }
+
+    if (!formData.about.trim()) newErrors.about = "Query is required";
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0;
@@ -128,13 +132,13 @@ export default function ContactInformation({isEndUser = false}: {isEndUser?: boo
     if(validate()){
         const payload = {
           firstName: formData.firstName,
-          lastName: formData.lastName,
+          ...(formData.lastName.trim() ? { lastName: formData.lastName } : {}),
           phoneNumber: formData.phone.value,
-          message: formData.about, 
+          message: formData.about,
          ...(formData.email ? { email: formData.email} : {})
         }
           submitContactDetails(payload)
-    } 
+    }
   }
 
   React.useEffect(() => {
@@ -150,12 +154,12 @@ export default function ContactInformation({isEndUser = false}: {isEndUser?: boo
         }))
       }
     }
-    
+
   },[openPopup])
-  
+
     const dynamicClass = (flag: string) => {
     return `
-                  box-border h-[47.81px] px-4 py-2 text-sm rounded-full 
+                  box-border h-[47.81px] px-4 py-2 text-sm rounded-full
                   border focus:outline-none
                   ${
                     Boolean(flag)
@@ -177,14 +181,14 @@ export default function ContactInformation({isEndUser = false}: {isEndUser?: boo
         slotProps={{
           paper: {
             sx: {
-              borderRadius: fullScreen ? '' : "1rem", 
+              borderRadius: fullScreen ? '' : "1rem",
               overflow: 'hidden'
             },
           },
         }}
       >
         <DialogContent sx={{ padding: "0px" }}>
-          
+
           <div className="grid md:grid-cols-[35%_65%] grid-cols-1 h-full w-full p-2.5">
             {/* Left Side: Contact Info */}
             <div className="bg-blue text-white p-8 relative rounded-xl z-10">
@@ -205,7 +209,7 @@ export default function ContactInformation({isEndUser = false}: {isEndUser?: boo
                       height={20}
                     />
                   </div>
-                  <p className="text-sm">+00 (123) 456 789 012</p>
+                  <p className="text-sm">{aboutusData?.phoneNumber ? (aboutusData.phoneNumber.startsWith('+') ? aboutusData.phoneNumber : `+91 ${aboutusData.phoneNumber}`) : ''}</p>
                 </div>
 
                 <div className="flex items-center gap-4">
@@ -217,7 +221,7 @@ export default function ContactInformation({isEndUser = false}: {isEndUser?: boo
                       height={20}
                     />
                   </div>
-                  <p className="text-sm">infomail123@domain.com</p>
+                  <p className="text-sm">{aboutusData?.email || 'info@kmaproperty.com'}</p>
                 </div>
 
                 <div className="flex items-center gap-4">
@@ -230,14 +234,14 @@ export default function ContactInformation({isEndUser = false}: {isEndUser?: boo
                     />
                   </div>
                   <p className="text-sm">
-                    West 2nd lane, Inner circular road, New York City
+                    {aboutusData?.address || 'Address not available'}
                   </p>
                 </div>
               </div>
               <div onClick={handleDirectClose} className="absolute top-4 right-3 flex w-full md:hidden justify-end ">
                 <Image src='/assets/close-icon-white.svg' alt='close' width={24} height={24} className="cursor-pointer"/>
               </div>
-              
+
               <div className="absolute bottom-[8%] right-[13%] w-28 h-28 z-1">
                 <Image
                   alt="round-ring"
@@ -274,7 +278,6 @@ export default function ContactInformation({isEndUser = false}: {isEndUser?: boo
                       placeholder="Enter first name"
                       fullWidth
                       className={dynamicClass(errors.firstName)}
-                      // className="box-border h-[47.81px] px-4 py-2 text-text-gray text-sm rounded-full border border-border focus:outline-none focus:border-blue"
                       inputProps={{
                         className: "placeholder-gray",
                       }}
@@ -289,7 +292,7 @@ export default function ContactInformation({isEndUser = false}: {isEndUser?: boo
                   </div>
                   </div>
                   <div>
-                    <p className="required-label text-sm lg:text-base 2xl:text-lg text-text-black pb-2">
+                    <p className="text-sm lg:text-base 2xl:text-lg text-text-black pb-2">
                       Last Name
                     </p>
                     <div>
@@ -297,7 +300,6 @@ export default function ContactInformation({isEndUser = false}: {isEndUser?: boo
                       placeholder="Enter last name"
                       fullWidth
                       className={dynamicClass(errors.lastName)}
-                      // className="box-border h-[47.81px] px-4 py-2 text-text-gray text-sm rounded-full border border-border focus:outline-none focus:border-blue"
                       inputProps={{
                         className: "placeholder-gray",
                       }}
@@ -322,7 +324,6 @@ export default function ContactInformation({isEndUser = false}: {isEndUser?: boo
                     <InputBase
                       placeholder="Enter email address"
                       fullWidth
-                      // className="box-border h-[47.81px] px-4 py-2 text-text-gray text-sm rounded-full border border-border focus:outline-none focus:border-blue"
                       className={dynamicClass(errors.email)}
                       inputProps={{
                         className: "placeholder-gray",
@@ -346,15 +347,17 @@ export default function ContactInformation({isEndUser = false}: {isEndUser?: boo
                 </div>
 
                 <div>
-                  <p className="text-sm lg:text-base 2xl:text-lg text-text-black pb-2">
-                    Message
+                  <p className="required-label text-sm lg:text-base 2xl:text-lg text-text-black pb-2">
+                    Query
                   </p>
                   <InputBase
-                    placeholder="Write your message"
+                    placeholder="Write your query"
                     multiline
                     fullWidth
                     minRows={3}
-                    className="box-border text-sm text-text-gray rounded-xl border border-border focus:outline-none focus:border-blue"
+                    className={`box-border text-sm text-text-gray rounded-xl border focus:outline-none ${
+                      errors.about ? "border-red-500 focus:border-red-500" : "border-border focus:border-blue"
+                    }`}
                     sx={{
                       "& .MuiInputBase-input": {
                         padding: "1rem",
@@ -363,6 +366,11 @@ export default function ContactInformation({isEndUser = false}: {isEndUser?: boo
                     value={formData.about}
                     onChange={(e) => handleChange("about", e.target.value)}
                   />
+                  {errors.about && (
+                    <p className="pt-1 text-red-500 text-xs">
+                      {errors.about}
+                    </p>
+                  )}
                 </div>
 
                 <div className="flex justify-end flex-row gap-4 items-center">
