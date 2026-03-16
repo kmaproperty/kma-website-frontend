@@ -5,6 +5,7 @@ import "slick-carousel/slick/slick-theme.css";
 import { useMemo, useRef, useState } from "react";
 import Slider from "react-slick";
 import { joinUrl } from "@/lib/helper";
+import { useRouter } from "nextjs-toploader/app";
 
 const NON_RESIDENTIAL_TYPES = new Set([
   "Office",
@@ -16,6 +17,7 @@ const NON_RESIDENTIAL_TYPES = new Set([
 ]);
 
 export default function TopProperties({ topProperties }) {
+  const router = useRouter();
   const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
   const sliderRef = useRef(null);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -53,7 +55,14 @@ export default function TopProperties({ topProperties }) {
               const isResidential = !NON_RESIDENTIAL_TYPES.has(item?.propertyType);
               return (
                 <div key={item?.id ?? item?.propertyId ?? index}>
-                  <div className="flex justify-start gap-2 2md:gap-3">
+                  <div
+                    className="flex justify-start gap-2 2md:gap-3 cursor-pointer"
+                    onClick={() => {
+                      const propId = item?.id;
+                      const cityId = item?.cityId;
+                      if (cityId && propId) router.push(`/projects/${cityId}/${propId}`);
+                    }}
+                  >
                     <div className="w-[110px] flex-shrink-0">
                       {imgSrc ? (
                         <Image
@@ -81,7 +90,7 @@ export default function TopProperties({ topProperties }) {
                         {item.address}
                       </p>
                       <p className="text-xs xl:text-sm font-semibold text-yellow">
-                        $
+                        ₹
                         {item.listingType == "Sale"
                           ? item.price
                           : item.monthlyRent}{" "}

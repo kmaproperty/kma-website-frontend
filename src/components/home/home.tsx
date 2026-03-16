@@ -1,7 +1,5 @@
 "use client";
-import type { Variants } from "framer-motion";
-import { motion } from "framer-motion";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import Social from "./social";
 import HomeHeader from "../header/homeHeader";
 import BannerText from "./bannertext";
@@ -17,17 +15,8 @@ type MainHomeProps = {
   topProperties: unknown[];
 };
 
-const dissolve: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { duration: 1.5, ease: "easeOut" },
-  },
-};
-
 export default function MainHome({ topProperties }: MainHomeProps) {
   const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
-  const [show, setShow] = useState(false);
 
   const { data: reviewData } = useQuery<GetUserReviewApiHandlerResponse>({
     queryKey: ["review"],
@@ -51,14 +40,7 @@ export default function MainHome({ topProperties }: MainHomeProps) {
         <HomeHeader />
       </div>
     </div>
-    <motion.div
-      className="absolute w-[100%] h-[88vh] top-0"
-      variants={dissolve}
-      initial="hidden"
-      animate={show ? "visible" : "hidden"}
-      onMouseEnter={() => setShow(true)}
-      onTouchStart={() => setShow(true)}
-    >
+    <div className="absolute w-[100%] h-[88vh] top-0">
       <div>
         <Social/>
       </div>
@@ -81,7 +63,7 @@ export default function MainHome({ topProperties }: MainHomeProps) {
       <div>
         <ContactUs />
       </div>
-    </motion.div>
+    </div>
     <ContactInformation isEndUser={true}/>
     </>
   );

@@ -342,6 +342,7 @@ export interface PropertyDetails {
     imageCount: string;
     price: number;
     monthlyRent: number;
+    cityId: string;
     city: string;
     society: string;
     locality: string;
