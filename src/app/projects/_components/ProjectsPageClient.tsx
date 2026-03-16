@@ -1,7 +1,8 @@
 "use client";
 
-import { useDeferredValue, useEffect, useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { Search } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import type { Project } from "../_types";
 import FiltersSidebar from "./FiltersSidebar";
 import ProjectsToolbar from "./ProjectsToolbar";
@@ -190,6 +191,18 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
     longitude: number;
   } | null>(null);
   const [isLocating, setIsLocating] = useState(false);
+
+  // Apply filters from URL query params (from header dropdown navigation)
+  const searchParams = useSearchParams();
+  const appliedQueryRef = useRef<string | null>(null);
+  useEffect(() => {
+    const propertyTypeId = searchParams.get('propertyTypeId');
+    const queryKey = searchParams.toString();
+    if (propertyTypeId && appliedQueryRef.current !== queryKey) {
+      appliedQueryRef.current = queryKey;
+      setFilters({ propertyTypeIds: [propertyTypeId] });
+    }
+  }, [searchParams, setFilters]);
 
   const deferredFilters = useDeferredValue(filters);
   const deferredSort = useDeferredValue(sort);

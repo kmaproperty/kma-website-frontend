@@ -1,7 +1,7 @@
 "use client";
-import { ClickAwayListener, Paper, Popper } from "@mui/material";
+import { Paper, Popper } from "@mui/material";
 import Image from "next/image";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import ListView from "./listView";
 import {
@@ -58,7 +58,9 @@ export default function HomeHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
   const pathname = usePathname();
- 
+  const headerBarRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
@@ -83,7 +85,39 @@ export default function HomeHeader() {
   }, [pathname, resetMenuState]);
 
   const openType = Boolean(anchorEl);
+
+  const cancelCloseTimer = useCallback(() => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  }, []);
+
+  const scheduleClose = useCallback(() => {
+    cancelCloseTimer();
+    closeTimerRef.current = setTimeout(() => {
+      resetMenuState();
+    }, 200);
+  }, [cancelCloseTimer, resetMenuState]);
+
+  // Clean up timer on unmount
+  useEffect(() => {
+    return () => cancelCloseTimer();
+  }, [cancelCloseTimer]);
+
+  // Click outside detection (replaces ClickAwayListener)
+  useEffect(() => {
+    if (!openType) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (headerBarRef.current?.contains(e.target as Node)) return;
+      if (dropdownRef.current?.contains(e.target as Node)) return;
+      resetMenuState();
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [openType, resetMenuState]);
   const handleOpenMenu = (event, menuType) => {
+    cancelCloseTimer();
     switch (menuType) {
       case "project":
         setMenuList(projectMenuList);
@@ -195,6 +229,7 @@ const handleHeaderSubMenuClick = (label: string) => {
     <div className="sticky top-0 z-50 w-full flex justify-center">
     <div className="w-[90%] lg:w-[75%] mt-[25px]">
       <div
+        ref={headerBarRef}
         className={[
           "rounded-[200px] h-[50px] 2md:h-[63px] px-3 lg:px-7 pt-[4px] flex justify-between items-center border border-1 transition-colors duration-300",
           isScrolled
@@ -218,9 +253,14 @@ const handleHeaderSubMenuClick = (label: string) => {
         <div className="flex flex-row justify-between items-center gap-1 w-full px-4 text-center">
           <div
             onMouseEnter={(event) => {
+              cancelCloseTimer();
               setanchorEl(event.currentTarget);
               setCityMenu(true);
+              setType(null);
+              setProfileMenu(null);
+              setHoveredMenu("city");
             }}
+            onMouseLeave={() => scheduleClose()}
             onClick={(event) => {
               setanchorEl(event.currentTarget);
               setCityMenu(true);
@@ -253,12 +293,23 @@ const handleHeaderSubMenuClick = (label: string) => {
             return (
               <p
                 onMouseEnter={(event) => {
+                  cancelCloseTimer();
                   setHoveredMenu(item.value);
-                  if (hasDropdown) handleOpenMenu(event, item.value);
-                  else handleOpenMenu(event, item.value);
+                  if (hasDropdown) {
+                    handleOpenMenu(event, item.value);
+                  } else {
+                    setanchorEl(null);
+                    setCityMenu(false);
+                    setType(null);
+                    setProfileMenu(null);
+                  }
                 }}
                 onMouseLeave={() => {
-                  if (!hasDropdown) setHoveredMenu(null);
+                  if (!hasDropdown) {
+                    setHoveredMenu(null);
+                  } else {
+                    scheduleClose();
+                  }
                 }}
                 onClick={(event) => {
                   if (hasDropdown) {
@@ -269,7 +320,7 @@ const handleHeaderSubMenuClick = (label: string) => {
                   }
                 }}
                 key={item.value}
-                className={`hidden 2md:block mt-2 text-gray-100 break-word text-xs xl:text-sm nowrap w-max border-b-2 transition-colors duration-200 cursor-pointer px-1.5 pb-1 ${
+                className={`hidden 2md:block mt-2 text-gray-100 break-word text-xs xl:text-sm nowrap w-max border-b-2 transition-colors duration-200 cursor-pointer px-1.5 pb-1 hover:border-blue ${
                   isActive ? "border-blue" : "border-transparent"
                 }`}
               >
@@ -278,7 +329,8 @@ const handleHeaderSubMenuClick = (label: string) => {
             );
           })}
           <div
-            onMouseEnter={(event) => { setHoveredMenu("more"); handleOpenMenu(event, "more"); }}
+            onMouseEnter={(event) => { cancelCloseTimer(); setHoveredMenu("more"); handleOpenMenu(event, "more"); }}
+            onMouseLeave={() => scheduleClose()}
             onClick={(event) => handleOpenMenu(event, "more")}
             className="flex justify-center items-center h-[30px] pt-1"
           >
@@ -322,11 +374,14 @@ const handleHeaderSubMenuClick = (label: string) => {
           </button>}
           <div
             onMouseEnter={(event) => {
+              cancelCloseTimer();
               setProfileMenu("profile");
               setanchorEl(event.currentTarget);
               setCityMenu(false);
               setType(null);
+              setHoveredMenu("profile");
             }}
+            onMouseLeave={() => scheduleClose()}
             className="flex flex-row gap-[6px] items-center cursor-pointer"
           >
             <Image
@@ -392,16 +447,11 @@ const handleHeaderSubMenuClick = (label: string) => {
             },
           ]}
         >
-          <ClickAwayListener
-            onClickAway={() => {
-              setanchorEl(null);
-              setCityMenu(false);
-              setType(null);
-              setProfileMenu(null);
-              setHoveredMenu(null);
-            }}
-          >
-            <div>
+            <div
+              ref={dropdownRef}
+              onMouseEnter={cancelCloseTimer}
+              onMouseLeave={scheduleClose}
+            >
               {!cityMenu &&
                 (!type ? (
                   <Paper
@@ -413,7 +463,7 @@ const handleHeaderSubMenuClick = (label: string) => {
                      : <ProfileView userRole={userRole}/>}
                   </Paper>
                 ) : (
-                  <RentSellHeaderView type={type} />
+                  <RentSellHeaderView type={type} onClose={resetMenuState} />
                 ))}
               {cityMenu && (
                 <Paper className="w-auto min-w-[180px]! rounded-2xl! px-2 py-2 shadow-xl border border-gray-200 bg-white relative z-[9999]">
@@ -421,7 +471,6 @@ const handleHeaderSubMenuClick = (label: string) => {
                 </Paper>
               )}
             </div>
-          </ClickAwayListener>
         </Popper>
       </div>
     </div>
