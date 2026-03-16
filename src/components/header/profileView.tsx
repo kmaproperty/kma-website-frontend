@@ -34,9 +34,9 @@ const LOGGED_IN_MENU_BASE: MenuItem[] = [
   { label: "Saved Properties", icon: "/assets/home-save-blue.svg", route: "/projects" },
   { label: "Contacted Properties", icon: "/assets/home-contact-blue.svg", route: "/contact-us" },
   { label: "My Reviews (New)", icon: "/assets/review-blue.svg", route: "/profile" },
-  { label: "My Services", icon: "/assets/service-blue.svg", route: "/user-dashboard" },
-  { label: "Refer And Earn", icon: "/assets/refer-earn-blue.svg", route: "/user-dashboard" },
-  { label: "Help", icon: "/assets/help-blue.svg", route: "/contact-us" },
+  { label: "My Services", icon: "/assets/service-blue.svg", route: "/"},
+  { label: "Refer And Earn", icon: "/assets/refer-earn-blue.svg", route: "/join-us" },
+  { label: "Help", icon: "/assets/help-blue.svg", route: "/help-center" },
 ];
 
 const GUEST_MENU_BASE: MenuItem[] = [
@@ -46,8 +46,8 @@ const GUEST_MENU_BASE: MenuItem[] = [
   { label: "Contacted Properties", icon: "/assets/home-contact-blue.svg" },
   { label: "My Reviews (New)", icon: "/assets/review-blue.svg" },
   { label: "My Services", icon: "/assets/service-blue.svg" },
-  { label: "Refer And Earn", icon: "/assets/refer-earn-blue.svg" },
-  { label: "Help", icon: "/assets/help-blue.svg", route: "/contact-us" },
+  { label: "Refer And Earn", icon: "/assets/refer-earn-blue.svg", route: "/join-us" },
+  { label: "Help", icon: "/assets/help-blue.svg", route: "/help-center" },
 ];
 
 function CountBadge({ count }: { count?: number }) {

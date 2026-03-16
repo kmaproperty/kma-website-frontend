@@ -13,10 +13,23 @@ export default function middleware(req: NextRequest) {
   const isRecentlyViewedPage = pathname === "/recently-viewed";
   const isSignupPage = pathname === '/signup';
   const isVerifyOtpPage = pathname === '/verify-otp';
+  const isContactUsPage = pathname === '/contact-us';
+  const isHelpCenterPage = pathname === '/help-center';
+  const isJoinUsPage = pathname === '/join-us';
   const event = searchParams.get('event')
 
   // Public pages (no login required)
-  if (isHomePage || isAbooutUsPage || verifyProperty || isProjectsPage || isUserFlowPage || isRecentlyViewedPage) {
+  if (
+    isHomePage ||
+    isAbooutUsPage ||
+    verifyProperty ||
+    isProjectsPage ||
+    isUserFlowPage ||
+    isRecentlyViewedPage ||
+    isContactUsPage ||
+    isHelpCenterPage ||
+    isJoinUsPage
+  ) {
     return NextResponse.next();
   }
 
