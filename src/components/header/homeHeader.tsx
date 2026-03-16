@@ -1,7 +1,8 @@
 "use client";
 import { ClickAwayListener, Paper, Popper } from "@mui/material";
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
 import ListView from "./listView";
 import {
   channelPartnerMenuList,
@@ -55,6 +56,8 @@ export default function HomeHeader() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [activeSubMenu, setActiveSubMenu] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
+  const pathname = usePathname();
  
 
   const toggleDrawer = () => {
@@ -64,6 +67,20 @@ export default function HomeHeader() {
 
   const openSubMenu = (label) => setActiveSubMenu(label);
   const closeSubMenu = () => setActiveSubMenu(null);
+
+  // Reset all menu state on route change
+  const resetMenuState = useCallback(() => {
+    setanchorEl(null);
+    setCityMenu(false);
+    setType(null);
+    setMenuList([]);
+    setProfileMenu(null);
+    setHoveredMenu(null);
+  }, []);
+
+  useEffect(() => {
+    resetMenuState();
+  }, [pathname, resetMenuState]);
 
   const openType = Boolean(anchorEl);
   const handleOpenMenu = (event, menuType) => {
@@ -115,7 +132,8 @@ export default function HomeHeader() {
   const handleScroll = () => {
     setanchorEl(null);
     setCityMenu(false);
-    setType(null)
+    setType(null);
+    setHoveredMenu(null);
   };
 
   // Make header clearly visible on scroll by switching to a solid theme color background.
@@ -229,21 +247,38 @@ const handleHeaderSubMenuClick = (label: string) => {
           </div>
           <div className="hidden 2md:block border border-[0.2px] border-[#FFFFFF] h-[30px] ml-2" />
 
-          {headerMenuList.map((item) => (
-            <p
-              onMouseEnter={(event) => handleOpenMenu(event, item.value)}
-              onClick={(event) => {
-                handleOpenMenu(event, item.value);
-                if (item.value === "refer_and_earn") router.push("/about-us");
-              }}
-              key={item.value}
-              className="hidden 2md:block mt-2 text-gray-100 break-word text-xs xl:text-sm nowrap w-max border-b-2 border-transparent hover:border-blue transition-colors duration-200 cursor-pointer px-1.5  pb-1"
-            >
-              {item.label}
-            </p>
-          ))}
+          {headerMenuList.map((item) => {
+            const hasDropdown = item.value !== "refer_and_earn";
+            const isActive = hoveredMenu === item.value;
+            return (
+              <p
+                onMouseEnter={(event) => {
+                  setHoveredMenu(item.value);
+                  if (hasDropdown) handleOpenMenu(event, item.value);
+                  else handleOpenMenu(event, item.value);
+                }}
+                onMouseLeave={() => {
+                  if (!hasDropdown) setHoveredMenu(null);
+                }}
+                onClick={(event) => {
+                  if (hasDropdown) {
+                    handleOpenMenu(event, item.value);
+                  } else {
+                    resetMenuState();
+                    router.push("/about-us");
+                  }
+                }}
+                key={item.value}
+                className={`hidden 2md:block mt-2 text-gray-100 break-word text-xs xl:text-sm nowrap w-max border-b-2 transition-colors duration-200 cursor-pointer px-1.5 pb-1 ${
+                  isActive ? "border-blue" : "border-transparent"
+                }`}
+              >
+                {item.label}
+              </p>
+            );
+          })}
           <div
-            onMouseEnter={(event) => handleOpenMenu(event, "more")}
+            onMouseEnter={(event) => { setHoveredMenu("more"); handleOpenMenu(event, "more"); }}
             onClick={(event) => handleOpenMenu(event, "more")}
             className="flex justify-center items-center h-[30px] pt-1"
           >
@@ -361,8 +396,9 @@ const handleHeaderSubMenuClick = (label: string) => {
             onClickAway={() => {
               setanchorEl(null);
               setCityMenu(false);
-              setType(null)
-              setProfileMenu(null)
+              setType(null);
+              setProfileMenu(null);
+              setHoveredMenu(null);
             }}
           >
             <div>
