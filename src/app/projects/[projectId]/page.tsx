@@ -8,9 +8,9 @@ import HeaderDataSync from "@/components/header/HeaderDataSync";
 export default async function ProjectDetailsPage({
   params,
 }: {
-  params: { projectId: string };
+  params: Promise<{ projectId: string }>;
 }) {
-  const projectId = params?.projectId;
+  const { projectId } = await params;
   const response = await fetchPropertyMasterData();
   let propertyMasterData: unknown[] = [];
   if (response && response.success) {

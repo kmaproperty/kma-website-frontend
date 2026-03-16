@@ -180,9 +180,9 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
           </div>
         </div>
       )}
-      <div className="">
+      {/* <div className="">
         <LazyAppDownloadSection />
-      </div>
+      </div> */}
       <div className="flex justify-center overflow-hidden">
         <div className="my-16 w-[90%] 2md:w-[75%]">
           <LazyBlogSection />
