@@ -29,6 +29,7 @@ import {
   Tv,
   UtensilsCrossed,
   WavesLadder,
+  ChevronLeft,
 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -414,11 +415,7 @@ export default function ListingDetailsPage() {
 
   const displayGallery = useMemo(() => {
     const nextImages = resolvedGalleryImages.length > 0 ? resolvedGalleryImages : galleryImages;
-    if (nextImages.length >= 5) {
-      return nextImages;
-    }
-
-    return [...nextImages, ...galleryImages].slice(0, 5);
+    return nextImages.slice(0, 5);
   }, [resolvedGalleryImages]);
 
   const propertyTitle =
@@ -591,7 +588,7 @@ export default function ListingDetailsPage() {
           [activeLocalityCategory]: res.places?.map((p) => ({ name: p.name, distance: p.distance })) ?? [],
         }));
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setNearbyLoading(false));
   }, [activeLocalityCategory, lat, lng]);
 
@@ -604,16 +601,16 @@ export default function ListingDetailsPage() {
   return (
     <MainLayout>
 
-      <div className="py-8">
+      <div className="pt-10 pb-6">
         <div className="text-sm text-white absolute top-35 left-62">
-        Home / Property for Rent in Gurgaon / Flats for Rent in Gurgaon / Flats for Rent in Sector 49 /  4 Bedroom 2337 Sq.Ft. Apartment in Sector 49 Gurgaon
+          Home / Property for Rent in Gurgaon / Flats for Rent in Gurgaon / Flats for Rent in Sector 49 /  4 Bedroom 2337 Sq.Ft. Apartment in Sector 49 Gurgaon
         </div>
-        <div className="text-4xl ml-6 mb-5 rounded-lg font-semibold text-white">
+        <div className="text-4xl mb-8 rounded-lg font-semibold text-white">
           Property Details
         </div>
-        <div className="mx-auto w-full max-w-[1180px] px-4 lg:px-6">
-          <div className="rounded-2xl border border-border bg-white p-4 shadow-sm lg:p-6">
-            <div className="flex flex-col gap-4 border-b border-border pb-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mx-auto w-full">
+          <div className="rounded-2xl border border-border bg-white p-4 shadow-sm lg:p-8">
+            <div className="flex flex-col gap-4 pb-2 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 {/* <p className="text-xs font-medium text-text-light-gray">
                 Home / Projects / {params?.projectId ?? "project"} / {listingId || "property"}
@@ -621,7 +618,7 @@ export default function ListingDetailsPage() {
                 <h1 className="mt-1 text-2xl font-semibold text-text-black">
                   {propertyTitle}
                 </h1>
-                <p className="mt-1 flex items-center gap-1 text-sm text-text-gray">
+                <p className="mt-2.5 flex items-center gap-1 text-sm text-text-gray">
                   <MapPin className="h-4 w-4" />
                   {propertyAddress}
                 </p>
@@ -629,7 +626,7 @@ export default function ListingDetailsPage() {
 
               <div className="text-left sm:text-right">
                 <p className="text-3xl font-semibold leading-none text-blue">{currentPriceLabel}</p>
-                <p className="mt-1 text-xs text-text-gray">{depositLabel}</p>
+                <p className="mt-2.5 text-xs text-text-gray">{depositLabel}</p>
               </div>
             </div>
 
@@ -642,8 +639,8 @@ export default function ListingDetailsPage() {
               </p>
             ) : null}
 
-            <section className="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-[2fr_1fr]">
-              <div className="relative h-[250px] overflow-hidden rounded-sm sm:h-[330px]">
+            <section className="mt-4 flex gap-3">
+              <div className="relative h-[250px] w-[60%] overflow-hidden rounded-sm sm:h-[480px]">
                 <Image
                   src={displayGallery[0]}
                   alt="Property cover"
@@ -660,11 +657,11 @@ export default function ListingDetailsPage() {
                 </button>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="w-[40%] grid grid-cols-2 gap-3">
                 {displayGallery.slice(1).map((src, idx) => (
                   <div
                     key={src}
-                    className="relative h-[118px] overflow-hidden rounded-sm sm:h-[158px]"
+                    className="relative h-[118px] overflow-hidden rounded-sm sm:h-full"
                   >
                     <Image
                       src={src}
@@ -689,9 +686,9 @@ export default function ListingDetailsPage() {
               {quickFactsData.map((fact) => (
                 <div
                   key={fact.label}
-                  className="inline-flex items-center gap-2 rounded-md border border-border bg-background-gray px-3 py-2 text-xs font-medium text-text-black"
+                  className="inline-flex items-center gap-2 rounded-md border border-border bg-background-gray px-2.5 py-2 text-[13px] text-text-black"
                 >
-                  <span>{fact.icon}</span>
+                  <span className="flex w-[30px] h-[30px] justify-center items-center rounded-md bg-white">{fact.icon}</span>
                   <span>{fact.label}</span>
                 </div>
               ))}
@@ -711,8 +708,8 @@ export default function ListingDetailsPage() {
                     <button
                       key={item}
                       type="button"
-                      className={`whitespace-nowrap border-b-2 px-6 py-4 font-medium transition ${idx === 0
-                        ? "border-blue bg-white/70 text-text-black"
+                      className={`whitespace-nowrap border-b-2 px-6 py-4 transition ${idx === 0
+                        ? "border-blue bg-white/70 text-text-black font-semibold"
                         : "border-transparent text-text-gray hover:text-text-black"
                         }`}
                     >
@@ -753,12 +750,12 @@ export default function ListingDetailsPage() {
                       {propertyInfoData.map(([label, value]) => (
                         <div
                           key={label}
-                          className="rounded-lg border border-border p-3"
+                          className="rounded-lg border border-border px-3 py-2"
                         >
-                          <p className="text-[11px] text-text-gray">
+                          <p className="text-[12px] text-text-gray">
                             {label}
                           </p>
-                          <p className="mt-1 text-sm font-medium text-text-black">{value}</p>
+                          <p className="mt-0.5 text-sm font-medium text-text-black">{value}</p>
                         </div>
                       ))}
                     </div>
@@ -766,12 +763,12 @@ export default function ListingDetailsPage() {
 
                   <section className="rounded-xl">
                     <h2 className="text-xl font-semibold text-text-black">Furnishing Details</h2>
-                    <div className="mt-4 rounded-lg bg-white p-3 grid grid-cols-1  gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-4">
+                    <div className="mt-4 rounded-lg bg-white px-5 py-4 grid grid-cols-1  gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-4">
                       {(Array.isArray(propertyDetails?.furnishingsCounts) && propertyDetails.furnishingsCounts.length > 0
                         ? propertyDetails.furnishingsCounts.map((f: { item: string; count: number }) => ({
-                            label: `${f.count} ${f.item}`,
-                            icon: getFurnishingIcon(f.item),
-                          }))
+                          label: `${f.count} ${f.item}`,
+                          icon: getFurnishingIcon(f.item),
+                        }))
                         : furnishingDetails
                       ).map((item: { label: string; icon: string }) => (
                         <div
@@ -793,7 +790,7 @@ export default function ListingDetailsPage() {
 
                   <section className="rounded-xl p-4">
                     <h2 className="text-xl font-semibold text-text-black">Locality</h2>
-                    <div className="mt-3 relative h-[260px] overflow-hidden rounded-xl bg-[#ECEEF3]">
+                    <div className="mt-3 relative h-[300px] overflow-hidden rounded-tr-lg border border-[#D4D5D8] rounded-tl-lg bg-[#ECEEF3]">
                       <Image
                         src="/assets/city/city1.svg"
                         alt="Locality map"
@@ -809,46 +806,45 @@ export default function ListingDetailsPage() {
                       </button>
                     </div>
 
-                    <div className="mt-4 flex gap-1 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                      {localityCategories.map((category) => {
-                        const Icon = category.icon;
-                        const isActive = activeLocalityCategory === category.key;
+                    <div className=" divide-y divide-[#D4D5D8] rounded-br-lg rounded-bl-lg border border-[#D4D5D8] bg-white px-5">
+                      <div className="py-3 flex gap-1.5 overflow-x-auto[scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                        {localityCategories.map((category) => {
+                          const Icon = category.icon;
+                          const isActive = activeLocalityCategory === category.key;
 
-                        return (
-                          <button
-                            key={category.key}
-                            type="button"
-                            onClick={() => setActiveLocalityCategory(category.key)}
-                            className={`inline-flex shrink-0 items-center gap-2 rounded-md border px-4 py-2.5 text-sm font-medium transition ${isActive
-                              ? "border-[#05085E] bg-[#05085E] text-white"
-                              : "border-[#D4D5D8] bg-[#F8F8F9] text-text-black hover:bg-white"
-                              }`}
-                          >
-                            <Icon className="h-4 w-4" />
-                            {category.label}
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    <div className="mt-4 divide-y divide-[#D4D5D8] rounded-lg border border-[#D4D5D8] bg-white px-3">
+                          return (
+                            <button
+                              key={category.key}
+                              type="button"
+                              onClick={() => setActiveLocalityCategory(category.key)}
+                              className={`inline-flex shrink-0 items-center gap-2 rounded-md border px-4 py-2.5 text-sm font-medium transition ${isActive
+                                ? "border-[#05085E] bg-[#05085E] text-white"
+                                : "border-[#D4D5D8] bg-[#fff] text-text-black hover:bg-white"
+                                }`}
+                            >
+                              <Icon className="h-5 w-5" />
+                              {category.label}
+                            </button>
+                          );
+                        })}
+                      </div>
                       {activeLocalityPlaces.map((place) => (
                         <div
                           key={place.name}
-                          className="grid grid-cols-1 gap-3 py-4 sm:grid-cols-2 sm:gap-6"
+                          className="grid grid-cols-1 gap-3 py-5 sm:grid-cols-2 sm:gap-6"
                         >
                           <div className="inline-flex items-start gap-3 text-sm text-text-black">
-                            <School className="mt-0.5 h-5 w-5 text-[#05085E]" />
+                            <School className="mt-0.5 h-6 w-6 text-[#05085E]" />
                             <div>
                               <p className="font-medium text-text-black">{place.name}</p>
-                              <span className="mt-1 block text-text-light-black">{place.distance}</span>
+                              <span className="mt-1 block text-[#888888]">{place.distance}</span>
                             </div>
                           </div>
                           <div className="inline-flex items-start gap-3 text-sm text-text-black">
-                            <School className="mt-0.5 h-5 w-5 text-[#05085E]" />
+                            <School className="mt-0.5 h-6 w-6 text-[#05085E]" />
                             <div>
                               <p className="font-medium text-text-black">{place.name}</p>
-                              <span className="mt-1 block text-text-light-black">{place.distance}</span>
+                              <span className="mt-1 block text-[#888888]">{place.distance}</span>
                             </div>
                           </div>
                         </div>
@@ -858,12 +854,12 @@ export default function ListingDetailsPage() {
 
                   <section className="rounded-xl">
                     <h2 className="text-xl font-semibold text-text-black">Amenities</h2>
-                    <div className="mt-4 rounded-lg bg-white p-3 grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2 lg:grid-cols-4">
+                    <div className="mt-4 rounded-lg bg-white p-4 grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
                       {(Array.isArray(propertyDetails?.amenitiesList) && propertyDetails.amenitiesList.length > 0
                         ? propertyDetails.amenitiesList.map((name: string) => ({
-                            icon: <CheckCircle2 className="h-5 w-5" />,
-                            label: name,
-                          }))
+                          icon: <CheckCircle2 className="h-5 w-5" />,
+                          label: name,
+                        }))
                         : amenities
                       ).map((amenity: { icon: React.ReactNode; label: string }) => (
                         <div
@@ -931,8 +927,8 @@ export default function ListingDetailsPage() {
                             [apiChannelPartner?.areasOfOperation != null && apiChannelPartner.areasOfOperation > 0 ? `${apiChannelPartner.areasOfOperation}+` : "20+", "Areas of Operation"],
                           ].map(([value, label]) => (
                             <div key={label} className="flex items-center  gap-3">
-                              <p className="text-2xl leading-none font-semibold text-[#05085E]">{value}</p>
-                              <p className="max-w-[110px] text-xs leading-5 text-text-black">{label}</p>
+                              <p className="text-3xl leading-none font-semibold text-[#05085E]">{value}</p>
+                              <p className="max-w-[110px] text-sm leading-5 text-text-black">{label}</p>
                             </div>
                           ))}
                         </div>
@@ -1325,23 +1321,23 @@ export default function ListingDetailsPage() {
                         type="button"
                         aria-label="Previous similar property"
                         onClick={() => scrollSimilarProperties("prev")}
-                        className="absolute left-2 top-1/2 z-10 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[#D4D5D8] bg-white text-[#05085E] shadow transition hover:bg-[#F8F9FF]"
+                        className="absolute left-[-15px] top-1/2 z-10 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-[#D4D5D8] bg-white text-[#05085E] shadow transition hover:bg-[#F8F9FF]"
                       >
-                        <ArrowLeft className="h-4 w-4" />
+                        <ChevronLeft className="h-4 w-4" />
                       </button>
                       <button
                         type="button"
                         aria-label="Next similar property"
                         onClick={() => scrollSimilarProperties("next")}
-                        className="absolute right-2 top-1/2 z-10 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[#D4D5D8] bg-white text-[#05085E] shadow transition hover:bg-[#F8F9FF]"
+                        className="absolute right-[-15px] top-1/2 z-8 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-[#D4D5D8] bg-white text-[#05085E] shadow transition hover:bg-[#F8F9FF]"
                       >
-                        <ArrowRight className="h-4 w-4" />
+                        <ChevronRight className="h-4 w-4" />
                       </button>
                     </div>
                   </section>
                 </main>
 
-                <aside className="h-fit rounded-xl border border-border p-4 xl:sticky xl:top-4">
+                <aside className="h-fit rounded-xl border bg-white border-border p-4 xl:sticky xl:top-4">
                   <h3 className="text-xl font-semibold text-text-black">
                     Talk to our real estate specialists
                   </h3>
@@ -1360,7 +1356,7 @@ export default function ListingDetailsPage() {
                     const telHref = phone ? `tel:+91${phone.replace(/\D/g, "")}` : undefined;
                     return (
                       <>
-                        <div className="mt-4 flex items-center gap-3 rounded-lg bg-[#FAFAFB] p-3">
+                        <div className="mt-4 flex items-center gap-3 rounded-lg py-3">
                           <Image
                             src={specialistImage}
                             alt={specialistName}
@@ -1376,7 +1372,7 @@ export default function ListingDetailsPage() {
                         {telHref ? (
                           <a
                             href={telHref}
-                            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-blue px-4 py-3 text-sm font-semibold text-white"
+                            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-blue px-4 py-3 text-sm font-semibold text-white"
                           >
                             <PhoneCall className="h-4 w-4" />
                             Contact Now
@@ -1384,7 +1380,7 @@ export default function ListingDetailsPage() {
                         ) : (
                           <button
                             type="button"
-                            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-blue px-4 py-3 text-sm font-semibold text-white"
+                            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-blue px-4 py-3 text-sm font-semibold text-white"
                           >
                             <PhoneCall className="h-4 w-4" />
                             Contact Now
@@ -1394,7 +1390,7 @@ export default function ListingDetailsPage() {
                           href={whatsappHref}
                           target="_blank"
                           rel="noreferrer"
-                          className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-[#1B8836] px-4 py-3 text-sm font-semibold text-[#1B8836]"
+                          className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#1B8836] px-4 py-3 text-sm font-semibold text-[#1B8836]"
                         >
                           <MessageCircle className="h-4 w-4" />
                           WhatsApp Expert

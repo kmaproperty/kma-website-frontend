@@ -23,7 +23,7 @@ export default function ImageCarousel({
   const canNext = idx < total - 1;
 
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-xl bg-[#D9D9D9]">
+    <div className="relative h-full w-full overflow-hidden bg-[#D9D9D9]">
       {current ? (
         <Image
           src={current}
