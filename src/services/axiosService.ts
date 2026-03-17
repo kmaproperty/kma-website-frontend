@@ -75,6 +75,11 @@ axiosInstance.interceptors.response.use(
         window.location.href = "/signup"
       }
     }else if(error.response?.status === 401){
+      // Don't redirect for view-limit 401s (guest user exceeded 3 free views)
+      const data = error.response?.data;
+      if (data?.requiresLogin === true && data?.remainingViews === 0) {
+        return Promise.reject(data);
+      }
       localStorage.clear();
       clearAuthCookies()
       window.location.href = "/signup"
