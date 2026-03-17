@@ -10,6 +10,17 @@ export default function SectionHeader({
   hideButton = false,
   channelPartnerBtn = false,
   isInView = false,
+  listingFilter = "Sale",
+  onListingFilterChange,
+}: {
+  heading?: string;
+  subHeading?: string;
+  sectionName?: string;
+  hideButton?: boolean;
+  channelPartnerBtn?: boolean;
+  isInView?: boolean;
+  listingFilter?: "Sale" | "Rent";
+  onListingFilterChange?: (filter: "Sale" | "Rent") => void;
 }) {
   const router = useRouter()
   const smartTransition = {
@@ -63,14 +74,14 @@ export default function SectionHeader({
           </button>
         )}
         {sectionName == "featureProperties" && (
-          <button className="font-medium w-auto text-sm 1xl:text-base animated-button px-9 py-2 border border-blue text-center cursor-pointer">
+          <button onClick={() => onListingFilterChange?.("Sale")} className={`font-medium w-auto text-sm 1xl:text-base px-9 py-2 border border-blue text-center cursor-pointer ${listingFilter === "Sale" ? "animated-button" : "animated-button text-blue! hover:text-white! bg-transparent!"}`}>
             <span className="gap-3 relative flex justify-center">
               <p className={`text-nowrap`}>For Sale</p>
             </span>
           </button>
         )}
         {sectionName == "featureProperties" && (
-          <button className="font-medium w-auto text-sm 1xl:text-base animated-button px-9 py-1.5 border border-blue text-blue! hover:text-white! bg-transparent! text-center cursor-pointer">
+          <button onClick={() => onListingFilterChange?.("Rent")} className={`font-medium w-auto text-sm 1xl:text-base px-9 py-1.5 border border-blue text-center cursor-pointer ${listingFilter === "Rent" ? "animated-button" : "animated-button text-blue! hover:text-white! bg-transparent!"}`}>
             <span className="gap-3 relative flex justify-center">
               <p className={`text-nowrap`}>For Rentals</p>
             </span>

@@ -8,6 +8,7 @@ import Image from 'next/image';
 import BlogSection from '@/components/home/blogSection';
 import HomdeHeader from '@/components/header/homeHeader'
 import HomeFooter from '@/components/footer/homeFooter';
+import AboutusDataSync from '@/components/footer/AboutusDataSync';
 import { FaFacebook, FaLinkedin, FaTwitter, FaYoutube } from 'react-icons/fa';
 import ContactFormComponent from '@/components/contactUs/contactForm';
 import Link from 'next/link';
@@ -205,6 +206,7 @@ const MeetTheTeam = () => {
             </div>
             <div className="bg-text-black flex justify-center">
                 <div className="my-13 w-[75%]">
+                    <AboutusDataSync />
                     <HomeFooter tab={1} />
                 </div>
             </div>

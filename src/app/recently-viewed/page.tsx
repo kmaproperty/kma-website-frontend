@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import MainLayout from "@/components/myList/mainLayout";
 import HomeFooter from "@/components/footer/homeFooter";
+import AboutusDataSync from "@/components/footer/AboutusDataSync";
 import HeaderDataSync from "@/components/header/HeaderDataSync";
 import { fetchPropertyMasterData } from "../api/home";
 import RecentlyViewedPageClient from "./_components/RecentlyViewedPageClient";
@@ -23,6 +24,7 @@ export default async function RecentlyViewedPage() {
       <MainLayout>
         <RecentlyViewedPageClient />
       </MainLayout>
+      <AboutusDataSync />
       <HomeFooter />
     </>
   );

@@ -18,6 +18,28 @@ import ContactUsPopup from "@/components/contactUsPopup";
 const PROFILE_BASE = process.env.NEXT_PUBLIC_AWS_URL;
 const DEFAULT_PAGE_SIZE = 12;
 
+const FILTER_CITIES = [
+  "Indore",
+  "Mumbai",
+  "Delhi",
+  "Bangalore",
+  "Hyderabad",
+  "Chennai",
+  "Kolkata",
+  "Pune",
+  "Ahmedabad",
+];
+
+const PROPERTY_RANGES = [
+  "1-5",
+  "5-10",
+  "10-15",
+  "15-20",
+  "20-30",
+  "30-50",
+  "50+",
+];
+
 function Star({
   fill = 100,
   className = "h-4 w-4",
@@ -128,12 +150,16 @@ export default function ChannelPartnerPageClient() {
   const [page, setPage] = useState(1);
   const [filterOpen, setFilterOpen] = useState(false);
   const [contactPopupOpen, setContactPopupOpen] = useState(false);
+  const [filterExperience, setFilterExperience] = useState("");
+  const [filterCity, setFilterCity] = useState("");
+  const [filterProperties, setFilterProperties] = useState("");
+  const [citySearch, setCitySearch] = useState("");
 
   const payload: GetChannelPartnerListPayload = {
     search: search || null,
-    city: selectedCity?.name ?? null,
-    experience: null,
-    properties: null,
+    city: filterCity || selectedCity?.name ?? null,
+    experience: filterExperience.trim() || null,
+    properties: filterProperties || null,
     page: String(page),
     limit: String(DEFAULT_PAGE_SIZE),
   };
@@ -155,6 +181,15 @@ export default function ChannelPartnerPageClient() {
 
   const handleSearch = useCallback(() => {
     setPage(1);
+  }, []);
+
+  const filteredCities = FILTER_CITIES.filter((c) =>
+    c.toLowerCase().includes(citySearch.toLowerCase().trim())
+  );
+
+  const handleApplyFilters = useCallback(() => {
+    setPage(1);
+    setFilterOpen(false);
   }, []);
 
   return (
@@ -305,11 +340,134 @@ export default function ChannelPartnerPageClient() {
       )}
 
       {filterOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/20"
-          aria-hidden
-          onClick={() => setFilterOpen(false)}
-        />
+        <>
+          <div
+            className="fixed inset-0 z-40 bg-black/20"
+            aria-hidden
+            onClick={() => setFilterOpen(false)}
+          />
+          <div className="fixed left-1/2 top-[180px] z-50 w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 rounded-2xl bg-[#F5F5F5] shadow-xl max-h-[calc(100vh-220px)] overflow-y-auto">
+            {/* Filter Dropdown card */}
+            <div className="rounded-2xl bg-white p-4 shadow-sm">
+              <h3 className="text-sm font-semibold text-text-black mb-4">
+                Filter Dropdown
+              </h3>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs font-medium text-text-gray mb-1">
+                    By Experience
+                  </label>
+                  <input
+                    type="number"
+                    min={0}
+                    placeholder="i.e. 1"
+                    value={filterExperience}
+                    onChange={(e) => setFilterExperience(e.target.value)}
+                    className="w-full rounded-lg border border-[#D9D9D9] bg-white px-3 py-2.5 text-sm text-text-black placeholder:text-text-gray outline-none focus:border-blue"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-text-gray mb-1">
+                    By City
+                  </label>
+                  <select
+                    value={filterCity}
+                    onChange={(e) => setFilterCity(e.target.value)}
+                    className="w-full rounded-lg border border-[#D9D9D9] bg-white px-3 py-2.5 text-sm text-text-black outline-none focus:border-blue appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M6%208L1%203h10z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:12px] bg-[right_0.75rem_center] bg-no-repeat pr-9"
+                  >
+                    <option value="">Select City</option>
+                    {FILTER_CITIES.map((city) => (
+                      <option key={city} value={city}>
+                        {city}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-text-gray mb-1">
+                    By Properties
+                  </label>
+                  <select
+                    value={filterProperties}
+                    onChange={(e) => setFilterProperties(e.target.value)}
+                    className="w-full rounded-lg border border-[#D9D9D9] bg-white px-3 py-2.5 text-sm text-text-black outline-none focus:border-blue appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M6%208L1%203h10z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:12px] bg-[right_0.75rem_center] bg-no-repeat pr-9"
+                  >
+                    <option value="">Select No. of Properties</option>
+                    {PROPERTY_RANGES.map((range) => (
+                      <option key={range} value={range}>
+                        {range}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex justify-end pt-1">
+                  <button
+                    type="button"
+                    onClick={handleApplyFilters}
+                    className="rounded-lg bg-blue px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
+                  >
+                    Apply
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Cities card */}
+            <div className="mt-4 rounded-2xl bg-white p-4 shadow-sm">
+              <h3 className="text-sm font-semibold text-text-black mb-3">
+                Cities
+              </h3>
+              <input
+                type="search"
+                placeholder="Search Cities"
+                value={citySearch}
+                onChange={(e) => setCitySearch(e.target.value)}
+                className="w-full rounded-lg border border-[#D9D9D9] bg-[#F5F5F5] px-3 py-2.5 text-sm text-text-black placeholder:text-text-gray outline-none focus:border-blue mb-3"
+              />
+              <div className="flex flex-wrap gap-2">
+                {filteredCities.map((city) => (
+                  <button
+                    key={city}
+                    type="button"
+                    onClick={() => {
+                      setFilterCity(city);
+                    }}
+                    className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
+                      filterCity === city
+                        ? "border-blue bg-light-purple text-blue"
+                        : "border-[#D9D9D9] bg-white text-text-black hover:bg-[#F5F5F5]"
+                    }`}
+                  >
+                    {city}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Properties card */}
+            <div className="mt-4 rounded-2xl bg-white p-4 shadow-sm mb-4">
+              <h3 className="text-sm font-semibold text-text-black mb-3">
+                Properties
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {PROPERTY_RANGES.map((range) => (
+                  <button
+                    key={range}
+                    type="button"
+                    onClick={() => setFilterProperties(range)}
+                    className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
+                      filterProperties === range
+                        ? "border-blue bg-light-purple text-blue"
+                        : "border-[#D9D9D9] bg-white text-text-black hover:bg-[#F5F5F5]"
+                    }`}
+                  >
+                    {range}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </>
       )}
 
       <ContactUsPopup

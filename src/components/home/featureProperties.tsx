@@ -54,6 +54,12 @@ export default function FeaturedProperties({ topProperties }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
+  const [listingFilter, setListingFilter] = useState<"Sale" | "Rent">("Sale");
+
+  const filteredProperties = (topProperties ?? []).filter((item: any) => {
+    if (!item?.listingType) return true;
+    return item.listingType === listingFilter;
+  });
 
   const toggleFavorite = async (e: React.MouseEvent, propertyId: string) => {
     e.stopPropagation();
@@ -72,7 +78,7 @@ export default function FeaturedProperties({ topProperties }) {
     }
   };
 
-  const slidesCount = topProperties?.length ?? 0;
+  const slidesCount = filteredProperties.length;
   const settings = {
     slidesToShow: Math.min(4, slidesCount),
     slidesToScroll: 1,
@@ -93,11 +99,13 @@ export default function FeaturedProperties({ topProperties }) {
         sectionName="featureProperties"
         heading="Featured Properties"
         subHeading="Discover Exclusive Listings of Premium Properties Available for Purchase"
+        listingFilter={listingFilter}
+        onListingFilterChange={setListingFilter}
       />
 
       <div className="flex-1 w-full  2md:min-w-0 -mx-2 feature-property">
         <Slider ref={sliderRef} {...settings} className="mt-10">
-          {(topProperties ?? []).map((item, index) => {
+          {filteredProperties.map((item, index) => {
             const img = item?.images?.length > 0 ? item.images[0]?.fileKey : null;
             const size = item?.units?.length > 0 ? item.units[0]?.size : null;
             const ratingNumber = Math.max(

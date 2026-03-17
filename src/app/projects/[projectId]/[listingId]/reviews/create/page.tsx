@@ -9,6 +9,7 @@ import { usePropertyDetails } from "@/api/hooks/usePropertyDetails";
 import { submitPropertyRatingReviewAction } from "@/api/actions/propertyActions";
 import MainLayout from "@/components/myList/mainLayout";
 import HomeFooter from "@/components/footer/homeFooter";
+import AboutusDataSync from "@/components/footer/AboutusDataSync";
 import { fetchPropertyMasterData } from "@/app/api/home";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
@@ -373,6 +374,7 @@ export default function CreateReviewPage() {
           </div>
         </div>
       </MainLayout>
+      <AboutusDataSync />
       <HomeFooter />
 
       {/* Success modal */}

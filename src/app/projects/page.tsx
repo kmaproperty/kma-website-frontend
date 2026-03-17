@@ -3,6 +3,7 @@ import ProjectsPageClient from "./_components/ProjectsPageClient";
 import MainLayout from "@/components/myList/mainLayout";
 import { fetchPropertyMasterData } from "../api/home";
 import HomeFooter from "@/components/footer/homeFooter";
+import AboutusDataSync from "@/components/footer/AboutusDataSync";
 import HeaderDataSync from "@/components/header/HeaderDataSync";
 
 export const metadata: Metadata = {
@@ -22,6 +23,7 @@ export default async function ProjectsPage() {
       <MainLayout>
         <ProjectsPageClient />
       </MainLayout>
+      <AboutusDataSync />
       <HomeFooter />
     </>
   );
