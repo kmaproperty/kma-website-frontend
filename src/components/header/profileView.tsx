@@ -31,7 +31,7 @@ const baseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
 const LOGGED_IN_MENU_BASE: MenuItem[] = [
   { label: "Recently Search", icon: "/assets/home-search-blue.svg", route: "/projects" },
   { label: "Recently Viewed", icon: "/assets/home-recent-blue.svg", route: "/recently-viewed" },
-  { label: "Saved Properties", icon: "/assets/home-save-blue.svg", route: "/projects" },
+  { label: "Saved Properties", icon: "/assets/home-save-blue.svg", route: "/recently-viewed" },
   { label: "Contacted Properties", icon: "/assets/home-contact-blue.svg", route: "/contact-us" },
   { label: "My Reviews (New)", icon: "/assets/review-blue.svg", route: "/profile" },
   { label: "My Services", icon: "/assets/service-blue.svg", route: "/"},
