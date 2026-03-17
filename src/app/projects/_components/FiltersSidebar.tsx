@@ -1,12 +1,42 @@
 "use client";
 
 import { useMemo, useTransition } from "react";
-import { Search, RotateCcw, Check } from "lucide-react";
+import { Search, RotateCcw, Check, ChevronDown } from "lucide-react";
 import ActiveFilterChips from "./ActiveFilterChips";
 import { useProjectsStore } from "../_store/useProjectsStore";
 import { useEndUserFilters } from "@/api/hooks/useEndUserFilters";
 import type { PostedByTab, ProjectsFilters } from "../_types";
 import { cx } from "../_utils/format";
+
+function SelectField({
+  value,
+  onChange,
+  children,
+}: {
+  value: string | number;
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="relative">
+      <select
+        value={value}
+        onChange={onChange}
+        className={cx(
+          "h-10 w-full cursor-pointer appearance-none rounded-md border border-border bg-white px-3 pr-9 text-sm text-text-gray outline-none transition",
+          "hover:bg-background-gray/40",
+          "focus:border-blue focus:ring-2 focus:ring-blue/15"
+        )}
+      >
+        {children}
+      </select>
+      <ChevronDown
+        className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-gray"
+        aria-hidden
+      />
+    </div>
+  );
+}
 
 function Section({
   title,
@@ -208,10 +238,9 @@ export default function FiltersSidebar() {
 
         <Section title="Budget" hint="₹ Crore">
           <div className="grid grid-cols-2 gap-1">
-            <select
+            <SelectField
               value={filters.minBudget ?? ""}
               onChange={(e) => setBudget("minBudget", e.target.value)}
-              className="h-10 w-full cursor-pointer rounded-md border border-border bg-white px-3 text-sm text-text-gray outline-none transition focus:border-blue"
             >
               <option value="">Min</option>
               {[0.5, 1, 1.4, 2, 5, 10].map((v) => (
@@ -219,11 +248,10 @@ export default function FiltersSidebar() {
                   ₹ {v} Cr
                 </option>
               ))}
-            </select>
-            <select
+            </SelectField>
+            <SelectField
               value={filters.maxBudget ?? ""}
               onChange={(e) => setBudget("maxBudget", e.target.value)}
-              className="h-10 w-full cursor-pointer rounded-md border border-border bg-white px-3 text-sm text-text-gray outline-none transition focus:border-blue"
             >
               <option value="">Max</option>
               {[1, 2, 5, 10, 20].map((v) => (
@@ -231,16 +259,15 @@ export default function FiltersSidebar() {
                   ₹ {v} Cr
                 </option>
               ))}
-            </select>
+            </SelectField>
           </div>
         </Section>
 
         <Section title="Size" hint="Sq. Yd.">
           <div className="grid grid-cols-2 gap-1">
-            <select
+            <SelectField
               value={filters.minSizeSqYd ?? ""}
               onChange={(e) => setSize("minSizeSqYd", e.target.value)}
-              className="h-10 w-full cursor-pointer rounded-md border border-border bg-white px-3 text-sm text-text-gray outline-none transition focus:border-blue"
             >
               <option value="">Min</option>
               {[50, 100, 119, 150, 200].map((v) => (
@@ -248,11 +275,10 @@ export default function FiltersSidebar() {
                   {v} Sq.Yd.
                 </option>
               ))}
-            </select>
-            <select
+            </SelectField>
+            <SelectField
               value={filters.maxSizeSqYd ?? ""}
               onChange={(e) => setSize("maxSizeSqYd", e.target.value)}
-              className="h-10 w-full cursor-pointer rounded-md border border-border bg-white px-3 text-sm text-text-gray outline-none transition focus:border-blue"
             >
               <option value="">Max</option>
               {[119, 150, 200, 300].map((v) => (
@@ -260,7 +286,7 @@ export default function FiltersSidebar() {
                   {v} Sq.Yd.
                 </option>
               ))}
-            </select>
+            </SelectField>
           </div>
         </Section>
 
