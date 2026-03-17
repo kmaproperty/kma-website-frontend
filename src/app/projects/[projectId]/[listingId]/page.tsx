@@ -42,6 +42,7 @@ import { useSimilarProperties } from "@/api/hooks/useSimilarProperties";
 import { FAVORITE_PROPERTIES_QUERY_KEY } from "@/api/hooks/useFavoriteProperties";
 import MainLayout from "@/components/myList/mainLayout";
 import { useProjectsStore } from "@/app/projects/_store/useProjectsStore";
+import { useRouter } from "nextjs-toploader/app";
 
 const galleryImages = [
   "/assets/property/img-1.png",
@@ -334,11 +335,20 @@ const formatListedOn = (dateStr: string) => {
 };
 
 export default function ListingDetailsPage() {
+  const router = useRouter();
   const params = useParams<{ projectId: string; listingId: string }>();
   const listingId = params?.listingId ?? "";
-  const { data: detailsResponse, isPending, isError } = usePropertyDetails({
+  const { data: detailsResponse, isPending, isError, error } = usePropertyDetails({
     id: listingId,
   });
+
+  // Check if view limit exceeded (guest user saw 3+ properties)
+  const viewLimitExceeded = useMemo(() => {
+    if (!error || typeof error !== "object") return false;
+    const err = error as { requiresLogin?: boolean; remainingViews?: number };
+    return err.requiresLogin === true && err.remainingViews === 0;
+  }, [error]);
+
   const propertyDetails = detailsResponse?.property ?? null;
   const apiChannelPartner = detailsResponse?.channelPartnerDetails;
   const apiOwnerDetails = detailsResponse?.ownerDetails;
@@ -600,6 +610,39 @@ export default function ListingDetailsPage() {
     cachedPlaces && cachedPlaces.length > 0
       ? cachedPlaces
       : localityPlacesByCategory[activeLocalityCategory];
+
+  // Show login prompt when guest user has exceeded 3 free views
+  if (viewLimitExceeded) {
+    return (
+      <MainLayout>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] px-4">
+          <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
+            <div className="w-16 h-16 bg-blue/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <ShieldCheck className="w-8 h-8 text-blue" />
+            </div>
+            <h2 className="text-2xl font-semibold text-text-black mb-2">
+              Login to Continue
+            </h2>
+            <p className="text-text-gray text-sm mb-6">
+              You have viewed 3 free properties. Please login or sign up to continue exploring more properties.
+            </p>
+            <button
+              onClick={() => router.push(`/user-flow?isLogin=true&redirect=/projects/${params?.projectId}/${listingId}`)}
+              className="w-full bg-blue text-white py-3 px-6 rounded-full font-medium hover:bg-blue/90 transition cursor-pointer"
+            >
+              Login / Sign Up
+            </button>
+            <button
+              onClick={() => router.back()}
+              className="w-full mt-3 text-text-gray py-2 px-6 rounded-full font-medium hover:bg-gray-100 transition cursor-pointer"
+            >
+              Go Back
+            </button>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
