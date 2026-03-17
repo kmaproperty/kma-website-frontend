@@ -6,6 +6,7 @@ import { useCallback, useEffect } from "react";
 export const useCreateEndUserSession = () => {
   const sessionId = useSessionStore((state) => state.sessionId);
   const isCreatingSession = useSessionStore((state) => state.isCreatingSession);
+  const hasHydrated = useSessionStore((state) => state._hasHydrated);
   const setSessionId = useSessionStore((state) => state.setSessionId);
   const setIsCreatingSession = useSessionStore(
     (state) => state.setIsCreatingSession
@@ -28,12 +29,12 @@ export const useCreateEndUserSession = () => {
   const { mutate, isPending } = mutation;
 
   const initializeSession = useCallback(() => {
-    if (sessionId || isCreatingSession || isPending) {
-      return;
-    }
+    // Wait for Zustand to hydrate from localStorage before deciding to create
+    if (!hasHydrated) return;
+    if (sessionId || isCreatingSession || isPending) return;
 
     mutate();
-  }, [isCreatingSession, isPending, mutate, sessionId]);
+  }, [hasHydrated, isCreatingSession, isPending, mutate, sessionId]);
 
   return {
     ...mutation,
