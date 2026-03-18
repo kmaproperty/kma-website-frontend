@@ -1,12 +1,5 @@
-import ContentLayout from "@/components/signUp/contentLayout";
-import CreateAccountOtp from "@/components/signUp/createAccountOtp";
-import InfoSection from "@/components/signUp/infoSection";
-import MainLayout from "@/components/signUp/mainLayout";
+import { redirect } from "next/navigation";
 
 export default function VerifyOtpPage() {
-  return (
-    <MainLayout>
-      <ContentLayout cardContent={<CreateAccountOtp />} infoContent={<InfoSection />} />
-    </MainLayout>
-  );
+  redirect("/user-flow?isLogin=true");
 }

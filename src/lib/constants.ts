@@ -81,10 +81,6 @@ export const filterTypeList = [
     value: 'rent'
   },
   {
-    label: 'Projects',
-    value: 'projects'
-  },
-  {
     label: 'Plot & Land',
     value: 'plot_land'
   },

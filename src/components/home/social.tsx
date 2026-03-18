@@ -17,7 +17,7 @@ export default function Social() {
           href={fbLink}
           target="_blank"
           rel="noopener noreferrer"
-          className="cursor-pointer flex items-center gap-1 hover:opacity-80"
+          className="cursor-pointer flex items-center gap-1 px-2 py-1 rounded-md transition-all duration-200 hover:bg-blue hover:text-white"
         >
           <FaFacebookF style={{ transform: "rotate(266deg)" }} />
           Facebook
@@ -29,7 +29,7 @@ export default function Social() {
           href={instagramLink}
           target="_blank"
           rel="noopener noreferrer"
-          className="cursor-pointer flex items-center gap-1 hover:opacity-80"
+          className="cursor-pointer flex items-center gap-1 px-2 py-1 rounded-md transition-all duration-200 hover:bg-blue hover:text-white"
         >
           <FaInstagram style={{ transform: "rotate(266deg)" }} />
           Instagram
@@ -41,7 +41,7 @@ export default function Social() {
           href={twitterLink}
           target="_blank"
           rel="noopener noreferrer"
-          className="cursor-pointer flex items-center gap-1 hover:opacity-80"
+          className="cursor-pointer flex items-center gap-1 px-2 py-1 rounded-md transition-all duration-200 hover:bg-blue hover:text-white"
         >
           <FaTwitter style={{ transform: "rotate(266deg)" }} />
           Twitter

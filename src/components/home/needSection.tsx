@@ -3,7 +3,7 @@ import { Easing, useInView, Variants } from "framer-motion";
 import SectionHeader from "../common/home/secionHeader";
 import { motion } from "framer-motion";
 import { useRef, useState } from "react";
-import { useRouter } from "nextjs-toploader/app";
+import { toast } from "react-toastify";
 
 const featureDetails = [
   {
@@ -30,7 +30,6 @@ const featureDetails = [
 ];
 
 export default function NeedSection() {
-  const router = useRouter();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
   const smartTransition = {
@@ -64,6 +63,7 @@ export default function NeedSection() {
         isInView={isInView}
         heading="All Your Needs. One Trusted Platform."
         subHeading="Reliable support for all your property, loan, and agreement needs."
+        hideButton={true}
       />
       <div className="mt-10 flex gap-4 flex-col flex-wrap 2md:flex-row" ref={ref}>
         {featureDetails.map((item, index) => {
@@ -76,7 +76,7 @@ export default function NeedSection() {
           return (
             <motion.div
               key={index}
-              onClick={() => router.push('/contact-us')}
+              onClick={() => toast.info("This feature is coming soon!")}
               className="rounded-[8px] p-5 flex-1 cursor-pointer transition-all duration-500 ease-out
              hover:-translate-y-2 "
               style={{ background: item.background }}

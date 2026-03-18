@@ -4,15 +4,16 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useRouter } from "nextjs-toploader/app";
 
-export default function RentSellHeaderView({ type }: { type: string }) {
+export default function RentSellHeaderView({ type, onClose }: { type: string; onClose?: () => void }) {
   const router = useRouter();
   const selectedCity = useSelector(getSelectedCity);
   const aboutusData = useSelector(getAboutusData);
   const propertyMasterData = useSelector(getPropertyMasterData);
   const category = (Array.isArray(propertyMasterData) ? propertyMasterData : [])?.find((item: { code: string }) => item.code == type)?.categories ?? [];
   const defaultCategoryId = category.find((item: { code: string }) => item.code == 'residential')?.id ?? category[0]?.id;
-  const [categoryType, setCategoryType] = useState(defaultCategoryId); // residential
+  const [categoryType, setCategoryType] = useState(defaultCategoryId);
   const propertyList = category?.find(item => item.id == categoryType)?.propertyTypes ?? []
+
   return (
     <div className="flex  flex-col 2md:flex-row justify-start overflow-hidden rounded-xl h-full 2md:h-[280px]">
       <div className="flex flex-col gap-6 2md:gap-0 justify-between bg-blue pl-8 pt-8 pb-3 pr-5">
@@ -20,11 +21,11 @@ export default function RentSellHeaderView({ type }: { type: string }) {
           {
             category.map(item => {
               return(
-                <p onClick={() => setCategoryType(item.id)} className="text-white text-base cursor-pointer w-fit" style={{borderBottom: categoryType == item.id ? '1px solid white' : ''}}>{item.name}</p>
+                <p key={item.id} onClick={() => setCategoryType(item.id)} className="text-white text-base cursor-pointer w-fit" style={{borderBottom: categoryType == item.id ? '1px solid white' : ''}}>{item.name}</p>
               )
             })
           }
-          
+
         </div>
         <div>
           <p className="text-white text-xs">Contact Us Toll Free on</p>
@@ -46,11 +47,12 @@ export default function RentSellHeaderView({ type }: { type: string }) {
                     <p
                       key={item.id}
                       onClick={() => {
-                        if (selectedCity?.id) {
-                          router.push(`/projects/${selectedCity.id}`);
-                        } else {
-                          router.push("/projects");
-                        }
+                        onClose?.();
+                        const basePath = selectedCity?.id ? `/projects/${selectedCity.id}` : "/projects";
+                        const params = new URLSearchParams();
+                        params.set('propertyTypeId', item.id);
+                        params.set('listingType', type);
+                        router.push(`${basePath}?${params.toString()}`);
                       }}
                       className="cursor-pointer text-sm mt-1  text-text-black break-inside-avoid hover:underline"
                     >

@@ -16,9 +16,9 @@ export default function BannerText(){
 
             <p className="text-xs xl:text-sm text-white mt-2">Properties for buy / rent in your location. We have more than 3000+ listings</p>
 
-            <Link href="/contact-us" className="border border-1 rounded-full px-7.5 text-xs py-2 w-max cursor-pointer mt-5 text-white">
+            {/* <Link href="/contact-us" className="border border-1 rounded-full px-7.5 text-xs py-2 w-max cursor-pointer mt-5 text-white">
                 <p className="text-nowrap xl:text-sm">Contact Us</p>
-            </Link>
+            </Link> */}
 
         </div>
     )

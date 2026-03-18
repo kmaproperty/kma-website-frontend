@@ -31,12 +31,12 @@ const baseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
 const LOGGED_IN_MENU_BASE: MenuItem[] = [
   { label: "Recently Search", icon: "/assets/home-search-blue.svg", route: "/projects" },
   { label: "Recently Viewed", icon: "/assets/home-recent-blue.svg", route: "/recently-viewed" },
-  { label: "Saved Properties", icon: "/assets/home-save-blue.svg", route: "/projects" },
+  { label: "Saved Properties", icon: "/assets/home-save-blue.svg", route: "/recently-viewed" },
   { label: "Contacted Properties", icon: "/assets/home-contact-blue.svg", route: "/contact-us" },
   { label: "My Reviews (New)", icon: "/assets/review-blue.svg", route: "/profile" },
-  { label: "My Services", icon: "/assets/service-blue.svg", route: "/user-dashboard" },
-  { label: "Refer And Earn", icon: "/assets/refer-earn-blue.svg", route: "/user-dashboard" },
-  { label: "Help", icon: "/assets/help-blue.svg", route: "/contact-us" },
+  { label: "My Services", icon: "/assets/service-blue.svg", route: "/"},
+  { label: "Refer And Earn", icon: "/assets/refer-earn-blue.svg", route: "/join-us" },
+  { label: "Help", icon: "/assets/help-blue.svg", route: "/help-center" },
 ];
 
 const GUEST_MENU_BASE: MenuItem[] = [
@@ -46,8 +46,8 @@ const GUEST_MENU_BASE: MenuItem[] = [
   { label: "Contacted Properties", icon: "/assets/home-contact-blue.svg" },
   { label: "My Reviews (New)", icon: "/assets/review-blue.svg" },
   { label: "My Services", icon: "/assets/service-blue.svg" },
-  { label: "Refer And Earn", icon: "/assets/refer-earn-blue.svg" },
-  { label: "Help", icon: "/assets/help-blue.svg", route: "/contact-us" },
+  { label: "Refer And Earn", icon: "/assets/refer-earn-blue.svg", route: "/join-us" },
+  { label: "Help", icon: "/assets/help-blue.svg", route: "/help-center" },
 ];
 
 function CountBadge({ count }: { count?: number }) {
@@ -111,7 +111,7 @@ export default function ProfileView({ userRole }: ProfileViewProps) {
       localStorage.clear();
       await clearAuthCookies();
       queryClient.clear();
-      router.replace("/signup");
+      router.replace("/");
     },
     onError: (error: any) => {
       const message = Array.isArray(error?.message) ? error.message.join(", ") : error?.message ?? "Unable to logout";

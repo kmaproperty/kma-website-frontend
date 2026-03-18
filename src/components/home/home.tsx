@@ -1,48 +1,17 @@
 "use client";
-import type { Variants } from "framer-motion";
-import { motion } from "framer-motion";
-import { useMemo, useState } from "react";
 import Social from "./social";
 import HomeHeader from "../header/homeHeader";
 import BannerText from "./bannertext";
 import TopProperties from "./topProperties";
 import Filter from "./filter";
 import ContactUs from "./contactus";
-import UserRating from "../common/home/rating";
-import { useQuery } from "@tanstack/react-query";
-import { getUserReviewApiHandler, GetUserReviewApiHandlerResponse, Rating } from "@/services/homeService";
 import ContactInformation from "../contactInformation";
 
 type MainHomeProps = {
   topProperties: unknown[];
 };
 
-const dissolve: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { duration: 1.5, ease: "easeOut" },
-  },
-};
-
 export default function MainHome({ topProperties }: MainHomeProps) {
-  const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
-  const [show, setShow] = useState(false);
-
-  const { data: reviewData } = useQuery<GetUserReviewApiHandlerResponse>({
-    queryKey: ["review"],
-    queryFn: () => getUserReviewApiHandler(),
-    staleTime: 60_000,
-  });
-
-  const avatars = useMemo(() => {
-    const reviews: Rating[] = reviewData?.reviews ?? [];
-    if (!Array.isArray(reviews) || reviews.length === 0) return [];
-    return reviews.map((item) => ({
-      img: item.endUser?.profileImage ? `${profileBaseUrl}${item.endUser.profileImage}` : "",
-      name: item.name ?? "",
-    }));
-  }, [profileBaseUrl, reviewData]);
 
   return (
     <>
@@ -51,14 +20,7 @@ export default function MainHome({ topProperties }: MainHomeProps) {
         <HomeHeader />
       </div>
     </div>
-    <motion.div
-      className="absolute w-[100%] h-[88vh] top-0"
-      variants={dissolve}
-      initial="hidden"
-      animate={show ? "visible" : "hidden"}
-      onMouseEnter={() => setShow(true)}
-      onTouchStart={() => setShow(true)}
-    >
+    <div className="absolute w-[100%] h-[88vh] top-0">
       <div>
         <Social/>
       </div>
@@ -69,7 +31,6 @@ export default function MainHome({ topProperties }: MainHomeProps) {
           </div>
           <div className="w-[100%] lg:w-[40%]">
             {Array.isArray(topProperties) && topProperties.length > 0 && <TopProperties topProperties={topProperties}/>}
-            <UserRating avatars={avatars} rating={reviewData?.statistics?.averageRating} subtitle={reviewData?.trustedByText}/>
           </div>
         </div>
       </div>
@@ -81,7 +42,7 @@ export default function MainHome({ topProperties }: MainHomeProps) {
       <div>
         <ContactUs />
       </div>
-    </motion.div>
+    </div>
     <ContactInformation isEndUser={true}/>
     </>
   );

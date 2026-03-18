@@ -24,7 +24,7 @@ export default function ProfileMenu({ anchorEl, open, handleClose }) {
       localStorage.clear();
       await clearAuthCookies();
       queryClient.clear();
-      router.replace("/signup");
+      router.replace("/");
     },
     onError: (error: any) => {
       if (Array.isArray(error.message)) {

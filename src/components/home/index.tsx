@@ -65,7 +65,6 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
     // staleTime: 60_000,
   }); 
 
-  console.log(explorePropertyList, "explorePropertyList");
   
 
   const { data } = useQuery({
@@ -108,7 +107,6 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
     refetchOnReconnect: true,
   });
 
-  console.log(channelPartnerList, "channelPartnerList");
 
 
   useEffect(() => {
@@ -182,9 +180,9 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
           </div>
         </div>
       )}
-      <div className="">
+      {/* <div className="">
         <LazyAppDownloadSection />
-      </div>
+      </div> */}
       <div className="flex justify-center overflow-hidden">
         <div className="my-16 w-[90%] 2md:w-[75%]">
           <LazyBlogSection />

@@ -25,6 +25,7 @@ export default async function ChannelPartnerPage() {
 
   return (
     <>
+    
       <HeaderDataSync propertyMasterData={propertyMasterData} />
       <MainLayout>
         <ChannelPartnerPageClient />
