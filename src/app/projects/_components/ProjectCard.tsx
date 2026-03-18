@@ -41,8 +41,8 @@ function FeaturePill({
   label: string;
 }) {
   return (
-    <div className="flex items-center gap-2.5 px-1 py-1 text-sm font-semibold text-text-black">
-      <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-white text-text-gray shadow-[0_0_0_1px_rgba(0,0,0,0.05)]">
+    <div className="flex items-center gap-2.5 px-2 py-1 text-sm font-medium text-text-black">
+      <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-white text-gray-700 shadow-[0_0_0_1px_rgba(0,0,0,0.05)]">
         {icon}
       </span>
       <span className="whitespace-nowrap">{label}</span>
@@ -246,7 +246,7 @@ export default function ProjectCard({
 
   return (
     <div
-      className="group cursor-pointer overflow-hidden rounded-2xl border border-border bg-[#F2F2F2] shadow-sm transition will-change-transform hover:-translate-y-[1px] hover:shadow-md"
+      className="group cursor-pointer overflow-hidden rounded-lg bg-[#f5f5f5] shadow-sm transition will-change-transform hover:-translate-y-[1px] hover:shadow-md"
       role="link"
       tabIndex={0}
       
@@ -301,23 +301,22 @@ export default function ProjectCard({
               <h3 className="line-clamp-1 text-lg font-semibold text-text-black">
                 {project.title}
               </h3>
-              <p className="mt-1 line-clamp-1 text-sm text-text-gray">
+              <p className="mt-0.5 line-clamp-1 text-sm text-text-gray">
                 {project.address}
               </p>
             </div>
-
-            <div className="shrink-0 text-right">
+          </div>
+          <div className="mt-3">
               <div className="text-lg font-semibold text-text-black">
                 {project.priceLabel}
               </div>
             </div>
-          </div>
 
           <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-2">
             {typeof project.plotAreaSqYd === "number" && (
               <>
                 <FeaturePill
-                  icon={<Maximize2 className="h-4 w-4" />}
+                  icon={<Image src="/assets/app/area.svg" width={20} height={20} alt="area" className="h-6 w-6" />}
                   label={`${project.plotAreaSqYd} Sq.Yd. (Plot Area)`}
                 />
                 <span className="hidden h-8 w-px bg-border sm:block" />
@@ -326,7 +325,7 @@ export default function ProjectCard({
             {typeof project.bedrooms === "number" && project.bedrooms > 0 && (
               <>
                 <FeaturePill
-                  icon={<BedDouble className="h-4 w-4" />}
+                  icon={<Image src="/assets/app/bed.svg" width={20} height={20} alt="area" className="h-6 w-6" />}
                   label={`${project.bedrooms}Bhk`}
                 />
                 <span className="hidden h-8 w-px bg-border md:block" />
@@ -335,7 +334,7 @@ export default function ProjectCard({
             {project.view && (
               <>
                 <FeaturePill
-                  icon={<Trees className="h-4 w-4" />}
+                  icon={<Trees className="h-6 w-6" />}
                   label={project.view}
                 />
                 <span className="hidden h-8 w-px bg-border lg:block" />
@@ -343,7 +342,7 @@ export default function ProjectCard({
             )}
             {project.furnishing && (
               <FeaturePill
-                icon={<Sofa className="h-4 w-4" />}
+                icon={<Image src="/assets/app/sofa.svg" width={20} height={20} alt="area" className="h-6 w-6" />}
                 label={
                   project.furnishing === "semi-furnished"
                     ? "Semi-Furnished"
@@ -361,8 +360,7 @@ export default function ProjectCard({
           <div className="mt-3" onClick={handleCardClick}>
             <Link
               href={detailsHref}
-              
-              className="inline-flex h-9 items-center justify-center rounded-full bg-[#E4E4E8] px-4 text-sm font-semibold text-[#262B58] transition hover:bg-[#d9d9df] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/30"
+              className="inline-flex h-8 items-center justify-center rounded-full bg-[#E4E4E8] px-4 text-sm font-medium text-[#262B58] transition hover:bg-[#d9d9df] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/30"
             >
               Read More
             </Link>
@@ -387,21 +385,28 @@ export default function ProjectCard({
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 border-t border-border bg-[#EFEFEF] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 border-t border-border bg-[#f5f5f5] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <Image
             src={project.agent?.avatarUrl ?? "/assets/app/call-person.svg"}
             alt={project.agent?.name ?? "Agent"}
             width={36}
             height={36}
-            className="h-9 w-9 rounded-full object-cover"
+            className="h-11 w-11 rounded-full object-cover"
           />
           <div className="leading-tight">
             <div className="text-sm font-semibold text-text-black">
               {project.agent?.name ?? "KMA Expert"}
             </div>
             {project.agent?.badge ? (
-              <div className="mt-1 inline-flex items-center rounded-md bg-[#D08A2F] px-2 py-0.5 text-[11px] font-semibold text-white">
+              <div className="mt-1 gap-1 inline-flex items-center rounded-md bg-[#C75C10] px-2.5 py-1 text-[13px] text-white">
+                <Image
+                src='/assets/app/shield.svg'
+                width={20}
+                height={20}
+                alt="Shield"
+                className="w-4 h-4 "
+                />
                 {project.agent.badge}
               </div>
             ) : null}
@@ -421,7 +426,7 @@ export default function ProjectCard({
             type="button"
             onClick={handleCallBackClick}
             disabled={isAuthChecking}
-            className="inline-flex h-12 items-center gap-2 rounded-xl border border-[#4CAF50] bg-transparent px-6 text-sm font-semibold text-[#2F9E44] transition hover:bg-[#E9F7EE] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1B8836]/25"
+            className="inline-flex h-12 items-center gap-2 rounded-xl bg-white border border-[#4CAF50] bg-transparent px-6 text-sm font-semibold text-[#2F9E44] transition hover:bg-[#E9F7EE] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1B8836]/25"
           >
             <PhoneCall className="h-5 w-5" />
             {isAuthChecking ? <Spinner size={16} /> : "Get a Call Back"}
@@ -462,14 +467,14 @@ export default function ProjectCard({
                   alt={project.agent?.name ?? "KMA Expert"}
                   width={40}
                   height={40}
-                  className="h-10 w-10 rounded-full object-cover"
+                  className="h-11 w-11 rounded-full object-cover"
                 />
                 <div>
                   <p className="text-sm font-semibold text-text-black">
                     {project.agent?.name ?? "KMA Expert"}
                   </p>
                   {project.agent?.badge ? (
-                    <span className="mt-1 inline-flex rounded-md bg-[#D08A2F] px-2 py-0.5 text-[11px] font-semibold text-white">
+                    <span className="mt-0.5 inline-flex rounded-md bg-[#D08A2F] px-2 py-1 text-[12px] text-white">
                       {project.agent.badge}
                     </span>
                   ) : null}

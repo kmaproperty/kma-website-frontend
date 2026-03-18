@@ -15,6 +15,7 @@ import {
   ThumbsUp,
   Trees,
   AlertCircle,
+  ChevronDown,
 } from "lucide-react";
 import { usePropertyDetails } from "@/api/hooks/usePropertyDetails";
 import { usePropertyRatingReviews } from "@/api/hooks/usePropertyRatingReviews";
@@ -64,9 +65,9 @@ const asNumber = (value: unknown): number | null =>
     ? value
     : typeof value === "string"
       ? (() => {
-          const n = Number(value.trim());
-          return Number.isFinite(n) ? n : null;
-        })()
+        const n = Number(value.trim());
+        return Number.isFinite(n) ? n : null;
+      })()
       : null;
 const formatInr = (value: number) =>
   new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(value);
@@ -106,11 +107,10 @@ function ReviewCard({ review }: { review: PropertyRatingReviewItem }) {
               {[1, 2, 3, 4, 5].map((i) => (
                 <Star
                   key={i}
-                  className={`h-5 w-5 ${
-                    i <= Math.floor(review.overallRating)
-                      ? "fill-[#F5A524] text-[#F5A524]"
-                      : "text-[#E5E7EB]"
-                  }`}
+                  className={`h-5 w-5 ${i <= Math.floor(review.overallRating)
+                    ? "fill-[#F5A524] text-[#F5A524]"
+                    : "text-[#E5E7EB]"
+                    }`}
                 />
               ))}
             </div>
@@ -272,13 +272,13 @@ export default function ListingReviewsPage() {
   return (
     <>
       <MainLayout>
-        <div>
+        <div className="w-full">
           <div className="py-8">
-            <div className="text-4xl ml-6 mb-5 rounded-lg font-semibold text-white">
-            User Ratings and Reviews
+            <div className="text-3xl ml-6 mb-7 rounded-lg font-medium text-white">
+              User Ratings and Reviews
             </div>
             <div className="mx-auto w-full min-w-0 px-4 lg:px-6 max-w-[1440px]">
-              <div className="rounded-lg border border-border bg-white p-4 shadow-sm lg:p-6">
+              <div className="rounded-lg border border-border bg-white p-4 shadow-sm lg:p-8">
                 {/* Top bar - same pattern as gallery */}
                 {/* <div className="flex flex-col gap-4 border-b border-border pb-5 lg:flex-row lg:items-center lg:justify-between">
                   <div className="flex items-center gap-4">
@@ -323,8 +323,8 @@ export default function ListingReviewsPage() {
                 {/* Property banner with rating - light card, image + details | reviews */}
                 <div className=" flex flex-col sm:flex-row overflow-hidden rounded-xl bg-white pb-6">
                   {/* Left 50%: Image and Property details */}
-                  <div className="flex w-full w-[55%] min-h-[160px] sm:min-h-[120px] flex-row">
-                    <div className="relative h-[100px] w-[130px] sm:h-[120px] sm:w-[160px] shrink-0 overflow-hidden rounded-xl m-4 sm:m-6 border border-[#E5E7EB]">
+                  <div className="flex w-full w-[55%] min-h-[160px] sm:min-h-[120px] flex-row boreder border-r-2 border-gray-200">
+                    <div className="relative h-[100px] w-[180px] sm:h-[180px] sm:w-[280px] shrink-0 overflow-hidden rounded-xl mr-6 border border-[#E5E7EB]">
                       <Image
                         src={coverImage}
                         alt={propertyTitle}
@@ -333,13 +333,13 @@ export default function ListingReviewsPage() {
                       />
                     </div>
                     <div className="flex flex-col justify-center px-2 sm:px-0">
-                      <h1 className="text-base font-semibold text-[#374151] sm:text-lg leading-5 line-clamp-2">
+                      <h1 className="text-base font-semibold text-[#374151] sm:text-2xl line-clamp-2">
                         {propertyTitle}
                       </h1>
-                      <p className="mt-1 text-sm text-[#6B7280]">
+                      <p className="mt-2 font-semibold text-md text-[#6B7280]">
                         {priceLabel}
                       </p>
-                      <p className="mt-1 text-xs text-[#6B7280] flex items-center">
+                      <p className="mt-2 text-sm text-[#6B7280] flex items-center">
                         <MapPin className="h-4 w-4 mr-1 text-[#6B7280]" />
                         {propertyAddress}
                       </p>
@@ -415,12 +415,12 @@ export default function ListingReviewsPage() {
                         key={label}
                         className="flex items-center gap-3 rounded-xl border border-[#E7E7E9] bg-[#F8F8F9] p-4"
                       >
-                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#F0BC00] bg-white text-[#05085E]">
-                          <Icon className="h-5 w-5" />
+                        <span className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#F0BC00] bg-white text-[#05085E]">
+                          <Icon className="h-6 w-6" />
                         </span>
                         <div>
-                          <p className="text-sm font-medium text-text-black">{label}</p>
-                          <p className="text-sm font-semibold text-[#05085E]">{score}</p>
+                          <p className="text-sm text-gray-600">{label}</p>
+                          <p className="text-sm mt-0.5 font-medium text-[#05085E]">{score}</p>
                         </div>
                       </div>
                     ))}
@@ -434,13 +434,13 @@ export default function ListingReviewsPage() {
                     <div className="mt-3 flex flex-wrap gap-2">
                       {whatsGood.length > 0
                         ? whatsGood.map((item) => (
-                            <span
-                              key={item}
-                              className="rounded-full bg-[#E7E7E9] px-3 py-1.5 text-xs text-text-black"
-                            >
-                              {item}
-                            </span>
-                          ))
+                          <span
+                            key={item}
+                            className="rounded-full bg-[#f5f5f5] px-3 py-1.5 text-xs text-gray-600"
+                          >
+                            {item}
+                          </span>
+                        ))
                         : <span className="text-sm text-text-gray">—</span>}
                     </div>
                   </div>
@@ -449,159 +449,122 @@ export default function ListingReviewsPage() {
                     <div className="mt-3 flex flex-wrap gap-2">
                       {whatsBad.length > 0
                         ? whatsBad.map((item) => (
-                            <span
-                              key={item}
-                              className="rounded-full bg-[#E7E7E9] px-3 py-1.5 text-xs text-text-black"
-                            >
-                              {item}
-                            </span>
-                          ))
+                          <span
+                            key={item}
+                            className="rounded-full bg-[#f5f5f5] px-3 py-1.5 text-xs text-gray-600"
+                          >
+                            {item}
+                          </span>
+                        ))
                         : <span className="text-sm text-text-gray">—</span>}
                     </div>
                   </div>
                 </div>
 
                 {/* Main + Sidebar grid (like gallery) */}
-                <div className="mt-8 grid grid-cols-1 gap-8 xl:grid-cols-[1fr_360px]">
-                  <main className="space-y-6">
-                    {/* All Reviews section */}
-                    <div>
-                      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                        <h2 className="text-xl font-semibold text-text-black">
-                          All Reviews ({total})
-                        </h2>
-                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                          <div className="relative flex gap-2">
-                            <div className="relative">
-                              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-gray" />
-                              <input
-                                type="search"
-                                placeholder="Search reviews..."
-                                value={searchInput}
-                                onChange={(e) => setSearchInput(e.target.value)}
-                                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                                className="w-full rounded-xl border border-[#D4D5D8] bg-white py-2.5 pl-9 pr-4 text-sm text-text-black placeholder:text-text-gray focus:border-[#05085E] focus:outline-none focus:ring-1 focus:ring-[#05085E] sm:w-[220px]"
-                              />
-                            </div>
-                            <button
-                              type="button"
-                              onClick={handleSearch}
-                              className="rounded-xl border border-[#D4D5D8] bg-white px-4 py-2.5 text-sm font-medium text-text-black hover:bg-[#F8F8F9]"
-                            >
-                              Search
-                            </button>
+                <main className="space-y-6 mt-8">
+                  {/* All Reviews section */}
+                  <div>
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                      <h2 className="text-xl font-semibold text-text-black">
+                        All Reviews ({total})
+                      </h2>
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                        <div className="relative flex gap-2">
+                          <div className="relative">
+                            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-gray" />
+                            <input
+                              type="search"
+                              placeholder="Search reviews..."
+                              value={searchInput}
+                              onChange={(e) => setSearchInput(e.target.value)}
+                              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                              className="w-full rounded-xl border border-[#D4D5D8] bg-white py-2.5 pl-9 pr-4 text-sm text-text-black placeholder:text-text-gray focus:border-[#05085E] focus:outline-none focus:ring-1 focus:ring-[#05085E] sm:w-[220px]"
+                            />
                           </div>
-                          <Link
-                            href={`/projects/${projectId}/${listingId}/reviews/create`}
-                            className="inline-flex items-center justify-center rounded-xl bg-[#05085E] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0B127A]"
+                          <button
+                            type="button"
+                            onClick={handleSearch}
+                            className="rounded-xl border border-[#D4D5D8] bg-white px-4 py-2.5 text-sm font-medium text-text-black hover:bg-[#F8F8F9]"
                           >
-                            Write Review
-                          </Link>
+                            Search
+                          </button>
                         </div>
+                        <Link
+                          href={`/projects/${projectId}/${listingId}/reviews/create`}
+                          className="inline-flex items-center justify-center rounded-xl bg-[#05085E] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0B127A]"
+                        >
+                          Write Review
+                        </Link>
                       </div>
-                      <div className="mt-4 flex flex-wrap items-center gap-3">
+                    </div>
+                    <div className="mt-4 flex flex-wrap items-center justify-end gap-4">
+                      <p className="text-sm font-medium text-text-black">Filter by:</p>
+                      <div className="relative">
                         <select
                           value={ratingFilter === "" ? "" : String(ratingFilter)}
                           onChange={(e) => handleRatingFilter(e.target.value)}
-                          className="inline-flex appearance-none items-center gap-1 rounded-lg border border-[#D4D5D8] bg-white px-4 py-2 pr-8 text-sm font-medium text-text-black"
+                          className="inline-flex appearance-none items-center gap-1 border-b-1 border-[#D4D5D8] bg-white px-4 py-2 pr-8 min-w-[160px] text-sm font-medium text-gray-600 pl-0"
                         >
                           {RATING_FILTER_OPTIONS.map((opt) => (
                             <option key={opt.value} value={opt.value}>{opt.label}</option>
                           ))}
                         </select>
+                        <ChevronDown className="absolute right-1 top-1/2 h-4 w-4 -translate-y-1/2 text-text-gray" />
+                      </div>
+                      <div className="relative">
                         <select
                           value={sortBy}
                           onChange={(e) => handleSortBy(e.target.value)}
-                          className="inline-flex appearance-none items-center gap-1 rounded-lg border border-[#D4D5D8] bg-white px-4 py-2 pr-8 text-sm font-medium text-text-black"
+                          className="inline-flex appearance-none items-center gap-1 border-b-1 border-[#D4D5D8] bg-white px-4 py-2 pr-8 min-w-[160px] text-sm font-medium text-gray-600 pl-0"
                         >
                           {SORT_OPTIONS.map((opt) => (
                             <option key={opt.value} value={opt.value}>{opt.label}</option>
                           ))}
                         </select>
+                        <ChevronDown className="absolute right-1 top-1/2 h-4 w-4 -translate-y-1/2 text-text-gray" />
                       </div>
+                    </div>
 
-                      {ratingLoading && !ratingData ? (
-                        <div className="mt-6 text-sm text-text-gray">Loading reviews…</div>
-                      ) : (
-                        <>
-                          <div className="mt-6 space-y-6">
-                            {reviews.map((review) => (
-                              <ReviewCard key={review.id} review={review} />
-                            ))}
+                    {ratingLoading && !ratingData ? (
+                      <div className="mt-6 text-sm text-text-gray">Loading reviews…</div>
+                    ) : (
+                      <>
+                        <div className="mt-6 space-y-6">
+                          {reviews.map((review) => (
+                            <ReviewCard key={review.id} review={review} />
+                          ))}
+                        </div>
+                        {reviews.length === 0 && (
+                          <p className="mt-6 text-sm text-text-gray">No reviews match your filters.</p>
+                        )}
+                        {totalPages > 1 && (
+                          <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+                            <button
+                              type="button"
+                              disabled={page <= 1}
+                              onClick={() => setPage((p) => Math.max(1, p - 1))}
+                              className="rounded-lg border border-[#D4D5D8] bg-white px-4 py-2 text-sm font-medium text-text-black disabled:opacity-50 hover:bg-[#F8F8F9]"
+                            >
+                              Previous
+                            </button>
+                            <span className="text-sm text-text-gray">
+                              Page {page} of {totalPages}
+                            </span>
+                            <button
+                              type="button"
+                              disabled={page >= totalPages}
+                              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                              className="rounded-lg border border-[#D4D5D8] bg-white px-4 py-2 text-sm font-medium text-text-black disabled:opacity-50 hover:bg-[#F8F8F9]"
+                            >
+                              Next
+                            </button>
                           </div>
-                          {reviews.length === 0 && (
-                            <p className="mt-6 text-sm text-text-gray">No reviews match your filters.</p>
-                          )}
-                          {totalPages > 1 && (
-                            <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-                              <button
-                                type="button"
-                                disabled={page <= 1}
-                                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                                className="rounded-lg border border-[#D4D5D8] bg-white px-4 py-2 text-sm font-medium text-text-black disabled:opacity-50 hover:bg-[#F8F8F9]"
-                              >
-                                Previous
-                              </button>
-                              <span className="text-sm text-text-gray">
-                                Page {page} of {totalPages}
-                              </span>
-                              <button
-                                type="button"
-                                disabled={page >= totalPages}
-                                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                                className="rounded-lg border border-[#D4D5D8] bg-white px-4 py-2 text-sm font-medium text-text-black disabled:opacity-50 hover:bg-[#F8F8F9]"
-                              >
-                                Next
-                              </button>
-                            </div>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  </main>
-
-                  {/* <aside className="h-fit rounded-xl border border-[#D2D3D7] bg-[#F9F9FA] p-5 xl:sticky xl:top-4">
-                  <h3 className="text-sm font-semibold leading-tight text-text-black">
-                    Talk to Our Real Estate Specialists
-                  </h3>
-                  <p className="mt-2 text-xs text-text-gray sm:text-sm">
-                    Buy • Sell • Invest with Expert Advice
-                  </p>
-                  <div className="mt-6 flex items-center gap-3">
-                    <Image
-                      src="/assets/profile.png"
-                      alt="Manjeet Skyzen"
-                      width={66}
-                      height={66}
-                      className="h-[66px] w-[66px] rounded-full object-cover"
-                    />
-                    <div>
-                      <p className="text-sm font-semibold text-text-black sm:text-base">
-                        Manjeet Skyzen
-                      </p>
-                      <span className="mt-1 inline-block rounded bg-[#E69D48] px-2.5 py-1 text-[10px] text-white sm:text-xs">
-                        KMA Expert Pro
-                      </span>
-                    </div>
+                        )}
+                      </>
+                    )}
                   </div>
-                  <button
-                    type="button"
-                    className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#05085E] px-4 py-2.5 text-sm font-medium text-white"
-                  >
-                    <PhoneCall className="h-5 w-5" />
-                    Contact Now
-                  </button>
-                  <a
-                    href="https://wa.me/919056580022"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#1B8836] px-4 py-2.5 text-sm font-medium text-[#1B8836]"
-                  >
-                    <MessageCircle className="h-5 w-5" />
-                    WhatsApp Expert
-                  </a>
-                </aside> */}
-                </div>
+                </main>
               </div>
             </div>
           </div>

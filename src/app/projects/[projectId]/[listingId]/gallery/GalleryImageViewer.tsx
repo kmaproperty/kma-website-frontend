@@ -74,7 +74,7 @@ export function GalleryImageViewer({
   if (!current) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col bg-[#1a1a1a]">
+    <div className="fixed inset-0 z-100 flex flex-col bg-[#1a1a1a]">
       {/* Header */}
       <header className="flex shrink-0 items-center justify-between px-4 py-3 sm:px-6">
         <button

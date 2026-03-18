@@ -58,8 +58,8 @@ export default function TopProperties({ topProperties }) {
                   <div
                     className="flex justify-start gap-2 2md:gap-3 cursor-pointer"
                     onClick={() => {
-                      const propId = item?.id;
-                      const cityId = item?.cityId;
+                      const cityId = item?.cityId || item?.city?.id;
+                      const propId = item?.id || item?.propertyId;
                       if (cityId && propId) router.push(`/projects/${cityId}/${propId}`);
                     }}
                   >

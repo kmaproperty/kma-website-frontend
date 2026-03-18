@@ -67,12 +67,12 @@ export default async function ListingGalleryPage({
       <MainLayout>
         <div className="min-w-0 w-full">
           <div className="py-8">
-            <div className="text-4xl ml-6 mb-5 rounded-lg font-semibold text-white">
+            <h2 className="text-4xl mb-8 rounded-lg font-semibold text-white">
               Property Gallery
-            </div>
-            <div className="mx-auto w-full min-w-0 max-w-[1440px] px-4 lg:px-6">
-              <div className="rounded-lg border border-border bg-white p-4 shadow-sm lg:p-6">
-                <div className="flex flex-col gap-4 border-b border-border pb-5 lg:flex-row lg:items-center lg:justify-between">
+            </h2>
+            <div className="mx-auto w-full min-w-0 max-w-[1440px]">
+              <div className="rounded-xl border border-border bg-white p-4 shadow-sm lg:p-8">
+                <div className="flex flex-col gap-4 pb-2 lg:flex-row lg:items-center lg:justify-between">
                   <div className="flex items-center gap-4">
                     <Link
                       href={listingHref}
@@ -81,34 +81,34 @@ export default async function ListingGalleryPage({
                       <ChevronLeft className="h-6 w-6" />
                     </Link>
                     <div>
-                      <span className="text-lg font-semibold leading-none text-text-black ">
+                      <span className="text-xl font-semibold leading-none text-text-black ">
                         {property?.name ?? "Property"}
                       </span>
-                      <p className="mt-3 text-sm font-semibold leading-none text-text-black ">
+                      <p className="mt-1.5 text-md font-medium leading-none text-gray-500 ">
                         {property?.price ?? "—"}
                       </p>
-                      {property?.address ? (
+                      {/* {property?.address ? (
                         <p className="mt-1 text-xs text-text-gray">{property.address}</p>
-                      ) : null}
+                      ) : null} */}
                     </div>
                   </div>
 
                   <div className="inline-flex w-fit rounded-md border border-[#D4D5D8] bg-white p-1">
                     <Link
                       href={listingHref}
-                      className="min-w-[110px] rounded-md bg-[#05085E] px-3 py-2 text-xs font-semibold text-white sm:min-w-[125px] sm:px-4 sm:py-2.5 sm:text-sm md:min-w-[140px] md:px-5 md:text-base inline-flex items-center justify-center"
+                      className="min-w-[110px] rounded-md bg-[#05085E] px-3 py-2 text-xs font-medium text-white sm:min-w-[125px] sm:px-4 sm:py-2.5 sm:text-sm md:min-w-[140px] md:px-5 md:text-base inline-flex items-center justify-center"
                     >
                       Listing
                     </Link>
                     <Link
                       href={projectHref}
-                      className="min-w-[110px] rounded-md px-3 py-2 text-xs font-medium text-text-light-black sm:min-w-[125px] sm:px-4 sm:py-2.5 sm:text-sm md:min-w-[140px] md:px-5 md:text-base inline-flex items-center justify-center"
+                      className="min-w-[110px] rounded-md px-3 py-2 text-xs text-gray-500 text-text-light-black sm:min-w-[125px] sm:px-4 sm:py-2.5 sm:text-sm md:min-w-[140px] md:px-5 md:text-base inline-flex items-center justify-center"
                     >
                       Project
                     </Link>
                     <Link
                       href={listingHref}
-                      className="min-w-[110px] rounded-md px-3 py-2 text-xs font-medium text-text-light-black sm:min-w-[125px] sm:px-4 sm:py-2.5 sm:text-sm md:min-w-[140px] md:px-5 md:text-base inline-flex items-center justify-center"
+                      className="min-w-[110px] rounded-md px-3 py-2 text-xs text-gray-500 text-text-light-black sm:min-w-[125px] sm:px-4 sm:py-2.5 sm:text-sm md:min-w-[140px] md:px-5 md:text-base inline-flex items-center justify-center"
                     >
                       Units
                     </Link>
@@ -116,11 +116,11 @@ export default async function ListingGalleryPage({
                 </div>
 
                 <div className="mt-5 inline-flex flex-wrap items-center gap-3">
-                  <span className="inline-flex items-center gap-2 rounded-full border border-[#D3D4D7] bg-[#F5F6F8] px-1.5 py-1 text-xs text-text-black">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-[#D3D4D7] bg-[#F5F6F8] px-2.5 py-1 text-xs text-text-black">
                     <ImageIcon className="h-5 w-5" />
                     {photoCount} Photos
                   </span>
-                  <span className="inline-flex items-center gap-2 rounded-full border border-[#D3D4D7] bg-[#F5F6F8] px-1.5 py-1 text-xs text-text-black">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-[#D3D4D7] bg-[#F5F6F8] px-2.5 py-1 text-xs text-text-black">
                     <VideoIcon className="h-5 w-5" />
                     {videoCount} Videos
                   </span>

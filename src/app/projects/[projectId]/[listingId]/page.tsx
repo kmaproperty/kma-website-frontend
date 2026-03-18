@@ -29,6 +29,8 @@ import {
   Tv,
   UtensilsCrossed,
   WavesLadder,
+  ChevronLeft,
+  Share2,
 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -424,11 +426,7 @@ export default function ListingDetailsPage() {
 
   const displayGallery = useMemo(() => {
     const nextImages = resolvedGalleryImages.length > 0 ? resolvedGalleryImages : galleryImages;
-    if (nextImages.length >= 5) {
-      return nextImages;
-    }
-
-    return [...nextImages, ...galleryImages].slice(0, 5);
+    return nextImages.slice(0, 5);
   }, [resolvedGalleryImages]);
 
   const propertyTitle =
@@ -473,16 +471,16 @@ export default function ListingDetailsPage() {
     const totalFloors = asNumber(propertyDetails?.totalFloorCount) ?? asNumber(propertyDetails?.totalFloors);
 
     return [
-      { icon: <BedDouble className="h-4 w-4" />, label: bedrooms },
-      { icon: <Sofa className="h-4 w-4" />, label: furnishing },
-      { icon: <Bath className="h-4 w-4" />, label: `${bathrooms} Bathrooms` },
+      { icon: <Image src="/assets/app/bed.svg" width={20} height={20} alt="area" className="h-5 w-5" />, label: bedrooms },
+      { icon: <Image src="/assets/app/sofa.svg" width={20} height={20} alt="area" className="h-5 w-5" />, label: furnishing },
+      { icon: <Bath strokeWidth={1.5} className="h-5 w-5" />, label: `${bathrooms} Bathrooms` },
       {
-        icon: <House className="h-4 w-4" />,
+        icon: <Image src="/assets/app/area.svg" width={20} height={20} alt="area" className="h-5 w-5" />,
         label: area ? `${formatInr(area)} Sq. Ft (Built-up Area)` : "2337 Sq. Ft (Built-up Area)",
       },
-      { icon: <Trees className="h-4 w-4" />, label: facing },
+      { icon: <Trees strokeWidth={1.5} className="h-5 w-5" />, label: facing },
       {
-        icon: <Building2 className="h-4 w-4" />,
+        icon: <Building2 className="h-5 w-5" strokeWidth={1.5} />,
         label:
           floor && totalFloors
             ? `${floor}th Floor out of ${totalFloors} Floors`
@@ -601,7 +599,7 @@ export default function ListingDetailsPage() {
           [activeLocalityCategory]: res.places?.map((p) => ({ name: p.name, distance: p.distance })) ?? [],
         }));
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setNearbyLoading(false));
   }, [activeLocalityCategory, lat, lng]);
 
@@ -647,16 +645,16 @@ export default function ListingDetailsPage() {
   return (
     <MainLayout>
 
-      <div className="py-8">
+      <div className="pt-10 pb-6">
         <div className="text-sm text-white absolute top-35 left-62">
-        Home / Property for Rent in Gurgaon / Flats for Rent in Gurgaon / Flats for Rent in Sector 49 /  4 Bedroom 2337 Sq.Ft. Apartment in Sector 49 Gurgaon
+          Home / Property for Rent in Gurgaon / Flats for Rent in Gurgaon / Flats for Rent in Sector 49 /  4 Bedroom 2337 Sq.Ft. Apartment in Sector 49 Gurgaon
         </div>
-        <div className="text-4xl ml-6 mb-5 rounded-lg font-semibold text-white">
+        <h2 className="text-4xl mb-8 rounded-lg font-semibold text-white">
           Property Details
-        </div>
-        <div className="mx-auto w-full max-w-[1180px] px-4 lg:px-6">
-          <div className="rounded-2xl border border-border bg-white p-4 shadow-sm lg:p-6">
-            <div className="flex flex-col gap-4 border-b border-border pb-4 sm:flex-row sm:items-center sm:justify-between">
+        </h2>
+        <div className="mx-auto w-full">
+          <div className="rounded-2xl border border-border bg-white p-4 shadow-sm lg:p-8">
+            <div className="flex flex-col gap-4 pb-2 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 {/* <p className="text-xs font-medium text-text-light-gray">
                 Home / Projects / {params?.projectId ?? "project"} / {listingId || "property"}
@@ -664,15 +662,15 @@ export default function ListingDetailsPage() {
                 <h1 className="mt-1 text-2xl font-semibold text-text-black">
                   {propertyTitle}
                 </h1>
-                <p className="mt-1 flex items-center gap-1 text-sm text-text-gray">
+                <p className="mt-2.5 flex items-center gap-1 text-sm text-text-gray">
                   <MapPin className="h-4 w-4" />
                   {propertyAddress}
                 </p>
               </div>
 
               <div className="text-left sm:text-right">
-                <p className="text-3xl font-semibold leading-none text-blue">{currentPriceLabel}</p>
-                <p className="mt-1 text-xs text-text-gray">{depositLabel}</p>
+                <p className="text-3xl font-bold leading-none text-blue">{currentPriceLabel}</p>
+                <p className="mt-3 text-xs font-medium text-text-gray">{depositLabel}</p>
               </div>
             </div>
 
@@ -685,8 +683,8 @@ export default function ListingDetailsPage() {
               </p>
             ) : null}
 
-            <section className="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-[2fr_1fr]">
-              <div className="relative h-[250px] overflow-hidden rounded-sm sm:h-[330px]">
+            <section className="mt-4 flex gap-3">
+              <div className="relative h-[250px] w-[60%] overflow-hidden rounded-sm sm:h-[480px]">
                 <Image
                   src={displayGallery[0]}
                   alt="Property cover"
@@ -696,18 +694,18 @@ export default function ListingDetailsPage() {
                 />
                 <button
                   type="button"
-                  className="absolute right-3 top-3 inline-flex items-center gap-2 rounded-lg bg-white/90 px-3 py-1.5 text-xs font-medium text-text-black"
+                  className="absolute right-3 top-3 inline-flex items-center gap-2 rounded-lg bg-white/95 px-3 py-2 text-xs font-medium text-text-black"
                 >
-                  <Heart className="h-3.5 w-3.5" />
+                  <Share2 className="h-3.5 w-3.5" />
                   Share
                 </button>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="w-[40%] grid grid-cols-2 gap-3">
                 {displayGallery.slice(1).map((src, idx) => (
                   <div
                     key={src}
-                    className="relative h-[118px] overflow-hidden rounded-sm sm:h-[158px]"
+                    className="relative h-[118px] overflow-hidden rounded-sm sm:h-full"
                   >
                     <Image
                       src={src}
@@ -732,15 +730,15 @@ export default function ListingDetailsPage() {
               {quickFactsData.map((fact) => (
                 <div
                   key={fact.label}
-                  className="inline-flex items-center gap-2 rounded-md border border-border bg-background-gray px-3 py-2 text-xs font-medium text-text-black"
+                  className="inline-flex items-center gap-2 rounded-md border border-border bg-background-gray px-2.5 py-2 text-[13px] text-text-black pr-4"
                 >
-                  <span>{fact.icon}</span>
+                  <span className="flex w-[30px] h-[30px] justify-center items-center rounded-md bg-white">{fact.icon}</span>
                   <span>{fact.label}</span>
                 </div>
               ))}
             </div>
 
-            <div className="mt-5 border-b border-border bg-background-gray rounded-sm p-5">
+            <div className="mt-4 border-b border-border bg-background-gray rounded-sm p-5">
               <nav className=" overflow-x-auto rounded-md bg-white text-sm">
                 <div className="flex w-max min-w-full items-center">
                   {[
@@ -754,8 +752,8 @@ export default function ListingDetailsPage() {
                     <button
                       key={item}
                       type="button"
-                      className={`whitespace-nowrap border-b-2 px-6 py-4 font-medium transition ${idx === 0
-                        ? "border-blue bg-white/70 text-text-black"
+                      className={`whitespace-nowrap border-b-2 px-6 py-4 transition ${idx === 0
+                        ? "border-blue bg-white/70 text-text-black font-semibold"
                         : "border-transparent text-text-gray hover:text-text-black"
                         }`}
                     >
@@ -796,12 +794,12 @@ export default function ListingDetailsPage() {
                       {propertyInfoData.map(([label, value]) => (
                         <div
                           key={label}
-                          className="rounded-lg border border-border p-3"
+                          className="rounded-lg border border-border px-3 py-2"
                         >
-                          <p className="text-[11px] text-text-gray">
+                          <p className="text-[12px] text-text-gray">
                             {label}
                           </p>
-                          <p className="mt-1 text-sm font-medium text-text-black">{value}</p>
+                          <p className="mt-0.5 text-sm font-medium text-text-black">{value}</p>
                         </div>
                       ))}
                     </div>
@@ -809,12 +807,12 @@ export default function ListingDetailsPage() {
 
                   <section className="rounded-xl">
                     <h2 className="text-xl font-semibold text-text-black">Furnishing Details</h2>
-                    <div className="mt-4 rounded-lg bg-white p-3 grid grid-cols-1  gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-4">
+                    <div className="mt-4 rounded-lg bg-white px-5 py-4 grid grid-cols-1  gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-4">
                       {(Array.isArray(propertyDetails?.furnishingsCounts) && propertyDetails.furnishingsCounts.length > 0
                         ? propertyDetails.furnishingsCounts.map((f: { item: string; count: number }) => ({
-                            label: `${f.count} ${f.item}`,
-                            icon: getFurnishingIcon(f.item),
-                          }))
+                          label: `${f.count} ${f.item}`,
+                          icon: getFurnishingIcon(f.item),
+                        }))
                         : furnishingDetails
                       ).map((item: { label: string; icon: string }) => (
                         <div
@@ -836,7 +834,7 @@ export default function ListingDetailsPage() {
 
                   <section className="rounded-xl p-4">
                     <h2 className="text-xl font-semibold text-text-black">Locality</h2>
-                    <div className="mt-3 relative h-[260px] overflow-hidden rounded-xl bg-[#ECEEF3]">
+                    <div className="mt-3 relative h-[300px] overflow-hidden rounded-tr-lg border border-[#D4D5D8] rounded-tl-lg bg-[#ECEEF3]">
                       <Image
                         src="/assets/city/city1.svg"
                         alt="Locality map"
@@ -852,46 +850,45 @@ export default function ListingDetailsPage() {
                       </button>
                     </div>
 
-                    <div className="mt-4 flex gap-1 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                      {localityCategories.map((category) => {
-                        const Icon = category.icon;
-                        const isActive = activeLocalityCategory === category.key;
+                    <div className=" divide-y divide-[#D4D5D8] rounded-br-lg rounded-bl-lg border border-[#D4D5D8] bg-white px-5">
+                      <div className="py-3 flex gap-1.5 overflow-x-auto[scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                        {localityCategories.map((category) => {
+                          const Icon = category.icon;
+                          const isActive = activeLocalityCategory === category.key;
 
-                        return (
-                          <button
-                            key={category.key}
-                            type="button"
-                            onClick={() => setActiveLocalityCategory(category.key)}
-                            className={`inline-flex shrink-0 items-center gap-2 rounded-md border px-4 py-2.5 text-sm font-medium transition ${isActive
-                              ? "border-[#05085E] bg-[#05085E] text-white"
-                              : "border-[#D4D5D8] bg-[#F8F8F9] text-text-black hover:bg-white"
-                              }`}
-                          >
-                            <Icon className="h-4 w-4" />
-                            {category.label}
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    <div className="mt-4 divide-y divide-[#D4D5D8] rounded-lg border border-[#D4D5D8] bg-white px-3">
+                          return (
+                            <button
+                              key={category.key}
+                              type="button"
+                              onClick={() => setActiveLocalityCategory(category.key)}
+                              className={`inline-flex shrink-0 items-center gap-2 rounded-md border px-4 py-2.5 text-sm font-medium transition ${isActive
+                                ? "border-[#05085E] bg-[#05085E] text-white"
+                                : "border-[#D4D5D8] bg-[#fff] text-text-black hover:bg-white"
+                                }`}
+                            >
+                              <Icon className="h-5 w-5" />
+                              {category.label}
+                            </button>
+                          );
+                        })}
+                      </div>
                       {activeLocalityPlaces.map((place) => (
                         <div
                           key={place.name}
-                          className="grid grid-cols-1 gap-3 py-4 sm:grid-cols-2 sm:gap-6"
+                          className="grid grid-cols-1 gap-3 py-5 sm:grid-cols-2 sm:gap-6"
                         >
                           <div className="inline-flex items-start gap-3 text-sm text-text-black">
-                            <School className="mt-0.5 h-5 w-5 text-[#05085E]" />
+                            <School className="mt-0.5 h-6 w-6 text-[#05085E]" />
                             <div>
                               <p className="font-medium text-text-black">{place.name}</p>
-                              <span className="mt-1 block text-text-light-black">{place.distance}</span>
+                              <span className="mt-1 block text-[#888888]">{place.distance}</span>
                             </div>
                           </div>
                           <div className="inline-flex items-start gap-3 text-sm text-text-black">
-                            <School className="mt-0.5 h-5 w-5 text-[#05085E]" />
+                            <School className="mt-0.5 h-6 w-6 text-[#05085E]" />
                             <div>
                               <p className="font-medium text-text-black">{place.name}</p>
-                              <span className="mt-1 block text-text-light-black">{place.distance}</span>
+                              <span className="mt-1 block text-[#888888]">{place.distance}</span>
                             </div>
                           </div>
                         </div>
@@ -901,12 +898,12 @@ export default function ListingDetailsPage() {
 
                   <section className="rounded-xl">
                     <h2 className="text-xl font-semibold text-text-black">Amenities</h2>
-                    <div className="mt-4 rounded-lg bg-white p-3 grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2 lg:grid-cols-4">
+                    <div className="mt-4 rounded-lg bg-white p-4 grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
                       {(Array.isArray(propertyDetails?.amenitiesList) && propertyDetails.amenitiesList.length > 0
                         ? propertyDetails.amenitiesList.map((name: string) => ({
-                            icon: <CheckCircle2 className="h-5 w-5" />,
-                            label: name,
-                          }))
+                          icon: <CheckCircle2 className="h-5 w-5" />,
+                          label: name,
+                        }))
                         : amenities
                       ).map((amenity: { icon: React.ReactNode; label: string }) => (
                         <div
@@ -974,8 +971,8 @@ export default function ListingDetailsPage() {
                             [apiChannelPartner?.areasOfOperation != null && apiChannelPartner.areasOfOperation > 0 ? `${apiChannelPartner.areasOfOperation}+` : "20+", "Areas of Operation"],
                           ].map(([value, label]) => (
                             <div key={label} className="flex items-center  gap-3">
-                              <p className="text-2xl leading-none font-semibold text-[#05085E]">{value}</p>
-                              <p className="max-w-[110px] text-xs leading-5 text-text-black">{label}</p>
+                              <p className="text-3xl leading-none font-semibold text-[#05085E]">{value}</p>
+                              <p className="max-w-[110px] text-sm leading-5 text-text-black">{label}</p>
                             </div>
                           ))}
                         </div>
@@ -1008,7 +1005,7 @@ export default function ListingDetailsPage() {
                     <h2 className="text-lg font-semibold text-text-black">Ratings and Reviews</h2>
                     <div className="mt-4 rounded-xl bg-white p-4 sm:p-6">
                       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[220px_1fr]">
-                        <div className="lg:border-r lg:border-[#CFCFD2] lg:pr-6  ">
+                        <div className="lg:border-r lg:border-[#CFCFD2] lg:pr-5  ">
 
                           <div className="flex flex-col items-center">
                             <p className="text-3xl font-semibold leading-none text-text-black">
@@ -1039,10 +1036,10 @@ export default function ListingDetailsPage() {
                                       style={{ width: `${pct}%` }}
                                     />
                                   </div>
-                                  <span className="min-w-10 text-right text-xs text-text-gray">
+                                  <span className="min-w-4 text-right text-[13px] text-text-gray">
                                     {star}
                                   </span>
-                                  <Star className="h-3.5 w-3.5 fill-[#8D8D91] text-[#8D8D91]" />
+                                  <Star className="h-3 w-3 fill-[#8D8D91] text-[#8D8D91]" />
                                 </div>
                               );
                             })}
@@ -1051,23 +1048,23 @@ export default function ListingDetailsPage() {
 
                         <div>
                           <h3 className="text-md font-semibold text-text-black">Ratings by features</h3>
-                          <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 border-b border-[#CFCFD2] pb-4">
+                          <div className="mt-3 flex flex-wrap gap-x-8 gap-y-1 border-b border-[#CFCFD2] pb-4">
                             {[
-                              { icon: <CarFront className="h-4 w-4" />, label: "Connectivity", score: apiRatings?.featureRatings?.connectivity },
-                              { icon: <MapPin className="h-4 w-4" />, label: "Neighbourhood", score: apiRatings?.featureRatings?.neighbourhood },
-                              { icon: <ShieldCheck className="h-4 w-4" />, label: "Safety", score: apiRatings?.featureRatings?.safety },
-                              { icon: <Trees className="h-4 w-4" />, label: "Livability", score: apiRatings?.featureRatings?.livability },
+                              { icon: <CarFront className="h-5 w-5" />, label: "Connectivity", score: apiRatings?.featureRatings?.connectivity },
+                              { icon: <MapPin className="h-5 w-5" />, label: "Neighbourhood", score: apiRatings?.featureRatings?.neighbourhood },
+                              { icon: <ShieldCheck className="h-5 w-5" />, label: "Safety", score: apiRatings?.featureRatings?.safety },
+                              { icon: <Trees className="h-5 w-5" />, label: "Livability", score: apiRatings?.featureRatings?.livability },
                             ].map((feature) => (
                               <div
                                 key={feature.label}
-                                className="inline-flex items-center gap-1"
+                                className="inline-flex items-center gap-2"
                               >
-                                <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-[#F0BC00] text-[#05085E]">
+                                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#F0BC00] text-[#05085E]">
                                   {feature.icon}
                                 </span>
                                 <div className="min-w-0 leading-none">
-                                  <p className="text-xs text-text-black">{feature.label}</p>
-                                  <p className="mt-1 text-xs font-semibold text-[#05085E]">
+                                  <p className="text-[14px] text-gray-600">{feature.label}</p>
+                                  <p className="mt-0.5 text-xs font-semibold text-[#05085E]">
                                     {feature.score != null ? `${feature.score}/5` : "—"}
                                   </p>
                                 </div>
@@ -1081,7 +1078,7 @@ export default function ListingDetailsPage() {
                               {(apiRatings?.likes?.length ? apiRatings.likes : goodThings).map((item) => (
                                 <span
                                   key={item}
-                                  className="rounded-full bg-[#E7E7E9] px-3 py-1.5 text-xs text-text-black"
+                                  className="rounded-full bg-[#f5f5f5] px-3 py-1.5 text-xs text-gray-600"
                                 >
                                   {item}
                                 </span>
@@ -1095,7 +1092,7 @@ export default function ListingDetailsPage() {
                               {(apiRatings?.dislikes?.length ? apiRatings.dislikes : badThings).map((item) => (
                                 <span
                                   key={item}
-                                  className="rounded-full bg-[#E7E7E9] px-3 py-1.5 text-xs text-text-black"
+                                  className="rounded-full bg-[#f5f5f5] px-3 py-1.5 text-xs text-gray-600"
                                 >
                                   {item}
                                 </span>
@@ -1125,22 +1122,22 @@ export default function ListingDetailsPage() {
                           </div>
                         </div>
 
-                        <div className="mt-5 grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">
+                        <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                           {currentReviews.map((review) => (
                             <article
                               key={review.id}
-                              className="rounded-xl border border-border bg-[#F8F8F9] p-4"
+                              className="rounded-xl border border-border p-4"
                             >
-                              <div className="flex items-start gap-3">
+                              <div className="flex items-center gap-3">
                                 <Image
                                   src={review.avatar}
                                   alt={review.name}
-                                  width={46}
-                                  height={46}
-                                  className="h-[46px] w-[46px] rounded-full object-cover"
+                                  width={54}
+                                  height={54}
+                                  className="h-[50px] w-[50px] rounded-full object-cover"
                                 />
                                 <div>
-                                  <p className="text-sm font-semibold leading-none text-text-black">
+                                  <p className="text-md font-semibold leading-none text-text-black">
                                     {review.name}
                                   </p>
                                   <p className="mt-1 text-xs text-text-gray">{review.role}</p>
@@ -1156,7 +1153,7 @@ export default function ListingDetailsPage() {
                                 ))}
                               </div>
 
-                              <p className="mt-4 min-h-[78px] text-sm leading-[36px] text-text-gray">
+                              <p className="mt-4 min-h-[78px] text-sm leading-[26px] text-text-gray">
                                 {review.review}
                               </p>
 
@@ -1370,23 +1367,23 @@ export default function ListingDetailsPage() {
                         type="button"
                         aria-label="Previous similar property"
                         onClick={() => scrollSimilarProperties("prev")}
-                        className="absolute left-2 top-1/2 z-10 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[#D4D5D8] bg-white text-[#05085E] shadow transition hover:bg-[#F8F9FF]"
+                        className="absolute left-[-15px] top-1/2 z-10 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-[#D4D5D8] bg-white text-[#05085E] shadow transition hover:bg-[#F8F9FF]"
                       >
-                        <ArrowLeft className="h-4 w-4" />
+                        <ChevronLeft className="h-4 w-4" />
                       </button>
                       <button
                         type="button"
                         aria-label="Next similar property"
                         onClick={() => scrollSimilarProperties("next")}
-                        className="absolute right-2 top-1/2 z-10 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[#D4D5D8] bg-white text-[#05085E] shadow transition hover:bg-[#F8F9FF]"
+                        className="absolute right-[-15px] top-1/2 z-8 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-[#D4D5D8] bg-white text-[#05085E] shadow transition hover:bg-[#F8F9FF]"
                       >
-                        <ArrowRight className="h-4 w-4" />
+                        <ChevronRight className="h-4 w-4" />
                       </button>
                     </div>
                   </section>
                 </main>
 
-                <aside className="h-fit rounded-xl border border-border p-4 xl:sticky xl:top-4">
+                <aside className="h-fit rounded-xl border bg-white border-border p-4 xl:sticky xl:top-4">
                   <h3 className="text-xl font-semibold text-text-black">
                     Talk to our real estate specialists
                   </h3>
@@ -1405,7 +1402,7 @@ export default function ListingDetailsPage() {
                     const telHref = phone ? `tel:+91${phone.replace(/\D/g, "")}` : undefined;
                     return (
                       <>
-                        <div className="mt-4 flex items-center gap-3 rounded-lg bg-[#FAFAFB] p-3">
+                        <div className="mt-4 flex items-center gap-3 rounded-lg py-3">
                           <Image
                             src={specialistImage}
                             alt={specialistName}
@@ -1421,7 +1418,7 @@ export default function ListingDetailsPage() {
                         {telHref ? (
                           <a
                             href={telHref}
-                            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-blue px-4 py-3 text-sm font-semibold text-white"
+                            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-blue px-4 py-3 text-sm font-semibold text-white"
                           >
                             <PhoneCall className="h-4 w-4" />
                             Contact Now
@@ -1429,7 +1426,7 @@ export default function ListingDetailsPage() {
                         ) : (
                           <button
                             type="button"
-                            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-blue px-4 py-3 text-sm font-semibold text-white"
+                            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-blue px-4 py-3 text-sm font-semibold text-white"
                           >
                             <PhoneCall className="h-4 w-4" />
                             Contact Now
@@ -1439,7 +1436,7 @@ export default function ListingDetailsPage() {
                           href={whatsappHref}
                           target="_blank"
                           rel="noreferrer"
-                          className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-[#1B8836] px-4 py-3 text-sm font-semibold text-[#1B8836]"
+                          className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#1B8836] px-4 py-3 text-sm font-semibold text-[#1B8836]"
                         >
                           <MessageCircle className="h-4 w-4" />
                           WhatsApp Expert

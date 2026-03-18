@@ -83,8 +83,8 @@ export function GalleryContent({ tabs, sections, videoUrls, propertyName = "Prop
               key={tab}
               type="button"
               onClick={() => scrollToSection(idx)}
-              className={`whitespace-nowrap border-b-2 px-4 py-2 text-sm font-medium transition-colors sm:px-5 sm:py-2.5 sm:text-base md:px-6 md:py-3 md:text-md ${
-                idx === activeTabIndex ? "border-[#13181F] text-text-black" : "border-transparent text-text-light-black"
+              className={`whitespace-nowrap border-b-2 px-4 py-2 text-sm  transition-colors sm:px-5 sm:py-2.5 sm:text-base md:px-6 md:py-3 md:text-md ${
+                idx === activeTabIndex ? "border-[#13181F] font-medium text-text-black" : "border-transparent text-gray-500"
               }`}
             >
               {tab}

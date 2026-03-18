@@ -180,7 +180,7 @@ export default function FiltersSidebar() {
 
   return (
     <div className="overflow-hidden rounded-lg">
-      <div className="sticky top-0 z-10 border-b border-border p-4 backdrop-blur">
+      <div className="sticky top-0 z-10 border-b border-border pb-4 pt-1 backdrop-blur">
         <div className="flex items-center justify-between gap-3">
           <div className="text-base font-semibold text-text-black">Filters</div>
           <button
@@ -201,46 +201,13 @@ export default function FiltersSidebar() {
         )}
       </div>
 
-      <div className="divide-y divide-border px-4">
-        <Section title="Localities" hint="Search by area">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-gray" />
-            <input
-              value={filters.searchLocality}
-              onChange={(e) =>
-                startTransition(() => setFilters({ searchLocality: e.target.value }))
-              }
-              placeholder="Search locality..."
-              className="h-10 w-full rounded-md border border-border bg-white pl-9 pr-3 text-sm text-text-gray outline-none transition focus:border-blue"
-            />
-          </div>
-        </Section>
-
-        <Section title="Posted by">
-          <div className="grid grid-cols-2 gap-1">
-            {POSTED_BY_OPTIONS.map((t) => (
-              <button
-                key={t.id}
-                onClick={() => startTransition(() => setTab(t.id))}
-                className={cx(
-                  "h-10 cursor-pointer rounded-md border text-xs font-medium transition",
-                  tab === t.id
-                    ? "border-blue bg-blue text-white"
-                    : "border-border bg-white text-text-gray hover:bg-background-gray"
-                )}
-                aria-pressed={tab === t.id}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-        </Section>
-
+      <div className="divide-y divide-border">
         <Section title="Budget" hint="₹ Crore">
           <div className="grid grid-cols-2 gap-1">
             <SelectField
               value={filters.minBudget ?? ""}
               onChange={(e) => setBudget("minBudget", e.target.value)}
+              className="h-9 w-full cursor-pointer rounded-md border border-border  px-3 text-sm text-text-gray outline-none transition focus:border-blue"
             >
               <option value="">Min</option>
               {[0.5, 1, 1.4, 2, 5, 10].map((v) => (
@@ -252,6 +219,7 @@ export default function FiltersSidebar() {
             <SelectField
               value={filters.maxBudget ?? ""}
               onChange={(e) => setBudget("maxBudget", e.target.value)}
+              className="h-9 w-full cursor-pointer rounded-md border border-border  px-3 text-sm text-text-gray outline-none transition focus:border-blue"
             >
               <option value="">Max</option>
               {[1, 2, 5, 10, 20].map((v) => (
@@ -268,6 +236,7 @@ export default function FiltersSidebar() {
             <SelectField
               value={filters.minSizeSqYd ?? ""}
               onChange={(e) => setSize("minSizeSqYd", e.target.value)}
+              className="h-9 w-full cursor-pointer rounded-md border border-border px-3 text-sm text-text-gray outline-none transition focus:border-blue"
             >
               <option value="">Min</option>
               {[50, 100, 119, 150, 200].map((v) => (
@@ -279,6 +248,7 @@ export default function FiltersSidebar() {
             <SelectField
               value={filters.maxSizeSqYd ?? ""}
               onChange={(e) => setSize("maxSizeSqYd", e.target.value)}
+              className="h-9 w-full cursor-pointer rounded-md border border-border px-3 text-sm text-text-gray outline-none transition focus:border-blue"
             >
               <option value="">Max</option>
               {[119, 150, 200, 300].map((v) => (
@@ -295,10 +265,10 @@ export default function FiltersSidebar() {
             <button
               onClick={() => startTransition(() => setCategoryId(null))}
               className={cx(
-                "h-10 cursor-pointer rounded-md border text-sm font-medium transition",
+                "h-9 cursor-pointer rounded-md border text-sm font-medium transition",
                 filters.categoryId == null
                   ? "border-blue bg-blue text-white"
-                  : "border-border bg-white text-text-gray hover:bg-background-gray"
+                  : "border-border  text-text-gray hover:bg-background-gray"
               )}
               aria-pressed={filters.categoryId == null}
             >
@@ -313,14 +283,48 @@ export default function FiltersSidebar() {
                   )
                 }
                 className={cx(
-                  "h-10 cursor-pointer rounded-md border text-sm font-medium transition",
+                  "h-9 cursor-pointer rounded-md border text-sm font-medium transition",
                   filters.categoryId === c.id
                     ? "border-blue bg-blue text-white"
-                    : "border-border bg-white text-text-gray hover:bg-background-gray"
+                    : "border-border  text-text-gray hover:bg-background-gray"
                 )}
                 aria-pressed={filters.categoryId === c.id}
               >
                 {c.name}
+              </button>
+            ))}
+          </div>
+        </Section>
+
+        <Section title="Localities" hint="Search by area">
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-gray" />
+            <input
+              value={filters.searchLocality}
+              onChange={(e) =>
+                startTransition(() => setFilters({ searchLocality: e.target.value }))
+              }
+              placeholder="Search locality..."
+              className="h-9 w-full rounded-md border border-border  pl-9 pr-3 text-sm text-text-gray outline-none transition focus:border-blue"
+            />
+          </div>
+        </Section>
+
+        <Section title="Posted by">
+          <div className="grid grid-cols-2 gap-1">
+            {POSTED_BY_OPTIONS.map((t) => (
+              <button
+                key={t.id}
+                onClick={() => startTransition(() => setTab(t.id))}
+                className={cx(
+                  "h-9 cursor-pointer rounded-md border text-sm transition",
+                  tab === t.id
+                    ? "border-blue bg-blue text-white"
+                    : "border-border  text-text-gray hover:bg-background-gray"
+                )}
+                aria-pressed={tab === t.id}
+              >
+                {t.label}
               </button>
             ))}
           </div>

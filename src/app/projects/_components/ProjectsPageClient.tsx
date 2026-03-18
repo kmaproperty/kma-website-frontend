@@ -451,11 +451,11 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-6 rounded-xl bg-white p-4 lg:mt-20 lg:grid-cols-[320px_1fr]">
-          <aside className="rounded-xl bg-background-gray p-4 lg:sticky lg:top-6 lg:mt-0 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:overscroll-contain">
+          <aside className="rounded-xl bg-[#f5f5f5] py-4 px-5 lg:sticky lg:top-6 lg:mt-0 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:overscroll-contain">
             <FiltersSidebar />
           </aside>
 
-          <main className="min-w-0 mt-8">
+          <main className="min-w-0 mt-2">
             <div className="rounded-2xl p-4  sm:p-5">
               <div>
                 <ProjectsToolbar total={initialProjects.length} />
