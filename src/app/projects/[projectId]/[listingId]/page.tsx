@@ -553,6 +553,45 @@ export default function ListingDetailsPage() {
 
   const similarCarouselRef = useRef<HTMLDivElement | null>(null);
 
+  const [similarScrollState, setSimilarScrollState] = useState(() => ({
+    canScroll: false,
+    canPrev: false,
+    canNext: false,
+  }));
+
+  useEffect(() => {
+    const container = similarCarouselRef.current;
+    if (!container) return;
+
+    const update = () => {
+      const maxScrollLeft = container.scrollWidth - container.clientWidth;
+      const canScroll = container.scrollWidth > container.clientWidth + 1;
+      const canPrev = canScroll && container.scrollLeft > 1;
+      const canNext = canScroll && container.scrollLeft < maxScrollLeft - 1;
+      setSimilarScrollState({ canScroll, canPrev, canNext });
+    };
+
+    update();
+
+    const onScroll = () => update();
+    container.addEventListener("scroll", onScroll, { passive: true });
+
+    const onResize = () => update();
+    window.addEventListener("resize", onResize);
+
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(() => update()) : null;
+    ro?.observe(container);
+
+    const raf = window.requestAnimationFrame(update);
+
+    return () => {
+      window.cancelAnimationFrame(raf);
+      ro?.disconnect();
+      window.removeEventListener("resize", onResize);
+      container.removeEventListener("scroll", onScroll);
+    };
+  }, [similarProperties.length]);
+
   const scrollSimilarProperties = (direction: "prev" | "next") => {
     const container = similarCarouselRef.current;
     if (!container) return;
@@ -1363,22 +1402,28 @@ export default function ListingDetailsPage() {
                           })}
                       </div>
 
-                      <button
-                        type="button"
-                        aria-label="Previous similar property"
-                        onClick={() => scrollSimilarProperties("prev")}
-                        className="absolute left-[-15px] top-1/2 z-10 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-[#D4D5D8] bg-white text-[#05085E] shadow transition hover:bg-[#F8F9FF]"
-                      >
-                        <ChevronLeft className="h-4 w-4" />
-                      </button>
-                      <button
-                        type="button"
-                        aria-label="Next similar property"
-                        onClick={() => scrollSimilarProperties("next")}
-                        className="absolute right-[-15px] top-1/2 z-8 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-[#D4D5D8] bg-white text-[#05085E] shadow transition hover:bg-[#F8F9FF]"
-                      >
-                        <ChevronRight className="h-4 w-4" />
-                      </button>
+                      {similarScrollState.canScroll && (
+                        <>
+                          <button
+                            type="button"
+                            aria-label="Previous similar property"
+                            onClick={() => scrollSimilarProperties("prev")}
+                            disabled={!similarScrollState.canPrev}
+                            className="absolute left-[-15px] top-1/2 z-10 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-[#D4D5D8] bg-white text-[#05085E] shadow transition hover:bg-[#F8F9FF] disabled:cursor-not-allowed disabled:opacity-40"
+                          >
+                            <ChevronLeft className="h-4 w-4" />
+                          </button>
+                          <button
+                            type="button"
+                            aria-label="Next similar property"
+                            onClick={() => scrollSimilarProperties("next")}
+                            disabled={!similarScrollState.canNext}
+                            className="absolute right-[-15px] top-1/2 z-8 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-[#D4D5D8] bg-white text-[#05085E] shadow transition hover:bg-[#F8F9FF] disabled:cursor-not-allowed disabled:opacity-40"
+                          >
+                            <ChevronRight className="h-4 w-4" />
+                          </button>
+                        </>
+                      )}
                     </div>
                   </section>
                 </main>
