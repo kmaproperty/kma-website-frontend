@@ -42,8 +42,8 @@ interface InfoSectionProps {
 export default function InfoSection({ titlePrefix, title }: InfoSectionProps) {
   return (
     <div className="flex justify-center items-start flex-col mt-8 md:mt-[7rem]">
-      <p className="text-white font-normal text-base md:text-lg mb-1">{titlePrefix}</p>
-      <p className="text-white font-semibold text-[2rem] leading-[2.2rem] mb-6">{title}</p>
+      <p className="text-white font-normal text-base md:text-lg mb-2">{titlePrefix}</p>
+      <h2 className="text-white font-semibold text-[2rem] leading-[2.2rem] mb-12">{title}</h2>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 w-full">
         {cardInfo.map((info) => (
           <div key={info.title} className="bg-white rounded-[10px] shadow-md flex flex-col h-full">

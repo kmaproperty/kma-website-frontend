@@ -30,6 +30,7 @@ import {
   UtensilsCrossed,
   WavesLadder,
   ChevronLeft,
+  Share2,
 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -460,16 +461,16 @@ export default function ListingDetailsPage() {
     const totalFloors = asNumber(propertyDetails?.totalFloorCount) ?? asNumber(propertyDetails?.totalFloors);
 
     return [
-      { icon: <BedDouble className="h-4 w-4" />, label: bedrooms },
-      { icon: <Sofa className="h-4 w-4" />, label: furnishing },
-      { icon: <Bath className="h-4 w-4" />, label: `${bathrooms} Bathrooms` },
+      { icon: <Image src="/assets/app/bed.svg" width={20} height={20} alt="area" className="h-5 w-5" />, label: bedrooms },
+      { icon: <Image src="/assets/app/sofa.svg" width={20} height={20} alt="area" className="h-5 w-5" />, label: furnishing },
+      { icon: <Bath strokeWidth={1.5} className="h-5 w-5" />, label: `${bathrooms} Bathrooms` },
       {
-        icon: <House className="h-4 w-4" />,
+        icon: <Image src="/assets/app/area.svg" width={20} height={20} alt="area" className="h-5 w-5" />,
         label: area ? `${formatInr(area)} Sq. Ft (Built-up Area)` : "2337 Sq. Ft (Built-up Area)",
       },
-      { icon: <Trees className="h-4 w-4" />, label: facing },
+      { icon: <Trees strokeWidth={1.5} className="h-5 w-5" />, label: facing },
       {
-        icon: <Building2 className="h-4 w-4" />,
+        icon: <Building2 className="h-5 w-5" strokeWidth={1.5} />,
         label:
           floor && totalFloors
             ? `${floor}th Floor out of ${totalFloors} Floors`
@@ -605,9 +606,9 @@ export default function ListingDetailsPage() {
         <div className="text-sm text-white absolute top-35 left-62">
           Home / Property for Rent in Gurgaon / Flats for Rent in Gurgaon / Flats for Rent in Sector 49 /  4 Bedroom 2337 Sq.Ft. Apartment in Sector 49 Gurgaon
         </div>
-        <div className="text-4xl mb-8 rounded-lg font-semibold text-white">
+        <h2 className="text-4xl mb-8 rounded-lg font-semibold text-white">
           Property Details
-        </div>
+        </h2>
         <div className="mx-auto w-full">
           <div className="rounded-2xl border border-border bg-white p-4 shadow-sm lg:p-8">
             <div className="flex flex-col gap-4 pb-2 sm:flex-row sm:items-center sm:justify-between">
@@ -625,8 +626,8 @@ export default function ListingDetailsPage() {
               </div>
 
               <div className="text-left sm:text-right">
-                <p className="text-3xl font-semibold leading-none text-blue">{currentPriceLabel}</p>
-                <p className="mt-2.5 text-xs text-text-gray">{depositLabel}</p>
+                <p className="text-3xl font-bold leading-none text-blue">{currentPriceLabel}</p>
+                <p className="mt-3 text-xs font-medium text-text-gray">{depositLabel}</p>
               </div>
             </div>
 
@@ -650,9 +651,9 @@ export default function ListingDetailsPage() {
                 />
                 <button
                   type="button"
-                  className="absolute right-3 top-3 inline-flex items-center gap-2 rounded-lg bg-white/90 px-3 py-1.5 text-xs font-medium text-text-black"
+                  className="absolute right-3 top-3 inline-flex items-center gap-2 rounded-lg bg-white/95 px-3 py-2 text-xs font-medium text-text-black"
                 >
-                  <Heart className="h-3.5 w-3.5" />
+                  <Share2 className="h-3.5 w-3.5" />
                   Share
                 </button>
               </div>
@@ -686,7 +687,7 @@ export default function ListingDetailsPage() {
               {quickFactsData.map((fact) => (
                 <div
                   key={fact.label}
-                  className="inline-flex items-center gap-2 rounded-md border border-border bg-background-gray px-2.5 py-2 text-[13px] text-text-black"
+                  className="inline-flex items-center gap-2 rounded-md border border-border bg-background-gray px-2.5 py-2 text-[13px] text-text-black pr-4"
                 >
                   <span className="flex w-[30px] h-[30px] justify-center items-center rounded-md bg-white">{fact.icon}</span>
                   <span>{fact.label}</span>
@@ -694,7 +695,7 @@ export default function ListingDetailsPage() {
               ))}
             </div>
 
-            <div className="mt-5 border-b border-border bg-background-gray rounded-sm p-5">
+            <div className="mt-4 border-b border-border bg-background-gray rounded-sm p-5">
               <nav className=" overflow-x-auto rounded-md bg-white text-sm">
                 <div className="flex w-max min-w-full items-center">
                   {[
@@ -961,7 +962,7 @@ export default function ListingDetailsPage() {
                     <h2 className="text-lg font-semibold text-text-black">Ratings and Reviews</h2>
                     <div className="mt-4 rounded-xl bg-white p-4 sm:p-6">
                       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[220px_1fr]">
-                        <div className="lg:border-r lg:border-[#CFCFD2] lg:pr-6  ">
+                        <div className="lg:border-r lg:border-[#CFCFD2] lg:pr-5  ">
 
                           <div className="flex flex-col items-center">
                             <p className="text-3xl font-semibold leading-none text-text-black">
@@ -992,10 +993,10 @@ export default function ListingDetailsPage() {
                                       style={{ width: `${pct}%` }}
                                     />
                                   </div>
-                                  <span className="min-w-10 text-right text-xs text-text-gray">
+                                  <span className="min-w-4 text-right text-[13px] text-text-gray">
                                     {star}
                                   </span>
-                                  <Star className="h-3.5 w-3.5 fill-[#8D8D91] text-[#8D8D91]" />
+                                  <Star className="h-3 w-3 fill-[#8D8D91] text-[#8D8D91]" />
                                 </div>
                               );
                             })}
@@ -1004,23 +1005,23 @@ export default function ListingDetailsPage() {
 
                         <div>
                           <h3 className="text-md font-semibold text-text-black">Ratings by features</h3>
-                          <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 border-b border-[#CFCFD2] pb-4">
+                          <div className="mt-3 flex flex-wrap gap-x-8 gap-y-1 border-b border-[#CFCFD2] pb-4">
                             {[
-                              { icon: <CarFront className="h-4 w-4" />, label: "Connectivity", score: apiRatings?.featureRatings?.connectivity },
-                              { icon: <MapPin className="h-4 w-4" />, label: "Neighbourhood", score: apiRatings?.featureRatings?.neighbourhood },
-                              { icon: <ShieldCheck className="h-4 w-4" />, label: "Safety", score: apiRatings?.featureRatings?.safety },
-                              { icon: <Trees className="h-4 w-4" />, label: "Livability", score: apiRatings?.featureRatings?.livability },
+                              { icon: <CarFront className="h-5 w-5" />, label: "Connectivity", score: apiRatings?.featureRatings?.connectivity },
+                              { icon: <MapPin className="h-5 w-5" />, label: "Neighbourhood", score: apiRatings?.featureRatings?.neighbourhood },
+                              { icon: <ShieldCheck className="h-5 w-5" />, label: "Safety", score: apiRatings?.featureRatings?.safety },
+                              { icon: <Trees className="h-5 w-5" />, label: "Livability", score: apiRatings?.featureRatings?.livability },
                             ].map((feature) => (
                               <div
                                 key={feature.label}
-                                className="inline-flex items-center gap-1"
+                                className="inline-flex items-center gap-2"
                               >
-                                <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-[#F0BC00] text-[#05085E]">
+                                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#F0BC00] text-[#05085E]">
                                   {feature.icon}
                                 </span>
                                 <div className="min-w-0 leading-none">
-                                  <p className="text-xs text-text-black">{feature.label}</p>
-                                  <p className="mt-1 text-xs font-semibold text-[#05085E]">
+                                  <p className="text-[14px] text-gray-600">{feature.label}</p>
+                                  <p className="mt-0.5 text-xs font-semibold text-[#05085E]">
                                     {feature.score != null ? `${feature.score}/5` : "—"}
                                   </p>
                                 </div>
@@ -1034,7 +1035,7 @@ export default function ListingDetailsPage() {
                               {(apiRatings?.likes?.length ? apiRatings.likes : goodThings).map((item) => (
                                 <span
                                   key={item}
-                                  className="rounded-full bg-[#E7E7E9] px-3 py-1.5 text-xs text-text-black"
+                                  className="rounded-full bg-[#f5f5f5] px-3 py-1.5 text-xs text-gray-600"
                                 >
                                   {item}
                                 </span>
@@ -1048,7 +1049,7 @@ export default function ListingDetailsPage() {
                               {(apiRatings?.dislikes?.length ? apiRatings.dislikes : badThings).map((item) => (
                                 <span
                                   key={item}
-                                  className="rounded-full bg-[#E7E7E9] px-3 py-1.5 text-xs text-text-black"
+                                  className="rounded-full bg-[#f5f5f5] px-3 py-1.5 text-xs text-gray-600"
                                 >
                                   {item}
                                 </span>
@@ -1078,22 +1079,22 @@ export default function ListingDetailsPage() {
                           </div>
                         </div>
 
-                        <div className="mt-5 grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">
+                        <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                           {currentReviews.map((review) => (
                             <article
                               key={review.id}
-                              className="rounded-xl border border-border bg-[#F8F8F9] p-4"
+                              className="rounded-xl border border-border p-4"
                             >
-                              <div className="flex items-start gap-3">
+                              <div className="flex items-center gap-3">
                                 <Image
                                   src={review.avatar}
                                   alt={review.name}
-                                  width={46}
-                                  height={46}
-                                  className="h-[46px] w-[46px] rounded-full object-cover"
+                                  width={54}
+                                  height={54}
+                                  className="h-[50px] w-[50px] rounded-full object-cover"
                                 />
                                 <div>
-                                  <p className="text-sm font-semibold leading-none text-text-black">
+                                  <p className="text-md font-semibold leading-none text-text-black">
                                     {review.name}
                                   </p>
                                   <p className="mt-1 text-xs text-text-gray">{review.role}</p>
@@ -1109,13 +1110,13 @@ export default function ListingDetailsPage() {
                                 ))}
                               </div>
 
-                              <p className="mt-4 min-h-[78px] text-sm leading-[36px] text-text-gray">
+                              <p className="mt-4 min-h-[78px] text-sm leading-[26px] text-text-gray">
                                 {review.review}
                               </p>
 
                               <button
                                 type="button"
-                                className="mt-4 text-xs font-semibold text-[#05085E] underline underline-offset-4"
+                                className="mt-4 text-sm font-semibold text-[#05085E] underline underline-offset-4"
                               >
                                 Read More
                               </button>

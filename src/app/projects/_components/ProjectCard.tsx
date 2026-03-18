@@ -246,7 +246,7 @@ export default function ProjectCard({
 
   return (
     <div
-      className="group cursor-pointer overflow-hidden rounded-2xl bg-[#f5f5f5] shadow-sm transition will-change-transform hover:-translate-y-[1px] hover:shadow-md"
+      className="group cursor-pointer overflow-hidden rounded-lg bg-[#f5f5f5] shadow-sm transition will-change-transform hover:-translate-y-[1px] hover:shadow-md"
       role="link"
       tabIndex={0}
       
@@ -316,7 +316,7 @@ export default function ProjectCard({
             {typeof project.plotAreaSqYd === "number" && (
               <>
                 <FeaturePill
-                  icon={<Maximize2 className="h-5 w-5" />}
+                  icon={<Image src="/assets/app/area.svg" width={20} height={20} alt="area" className="h-6 w-6" />}
                   label={`${project.plotAreaSqYd} Sq.Yd. (Plot Area)`}
                 />
                 <span className="hidden h-8 w-px bg-border sm:block" />
@@ -325,7 +325,7 @@ export default function ProjectCard({
             {typeof project.bedrooms === "number" && project.bedrooms > 0 && (
               <>
                 <FeaturePill
-                  icon={<BedDouble className="h-5 w-5" />}
+                  icon={<Image src="/assets/app/bed.svg" width={20} height={20} alt="area" className="h-6 w-6" />}
                   label={`${project.bedrooms}Bhk`}
                 />
                 <span className="hidden h-8 w-px bg-border md:block" />
@@ -334,7 +334,7 @@ export default function ProjectCard({
             {project.view && (
               <>
                 <FeaturePill
-                  icon={<Trees className="h-5 w-5" />}
+                  icon={<Trees className="h-6 w-6" />}
                   label={project.view}
                 />
                 <span className="hidden h-8 w-px bg-border lg:block" />
@@ -342,7 +342,7 @@ export default function ProjectCard({
             )}
             {project.furnishing && (
               <FeaturePill
-                icon={<Sofa className="h-5 w-5" />}
+                icon={<Image src="/assets/app/sofa.svg" width={20} height={20} alt="area" className="h-6 w-6" />}
                 label={
                   project.furnishing === "semi-furnished"
                     ? "Semi-Furnished"
@@ -399,7 +399,14 @@ export default function ProjectCard({
               {project.agent?.name ?? "KMA Expert"}
             </div>
             {project.agent?.badge ? (
-              <div className="mt-0.5 inline-flex items-center rounded-md bg-[#D08A2F] px-2.5 py-1 text-[12px] text-white">
+              <div className="mt-1 gap-1 inline-flex items-center rounded-md bg-[#C75C10] px-2.5 py-1 text-[13px] text-white">
+                <Image
+                src='/assets/app/shield.svg'
+                width={20}
+                height={20}
+                alt="Shield"
+                className="w-4 h-4 "
+                />
                 {project.agent.badge}
               </div>
             ) : null}
