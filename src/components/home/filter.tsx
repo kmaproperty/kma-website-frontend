@@ -69,12 +69,34 @@ export default function Filter() {
 
     setCitySelectionError(false)
 
-    const listId = Array.isArray(propertyMasterData)
-      ? propertyMasterData.find(item => item.code == filterType)?.id
-      : null;
-
+    const masterData = Array.isArray(propertyMasterData) ? propertyMasterData : [];
     const params = new URLSearchParams();
-    if (listId) params.set('listingTypeId', listId);
+
+    if (filterType === 'sale' || filterType === 'rent') {
+      const listId = masterData.find(item => item.code == filterType)?.id;
+      if (listId) params.set('listingTypeId', listId);
+    } else if (filterType === 'commercial') {
+      for (const lt of masterData) {
+        const cat = lt.categories?.find(c => c.code === 'commercial');
+        if (cat) { params.set('categoryIds', cat.id); break; }
+      }
+    } else if (filterType === 'plot_land') {
+      const plotIds: string[] = [];
+      for (const lt of masterData) {
+        for (const cat of (lt.categories ?? [])) {
+          for (const pt of (cat.propertyTypes ?? [])) {
+            const name = pt.name?.toLowerCase() ?? '';
+            if (name.includes('plot') || name.includes('land') || name.includes('agricultural')) {
+              plotIds.push(pt.id);
+            }
+          }
+        }
+      }
+      if (plotIds.length > 0 && selectedPropertyType.length === 0) {
+        params.set('propertyTypeIds', plotIds.join(','));
+      }
+    }
+
     if (deferredSearch) params.set('search', deferredSearch);
     if (selectedPropertyType.length > 0) params.set('propertyTypeIds', selectedPropertyType.map(item => item.id).join(','));
     if (selectedFurnishType.length > 0) params.set('furnishingTypes', selectedFurnishType.map(item => item.value).join(','));
@@ -103,15 +125,44 @@ export default function Filter() {
       transactionBy?.value ?? null,
     ],
     queryFn: () => {
-      const listId = Array.isArray(propertyMasterData)
-        ? propertyMasterData.find(item => item.code == filterType)?.id
-        : null
+      // "sale" and "rent" are listing types; "plot_land" and "commercial" are categories
+      const masterData = Array.isArray(propertyMasterData) ? propertyMasterData : [];
+      let listId: string | null = null;
+      let categoryIds: string | null = null;
+      let plotPropertyTypeIds: string | null = null;
+
+      if (filterType === 'sale' || filterType === 'rent') {
+        listId = masterData.find(item => item.code == filterType)?.id ?? null;
+      } else if (filterType === 'commercial') {
+        // Commercial is a category — find the commercial category ID
+        for (const lt of masterData) {
+          const cat = lt.categories?.find(c => c.code === 'commercial');
+          if (cat) { categoryIds = cat.id; break; }
+        }
+      } else if (filterType === 'plot_land') {
+        // Plot & Land — find all plot/land property type IDs
+        const plotIds: string[] = [];
+        for (const lt of masterData) {
+          for (const cat of (lt.categories ?? [])) {
+            for (const pt of (cat.propertyTypes ?? [])) {
+              const name = pt.name?.toLowerCase() ?? '';
+              if (name.includes('plot') || name.includes('land') || name.includes('agricultural')) {
+                plotIds.push(pt.id);
+              }
+            }
+          }
+        }
+        if (plotIds.length > 0) plotPropertyTypeIds = plotIds.join(',');
+      }
+
       let payload: GetPropertiesCountPayload = {
         page: '1',
         limit: '5',
         ...(selectedCity?.id ? {cityId: selectedCity?.id ?? null,} : {}),
         ...(deferredSearch ? {search: deferredSearch ?? null,} : {}),
-        ...(listId ? {listingTypeIds: listId ?? null,} : {}),
+        ...(listId ? {listingTypeIds: listId,} : {}),
+        ...(categoryIds ? {categoryIds: categoryIds,} : {}),
+        ...(plotPropertyTypeIds && selectedPropertyType.length === 0 ? {propertyTypeIds: plotPropertyTypeIds,} : {}),
         ...(selectedPropertyType.length > 0 ? {propertyTypeIds: selectedPropertyType.map(item => item.id).join(',') ?? '',} : {}),
         ...(selectedFurnishType.length > 0 ? {furnishingTypes: selectedFurnishType.map(item => item.value).join(',') ?? '',} : {}),
         ...(selectedPossessionStatus.length > 0 ? {constructionStatuses: selectedPossessionStatus.map(item => item.value).join(',') ?? '',} : {}),

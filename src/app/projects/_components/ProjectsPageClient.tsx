@@ -233,6 +233,11 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
       patch.furnishingTypeId = furnishingTypes.split(',')[0] || null;
     }
 
+    const categoryIds = searchParams.get('categoryIds');
+    if (categoryIds) {
+      patch.categoryId = categoryIds.split(',')[0] || null;
+    }
+
     if (Object.keys(patch).length > 0) {
       setFilters(patch);
     }
