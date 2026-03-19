@@ -164,7 +164,7 @@ export default function ProfileView({ userRole }: ProfileViewProps) {
               />
               <div className="min-w-0">
                 <p className="text-[15px] leading-5 font-semibold text-[#101828] truncate">{user?.name || "User"}</p>
-                <p className="text-xs leading-4 text-[#667085] truncate">{user?.phone ? `+91 ${user.phone}` : ""}</p>
+                <p className="text-xs leading-4 text-[#667085] truncate">{user?.phone ? (user.phone.startsWith('+') ? user.phone : `+91 ${user.phone}`) : ""}</p>
               </div>
             </div>
             <button

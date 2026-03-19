@@ -806,9 +806,7 @@ export default function ListingDetailsPage() {
                 <main className="space-y-5">
                   <section className="rounded-xl">
                     <h2 className="text-xl font-semibold text-text-black">Key highlights</h2>
-                    <p className="mt-3 text-sm leading-6 text-text-gray">
-                      {propertyDescription}
-                    </p>
+                    <div className="mt-3 text-sm leading-6 text-text-gray" dangerouslySetInnerHTML={{ __html: propertyDescription }} />
                     <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-text-gray">
                       <li>
                         Located on the 9th floor in a 14-storey building with one
@@ -1441,10 +1439,12 @@ export default function ListingDetailsPage() {
                     const specialistFirm = asString(cp?.firmName) ?? "KMA Real Partner";
                     const specialistImage = toFullAssetUrl(cp?.profileImage) || "/assets/profile.png";
                     const phone = asString(cp?.phone);
+                    const cleanPhone = phone?.replace(/\D/g, "") ?? "";
+                    const normalizedPhone = cleanPhone.startsWith("91") && cleanPhone.length > 10 ? cleanPhone : `91${cleanPhone}`;
                     const whatsappHref = phone
-                      ? `https://wa.me/91${phone.replace(/\D/g, "")}`
+                      ? `https://wa.me/${normalizedPhone}`
                       : "https://wa.me/919056580022";
-                    const telHref = phone ? `tel:+91${phone.replace(/\D/g, "")}` : undefined;
+                    const telHref = phone ? `tel:+${normalizedPhone}` : undefined;
                     return (
                       <>
                         <div className="mt-4 flex items-center gap-3 rounded-lg py-3">

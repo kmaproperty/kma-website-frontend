@@ -235,10 +235,10 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
                     />
                   </span>
                   <a
-                    href={aboutusData?.phoneNumber ? `tel:+91${aboutusData.phoneNumber}` : undefined}
+                    href={aboutusData?.phoneNumber ? `tel:${aboutusData.phoneNumber.startsWith('+') ? aboutusData.phoneNumber : `+91${aboutusData.phoneNumber}`}` : undefined}
                     className="hover:text-white"
                   >
-                    +91 {aboutusData?.phoneNumber ?? ""}
+                    {aboutusData?.phoneNumber ? (aboutusData.phoneNumber.startsWith('+') ? aboutusData.phoneNumber : `+91 ${aboutusData.phoneNumber}`) : ""}
                   </a>
                 </li>
                 <li className="flex items-start gap-3">

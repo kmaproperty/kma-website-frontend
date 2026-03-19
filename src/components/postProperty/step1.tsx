@@ -1196,6 +1196,12 @@ export default function Step1({containerRef}) {
       }))
 
       dispatch(setTotalProgress({progress: step1Details.progressPercentage}))
+
+      // Restore the correct step on page refresh based on completionStep from API
+      if(step1Details.completionStep && step1Details.completionStep >= 1){
+        const nextStep = Math.min(step1Details.completionStep + 1, 4)
+        dispatch(setActiveStep({step: nextStep}))
+      }
     }
   },[step1Details])
 
@@ -1265,7 +1271,7 @@ export default function Step1({containerRef}) {
               return(
                 <ChipTag
                   checked={item.code == basicStaticDetails.propertyListFor?.code}
-                  label={item.name}
+                  label={item.name === 'Sale' ? 'Sell' : item.name === 'Rent' ? 'Rent & Lease' : item.name}
                   onChagne={() => {
                     if(basicStaticDetails?.propertyListFor?.code == item.code) return
                     const initialFn = () => {

@@ -81,9 +81,9 @@ export default function AboutUsSection() {
             className="flex flex-col gap-3 2md:pr-6"
             animate={isInView ? "visible" : "hidden"}
           >
-            <div className="w-fit text-black bg-white px-2 py-1 text-xs rounded-[5px]">
+            <p className="w-fit text-white text-xs">
               About Us
-            </div>
+            </p>
             <div>
               <p className="text-xl text-white text-wrap font-semibold">
                 {aboutus?.aboutUs?.heading}

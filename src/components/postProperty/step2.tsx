@@ -682,6 +682,18 @@ export default function Step2({containerRef}) {
     }
   }
 
+  const getBrokerageChipLabel = (item: {name: string, value: string}) => {
+    const isSell = basicStaticDetail.propertyListFor?.code == 'sale'
+    if(isSell){
+      const labelMap: Record<string, string> = {
+        '15_days': '1%',
+        '30_days': '2%',
+      }
+      return labelMap[item.value] ?? item.name
+    }
+    return item.name
+  }
+
   //Validation
   const validate = () => {
     const isResidential = basicStaticDetail.propertyCategory?.code == 'residential'
@@ -2114,7 +2126,7 @@ export default function Step2({containerRef}) {
                 return(
                   <ChipTag
                     checked={item.value == dynamicFieldDetails.brokerageCharge}
-                    label={item.name}
+                    label={getBrokerageChipLabel(item)}
                     onChagne={() => {
                       setDynamicFieldDetails((pre) => ({...pre, brokerageCharge: item.value, otherBrokerageCharge: null, isBrokerageNegotiable: false }))
                       setErrors((pre) => ({...pre, brokerageCharge: ''}))
