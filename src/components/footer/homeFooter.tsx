@@ -1,11 +1,12 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { useSelector } from "react-redux";
 import { getAboutusData, getSelectedCity, getPropertyMasterData } from "@/store/homeHeaderSlice";
+import { useEndUserProperties } from "@/api/hooks/useEndUserProperties";
 
 const rightVariant = {
   hidden: { x: "100%", opacity: 0 },
@@ -73,11 +74,47 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
 
   const isRentTab = footerTab === "1";
   const propertyVerb = isRentTab ? "rent" : "sale";
-  const residentialList = isRentTab
+  const rawResidentialList = isRentTab
     ? residentialRentProperty
     : residentialSaleProperty;
-  const commercialList = isRentTab ? commercialRentProperty : commercialSaleProperty;
+  const rawCommercialList = isRentTab ? commercialRentProperty : commercialSaleProperty;
   const citySuffix = selectedCity?.name ? `in ${selectedCity.name}` : "";
+
+  // Fetch properties for selected city + listing type to filter property types with 0 results
+  const listingTypeId = isRentTab
+    ? propertyMasterData?.find((item) => item.code == "rent")?.id
+    : propertyMasterData?.find((item) => item.code == "sale")?.id;
+
+  const { data: footerProperties = [] } = useEndUserProperties(
+    {
+      cityId: selectedCity?.id,
+      listingTypeIds: listingTypeId ? [listingTypeId] : undefined,
+      limit: 100,
+      page: 1,
+    },
+    { enabled: !!selectedCity?.id && !!listingTypeId }
+  );
+
+  const availablePropertyTypeIds = useMemo(() => {
+    const ids = new Set<string>();
+    for (const p of footerProperties) {
+      const ptId = typeof p.propertyType === 'object' && p.propertyType?.id
+        ? p.propertyType.id
+        : p.propertyTypeId;
+      if (ptId) ids.add(ptId);
+    }
+    return ids;
+  }, [footerProperties]);
+
+  const residentialList = useMemo(() => {
+    if (!selectedCity?.id || availablePropertyTypeIds.size === 0) return rawResidentialList;
+    return rawResidentialList.filter(item => availablePropertyTypeIds.has(item.id));
+  }, [rawResidentialList, availablePropertyTypeIds, selectedCity?.id]);
+
+  const commercialList = useMemo(() => {
+    if (!selectedCity?.id || availablePropertyTypeIds.size === 0) return rawCommercialList;
+    return rawCommercialList.filter(item => availablePropertyTypeIds.has(item.id));
+  }, [rawCommercialList, availablePropertyTypeIds, selectedCity?.id]);
 
   return (
     <footer className="w-full bg-text-black">

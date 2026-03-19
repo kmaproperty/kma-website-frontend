@@ -232,8 +232,9 @@ export default function Filter() {
           </div>
           <div className="flex-1">
             <button
-              className="animated-button px-[30px] py-[9px] cursor-pointer ml-2 h-full w-[calc(100%-0.5rem)]"
+              className={`animated-button px-[30px] py-[9px] ml-2 h-full w-[calc(100%-0.5rem)] ${explorePropertyCount === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
               onClick={handleSearchClick}
+              disabled={explorePropertyCount === 0}
             >
               <span className="flex items-center justify-center gap-[6px] relative z-11">
                 <Image
@@ -433,7 +434,7 @@ export default function Filter() {
           </div>}
         </div>
         <div className="2md:hidden flex-1 mt-2">
-            <button onClick={handleSearchClick} className="animated-button px-[30px] py-[9px] cursor-pointer ml-2 h-full w-[calc(100%-0.5rem)]">
+            <button onClick={handleSearchClick} disabled={explorePropertyCount === 0} className={`animated-button px-[30px] py-[9px] ml-2 h-full w-[calc(100%-0.5rem)] ${explorePropertyCount === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
               <span className="flex items-center justify-center gap-[6px] relative z-11">
                 <Image
                   src="/assets/white-search.svg"
