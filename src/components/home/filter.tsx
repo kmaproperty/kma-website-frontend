@@ -68,7 +68,23 @@ export default function Filter() {
     }
 
     setCitySelectionError(false)
-    window.location.href = `/projects/${selectedCity.id}`;
+
+    const listId = Array.isArray(propertyMasterData)
+      ? propertyMasterData.find(item => item.code == filterType)?.id
+      : null;
+
+    const params = new URLSearchParams();
+    if (listId) params.set('listingTypeId', listId);
+    if (deferredSearch) params.set('search', deferredSearch);
+    if (selectedPropertyType.length > 0) params.set('propertyTypeIds', selectedPropertyType.map(item => item.id).join(','));
+    if (selectedFurnishType.length > 0) params.set('furnishingTypes', selectedFurnishType.map(item => item.value).join(','));
+    if (selectedPossessionStatus.length > 0) params.set('constructionStatuses', selectedPossessionStatus.map(item => item.value).join(','));
+    if (selectedMinBudget) params.set('minPrice', String(selectedMinBudget.value));
+    if (selectedMaxBudget) params.set('maxPrice', String(selectedMaxBudget.value));
+    if (selectedPostedBy.length > 0) params.set('postedBy', selectedPostedBy.map(item => item.value).join(','));
+
+    const qs = params.toString();
+    window.location.href = `/projects/${selectedCity.id}${qs ? '?' + qs : ''}`;
   }
 
   const { data: explorePropertyCount } = useQuery({
