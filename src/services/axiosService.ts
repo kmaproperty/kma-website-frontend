@@ -14,32 +14,39 @@ const createCorrelationId = () => {
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 };
 
-// Read cookie directly from document.cookie (avoids round-trip to /api/get-token)
-const getCookie = (name: string): string | null => {
-  if (typeof document === "undefined") return null;
-  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
-  return match ? decodeURIComponent(match[1]) : null;
-};
-
-// Cache token to avoid reading cookie on every request
+// Cache the token from /api/get-token to avoid fetching on every request
 let cachedAccessToken: string | null = null;
 let tokenCacheTime = 0;
-const TOKEN_CACHE_MS = 5000; // cache for 5 seconds
+const TOKEN_CACHE_MS = 10_000; // cache for 10 seconds
+let tokenFetchPromise: Promise<string | null> | null = null;
 
-const getAccessToken = (): string | null => {
+const getAccessToken = async (): Promise<string | null> => {
   const now = Date.now();
-  if (cachedAccessToken && now - tokenCacheTime < TOKEN_CACHE_MS) {
+  if (cachedAccessToken !== null && now - tokenCacheTime < TOKEN_CACHE_MS) {
     return cachedAccessToken;
   }
-  cachedAccessToken = getCookie("accessToken");
-  tokenCacheTime = now;
-  return cachedAccessToken;
+  // Deduplicate concurrent fetches
+  if (!tokenFetchPromise) {
+    tokenFetchPromise = fetch("/api/get-token")
+      .then(res => res.json())
+      .then(data => {
+        cachedAccessToken = data.accessToken || null;
+        tokenCacheTime = Date.now();
+        tokenFetchPromise = null;
+        return cachedAccessToken;
+      })
+      .catch(() => {
+        tokenFetchPromise = null;
+        return null;
+      });
+  }
+  return tokenFetchPromise;
 };
 
-// Call this when token changes (login/logout)
 export const clearTokenCache = () => {
   cachedAccessToken = null;
   tokenCacheTime = 0;
+  tokenFetchPromise = null;
 };
 
 export const axiosInstance = axios.create({
@@ -51,9 +58,9 @@ export const axiosInstance = axios.create({
 
 // Request Interceptor: Attach access token
 axiosInstance.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
+  async (config: InternalAxiosRequestConfig) => {
     const sessionId = useSessionStore.getState().sessionId;
-    const accessToken = getAccessToken();
+    const accessToken = await getAccessToken();
     if (sessionId) {
       config.headers["X-Session-Id"] = sessionId;
     }
