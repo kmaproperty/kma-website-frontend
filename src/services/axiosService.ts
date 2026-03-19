@@ -14,6 +14,34 @@ const createCorrelationId = () => {
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 };
 
+// Read cookie directly from document.cookie (avoids round-trip to /api/get-token)
+const getCookie = (name: string): string | null => {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : null;
+};
+
+// Cache token to avoid reading cookie on every request
+let cachedAccessToken: string | null = null;
+let tokenCacheTime = 0;
+const TOKEN_CACHE_MS = 5000; // cache for 5 seconds
+
+const getAccessToken = (): string | null => {
+  const now = Date.now();
+  if (cachedAccessToken && now - tokenCacheTime < TOKEN_CACHE_MS) {
+    return cachedAccessToken;
+  }
+  cachedAccessToken = getCookie("accessToken");
+  tokenCacheTime = now;
+  return cachedAccessToken;
+};
+
+// Call this when token changes (login/logout)
+export const clearTokenCache = () => {
+  cachedAccessToken = null;
+  tokenCacheTime = 0;
+};
+
 export const axiosInstance = axios.create({
   baseURL: API_URL,
   headers: {
@@ -23,10 +51,9 @@ export const axiosInstance = axios.create({
 
 // Request Interceptor: Attach access token
 axiosInstance.interceptors.request.use(
-  async (config: InternalAxiosRequestConfig) => {
+  (config: InternalAxiosRequestConfig) => {
     const sessionId = useSessionStore.getState().sessionId;
-    const res = await fetch("/api/get-token");
-    const { accessToken } = await res.json();
+    const accessToken = getAccessToken();
     if (sessionId) {
       config.headers["X-Session-Id"] = sessionId;
     }
@@ -62,6 +89,7 @@ axiosInstance.interceptors.response.use(
         const newAccessToken = await handleRefreshToken();
         if (newAccessToken) {
           setAuthCookies(newAccessToken, refreshToken)
+          clearTokenCache();
           localStorage.setItem("accessToken", newAccessToken);
           originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
           return axiosInstance(originalRequest);
