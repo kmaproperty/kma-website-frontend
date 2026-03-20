@@ -221,9 +221,9 @@ export default function ChannelPartnerPageClient() {
   }, []);
 
   return (
-    <div className="w-full flex flex-col">
+    <div className="w-full flex flex-col mt-[150px]">
       {/* Hero */}
-      <div className="relative -mt-[120px] sm:-mt-[140px] md:-mt-[160px] mb-8 md:mb-10">
+      <div className="relative mt-[120px] sm:-mt-[140px] md:-mt-[160px] mb-8 md:mb-10">
         <div className="absolute inset-0 bg-blue rounded-b-[25px] sm:rounded-b-[60px] lg:rounded-b-[80px] xl:rounded-b-[100px]" />
         <div className="relative pt-6 pb-10 px-4 md:px-6 flex flex-col items-center">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white text-center mb-2">
