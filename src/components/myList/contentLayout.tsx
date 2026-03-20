@@ -56,7 +56,7 @@ export default function ContentLayout() {
           ...(filters.listingStatuses.length > 0 ? {listingStatuses: filters.listingStatuses.join(','),} : {}),
           ...(filters.verificationStatuses.length > 0 ? {verificationStatuses: filters.verificationStatuses.join(','),} : {}),
           ...(filters.projectStatuses.length > 0 ? {projectStatuses: filters.projectStatuses.join(','),} : {}),
-          ...(filters.statuses.length < 0 ? {statuses: filters.statuses.join(','),} : {}),
+          ...(filters.statuses.length > 0 ? {statuses: filters.statuses.join(','),} : {}),
           ...(topStatusFilter ? {filter: topStatusFilter} : null),
           minPrice: String(filters.minPrice),
           maxPrice: String(filters.maxPrice),

@@ -288,14 +288,33 @@ export default function Filter() {
                 }}
               />
             </div>
-            <div>
+            <button
+              type="button"
+              className="cursor-pointer"
+              title="Detect my location"
+              onClick={() => {
+                if (!navigator.geolocation) {
+                  toast.error("Geolocation is not supported by your browser")
+                  return
+                }
+                navigator.geolocation.getCurrentPosition(
+                  (position) => {
+                    setSearch(`${position.coords.latitude},${position.coords.longitude}`)
+                    toast.success("Location detected successfully")
+                  },
+                  (error) => {
+                    toast.error("Unable to detect location. Please allow location access.")
+                  }
+                )
+              }}
+            >
               <Image
                 src="/assets/blue-location-tracker.svg"
                 width={20}
                 height={20}
                 alt="Location finder"
               />
-            </div>
+            </button>
           </div>
           <div className="flex-1">
             <button
@@ -397,14 +416,33 @@ export default function Filter() {
                 }}
               />
             </div>
-            <div>
+            <button
+              type="button"
+              className="cursor-pointer"
+              title="Detect my location"
+              onClick={() => {
+                if (!navigator.geolocation) {
+                  toast.error("Geolocation is not supported by your browser")
+                  return
+                }
+                navigator.geolocation.getCurrentPosition(
+                  (position) => {
+                    setSearch(`${position.coords.latitude},${position.coords.longitude}`)
+                    toast.success("Location detected successfully")
+                  },
+                  (error) => {
+                    toast.error("Unable to detect location. Please allow location access.")
+                  }
+                )
+              }}
+            >
               <Image
                 src="/assets/blue-location-tracker.svg"
                 width={20}
                 height={20}
                 alt="Location finder"
               />
-            </div>
+            </button>
           </div>
         </div>
         <div className="flex justify-center gap-3 pt-2 2md:pt-3">

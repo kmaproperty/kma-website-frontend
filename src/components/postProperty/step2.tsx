@@ -688,10 +688,16 @@ export default function Step2({containerRef}) {
       const labelMap: Record<string, string> = {
         '15_days': '1%',
         '30_days': '2%',
+        'custom': 'Custom %',
       }
       return labelMap[item.value] ?? item.name
     }
-    return item.name
+    const rentLabelMap: Record<string, string> = {
+      '15_days': '50%',
+      '30_days': '100%',
+      'custom': 'Custom %',
+    }
+    return rentLabelMap[item.value] ?? item.name
   }
 
   //Validation
@@ -2459,7 +2465,7 @@ export default function Step2({containerRef}) {
                 return(
                   <ChipTag
                     checked={item.value == dynamicFieldDetails.brokerageCharge}
-                    label={item.name}
+                    label={getBrokerageChipLabel(item)}
                     onChagne={() => {
                       setDynamicFieldDetails((pre) => ({...pre, brokerageCharge: item.value, otherBrokerageCharge: null, isBrokerageNegotiable: false}))
                       setErrors((pre) => ({...pre, brokerageCharge: ''}))
