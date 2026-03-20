@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useId, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import {
   getChannelPartnerListApiHandler,
   type ChannelPartner,
@@ -68,10 +69,14 @@ function Star({
 function ChannelPartnerCard({
   partner,
   onContact,
+  onOpenDetails,
 }: {
   partner: ChannelPartner;
   onContact?: (partner: ChannelPartner) => void;
+  onOpenDetails?: (partner: ChannelPartner) => void;
 }) {
+  const handleOpenDetails = () => onOpenDetails?.(partner);
+
   const profileSrc = joinUrl(PROFILE_BASE, partner.profile_image);
   const rating = Number(partner.rating ?? 4.2);
   const ratingText = Number.isFinite(rating) ? rating.toFixed(1) : "4.2";
@@ -81,7 +86,18 @@ function ChannelPartnerCard({
     .filter(Boolean) ?? [];
 
   return (
-    <article className="bg-white rounded-2xl border border-[#EEF0F4] shadow-[0_6px_24px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col">
+    <article
+      className="bg-white rounded-2xl border border-[#EEF0F4] shadow-[0_6px_24px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col cursor-pointer transition hover:shadow-[0_10px_40px_rgba(0,0,0,0.09)]"
+      role="button"
+      tabIndex={0}
+      onClick={handleOpenDetails}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleOpenDetails();
+        }
+      }}
+    >
       <div className="relative aspect-square w-full bg-[#F2F2F2]">
         {profileSrc ? (
           <Image
@@ -128,7 +144,11 @@ function ChannelPartnerCard({
         </p>
         <button
           type="button"
-          onClick={() => onContact?.(partner)}
+          onClick={(e) => {
+            // Keep this button action isolated from card navigation.
+            e.stopPropagation();
+            onContact?.(partner);
+          }}
           className="mt-4 w-full py-3 px-6 rounded-xl bg-blue text-white font-semibold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
         >
           <Image
@@ -146,6 +166,7 @@ function ChannelPartnerCard({
 
 export default function ChannelPartnerPageClient() {
   const selectedCity = useSelector(getSelectedCity);
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [filterOpen, setFilterOpen] = useState(false);
@@ -163,6 +184,13 @@ export default function ChannelPartnerPageClient() {
     page: String(page),
     limit: String(DEFAULT_PAGE_SIZE),
   };
+
+  const handleOpenDetails = useCallback(
+    (p: ChannelPartner) => {
+      router.push(`/channel-partner/${encodeURIComponent(p.id)}`);
+    },
+    [router]
+  );
 
   const { data, isLoading } = useQuery<
     GetChannelPartnerListResponse,
@@ -293,6 +321,7 @@ export default function ChannelPartnerPageClient() {
               key={partner.id ?? `${partner.name}-${index}`}
               partner={partner}
               onContact={() => setContactPopupOpen(true)}
+              onOpenDetails={handleOpenDetails}
             />
           ))}
         </div>
