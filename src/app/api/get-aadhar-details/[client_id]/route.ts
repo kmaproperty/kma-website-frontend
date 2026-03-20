@@ -10,7 +10,6 @@ export async function GET(request: Request,{ params }: { params: { client_id: st
         { status: 500 }
       );
     }
-    console.log('params.client_id', params, params)
     const res = await fetch(`${baseUrl}/api/v1/digilocker/download-aadhaar/${params.client_id}`, {
       method: "GET",
       headers: {
