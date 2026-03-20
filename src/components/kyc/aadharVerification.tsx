@@ -58,7 +58,6 @@ export default function AadharVerification(){
   const fetchAadhar = async (id) => {
     const res = await fetch(`/api/get-aadhar-details/${id}`)
     const data = await res.json();
-    console.log('res', data)
     if(data?.status_code == 200){
       const aadharData = data?.data
 
@@ -110,7 +109,6 @@ export default function AadharVerification(){
       cursor: "pointer",
     },
     onSuccess: (data: any) => {
-      console.log("Verified Successfully:", data);
        const clientId = data?.client_id;
        setVerificationStart(true)
       if (!clientId) {
