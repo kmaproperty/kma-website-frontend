@@ -865,7 +865,7 @@ export default function ChannelPartnerDetailsClient({
                 ) : null}
 
                 {/* Keep CTA available without cluttering tab header */}
-                <div className="mt-5 flex items-center justify-end">
+                {/* <div className="mt-5 flex items-center justify-end">
                   <button
                     type="button"
                     onClick={() => setContactPopupOpen(true)}
@@ -873,7 +873,7 @@ export default function ChannelPartnerDetailsClient({
                   >
                     Request Property Details
                   </button>
-                </div>
+                </div> */}
               </>
             ) : (
               <div className="mt-5 bg-white rounded-2xl border border-[#EEF0F4] shadow-[0_6px_24px_rgba(0,0,0,0.06)] p-5 sm:p-7">
