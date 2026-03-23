@@ -220,6 +220,14 @@ export default function ChannelPartnerPageClient() {
     setFilterOpen(false);
   }, []);
 
+  const handleClearFilters = useCallback(() => {
+    setFilterExperience("");
+    setFilterCity("");
+    setFilterProperties("");
+    setCitySearch("");
+    setPage(1);
+  }, []);
+
   return (
     <div className="w-full flex flex-col mt-[150px]">
       {/* Hero */}
@@ -381,7 +389,7 @@ export default function ChannelPartnerPageClient() {
               <h3 className="text-sm font-semibold text-text-black mb-4">
                 Filter Dropdown
               </h3>
-              <div className="space-y-3">
+              {/* <div className="space-y-3">
                 <div>
                   <label className="block text-xs font-medium text-text-gray mb-1">
                     By Experience
@@ -438,7 +446,7 @@ export default function ChannelPartnerPageClient() {
                     Apply
                   </button>
                 </div>
-              </div>
+              </div> */}
             </div>
 
             {/* Cities card */}
@@ -494,6 +502,23 @@ export default function ChannelPartnerPageClient() {
                   </button>
                 ))}
               </div>
+            </div>
+
+            <div className="mb-4 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={handleClearFilters}
+                className="rounded-lg border border-[#D9D9D9] bg-white px-4 py-2.5 text-sm font-semibold text-text-black hover:bg-[#F5F5F5] transition-colors"
+              >
+                Clear Filters
+              </button>
+              {/* <button
+                type="button"
+                onClick={handleApplyFilters}
+                className="rounded-lg bg-blue px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
+              >
+                Apply
+              </button> */}
             </div>
           </div>
         </>
