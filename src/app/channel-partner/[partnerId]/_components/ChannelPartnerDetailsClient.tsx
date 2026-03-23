@@ -3,10 +3,14 @@
 import Image from "next/image";
 import { useCallback, useEffect, useId, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 import {
   getChannelPartnerDetailsApiHandler,
+  getChannelPartnerReviews,
+  submitChannelPartnerReview,
   type ChannelPartner,
+  type GetCPReviewsResponse,
 } from "@/services/homeService";
 import { joinUrl } from "@/lib/helper";
 import ContactUsPopup from "@/components/contactUsPopup";
@@ -325,8 +329,8 @@ export default function ChannelPartnerDetailsClient({
   const [reviewModalMode, setReviewModalMode] = useState<
     "form" | "success"
   >("form");
-  const [reviewName, setReviewName] = useState("Meera");
-  const [reviewRole, setReviewRole] = useState("Teacher from India");
+  const [reviewName, setReviewName] = useState("");
+  const [reviewRole, setReviewRole] = useState("");
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewText, setReviewText] = useState("");
   const [likedOptions, setLikedOptions] = useState<string[]>([]);
@@ -341,53 +345,25 @@ export default function ChannelPartnerDetailsClient({
     createdAt: string;
   };
 
-  const [reviews, setReviews] = useState<PartnerReview[]>([
-    {
-      id: "r-1",
-      name: "Meera",
-      role: "Teacher from India",
-      rating: 5,
-      reviewText:
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      createdAt: "2025-05-25",
-    },
-    {
-      id: "r-2",
-      name: "Meera",
-      role: "Teacher from India",
-      rating: 5,
-      reviewText:
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      createdAt: "2025-05-25",
-    },
-    {
-      id: "r-3",
-      name: "Meera",
-      role: "Teacher from India",
-      rating: 5,
-      reviewText:
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      createdAt: "2025-05-25",
-    },
-    {
-      id: "r-4",
-      name: "Meera",
-      role: "Teacher from India",
-      rating: 5,
-      reviewText:
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      createdAt: "2025-05-25",
-    },
-    {
-      id: "r-5",
-      name: "Meera",
-      role: "Teacher from India",
-      rating: 5,
-      reviewText:
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      createdAt: "2025-05-25",
-    },
-  ]);
+  const queryClient = useQueryClient();
+
+  const { data: reviewsData } = useQuery<GetCPReviewsResponse>({
+    queryKey: ["channel-partner-reviews", partnerId],
+    queryFn: () => getChannelPartnerReviews(partnerId, { page: 1, limit: 50, sortBy: "newest" }),
+    enabled: Boolean(partnerId),
+  });
+
+  const reviews: PartnerReview[] = useMemo(() => {
+    if (!reviewsData?.reviews) return [];
+    return reviewsData.reviews.map((r) => ({
+      id: r.id,
+      name: r.reviewerName || "User",
+      role: "",
+      rating: r.rating,
+      reviewText: r.review,
+      createdAt: r.createdAt?.slice(0, 10) ?? "",
+    }));
+  }, [reviewsData]);
 
   const REVIEWS_PER_PAGE = 3;
 
@@ -446,11 +422,10 @@ export default function ChannelPartnerDetailsClient({
   const openReviewModal = () => {
     setReviewModalMode("form");
     setLikedOptions([]);
-    setReviewName("Meera");
-    setReviewRole("Teacher from India");
+    setReviewName("");
+    setReviewRole("");
     setReviewRating(5);
     setReviewText("");
-    setReviewPage(1);
     setReviewModalOpen(true);
   };
 
@@ -458,36 +433,49 @@ export default function ChannelPartnerDetailsClient({
     setReviewModalMode("form");
     setLikedOptions([]);
     setReviewModalOpen(false);
-    setReviewName("Meera");
-    setReviewRole("Teacher from India");
+    setReviewName("");
+    setReviewRole("");
     setReviewRating(5);
     setReviewText("");
-    setReviewPage(1);
   };
 
-  const submitReview = () => {
-    const name = reviewName.trim() || "Meera";
-    const role = reviewRole.trim() || "Teacher from India";
+  const { mutate: submitReviewMutation, isPending: isSubmittingReview } = useMutation({
+    mutationFn: (payload: { rating: number; review: string }) =>
+      submitChannelPartnerReview(partnerId, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["channel-partner-reviews", partnerId] });
+      setReviewModalMode("success");
+      setLikedOptions([]);
+      setReviewName("");
+      setReviewRole("");
+      setReviewRating(5);
+      setReviewText("");
+      setReviewPage(1);
+    },
+    onError: (error: any) => {
+      const message = error?.message || "Failed to submit review. Please try again.";
+      toast.error(Array.isArray(message) ? message.join(", ") : message);
+    },
+  });
+
+  const submitReview = async () => {
     const text = reviewText.trim();
     if (!text) return;
 
-    const next: PartnerReview = {
-      id: `r-${Date.now()}`,
-      name,
-      role: role || "User",
-      rating: reviewRating,
-      reviewText: text,
-      createdAt: new Date().toISOString().slice(0, 10),
-    };
+    // Check if user is logged in
+    try {
+      const res = await fetch("/api/get-token");
+      const data = await res.json();
+      if (!data?.accessToken) {
+        toast.error("Please login to submit a review.");
+        return;
+      }
+    } catch {
+      toast.error("Please login to submit a review.");
+      return;
+    }
 
-    setReviews((prev) => [next, ...prev]);
-    setReviewModalMode("success");
-    setLikedOptions([]);
-    setReviewName("Meera");
-    setReviewRole("Teacher from India");
-    setReviewRating(5);
-    setReviewText("");
-    setReviewPage(1);
+    submitReviewMutation({ rating: reviewRating, review: text });
   };
 
   const {
@@ -506,18 +494,19 @@ export default function ChannelPartnerDetailsClient({
     return partner ? joinUrl(PROFILE_BASE, partner.profile_image) : null;
   }, [partner]);
 
+  const apiAverageRating = reviewsData?.averageRating ?? null;
+
+  const ratingCount = reviewsData?.totalReviews ?? 0;
+
   const rating = useMemo(() => {
-    const v = Number(partner?.rating ?? 4.2);
-    return Number.isFinite(v) ? v : 4.2;
-  }, [partner]);
+    if (apiAverageRating != null && Number.isFinite(apiAverageRating)) return apiAverageRating;
+    const v = Number(partner?.rating ?? 0);
+    return Number.isFinite(v) ? v : 0;
+  }, [partner, apiAverageRating]);
 
   const ratingText = useMemo(() => {
-    return Number.isFinite(rating) ? rating.toFixed(1) : "4.2";
+    return Number.isFinite(rating) ? rating.toFixed(1) : "0.0";
   }, [rating]);
-
-  // API for rating-count isn't available in this endpoint yet,
-  // so we keep a stable placeholder to match the design.
-  const ratingCount = 8;
 
   const areasOfOperation = useMemo(() => {
     const list = partner?.areas_of_operation_list ?? null;
@@ -916,16 +905,10 @@ export default function ChannelPartnerDetailsClient({
                         { stars: 2, label: "2 *" },
                         { stars: 1, label: "1 *" },
                       ].map((row) => {
-                        // Fake distribution for now (until partner review stats API exists).
-                        const count = Math.max(
-                          0,
-                          Math.round(
-                            12 -
-                              (5 - row.stars) * 2 -
-                              (Math.max(0, 4.5 - rating) * 2)
-                          )
-                        );
-                        const pct = Math.min(100, Math.round((count / 12) * 100));
+                        const dist = reviewsData?.starDistribution ?? {};
+                        const count = Number(dist[String(row.stars)] ?? 0);
+                        const maxCount = Math.max(1, ratingCount);
+                        const pct = Math.min(100, Math.round((count / maxCount) * 100));
 
                         return (
                           <div key={row.stars} className="flex items-center gap-3">
@@ -1145,9 +1128,9 @@ export default function ChannelPartnerDetailsClient({
                               type="button"
                               onClick={submitReview}
                               className="px-6 py-2 rounded-full bg-[#0B1B54] text-white font-semibold text-sm hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
-                              disabled={!reviewText.trim()}
+                              disabled={!reviewText.trim() || isSubmittingReview}
                             >
-                              Submit
+                              {isSubmittingReview ? "Submitting..." : "Submit"}
                             </button>
                           </div>
                         </div>

@@ -1198,12 +1198,6 @@ export default function Step1({containerRef}) {
 
       dispatch(setTotalProgress({progress: step1Details.progressPercentage}))
 
-      // Restore the correct step on page refresh (only on initial load, not when user navigates manually)
-      if(!hasRestoredStepRef.current && step1Details.completionStep && step1Details.completionStep >= 1){
-        hasRestoredStepRef.current = true;
-        const nextStep = Math.min(step1Details.completionStep + 1, 4)
-        dispatch(setActiveStep({step: nextStep}))
-      }
     }
   },[step1Details])
 

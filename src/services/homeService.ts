@@ -507,3 +507,62 @@ export const getPropertiesCountApiHandler = async ({page,limit,cityId,search,lis
         throw error.response?.data ?? error;
     }
 }
+
+// ──── Channel Partner Reviews ────
+
+export interface CPReviewItem {
+    id: string;
+    reviewerName: string;
+    reviewerProfileImage: string | null;
+    rating: number;
+    review: string;
+    createdAt: string;
+}
+
+export interface GetCPReviewsResponse {
+    averageRating: number;
+    totalReviews: number;
+    starDistribution: Record<string, number>;
+    reviews: CPReviewItem[];
+}
+
+export interface GetCPReviewsPayload {
+    page?: number;
+    limit?: number;
+    sortBy?: string;
+}
+
+export const getChannelPartnerReviews = async (
+    cpId: string,
+    { page = 1, limit = 10, sortBy = "newest" }: GetCPReviewsPayload = {}
+): Promise<GetCPReviewsResponse> => {
+    try {
+        const response = await axiosInstance.get<GetCPReviewsResponse>(
+            `end-user/channel-partners/${cpId}/reviews`,
+            { params: { page, limit, sortBy } }
+        );
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data ?? error;
+    }
+};
+
+export interface SubmitCPReviewPayload {
+    rating: number;
+    review: string;
+}
+
+export const submitChannelPartnerReview = async (
+    cpId: string,
+    payload: SubmitCPReviewPayload
+): Promise<any> => {
+    try {
+        const response = await axiosInstance.post(
+            `end-user/channel-partners/${cpId}/review`,
+            payload
+        );
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data ?? error;
+    }
+};
