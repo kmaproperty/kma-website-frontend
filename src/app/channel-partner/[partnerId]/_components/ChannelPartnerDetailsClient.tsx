@@ -883,13 +883,16 @@ export default function ChannelPartnerDetailsClient({
                       {ratingText} / 5
                     </div>
                     <div className="mt-2 flex items-center gap-0.5">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <Star
-                          key={i}
-                          fill={Math.min(100, (rating / 5) * 100)}
-                          className="h-4 w-4 text-[#F7BB06]"
-                        />
-                      ))}
+                      {Array.from({ length: 5 }).map((_, i) => {
+                        const starFill = rating >= i + 1 ? 100 : rating > i ? Math.round((rating - i) * 100) : 0;
+                        return (
+                          <Star
+                            key={i}
+                            fill={starFill}
+                            className="h-4 w-4 text-[#F7BB06]"
+                          />
+                        );
+                      })}
                     </div>
                     <p className="mt-2 text-xs text-text-gray">
                       {reviews.length} Ratings and Reviews
