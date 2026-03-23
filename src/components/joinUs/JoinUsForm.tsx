@@ -60,7 +60,7 @@ const JoinUsForm = () => {
         </div>
         <div className='flex gap-4'>
           <input type="text" value={formValue.state} onChange={handleChange} name="state" placeholder='State' className='w-full border border-[#D9D9D9] rounded-full px-5 py-3' />
-          <input type="number" name="city" value={formValue.city} onChange={handleChange} placeholder='City' className='w-full border border-[#D9D9D9] rounded-full px-5 py-3' />
+          <input type="text" name="city" value={formValue.city} onChange={handleChange} placeholder='City' className='w-full border border-[#D9D9D9] rounded-full px-5 py-3' />
         </div>
         <div className='flex gap-4'>
             <input type="email" name="email" value={formValue.email} onChange={handleChange} placeholder='Email address' className='w-full border border-[#D9D9D9] rounded-full px-5 py-3' />
