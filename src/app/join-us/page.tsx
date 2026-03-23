@@ -49,10 +49,10 @@ const JoinUs = () => {
 
                 </div>
             </div>
-            <div className='relative flex items-center justify-between w-[90%] mx-auto max-w-[1440px] bg-white rounded-lg shadow-lg px-12 py-12 gap-8' style={{ transform: 'translateY(-25%)' }}>
+            <div className='relative flex items-center justify-between w-[90%] mx-auto max-w-[1440px] bg-white rounded-2xl shadow-lg px-16 py-15 gap-8' style={{ transform: 'translateY(-25%)' }}>
                 <div className='flex items-center justify-between gap-8'>
-                    <h3 className='text-[28px] font-bold text-black mb-0 w-[30%]'>A KMA partner unlocks growth with unlimited listings and exclusive access.</h3>
-                    <div className='w-[50%]'>
+                    <h3 className='text-[28px] font-bold text-black mb-0 w-[36%]'>A KMA partner unlocks growth with unlimited listings and exclusive access.</h3>
+                    <div className='w-[48%]'>
                         <p className='text-[18px] font-normal text-[#888888] mb-0'>Join KMA as a Channel Partner and post your projects and properties without any limits. Whether you're an agent, broker, or builder, KMA offers a powerful platform to showcase your brand, gain real-time exposure, attract genuine buyers, and grow your business effortlessly with advanced tools designed to help you close more deals.</p>
                     </div>
                 </div>
