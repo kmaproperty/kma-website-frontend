@@ -227,7 +227,7 @@ const handleHeaderSubMenuClick = (label: string) => {
   return (
     <>
     <div className="sticky top-0 z-50 w-full flex justify-center">
-    <div className="w-[90%] lg:w-[75%] mt-[25px]">
+    <div className="w-[90%] mx-auto max-w-[1440px] mt-[25px]">
       <div
         ref={headerBarRef}
         className={[

@@ -36,9 +36,7 @@ const JoinUs = () => {
     return (
         <div>
             <div className="relative rounded-bl-[100px] rounded-br-[100px] pt-[25px] h-[100vh] max-h-[600px]" style={{ backgroundImage: 'url(assets/join-us-hero.png)', backgroundSize: 'cover', backgroundPosition: 'bottom' }}>
-                <div className="w-[75%] mx-auto">
-                    <HomdeHeader />
-                </div>
+                <HomdeHeader />
                 <div className="w-[75%] max-w-[600px] mx-auto mt-[150px]">
                     <PageTitle
                         title="Join As a Chanel Partner"
