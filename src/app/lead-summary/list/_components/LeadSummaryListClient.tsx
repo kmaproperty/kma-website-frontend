@@ -135,6 +135,13 @@ export default function LeadSummaryListClient() {
     return `Budget: Up to ₹${fmt(max!)}`;
   };
 
+  const stripHtml = (str: string) => str.replace(/<[^>]*>/g, "").trim();
+
+  const formatAreaUnit = (unit?: string) => {
+    if (!unit) return "Sq.ft";
+    return unit.replace(/_/g, " ").replace(/sq ft/i, "Sq.ft").replace(/sq yd/i, "Sq.yd");
+  };
+
   const formatTimeAgo = (dateStr?: string | null) => {
     if (!dateStr) return "";
     const diff = Date.now() - new Date(dateStr).getTime();
@@ -270,7 +277,7 @@ export default function LeadSummaryListClient() {
                                   {firstProperty.bhkTypeName
                                     ? `${firstProperty.bhkTypeName} `
                                     : ""}
-                                  {firstProperty.title || "Property"}
+                                  {stripHtml(firstProperty.title || "Property")}
                                 </p>
                                 <p className="mt-1 text-sm text-[#8a8a8a]">
                                   {[firstProperty.societyName, firstProperty.localityName]
@@ -301,7 +308,7 @@ export default function LeadSummaryListClient() {
                               )}
                               {firstProperty?.area && (
                                 <span className="rounded-full border border-[#e2e2e2] bg-[#f5f5f5] px-3 py-1 text-sm text-[#8b8b8b]">
-                                  {firstProperty.area} {firstProperty.areaUnit || "Sq.ft"}
+                                  {firstProperty.area} {formatAreaUnit(firstProperty.areaUnit)}
                                 </span>
                               )}
                               <button className="text-[#0b1555]">
