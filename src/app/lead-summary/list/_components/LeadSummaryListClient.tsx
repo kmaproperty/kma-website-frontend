@@ -3,10 +3,7 @@
 import { Search, Share2, RotateCcw, Download, ExternalLink } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import CustomPagination from "@/components/common/pagination";
-import LeadFiltersSidebar, {
-  LeadFilters,
-  DEFAULT_LEAD_FILTERS,
-} from "./LeadFiltersSidebar";
+import FiltersSidebar from "@/app/projects/_components/FiltersSidebar";
 import {
   getLeadsApiHandler,
   exportLeadsApiHandler,
@@ -39,7 +36,6 @@ export default function LeadSummaryListClient() {
     this_month: 0,
     last_month: 0,
   });
-  const [filters, setFilters] = useState<LeadFilters>({ ...DEFAULT_LEAD_FILTERS });
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -55,12 +51,6 @@ export default function LeadSummaryListClient() {
       };
       if (searchText.trim()) params.search = searchText.trim();
       if (activeTab !== "all") params.timeFilter = activeTab;
-      if (filters.budgetMin != null) params.budgetMin = filters.budgetMin;
-      if (filters.budgetMax != null) params.budgetMax = filters.budgetMax;
-      if (filters.sizeMin != null) params.sizeMin = filters.sizeMin;
-      if (filters.sizeMax != null) params.sizeMax = filters.sizeMax;
-      if (filters.buildingType != null) params.buildingType = filters.buildingType;
-      if (filters.locality.trim()) params.locality = filters.locality.trim();
 
       const res = await getLeadsApiHandler(params);
       setLeads(res.data);
@@ -71,16 +61,16 @@ export default function LeadSummaryListClient() {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, searchText, activeTab, filters]);
+  }, [currentPage, searchText, activeTab]);
 
   useEffect(() => {
     fetchLeads();
   }, [fetchLeads]);
 
-  // Reset to page 1 when tab, search or filters change
+  // Reset to page 1 when tab or search changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeTab, searchText, filters]);
+  }, [activeTab, searchText]);
 
   const handleSync = async () => {
     setSyncing(true);
@@ -100,12 +90,6 @@ export default function LeadSummaryListClient() {
       const params: LeadListQueryParams = {};
       if (searchText.trim()) params.search = searchText.trim();
       if (activeTab !== "all") params.timeFilter = activeTab;
-      if (filters.budgetMin != null) params.budgetMin = filters.budgetMin;
-      if (filters.budgetMax != null) params.budgetMax = filters.budgetMax;
-      if (filters.sizeMin != null) params.sizeMin = filters.sizeMin;
-      if (filters.sizeMax != null) params.sizeMax = filters.sizeMax;
-      if (filters.buildingType != null) params.buildingType = filters.buildingType;
-      if (filters.locality.trim()) params.locality = filters.locality.trim();
 
       const blob = await exportLeadsApiHandler(params);
       const url = window.URL.createObjectURL(blob);
@@ -166,7 +150,7 @@ export default function LeadSummaryListClient() {
         <div className="mt-4 rounded-[30px_30px_0_0] bg-white p-4 sm:p-5 w-full">
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-[280px_1fr]">
             <aside className="rounded-xl bg-[#f5f5f5] px-5 py-4 lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:overscroll-contain">
-              <LeadFiltersSidebar filters={filters} onChange={setFilters} />
+              <FiltersSidebar />
             </aside>
 
             <main className="min-w-0 rounded-4xl bg-white p-3 sm:p-4 absolute top-0 right-0 w-[74%]">
