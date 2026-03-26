@@ -4,6 +4,8 @@ import { Search, Share2, RotateCcw, Download, ExternalLink } from "lucide-react"
 import { useCallback, useEffect, useState } from "react";
 import CustomPagination from "@/components/common/pagination";
 import FiltersSidebar from "@/app/projects/_components/FiltersSidebar";
+import { useProjectsStore } from "@/app/projects/_store/useProjectsStore";
+import { useEndUserFilters } from "@/api/hooks/useEndUserFilters";
 import {
   getLeadsApiHandler,
   exportLeadsApiHandler,
@@ -11,6 +13,7 @@ import {
   LeadItem,
   LeadListQueryParams,
   LeadTabCounts,
+  LeadBuildingType,
 } from "@/services/leadService";
 
 type TabKey = "all" | "new" | "this_month" | "last_month";
@@ -40,7 +43,41 @@ export default function LeadSummaryListClient() {
   const [syncing, setSyncing] = useState(false);
   const [exporting, setExporting] = useState(false);
 
+  // Read filter values from the shared projects store (FiltersSidebar writes here)
+  const storeFilters = useProjectsStore((s) => s.filters);
+  const { data: filtersData } = useEndUserFilters();
+
   const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
+
+  // Build filter params from the store
+  const buildFilterParams = useCallback((): Partial<LeadListQueryParams> => {
+    const p: Partial<LeadListQueryParams> = {};
+
+    // Budget: store values are in crores, API expects raw numbers
+    if (storeFilters.minBudget != null) p.budgetMin = storeFilters.minBudget * 10000000;
+    if (storeFilters.maxBudget != null) p.budgetMax = storeFilters.maxBudget * 10000000;
+
+    // Size
+    if (storeFilters.minSizeSqYd != null) p.sizeMin = storeFilters.minSizeSqYd;
+    if (storeFilters.maxSizeSqYd != null) p.sizeMax = storeFilters.maxSizeSqYd;
+
+    // Building type: resolve categoryId to RESIDENTIAL/COMMERCIAL
+    if (storeFilters.categoryId && filtersData?.categories) {
+      const cat = filtersData.categories.find((c) => c.id === storeFilters.categoryId);
+      if (cat) {
+        const name = cat.name.toUpperCase();
+        if (name.includes("RESIDENTIAL")) p.buildingType = LeadBuildingType.RESIDENTIAL;
+        else if (name.includes("COMMERCIAL")) p.buildingType = LeadBuildingType.COMMERCIAL;
+      }
+    }
+
+    // Locality search
+    if (storeFilters.searchLocality?.trim()) {
+      p.locality = storeFilters.searchLocality.trim();
+    }
+
+    return p;
+  }, [storeFilters, filtersData]);
 
   const fetchLeads = useCallback(async () => {
     setLoading(true);
@@ -48,6 +85,7 @@ export default function LeadSummaryListClient() {
       const params: LeadListQueryParams = {
         page: currentPage,
         limit: ITEMS_PER_PAGE,
+        ...buildFilterParams(),
       };
       if (searchText.trim()) params.search = searchText.trim();
       if (activeTab !== "all") params.timeFilter = activeTab;
@@ -61,16 +99,16 @@ export default function LeadSummaryListClient() {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, searchText, activeTab]);
+  }, [currentPage, searchText, activeTab, buildFilterParams]);
 
   useEffect(() => {
     fetchLeads();
   }, [fetchLeads]);
 
-  // Reset to page 1 when tab or search changes
+  // Reset to page 1 when tab, search, or filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeTab, searchText]);
+  }, [activeTab, searchText, storeFilters]);
 
   const handleSync = async () => {
     setSyncing(true);
@@ -87,7 +125,9 @@ export default function LeadSummaryListClient() {
   const handleExport = async () => {
     setExporting(true);
     try {
-      const params: LeadListQueryParams = {};
+      const params: LeadListQueryParams = {
+        ...buildFilterParams(),
+      };
       if (searchText.trim()) params.search = searchText.trim();
       if (activeTab !== "all") params.timeFilter = activeTab;
 
