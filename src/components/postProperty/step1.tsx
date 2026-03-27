@@ -1267,7 +1267,7 @@ export default function Step1({containerRef}) {
               return(
                 <ChipTag
                   checked={item.code == basicStaticDetails.propertyListFor?.code}
-                  label={item.name === 'Sale' ? 'Sell' : item.name === 'Rent' ? 'Rent & Lease' : item.name}
+                  label={item.name === 'Sale' ? 'Sell' : item.name === 'Rent' ? 'Rent/Lease' : item.name}
                   onChagne={() => {
                     if(basicStaticDetails?.propertyListFor?.code == item.code) return
                     const initialFn = () => {
