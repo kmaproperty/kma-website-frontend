@@ -520,6 +520,20 @@ export default function Step2({containerRef}) {
         return false
       }
 
+      if(fieldName == FIELD_NAME.COMMERCIAL_MAINTENANCE_CHARGE){
+        if((isSell || isRent) && ['com-sale-office', 'com-sale-retail-shop', 'com-sale-showroom', 'com-sale-warehouse', 'com-sale-plot'].includes(basicStaticDetail.propertyType?.code ?? '')){
+          return true
+        }
+        return false
+      }
+
+      if(fieldName == FIELD_NAME.COMMERCIAL_MAINTENANCE_CHARGE_VALUE){
+        if((isSell || isRent) && ['com-sale-office', 'com-sale-retail-shop', 'com-sale-showroom', 'com-sale-warehouse', 'com-sale-plot'].includes(basicStaticDetail.propertyType?.code ?? '') && dynamicFieldDetails.maintenanceCharges == 'separate'){
+          return true
+        }
+        return false
+      }
+
       if(fieldName == FIELD_NAME.COMMERCIAL_RENT){
         if((isRent || isSell) && ['com-rent-office', 'com-rent-retail-shop', 'com-rent-showroom', 'com-rent-plot'].includes(basicStaticDetail.propertyType?.code ?? '')){
           return true
@@ -869,6 +883,25 @@ export default function Step2({containerRef}) {
       if(renderShowField(FIELD_NAME.COMMERCIAL_PRICE) && (!dynamicFieldDetails.price || (Number(dynamicFieldDetails.price) < 100000) || (Number(dynamicFieldDetails.price)  > 1500000000 ))){
         updatedError.price = 'Price should be between 1 Lac and 150 Cr'
         hasError = true;
+      }
+
+      if(renderShowField(FIELD_NAME.COMMERCIAL_MAINTENANCE_CHARGE) && !dynamicFieldDetails?.maintenanceCharges){
+        updatedError.maintenanceCharges = 'Please select the maintenance'
+        hasError = true;
+      }
+
+      if(renderShowField(FIELD_NAME.COMMERCIAL_MAINTENANCE_CHARGE_VALUE) && !dynamicFieldDetails?.otherMaintenanceCharges){
+        updatedError.otherMaintenanceCharges = 'Please enter the maintenance charges'
+        hasError = true;
+      }
+
+      if(renderShowField(FIELD_NAME.COMMERCIAL_MAINTENANCE_CHARGE_VALUE) && dynamicFieldDetails?.otherMaintenanceCharges){
+        if(renderShowField(FIELD_NAME.COMMERCIAL_PRICE) && dynamicFieldDetails.price){
+          if(((Number(dynamicFieldDetails.price) * 50) / 100) < Number(dynamicFieldDetails?.otherMaintenanceCharges)){
+            updatedError.otherMaintenanceCharges = `Maintenance charge should less then 50% of price`
+            hasError = true;
+          }
+        }
       }
 
       if(renderShowField(FIELD_NAME.COMMERCIAL_SECURITY_DEPOSITE) && (dynamicFieldDetails.securityDeposite && (Number(dynamicFieldDetails.securityDeposite) < 10000) || (Number(dynamicFieldDetails.securityDeposite)  > 10000000 ))){
@@ -2280,6 +2313,48 @@ export default function Step2({containerRef}) {
           />
           {numberToWordsIndian(dynamicFieldDetails?.price) && <p className="pt-1 text-text-gray text-xs">{numberToWordsIndian(dynamicFieldDetails?.price)}</p>}
           {errors?.price && <p className="pt-1 text-red-500 text-xs">{errors.price}</p>}
+        </div>}
+
+        {renderShowField(FIELD_NAME.COMMERCIAL_MAINTENANCE_CHARGE) && <div id='maintenanceCharges'>
+          <FieldLabel label="Maintenance Charges" required={true}/>
+          <div className="flex flex-wrap gap-3 py-2" data-field={FIELD_NAME.COMMERCIAL_MAINTENANCE_CHARGE} data-has-value={!!dynamicFieldDetails.maintenanceCharges}>
+            {
+              MAINTENANCE_CHARGES.map(item => {
+                return(
+                  <ChipTag
+                    checked={dynamicFieldDetails.maintenanceCharges == item.value}
+                    label={item.name}
+                    onChagne={() => {
+                      setDynamicFieldDetails((pre) => ({...pre, maintenanceCharges: item.value, otherMaintenanceCharges: null,}))
+                      setErrors((pre) => ({...pre, maintenanceCharges: ''}))
+                    }}
+                    value={1}
+                    isIcon={false}
+                    containerStyle="flex flex-1 2md:flex-none justify-center gap-2 min-w-[150px]"
+                  />
+                )
+              })
+            }
+          </div>
+          {errors?.maintenanceCharges && <p className="pt-1 text-red-500 text-xs">{errors.maintenanceCharges}</p>}
+          {renderShowField(FIELD_NAME.COMMERCIAL_MAINTENANCE_CHARGE_VALUE) && <div id='otherMaintenanceCharges' data-field={FIELD_NAME.COMMERCIAL_MAINTENANCE_CHARGE_VALUE} data-has-value={!!dynamicFieldDetails.otherMaintenanceCharges}>
+            <DynamicInput
+              placeHolder="Enter Maintenance Charge (Per Month)"
+              options={[{label: 'Per month', value: 'Per month'}]}
+              onChange={(value: string, dropdownValue: string) => {
+                const isOnlyDigits = /^\d*$/.test(value);
+                if (!isOnlyDigits) return;
+                if(Number(value) > 99999) return
+                setDynamicFieldDetails((pre) => ({...pre, otherMaintenanceCharges: value,}))
+                setErrors((pre) => ({...pre, otherMaintenanceCharges: ''}))
+              }}
+              value={dynamicFieldDetails.otherMaintenanceCharges ?? ''}
+              dropdownValue={'Per month'}
+              disabled={true}
+              />
+          {numberToWordsIndian(dynamicFieldDetails?.otherMaintenanceCharges) && <p className="pt-1 text-text-gray text-xs">{numberToWordsIndian(dynamicFieldDetails?.otherMaintenanceCharges)}</p>}
+          {errors?.otherMaintenanceCharges && <p className="pt-1 text-red-500 text-xs">{errors.otherMaintenanceCharges}</p>}
+          </div>}
         </div>}
 
         {renderShowField(FIELD_NAME.NEGOTIABLE) && <div id='isRentNegotiable' data-field={FIELD_NAME.NEGOTIABLE} data-has-value={!!dynamicFieldDetails.isRentNegotiable}>

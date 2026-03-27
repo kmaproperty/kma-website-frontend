@@ -39,9 +39,6 @@ export default function Listing({propertyList = [],listLoader, fetchPropertyList
 
   const handlePagination = (value:string) => {
     setPagination((pre) => ({...pre, page: value}))
-    setTimeout(() => {
-      fetchPropertyList()
-    }, 300);
   }
 
   const handleTopFilter = (value:string) => {
@@ -50,9 +47,6 @@ export default function Listing({propertyList = [],listLoader, fetchPropertyList
     }else{
       setTopStatusFilter(value)
     }
-    setTimeout(() => {
-      fetchPropertyList()
-    }, 300);
   }
 
   const handleManage = (id) => {

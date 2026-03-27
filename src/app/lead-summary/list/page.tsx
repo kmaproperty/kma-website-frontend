@@ -23,10 +23,10 @@ export default async function LeadSummaryListPage() {
       <HeaderDataSync propertyMasterData={propertyMasterData} />
       <div className="relative w-full bg-background-gray">
         <div className="absolute h-[420px] w-full rounded-b-[25px] bg-blue sm:rounded-b-[60px] lg:rounded-b-[80px] xl:rounded-b-[100px]" />
-        <div className="absolute left-0 top-6 z-20 flex w-full justify-center">
+        <div className="sticky top-0 z-50 flex w-full justify-center pt-6">
           <UserHeader />
         </div>
-        <div className="relative z-10 flex justify-center px-4 pb-10 pt-[9.5rem] sm:px-6">
+        <div className="relative z-10 flex justify-center px-4 pb-10 pt-[4rem] sm:px-6">
           <div className="w-full max-w-[1220px]">
             <LeadSummaryListClient />
           </div>
@@ -37,4 +37,3 @@ export default async function LeadSummaryListPage() {
     </>
   );
 }
-

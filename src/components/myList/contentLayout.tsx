@@ -44,7 +44,7 @@ export default function ContentLayout() {
 
  
   const { data: propertyList,  refetch: fetchPropertyList, isLoading: propertyListLoader } = useQuery({
-      queryKey: ["property-list", filters, sorting, search],
+      queryKey: ["property-list", filters, sorting, search, pagination.page, pagination.limit, topStatusFilter],
       queryFn: () => {
         let payload: ProeprtyListApiPayload = {
           page: pagination.page,
@@ -58,8 +58,8 @@ export default function ContentLayout() {
           ...(filters.projectStatuses.length > 0 ? {projectStatuses: filters.projectStatuses.join(','),} : {}),
           ...(filters.statuses.length > 0 ? {statuses: filters.statuses.join(','),} : {}),
           ...(topStatusFilter ? {filter: topStatusFilter} : null),
-          minPrice: String(filters.minPrice),
-          maxPrice: String(filters.maxPrice),
+          ...(filters.minPrice > 0 ? {minPrice: String(filters.minPrice)} : {}),
+          ...(filters.maxPrice < 10000000 ? {maxPrice: String(filters.maxPrice)} : {}),
           search: search,
           sortOrder: sorting.order == 'High to Low'? 'DESC' : 'ASC',
           sortBy: sorting.fieldName,
@@ -83,6 +83,11 @@ export default function ContentLayout() {
       }
       setEnable(true)
   }, []);
+
+  // Reset to page 1 when filters, sorting, search, or top status filter change
+  useEffect(() => {
+    setPagination((pre) => ({ ...pre, page: 1 }));
+  }, [filters, sorting, search, topStatusFilter]);
   
   useEffect(() => {
     if(propertyList){
