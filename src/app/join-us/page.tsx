@@ -75,10 +75,8 @@ const JoinUs = () => {
                 </div>
             </div>
             <div className="bg-text-black flex justify-center">
-                <div className="my-13 w-[75%]">
                     <AboutusDataSync />
                     <HomeFooter tab={1} />
-                </div>
             </div>
         </div>
     )
