@@ -73,9 +73,13 @@ const MeetTheTeam = () => {
 
     return (
         <div className='overflow-x-hidden'>
-            <HomdeHeader />
-            <div className="relative h-[100vh] max-h-[600px] -mt-[88px] pt-[150px]" style={{ backgroundImage: 'url(assets/team/meet-the-team-herobg.png)', backgroundSize: 'cover', backgroundPosition: 'bottom' }}>
-                <div className="w-[90%] md:w-[75%] max-w-[600px] mx-auto">
+            <div className="fixed -top-[25px] left-0 right-0 z-[60] flex justify-center pointer-events-none">
+                <div className="pointer-events-auto w-full flex justify-center">
+                    <HomdeHeader />
+                </div>
+            </div>
+            <div className="relative pt-[25px] h-[100vh] max-h-[600px]" style={{ backgroundImage: 'url(assets/team/meet-the-team-herobg.png)', backgroundSize: 'cover', backgroundPosition: 'bottom' }}>
+                <div className="w-[90%] md:w-[75%] max-w-[600px] mx-auto mt-[140px]">
                     <PageTitle
                         title="Meet our dedicated team"
                         description="Working together to help you find your perfect property."
