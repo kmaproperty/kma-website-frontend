@@ -51,7 +51,7 @@ export default function ProfileMenu({ anchorEl, open, handleClose }) {
         mt: "20px",
       }}
     >
-      <MenuItem
+      {/* <MenuItem
         onClick={() => handleRedirect("/profile")}
         className="text-sm! py-3! px-6!"
         sx={{
@@ -77,7 +77,7 @@ export default function ProfileMenu({ anchorEl, open, handleClose }) {
         Go to Kma.com
       </MenuItem>
 
-      <Divider className="m-0!" />
+      <Divider className="m-0!" /> */}
 
       <MenuItem
         onClick={handleLogout}

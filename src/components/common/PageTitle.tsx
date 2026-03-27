@@ -5,7 +5,7 @@ const PageTitle = ({ title, description, breadcrumps, actions }) => {
         <div className='flex flex-col items-center max-w-[610px]'>
             <h1 className="text-[40px] text-center font-semibold text-white">{title}</h1>
             {description && <p className="text-white text-center text-md mt-4 leading-7 font-light">{description}</p>}
-            {actions && (
+            {/* {actions && (
                 <div className="flex items-center mt-6 mb-3">
                     {actions.map((item, index) => (
                         <a key={index} href={item.link}>
@@ -17,7 +17,7 @@ const PageTitle = ({ title, description, breadcrumps, actions }) => {
                         </a>
                     ))}
                 </div>
-            )}
+            )} */}
             {breadcrumps && (
 
                 <div className="flex items-center mt-4">

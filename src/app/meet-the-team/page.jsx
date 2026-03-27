@@ -12,8 +12,12 @@ import AboutusDataSync from '@/components/footer/AboutusDataSync';
 import { FaFacebook, FaLinkedin, FaTwitter, FaYoutube } from 'react-icons/fa';
 import ContactFormComponent from '@/components/contactUs/contactForm';
 import Link from 'next/link';
+import { useSelector } from 'react-redux';
+import { getAboutusData } from '@/store/homeHeaderSlice';
 
 const MeetTheTeam = () => {
+    const aboutusData = useSelector(getAboutusData);
+    const { instagramLink, fbLink } = aboutusData || {};
 
     const breadcrumps = [
         {
@@ -68,76 +72,84 @@ const MeetTheTeam = () => {
     ]
 
     return (
-        <div>
-            <div className="relative pt-[25px] h-[100vh] max-h-[600px]" style={{ backgroundImage: 'url(assets/team/meet-the-team-herobg.png)', backgroundSize: 'cover', backgroundPosition: 'bottom' }}>
-                    <HomdeHeader />
-                <div className="w-[75%] max-w-[600px] mx-auto mt-[140px]">
+        <div className='overflow-x-hidden'>
+            <HomdeHeader />
+            <div className="relative h-[100vh] max-h-[600px] -mt-[88px] pt-[150px]" style={{ backgroundImage: 'url(assets/team/meet-the-team-herobg.png)', backgroundSize: 'cover', backgroundPosition: 'bottom' }}>
+                <div className="w-[90%] md:w-[75%] max-w-[600px] mx-auto">
                     <PageTitle
                         title="Meet our dedicated team"
                         description="Working together to help you find your perfect property."
                         breadcrumps={breadcrumps}
                     />
                     <div className='flex gap-3 justify-center mt-5'>
-                        <a className='flex w-10 h-10 items-center justify-center rounded-full bg-white' href='#'>
+                        <a
+                            className='flex w-10 h-10 items-center justify-center rounded-full bg-white'
+                            href={instagramLink || '#'}
+                            target={instagramLink ? '_blank' : undefined}
+                            rel={instagramLink ? 'noopener noreferrer' : undefined}
+                        >
                             <Image height={46} width={46} src="assets/app/instagram.svg" className='w-6 h-6' />
                         </a>
                         <a className='flex w-10 h-10 items-center justify-center rounded-full bg-white' href='#'>
                             <Image height={46} width={46} src="assets/app/linkedin.svg" className='w-6 h-6' />
                         </a>
-                        <a className='flex w-10 h-10 items-center justify-center rounded-full bg-white' href='#'>
+                        <a
+                            className='flex w-10 h-10 items-center justify-center rounded-full bg-white'
+                            href={fbLink || '#'}
+                            target={fbLink ? '_blank' : undefined}
+                            rel={fbLink ? 'noopener noreferrer' : undefined}
+                        >
                             <Image height={46} width={46} src="assets/app/facebook.svg" className='w-6 h-6' />
                         </a>
                     </div>
                 </div>
             </div>
-            <div className='w-full py-[100px] px-[50px]'>
+            <div className='w-full py-[100px] px-4 sm:px-6 md:px-[50px]'>
                 <div className='max-w-[1444px] mx-auto'>
-                    <div className='flex items-center justify-between'>
-                        <div className='w-[44%] max-w-[580px]'>
+                    <div className='flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-0'>
+                        <div className='w-full lg:w-[44%] max-w-[580px]'>
                             <SectionHeading title="" subtitle="Who We Are" type={'left'} color='' lineTop={false}
                                 description="KMA has a strong and experienced team that works every day to make property buying, selling, and posting simple for everyone. We connect property owners, buyers, and channel partners on one easy platform."
                             />
                         </div>
-                        <div className='w-[50%]'>
+                        <div className='w-full lg:w-[50%]'>
                             <Image src="/assets/team/who-we-are.png" width={720} height={360} className='w-full' />
                         </div>
                     </div>
-                    <div className='flex items-center justify-between'>
-                        <div className='w-[50%]'>
+                    <div className='flex flex-col-reverse lg:flex-row items-center justify-between gap-8 lg:gap-0'>
+                        <div className='w-full lg:w-[50%]'>
                             <Image src="/assets/team/why-choose-us.png" width={720} height={360} className='w-full' />
                         </div>
-                        <div className='w-[44%] max-w-[580px]'>
+                        <div className='w-full lg:w-[44%] max-w-[580px]'>
                             <SectionHeading title="" subtitle="What We Do" type={'left'} color='' lineTop={false}
                                 description="Our team handles residential and commercial property listings, RERA-approved projects, and builder tie-ups. We guide people step-by-step to post their property, find good options, or grow their real estate business."
                             />
                         </div>
                     </div>
-                    <div className='flex items-center justify-between'>
-                        <div className='w-[44%] max-w-[580px]'>
+                    <div className='flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-0'>
+                        <div className='w-full lg:w-[44%] max-w-[580px]'>
                             <SectionHeading title="" subtitle="Why Choose Us" type={'left'} color='' lineTop={false}
                                 description="From small towns to big cities, the KMA team is working to bring the best real estate experience to all. We believe in trust, transparency, and service. Our team is always ready to help you—whether you are an owner or a partner."
                             />
                         </div>
-                        <div className='w-[50%]'>
+                        <div className='w-full lg:w-[50%]'>
                             <Image src="/assets/team/what-we-do.png" width={720} height={360} className='w-full' />
                         </div>
                     </div>
                 </div>
             </div>
-            <div className='w-full py-[120px] px-[50px]' style={{ backgroundImage: 'url(assets/team/work-with-us-bg.jpg)' }}>
+            <div className='w-full py-[120px] px-4 sm:px-6 md:px-[50px]' style={{ backgroundImage: 'url(assets/team/work-with-us-bg.jpg)' }}>
                 <div className='max-w-[800px] mx-auto space-y-6 flex flex-col items-center'>
                     <h2 className={`text-[28px] leading-9 text-center font-semibold text-white`}>Work With Us</h2>
                     <p className='text-center text-md leading-6 font-normal text-white'>We are committed to building lasting trust by delivering transparent, tech-enabled, and customer-first real estate experiences across India.</p>
-                    <Link href="/contact-us">
-                        <button className="w-auto text-sm 1xl:text-base text-white! hover:text-text-black! animated-button-white px-8 py-2 border border-white bg-transparent! text-center cursor-pointer">
-                            <span className="gap-3 relative flex justify-center">
-                                <p className={`text-nowrap`}>Contact Us</p>
-                            </span>
-                        </button>
+                    <Link href="/contact-us" className="w-auto text-sm 1xl:text-base text-white! hover:text-text-black! animated-button-white px-8 py-2 border border-white bg-transparent! text-center cursor-pointer">
+                        <span className="gap-3 relative flex justify-center">
+                            <p className={`text-nowrap`}>Contact Us</p>
+                        </span>
                     </Link>
                 </div>
             </div>
-            <div className='w-full py-[100px] px-[50px] bg-[#F5F5F5]'>
+            <div className='w-full py-[100px] px-4 sm:px-6 md:px-[50px] bg-[#F5F5F5]'>
                 <div className='max-w-[800px] mx-auto space-y-6 flex flex-col items-center'>
                     <h2 className={`text-[40px] leading-9 text-center font-semibold text-text-black`}>Our Founders</h2>
                     <span
@@ -150,10 +162,10 @@ const MeetTheTeam = () => {
                         />
                     </span>
                 </div>
-                <div className='flex max-w-[1444px] mx-auto items-center justify-center gap-5 mt-12'>
+                <div className='flex flex-col md:flex-row max-w-[1444px] mx-auto items-center justify-center gap-5 mt-12'>
                     {
                         foundersDetails.map((founder, index) => (
-                            <div key={index} className='w-[50%] max-w-[468px] rounded-lg overflow-hidden'>
+                            <div key={index} className='w-full md:w-[50%] max-w-[468px] rounded-lg overflow-hidden'>
                                 <Image src={founder.image} width={500} height={500} className='w-full aspect-square' />
                                 <div className='bg-white px-5 py-4 flex items-center justify-center flex-col'>
                                     <h3 className='text-[28px] font-semibold text-text-black mb-1'>{founder.name}</h3>
@@ -168,7 +180,7 @@ const MeetTheTeam = () => {
                     }
                 </div>
             </div>
-            <div className='w-full pb-[100px] px-[50px] bg-[#F5F5F5]'>
+            <div className='w-full pb-[100px] px-4 sm:px-6 md:px-[50px] bg-[#F5F5F5]'>
                 <div className='max-w-[800px] mx-auto space-y-6 flex flex-col items-center'>
                     <h2 className={`text-[40px] leading-9 text-center font-semibold text-text-black`}>Our Team</h2>
                     <span
@@ -181,10 +193,10 @@ const MeetTheTeam = () => {
                         />
                     </span>
                 </div>
-                <div className='flex max-w-[1444px] mx-auto items-center justify-center gap-5 mt-12'>
+                <div className='flex flex-col md:flex-row max-w-[1444px] mx-auto items-center justify-center gap-5 mt-12'>
                     {
                         teamDetails.map((founder, index) => (
-                            <div key={index} className='w-[33.33%] max-w-[468px] rounded-lg overflow-hidden'>
+                            <div key={index} className='w-full md:w-[33.33%] max-w-[468px] rounded-lg overflow-hidden'>
                                 <Image src={founder.image} width={500} height={500} className='w-full aspect-square' />
                                 <div className='bg-white px-5 py-4 flex items-center justify-center flex-col'>
                                     <h3 className='text-[28px] font-semibold text-text-black mb-1'>{founder.name}</h3>
@@ -199,7 +211,7 @@ const MeetTheTeam = () => {
                     }
                 </div>
             </div>
-            <div className='py-[100px] px-[50px] bg-[#EFEFEF]'>
+            <div className='py-[100px] px-4 sm:px-6 md:px-[50px] bg-[#EFEFEF]'>
                 <div className='max-w-[850px] mx-auto'>
                     <i className='text-[40px] text-black font-light'><p className='text-center'>“At KMA, we don’t just list properties, we help people find their perfect place.”</p></i>
                 </div>
