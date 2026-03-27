@@ -68,7 +68,45 @@ export default function Filter() {
     }
 
     setCitySelectionError(false)
-    window.location.href = `/projects/${selectedCity.id}`;
+
+    const masterData = Array.isArray(propertyMasterData) ? propertyMasterData : [];
+    const params = new URLSearchParams();
+
+    if (filterType === 'sale' || filterType === 'rent') {
+      const listId = masterData.find(item => item.code == filterType)?.id;
+      if (listId) params.set('listingTypeId', listId);
+    } else if (filterType === 'commercial') {
+      for (const lt of masterData) {
+        const cat = lt.categories?.find(c => c.code === 'commercial');
+        if (cat) { params.set('categoryIds', cat.id); break; }
+      }
+    } else if (filterType === 'plot_land') {
+      const plotIds: string[] = [];
+      for (const lt of masterData) {
+        for (const cat of (lt.categories ?? [])) {
+          for (const pt of (cat.propertyTypes ?? [])) {
+            const name = pt.name?.toLowerCase() ?? '';
+            if (name.includes('plot') || name.includes('land') || name.includes('agricultural')) {
+              plotIds.push(pt.id);
+            }
+          }
+        }
+      }
+      if (plotIds.length > 0 && selectedPropertyType.length === 0) {
+        params.set('propertyTypeIds', plotIds.join(','));
+      }
+    }
+
+    if (deferredSearch) params.set('search', deferredSearch);
+    if (selectedPropertyType.length > 0) params.set('propertyTypeIds', selectedPropertyType.map(item => item.id).join(','));
+    if (selectedFurnishType.length > 0) params.set('furnishingTypes', selectedFurnishType.map(item => item.value).join(','));
+    if (selectedPossessionStatus.length > 0) params.set('constructionStatuses', selectedPossessionStatus.map(item => item.value).join(','));
+    if (selectedMinBudget) params.set('minPrice', String(selectedMinBudget.value));
+    if (selectedMaxBudget) params.set('maxPrice', String(selectedMaxBudget.value));
+    if (selectedPostedBy.length > 0) params.set('postedBy', selectedPostedBy.map(item => item.value).join(','));
+
+    const qs = params.toString();
+    window.location.href = `/projects/${selectedCity.id}${qs ? '?' + qs : ''}`;
   }
 
   const { data: explorePropertyCount } = useQuery({
@@ -87,15 +125,44 @@ export default function Filter() {
       transactionBy?.value ?? null,
     ],
     queryFn: () => {
-      const listId = Array.isArray(propertyMasterData)
-        ? propertyMasterData.find(item => item.code == filterType)?.id
-        : null
+      // "sale" and "rent" are listing types; "plot_land" and "commercial" are categories
+      const masterData = Array.isArray(propertyMasterData) ? propertyMasterData : [];
+      let listId: string | null = null;
+      let categoryIds: string | null = null;
+      let plotPropertyTypeIds: string | null = null;
+
+      if (filterType === 'sale' || filterType === 'rent') {
+        listId = masterData.find(item => item.code == filterType)?.id ?? null;
+      } else if (filterType === 'commercial') {
+        // Commercial is a category — find the commercial category ID
+        for (const lt of masterData) {
+          const cat = lt.categories?.find(c => c.code === 'commercial');
+          if (cat) { categoryIds = cat.id; break; }
+        }
+      } else if (filterType === 'plot_land') {
+        // Plot & Land — find all plot/land property type IDs
+        const plotIds: string[] = [];
+        for (const lt of masterData) {
+          for (const cat of (lt.categories ?? [])) {
+            for (const pt of (cat.propertyTypes ?? [])) {
+              const name = pt.name?.toLowerCase() ?? '';
+              if (name.includes('plot') || name.includes('land') || name.includes('agricultural')) {
+                plotIds.push(pt.id);
+              }
+            }
+          }
+        }
+        if (plotIds.length > 0) plotPropertyTypeIds = plotIds.join(',');
+      }
+
       let payload: GetPropertiesCountPayload = {
         page: '1',
         limit: '5',
         ...(selectedCity?.id ? {cityId: selectedCity?.id ?? null,} : {}),
         ...(deferredSearch ? {search: deferredSearch ?? null,} : {}),
-        ...(listId ? {listingTypeIds: listId ?? null,} : {}),
+        ...(listId ? {listingTypeIds: listId,} : {}),
+        ...(categoryIds ? {categoryIds: categoryIds,} : {}),
+        ...(plotPropertyTypeIds && selectedPropertyType.length === 0 ? {propertyTypeIds: plotPropertyTypeIds,} : {}),
         ...(selectedPropertyType.length > 0 ? {propertyTypeIds: selectedPropertyType.map(item => item.id).join(',') ?? '',} : {}),
         ...(selectedFurnishType.length > 0 ? {furnishingTypes: selectedFurnishType.map(item => item.value).join(',') ?? '',} : {}),
         ...(selectedPossessionStatus.length > 0 ? {constructionStatuses: selectedPossessionStatus.map(item => item.value).join(',') ?? '',} : {}),
@@ -221,19 +288,39 @@ export default function Filter() {
                 }}
               />
             </div>
-            <div>
+            <button
+              type="button"
+              className="cursor-pointer"
+              title="Detect my location"
+              onClick={() => {
+                if (!navigator.geolocation) {
+                  toast.error("Geolocation is not supported by your browser")
+                  return
+                }
+                navigator.geolocation.getCurrentPosition(
+                  (position) => {
+                    setSearch(`${position.coords.latitude},${position.coords.longitude}`)
+                    toast.success("Location detected successfully")
+                  },
+                  (error) => {
+                    toast.error("Unable to detect location. Please allow location access.")
+                  }
+                )
+              }}
+            >
               <Image
                 src="/assets/blue-location-tracker.svg"
                 width={20}
                 height={20}
                 alt="Location finder"
               />
-            </div>
+            </button>
           </div>
           <div className="flex-1">
             <button
-              className="animated-button px-[30px] py-[9px] cursor-pointer ml-2 h-full w-[calc(100%-0.5rem)]"
+              className={`animated-button px-[30px] py-[9px] ml-2 h-full w-[calc(100%-0.5rem)] ${explorePropertyCount === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
               onClick={handleSearchClick}
+              disabled={explorePropertyCount === 0}
             >
               <span className="flex items-center justify-center gap-[6px] relative z-11">
                 <Image
@@ -329,14 +416,33 @@ export default function Filter() {
                 }}
               />
             </div>
-            <div>
+            <button
+              type="button"
+              className="cursor-pointer"
+              title="Detect my location"
+              onClick={() => {
+                if (!navigator.geolocation) {
+                  toast.error("Geolocation is not supported by your browser")
+                  return
+                }
+                navigator.geolocation.getCurrentPosition(
+                  (position) => {
+                    setSearch(`${position.coords.latitude},${position.coords.longitude}`)
+                    toast.success("Location detected successfully")
+                  },
+                  (error) => {
+                    toast.error("Unable to detect location. Please allow location access.")
+                  }
+                )
+              }}
+            >
               <Image
                 src="/assets/blue-location-tracker.svg"
                 width={20}
                 height={20}
                 alt="Location finder"
               />
-            </div>
+            </button>
           </div>
         </div>
         <div className="flex justify-center gap-3 pt-2 2md:pt-3">
@@ -433,7 +539,7 @@ export default function Filter() {
           </div>}
         </div>
         <div className="2md:hidden flex-1 mt-2">
-            <button onClick={handleSearchClick} className="animated-button px-[30px] py-[9px] cursor-pointer ml-2 h-full w-[calc(100%-0.5rem)]">
+            <button onClick={handleSearchClick} disabled={explorePropertyCount === 0} className={`animated-button px-[30px] py-[9px] ml-2 h-full w-[calc(100%-0.5rem)] ${explorePropertyCount === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
               <span className="flex items-center justify-center gap-[6px] relative z-11">
                 <Image
                   src="/assets/white-search.svg"

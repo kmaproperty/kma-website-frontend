@@ -87,7 +87,7 @@ export const fetchPropertyMasterData = async (): Promise<GetPropertyMasterDataRe
     return null;
   } catch (error) {
     console.error("Property Master Data Error", error);
-    return error;
+    return null;
   }
 };
 
@@ -118,7 +118,7 @@ export const fetchPropertyCitiesData = async (): Promise<CitiesResponse> => {
 
     return null;
   } catch (error) {
-    console.error("Property Master Data Error", error);
-    return error;
+    console.error("Property Cities Data Error", error);
+    return null;
   }
 };

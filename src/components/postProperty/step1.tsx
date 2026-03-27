@@ -104,6 +104,7 @@ export default function Step1({containerRef}) {
   const { calculateProgress, totalProgress } = useStepProgress()
   const possessionDateRef = useRef<HTMLInputElement | null>(null);
   const availabelDateRef = useRef<HTMLInputElement | null>(null);
+  const hasRestoredStepRef = useRef(false);
 
   const router = useRouter()
   const params = useParams()
@@ -1196,6 +1197,7 @@ export default function Step1({containerRef}) {
       }))
 
       dispatch(setTotalProgress({progress: step1Details.progressPercentage}))
+
     }
   },[step1Details])
 
@@ -1265,7 +1267,7 @@ export default function Step1({containerRef}) {
               return(
                 <ChipTag
                   checked={item.code == basicStaticDetails.propertyListFor?.code}
-                  label={item.name}
+                  label={item.name === 'Sale' ? 'Sell' : item.name === 'Rent' ? 'Rent/Lease' : item.name}
                   onChagne={() => {
                     if(basicStaticDetails?.propertyListFor?.code == item.code) return
                     const initialFn = () => {

@@ -1,8 +1,9 @@
 import { getAboutusData, getPropertyMasterData, getSelectedCity } from "@/store/homeHeaderSlice";
 import Image from "next/image";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useRouter } from "nextjs-toploader/app";
+import { useEndUserProperties } from "@/api/hooks/useEndUserProperties";
 
 export default function RentSellHeaderView({ type, onClose }: { type: string; onClose?: () => void }) {
   const router = useRouter();
@@ -13,6 +14,37 @@ export default function RentSellHeaderView({ type, onClose }: { type: string; on
   const defaultCategoryId = category.find((item: { code: string }) => item.code == 'residential')?.id ?? category[0]?.id;
   const [categoryType, setCategoryType] = useState(defaultCategoryId);
   const propertyList = category?.find(item => item.id == categoryType)?.propertyTypes ?? []
+
+  // Fetch properties for this city + listing type to know which property types have results
+  const listingTypeId = (Array.isArray(propertyMasterData) ? propertyMasterData : [])?.find((item: { code: string }) => item.code == type)?.id;
+  const { data: properties = [] } = useEndUserProperties(
+    {
+      cityId: selectedCity?.id,
+      listingTypeIds: listingTypeId ? [listingTypeId] : undefined,
+      categoryIds: categoryType ? [categoryType] : undefined,
+      limit: 100,
+      page: 1,
+    },
+    { enabled: !!selectedCity?.id && !!listingTypeId }
+  );
+
+  // Extract property type IDs that have at least 1 property
+  const availablePropertyTypeIds = useMemo(() => {
+    const ids = new Set<string>();
+    for (const p of properties) {
+      const ptId = typeof p.propertyType === 'object' && p.propertyType?.id
+        ? p.propertyType.id
+        : p.propertyTypeId;
+      if (ptId) ids.add(ptId);
+    }
+    return ids;
+  }, [properties]);
+
+  // Filter property types to only show ones with properties
+  const visiblePropertyList = useMemo(() => {
+    if (!selectedCity?.id || availablePropertyTypeIds.size === 0) return propertyList;
+    return propertyList.filter(item => availablePropertyTypeIds.has(item.id));
+  }, [propertyList, availablePropertyTypeIds, selectedCity?.id]);
 
   return (
     <div className="flex  flex-col 2md:flex-row justify-start overflow-hidden rounded-xl h-full 2md:h-[280px]">
@@ -42,7 +74,7 @@ export default function RentSellHeaderView({ type, onClose }: { type: string; on
           </p>
             <div className="2md:columns-2 2md:h-[180px] [column-fill:auto]">
               {
-                propertyList.map(item => {
+                visiblePropertyList.length > 0 ? visiblePropertyList.map(item => {
                   return(
                     <p
                       key={item.id}
@@ -59,7 +91,9 @@ export default function RentSellHeaderView({ type, onClose }: { type: string; on
                       {item.name} {selectedCity ? `in ${selectedCity?.name}` : ''}
                     </p>
                   )
-                })
+                }) : (
+                  <p className="text-sm text-text-gray">No properties available</p>
+                )
               }
 
             </div>

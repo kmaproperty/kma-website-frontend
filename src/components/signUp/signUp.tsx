@@ -219,6 +219,7 @@ export default function SignUp() {
                 </p>
               </>
             )}
+            
 
             <p className="text-sm lg:text-base 2xl:text-lg font-semibold text-text-black mt-6">
               Mobile Number

@@ -11,10 +11,14 @@ export default async function ProjectDetailsPage({
   params: Promise<{ projectId: string }>;
 }) {
   const { projectId } = await params;
-  const response = await fetchPropertyMasterData();
   let propertyMasterData: unknown[] = [];
-  if (response && response.success) {
-    propertyMasterData = response.data as unknown[];
+  try {
+    const response = await fetchPropertyMasterData();
+    if (response?.success && Array.isArray(response.data)) {
+      propertyMasterData = response.data;
+    }
+  } catch {
+    // Gracefully handle — page still renders with empty master data
   }
 
   return (

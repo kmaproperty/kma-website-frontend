@@ -332,6 +332,8 @@ export const FIELD_NAME = {
   COMMERCIAL_BROKERAGE_CHARGE: 'Commercial_brokerage_charge',
   COMMERCIAL_CUSTOM_BROKERAGE_CHARGE: 'Commercial_custom_brokerage_charge',
   COMMERCIAL_PRICE: 'Commercial_price',
+  COMMERCIAL_MAINTENANCE_CHARGE: 'Commercial_maintenance_charge',
+  COMMERCIAL_MAINTENANCE_CHARGE_VALUE: 'Commercial_maintenance_charge_value',
   GOVT_CHARGES: 'Gov_charges',
   PRE_LEASED: 'Pre_leased',
   CURRENT_RENT_PER_MONTH: 'Current_rent_per_month',

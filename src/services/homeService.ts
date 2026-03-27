@@ -121,13 +121,77 @@ export interface GetChannelPartnerListPayload {
 
 export interface ChannelPartner {
     id: string;
-    name: string;
-    firm_name: string;
-    profile_image: string;
-    cities: string;
-    experience_years: number;
-    property_count: number;
+    name?: string;
+    firm_name?: string;
+    profile_image?: string | null;
+    cities?: string | null;
+
+    // Some endpoints return experience/property stats at the top-level.
+    experience_years?: number | null;
+    property_count?: number | null;
+
+    // Some endpoints return rating (used on list/details UI).
     rating?: number | string | null;
+
+    // --- Details payload fields (example from user) ---
+    channel_partner_code?: string | null;
+    created_at?: string | null;
+    phone?: string | null;
+    email?: string | null;
+    about?: string | null;
+    trusted_since?: string | null;
+
+    areas_of_operation_list?: string[] | null;
+
+    statistics?: {
+        buyers_served?: number | null;
+        years_of_experience?: number | null;
+        property_holdings?: number | null;
+        active_properties?: number | null;
+        team_size?: number | null;
+        areas_of_operation?: number | null;
+    } | null;
+
+    active_properties?: {
+        buy?: ChannelPartnerActiveProperty[] | null;
+        rent?: ChannelPartnerActiveProperty[] | null;
+        commercial?: ChannelPartnerActiveProperty[] | null;
+    } | null;
+}
+
+export interface ChannelPartnerActivePropertyUnit {
+  unit?: string | null;
+  size?: string | null;
+  price?: string | null;
+}
+
+export interface ChannelPartnerActiveProperty {
+  id: string;
+  propertyName?: string | null;
+  address?: string | null;
+  description?: string | null;
+  imageUrl?: string | null;
+
+  isReraRegistered?: boolean | null;
+  constructionStatus?: string | null;
+
+  category?: string | null;
+  categoryId?: string | null;
+  listingType?: string | null;
+  listingTypeId?: string | null;
+
+  propertyType?: string | null;
+  propertyTypeId?: string | null;
+  bhkType?: string | null;
+  bhkTypeId?: string | null;
+
+  price?: number | null;
+  monthlyRent?: number | null;
+
+  city?: string | null;
+  society?: string | null;
+  locality?: string | null;
+  units?: ChannelPartnerActivePropertyUnit[] | null;
 }
 
 export interface GetChannelPartnerListResponse {
@@ -153,6 +217,37 @@ export const getChannelPartnerListApiHandler = async ({search, city, experience,
         throw error.response?.data ?? error;
     }
 }
+export interface GetChannelPartnerDetailsResponse {
+    success?: boolean;
+    data?: ChannelPartner;
+    partner?: ChannelPartner;
+}
+
+/**
+ * Fetch a single channel partner by id.
+ * We normalize the response to `ChannelPartner | null`.
+ */
+export const getChannelPartnerDetailsApiHandler = async (
+  id: string
+): Promise<ChannelPartner | null> => {
+    try{
+        const response = await axiosInstance.get<
+          GetChannelPartnerDetailsResponse | ChannelPartner
+        >(`end-user/channel-partners/${id}`);
+
+        const raw = response.data;
+        const normalized =
+          (raw as GetChannelPartnerDetailsResponse)?.data ??
+          (raw as GetChannelPartnerDetailsResponse)?.partner ??
+          (raw as ChannelPartner);
+
+        return normalized ?? null;
+    }catch(error: any){
+        // If endpoint doesn't exist / id is invalid, show fallback UI.
+        return null;
+    }
+}
+
 export interface User {
     id: string,
     name: string,
@@ -412,3 +507,62 @@ export const getPropertiesCountApiHandler = async ({page,limit,cityId,search,lis
         throw error.response?.data ?? error;
     }
 }
+
+// ──── Channel Partner Reviews ────
+
+export interface CPReviewItem {
+    id: string;
+    reviewerName: string;
+    reviewerProfileImage: string | null;
+    rating: number;
+    review: string;
+    createdAt: string;
+}
+
+export interface GetCPReviewsResponse {
+    averageRating: number;
+    totalReviews: number;
+    starDistribution: Record<string, number>;
+    reviews: CPReviewItem[];
+}
+
+export interface GetCPReviewsPayload {
+    page?: number;
+    limit?: number;
+    sortBy?: string;
+}
+
+export const getChannelPartnerReviews = async (
+    cpId: string,
+    { page = 1, limit = 10, sortBy = "newest" }: GetCPReviewsPayload = {}
+): Promise<GetCPReviewsResponse> => {
+    try {
+        const response = await axiosInstance.get<GetCPReviewsResponse>(
+            `end-user/channel-partners/${cpId}/reviews`,
+            { params: { page, limit, sortBy } }
+        );
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data ?? error;
+    }
+};
+
+export interface SubmitCPReviewPayload {
+    rating: number;
+    review: string;
+}
+
+export const submitChannelPartnerReview = async (
+    cpId: string,
+    payload: SubmitCPReviewPayload
+): Promise<any> => {
+    try {
+        const response = await axiosInstance.post(
+            `end-user/channel-partners/${cpId}/review`,
+            payload
+        );
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data ?? error;
+    }
+};

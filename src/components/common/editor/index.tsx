@@ -91,7 +91,7 @@ export default function QuillEditor({ value = "", onChange }: QuillEditorProps) 
 
   return (
     <div className="relative w-full">
-      <div ref={editorRef} className=" bg-white min-h-[200px] pb-10 font-ibm-plex-sans!"></div>
+      <div ref={editorRef} className=" bg-white min-h-[350px] pb-10 font-ibm-plex-sans!"></div>
       <div className="absolute bottom-[10px] right-[10px] flex justify-end">
           <button disabled={loader} type="button" onClick={getAiGeneratedDescription} className="min-w-[160px] flex justify-center rounded-full py-2 px-4 mt-2 text-sm border border-border cursor-pointer hover:bg-list-background">{loader ? <Spinner className="fill-black!"/> : 'Generate With AI'}</button>
         </div>

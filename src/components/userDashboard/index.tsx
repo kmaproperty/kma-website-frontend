@@ -396,28 +396,28 @@ export default function UserDashboard() {
             </p>
           </div>
           <div>
-            <button className="w-full text-sm 1xl:text-base px-5 py-3 border border-[#E7E7E7] text-center cursor-pointer rounded-[5px] bg-light-purple">
+            <a href="/help-center" className="w-full text-sm 1xl:text-base px-5 py-3 border border-[#E7E7E7] text-center cursor-pointer rounded-[5px] bg-light-purple block">
               <span className="gap-3 relative flex justify-center">
                 <p className={`text-nowrap font-medium`}>Go to Help Center</p>
               </span>
-            </button>
+            </a>
           </div>
         </div>
 
         <div className="flex flex-col gap-4 border justify-between border-[#E7E7E7] rounded-[10px] px-4 py-3">
           <p className="font-bold text-lg">Customer Support</p>
           <div className="flex flex-row justify-between gap-4">
-            <div className="flex flex-col flex-1">
+            <a href={`tel:${aboutusData?.phoneNumber}`} className="flex flex-col flex-1 cursor-pointer">
               <Image src={'/assets/mobile-blue.svg'} width={45} height={45} alt="mobile" className="mb-3"/>
               <p className="font-semibold text-lg">Call Us</p>
-              <a href={`tel:${aboutusData?.phoneNumber}`} className="text-base text-text-gray">{aboutusData?.phoneNumber}</a>
-            </div>
+              <p className="text-base text-text-gray">{aboutusData?.phoneNumber}</p>
+            </a>
             <div className="h-[1px] 2md:h-auto 2md:mx-5 my-4 2md:my-0 2md:py-8 border  border-[#E7E7E7]"></div>
-            <div className="flex flex-col flex-1">
+            <a href={`mailto:${aboutusData?.email}`} className="flex flex-col flex-1 cursor-pointer">
               <Image src={'/assets/email-blue.svg'} width={45} height={45} alt="mobile" className="mb-3"/>
               <p className="font-semibold text-lg">Email Us</p>
-              <a href={`mailto:${aboutusData?.email}`} className="text-base text-text-gray">{aboutusData?.email}</a>
-            </div>
+              <p className="text-base text-text-gray">{aboutusData?.email}</p>
+            </a>
           </div>
           
         </div>

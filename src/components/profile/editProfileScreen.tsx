@@ -218,7 +218,7 @@ function EditProfileContent({ user, onSuccess }: EditProfileContentProps) {
 
         <div className="border-t border-border pt-6">
           <h3 className="text-[30px] font-semibold leading-none text-text-black">Mobile Number</h3>
-          <p className="mt-2 text-sm text-text-gray">+91 {user.phone}</p>
+          <p className="mt-2 text-sm text-text-gray">{user.phone?.startsWith('+') ? user.phone : `+91 ${user.phone}`}</p>
           <p className="mt-1 text-xs text-text-gray">Contact support to change your mobile number.</p>
         </div>
       </div>
@@ -287,7 +287,7 @@ export default function EditProfileScreen() {
               </div>
             )}
             <p className="mt-3 text-sm font-medium text-text-black">{profileLoading ? "..." : user?.name ?? "User"}</p>
-            <p className="mt-1 text-xs text-text-gray">{user?.phone ? `+91 ${user.phone}` : ""}</p>
+            <p className="mt-1 text-xs text-text-gray">{user?.phone ? (user.phone.startsWith('+') ? user.phone : `+91 ${user.phone}`) : ""}</p>
           </div>
 
           <div className="pt-4">

@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useId, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import {
   getChannelPartnerListApiHandler,
   type ChannelPartner,
@@ -19,15 +20,49 @@ const PROFILE_BASE = process.env.NEXT_PUBLIC_AWS_URL;
 const DEFAULT_PAGE_SIZE = 12;
 
 const FILTER_CITIES = [
-  "Indore",
-  "Mumbai",
-  "Delhi",
-  "Bangalore",
-  "Hyderabad",
-  "Chennai",
-  "Kolkata",
-  "Pune",
+  "Agra",
   "Ahmedabad",
+  "Allahabad",
+  "Amritsar",
+  "Bangalore",
+  "Bhopal",
+  "Bhubaneswar",
+  "Chandigarh",
+  "Chennai",
+  "Coimbatore",
+  "Cuttack",
+  "Delhi",
+  "Dehradun",
+  "Faridabad",
+  "Ghaziabad",
+  "Gurgaon",
+  "Guwahati",
+  "Hyderabad",
+  "Indore",
+  "Jaipur",
+  "Jodhpur",
+  "Kanpur",
+  "Kochi",
+  "Kolkata",
+  "Lucknow",
+  "Ludhiana",
+  "Madurai",
+  "Meerut",
+  "Mumbai",
+  "Nagpur",
+  "Nashik",
+  "Noida",
+  "Patna",
+  "Pune",
+  "Raipur",
+  "Rajkot",
+  "Ranchi",
+  "Surat",
+  "Thane",
+  "Vadodara",
+  "Varanasi",
+  "Vijayawada",
+  "Visakhapatnam"
 ];
 
 const PROPERTY_RANGES = [
@@ -68,10 +103,14 @@ function Star({
 function ChannelPartnerCard({
   partner,
   onContact,
+  onOpenDetails,
 }: {
   partner: ChannelPartner;
   onContact?: (partner: ChannelPartner) => void;
+  onOpenDetails?: (partner: ChannelPartner) => void;
 }) {
+  const handleOpenDetails = () => onOpenDetails?.(partner);
+
   const profileSrc = joinUrl(PROFILE_BASE, partner.profile_image);
   const rating = Number(partner.rating ?? 4.2);
   const ratingText = Number.isFinite(rating) ? rating.toFixed(1) : "4.2";
@@ -81,7 +120,18 @@ function ChannelPartnerCard({
     .filter(Boolean) ?? [];
 
   return (
-    <article className="bg-white rounded-2xl border border-[#EEF0F4] shadow-[0_6px_24px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col">
+    <article
+      className="bg-white rounded-2xl border border-[#EEF0F4] shadow-[0_6px_24px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col cursor-pointer transition hover:shadow-[0_10px_40px_rgba(0,0,0,0.09)]"
+      role="button"
+      tabIndex={0}
+      onClick={handleOpenDetails}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleOpenDetails();
+        }
+      }}
+    >
       <div className="relative aspect-square w-full bg-[#F2F2F2]">
         {profileSrc ? (
           <Image
@@ -128,7 +178,11 @@ function ChannelPartnerCard({
         </p>
         <button
           type="button"
-          onClick={() => onContact?.(partner)}
+          onClick={(e) => {
+            // Keep this button action isolated from card navigation.
+            e.stopPropagation();
+            onContact?.(partner);
+          }}
           className="mt-4 w-full py-3 px-6 rounded-xl bg-blue text-white font-semibold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
         >
           <Image
@@ -146,6 +200,7 @@ function ChannelPartnerCard({
 
 export default function ChannelPartnerPageClient() {
   const selectedCity = useSelector(getSelectedCity);
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [filterOpen, setFilterOpen] = useState(false);
@@ -163,6 +218,13 @@ export default function ChannelPartnerPageClient() {
     page: String(page),
     limit: String(DEFAULT_PAGE_SIZE),
   };
+
+  const handleOpenDetails = useCallback(
+    (p: ChannelPartner) => {
+      router.push(`/channel-partner/${encodeURIComponent(p.id)}`);
+    },
+    [router]
+  );
 
   const { data, isLoading } = useQuery<
     GetChannelPartnerListResponse,
@@ -192,10 +254,18 @@ export default function ChannelPartnerPageClient() {
     setFilterOpen(false);
   }, []);
 
+  const handleClearFilters = useCallback(() => {
+    setFilterExperience("");
+    setFilterCity("");
+    setFilterProperties("");
+    setCitySearch("");
+    setPage(1);
+  }, []);
+
   return (
-    <div className="w-full flex flex-col">
+    <div className="w-full flex flex-col mt-[150px]">
       {/* Hero */}
-      <div className="relative -mt-[120px] sm:-mt-[140px] md:-mt-[160px] mb-8 md:mb-10">
+      <div className="relative mt-[120px] sm:-mt-[100px]  mb-8 md:mb-10">
         <div className="absolute inset-0 bg-blue rounded-b-[25px] sm:rounded-b-[60px] lg:rounded-b-[80px] xl:rounded-b-[100px]" />
         <div className="relative pt-6 pb-10 px-4 md:px-6 flex flex-col items-center">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white text-center mb-2">
@@ -254,16 +324,11 @@ export default function ChannelPartnerPageClient() {
       </div>
 
       {/* Breadcrumbs */}
-      <nav className="text-sm text-text-gray mb-6" aria-label="Breadcrumb">
-        <Link href="/" className="hover:text-blue">
-          Home
-        </Link>
-        <span className="mx-2">/</span>
-        <span className="text-text-black">Channel Partner</span>
-      </nav>
+
 
       {/* Grid */}
-      {isLoading ? (
+     <div className="w-full py-[180px]">
+     {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
           {Array.from({ length: 8 }).map((_, i) => (
             <div
@@ -293,10 +358,12 @@ export default function ChannelPartnerPageClient() {
               key={partner.id ?? `${partner.name}-${index}`}
               partner={partner}
               onContact={() => setContactPopupOpen(true)}
+              onOpenDetails={handleOpenDetails}
             />
           ))}
         </div>
       )}
+     </div>
 
       {/* Pagination */}
       {totalPages > 1 && !isLoading && (
@@ -347,72 +414,6 @@ export default function ChannelPartnerPageClient() {
             onClick={() => setFilterOpen(false)}
           />
           <div className="fixed left-1/2 top-[180px] z-50 w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 rounded-2xl bg-[#F5F5F5] shadow-xl max-h-[calc(100vh-220px)] overflow-y-auto">
-            {/* Filter Dropdown card */}
-            <div className="rounded-2xl bg-white p-4 shadow-sm">
-              <h3 className="text-sm font-semibold text-text-black mb-4">
-                Filter Dropdown
-              </h3>
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-xs font-medium text-text-gray mb-1">
-                    By Experience
-                  </label>
-                  <input
-                    type="number"
-                    min={0}
-                    placeholder="i.e. 1"
-                    value={filterExperience}
-                    onChange={(e) => setFilterExperience(e.target.value)}
-                    className="w-full rounded-lg border border-[#D9D9D9] bg-white px-3 py-2.5 text-sm text-text-black placeholder:text-text-gray outline-none focus:border-blue"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-text-gray mb-1">
-                    By City
-                  </label>
-                  <select
-                    value={filterCity}
-                    onChange={(e) => setFilterCity(e.target.value)}
-                    className="w-full rounded-lg border border-[#D9D9D9] bg-white px-3 py-2.5 text-sm text-text-black outline-none focus:border-blue appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M6%208L1%203h10z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:12px] bg-[right_0.75rem_center] bg-no-repeat pr-9"
-                  >
-                    <option value="">Select City</option>
-                    {FILTER_CITIES.map((city) => (
-                      <option key={city} value={city}>
-                        {city}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-text-gray mb-1">
-                    By Properties
-                  </label>
-                  <select
-                    value={filterProperties}
-                    onChange={(e) => setFilterProperties(e.target.value)}
-                    className="w-full rounded-lg border border-[#D9D9D9] bg-white px-3 py-2.5 text-sm text-text-black outline-none focus:border-blue appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M6%208L1%203h10z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:12px] bg-[right_0.75rem_center] bg-no-repeat pr-9"
-                  >
-                    <option value="">Select No. of Properties</option>
-                    {PROPERTY_RANGES.map((range) => (
-                      <option key={range} value={range}>
-                        {range}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="flex justify-end pt-1">
-                  <button
-                    type="button"
-                    onClick={handleApplyFilters}
-                    className="rounded-lg bg-blue px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
-                  >
-                    Apply
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Cities card */}
             <div className="mt-4 rounded-2xl bg-white p-4 shadow-sm">
               <h3 className="text-sm font-semibold text-text-black mb-3">
                 Cities
@@ -465,6 +466,16 @@ export default function ChannelPartnerPageClient() {
                   </button>
                 ))}
               </div>
+            </div>
+
+            <div className="mb-4 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={handleClearFilters}
+                className="rounded-lg border border-[#D9D9D9] bg-white px-4 py-2.5 text-sm font-semibold text-text-black hover:bg-[#F5F5F5] transition-colors"
+              >
+                Clear Filters
+              </button>
             </div>
           </div>
         </>

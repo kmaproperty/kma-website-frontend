@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ProfileMenu from "../common/profileMenu";
 import { useRouter } from "nextjs-toploader/app";
 import { useQuery } from "@tanstack/react-query";
@@ -16,6 +16,13 @@ export default function UserHeader() {
   const pathName = usePathname();
   const router = useRouter()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -84,7 +91,7 @@ export default function UserHeader() {
   }
 
   return (
-    <div className="bg-white/10 rounded-[200px] bg-clip-padding backdrop-filter w-[80%]  backdrop-blur-[20px] h-[63px] px-7 pt-[4px] flex justify-between items-center border border-1 border-[#FFFFFF33] z-3">
+    <div className={`rounded-[200px] bg-clip-padding backdrop-filter w-[80%] backdrop-blur-[20px] h-[63px] px-7 pt-[4px] flex justify-between items-center border border-1 transition-colors duration-300 ${isScrolled ? "bg-blue shadow-xl border-[#FFFFFF1F]" : "bg-white/10 border-[#FFFFFF33]"}`}>
       <div onClick={() => handleRedirect('/')} className="flex items-center px-1.5 shrink-0 cursor-pointer">
         <Image
           src="/assets/kma-logo-white.svg"
@@ -96,7 +103,7 @@ export default function UserHeader() {
       </div>
 
       <div className="flex flex-row justify-center items-center gap-12 w-full px-8">
-        {[{name:"Dashboard", route: 'user-dashboard'}, {name: "Leads", route:''}, {name: "Listing", route: 'my-listing'}].map((item) => (
+        {[{name:"Dashboard", route: 'user-dashboard'}, {name: "Leads", route:'lead-summary/list'}, {name: "Listing", route: 'my-listing'}].map((item) => (
           <p
             key={item.name}
             onClick={() => handleRedirect(`/${item.route}`)}

@@ -98,7 +98,7 @@ export default function UserProfile() {
                     {userProfile.name}
                   </p>
                   <p className="text-text-gray text-base">
-                    +91 {userProfile.phone}
+                    {userProfile.phone?.startsWith('+') ? userProfile.phone : `+91 ${userProfile.phone}`}
                   </p>
                   <p className="text-text-gray text-base">
                     {userProfile.email}

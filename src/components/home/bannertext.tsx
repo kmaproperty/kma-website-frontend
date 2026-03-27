@@ -6,7 +6,7 @@ export default function BannerText(){
 
             <div style={{width: 'max-content'}} className="bg-white/10 rounded-[5px] bg-clip-padding backdrop-filter flex gap-3 items-center backdrop-blur-[20px] px-[8px] py-[4px]">
                 <button className="rounded-[5px] bg-[#ffbb55] px-[4px] py-[2px] text-xs xl:text-sm text-white">New</button>
-                <p className="text-xs xl:text-sm text-white">No 1 Best Selling Realstate Website</p>
+                <p className="text-xs xl:text-sm text-white">No 1 Best Selling Real Estate Website</p>
             </div>
 
             <div className="text-white mt-5">

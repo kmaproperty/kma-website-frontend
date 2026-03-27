@@ -63,7 +63,7 @@ export default function ListCard({data, handleManage}: {data: ListingItem, handl
     nextArrow: (
       <Arrow
         direction="right"
-        disabled={currentSlide === 3 - 1}
+        disabled={currentSlide === (data?.photos?.length || 1) - 1}
       />
     )
   };

@@ -191,16 +191,55 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
     longitude: number;
   } | null>(null);
   const [isLocating, setIsLocating] = useState(false);
+  const [listingTypeId, setListingTypeId] = useState<string | null>(null);
 
-  // Apply filters from URL query params (from header dropdown navigation)
+  // Apply filters from URL query params (from homepage search / header dropdown)
   const searchParams = useSearchParams();
   const appliedQueryRef = useRef<string | null>(null);
   useEffect(() => {
-    const propertyTypeId = searchParams.get('propertyTypeId');
     const queryKey = searchParams.toString();
-    if (propertyTypeId && appliedQueryRef.current !== queryKey) {
-      appliedQueryRef.current = queryKey;
-      setFilters({ propertyTypeIds: [propertyTypeId] });
+    if (!queryKey || appliedQueryRef.current === queryKey) return;
+    appliedQueryRef.current = queryKey;
+
+    const ltId = searchParams.get('listingTypeId') || searchParams.get('listingType');
+    if (ltId) setListingTypeId(ltId);
+
+    const patch: Partial<typeof filters> = {};
+
+    const propertyTypeId = searchParams.get('propertyTypeId');
+    const propertyTypeIds = searchParams.get('propertyTypeIds');
+    if (propertyTypeId) {
+      patch.propertyTypeIds = [propertyTypeId];
+    } else if (propertyTypeIds) {
+      patch.propertyTypeIds = propertyTypeIds.split(',').filter(Boolean);
+    }
+
+    const search = searchParams.get('search');
+    if (search) patch.searchText = search;
+
+    const minPrice = searchParams.get('minPrice');
+    if (minPrice) patch.minBudget = Number(minPrice) / 10_000_000 || null;
+
+    const maxPrice = searchParams.get('maxPrice');
+    if (maxPrice) patch.maxBudget = Number(maxPrice) / 10_000_000 || null;
+
+    const constructionStatuses = searchParams.get('constructionStatuses');
+    if (constructionStatuses) {
+      patch.possessionStatuses = constructionStatuses.split(',').filter(Boolean) as typeof filters.possessionStatuses;
+    }
+
+    const furnishingTypes = searchParams.get('furnishingTypes');
+    if (furnishingTypes) {
+      patch.furnishingTypeId = furnishingTypes.split(',')[0] || null;
+    }
+
+    const categoryIds = searchParams.get('categoryIds');
+    if (categoryIds) {
+      patch.categoryId = categoryIds.split(',')[0] || null;
+    }
+
+    if (Object.keys(patch).length > 0) {
+      setFilters(patch);
     }
   }, [searchParams, setFilters]);
 
@@ -252,12 +291,14 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
         deferredFilters.possessionStatuses.length > 0
           ? deferredFilters.possessionStatuses
           : undefined,
+      listingTypeIds:
+        listingTypeId ? [listingTypeId] : undefined,
       sortBy: "price",
       sortOrder: deferredSort === "price_low_high" ? "ASC" : "DESC",
       latitude: nearMeCoords?.latitude,
       longitude: nearMeCoords?.longitude,
     };
-  }, [cityId, deferredFilters, deferredSort, deferredTab, nearMeCoords]);
+  }, [cityId, deferredFilters, deferredSort, deferredTab, nearMeCoords, listingTypeId]);
 
   const apiQueryParams = useMemo(
     () => ({

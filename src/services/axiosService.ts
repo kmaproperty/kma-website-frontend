@@ -14,6 +14,41 @@ const createCorrelationId = () => {
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 };
 
+// Cache the token from /api/get-token to avoid fetching on every request
+let cachedAccessToken: string | null = null;
+let tokenCacheTime = 0;
+const TOKEN_CACHE_MS = 10_000; // cache for 10 seconds
+let tokenFetchPromise: Promise<string | null> | null = null;
+
+const getAccessToken = async (): Promise<string | null> => {
+  const now = Date.now();
+  if (cachedAccessToken !== null && now - tokenCacheTime < TOKEN_CACHE_MS) {
+    return cachedAccessToken;
+  }
+  // Deduplicate concurrent fetches
+  if (!tokenFetchPromise) {
+    tokenFetchPromise = fetch("/api/get-token")
+      .then(res => res.json())
+      .then(data => {
+        cachedAccessToken = data.accessToken || null;
+        tokenCacheTime = Date.now();
+        tokenFetchPromise = null;
+        return cachedAccessToken;
+      })
+      .catch(() => {
+        tokenFetchPromise = null;
+        return null;
+      });
+  }
+  return tokenFetchPromise;
+};
+
+export const clearTokenCache = () => {
+  cachedAccessToken = null;
+  tokenCacheTime = 0;
+  tokenFetchPromise = null;
+};
+
 export const axiosInstance = axios.create({
   baseURL: API_URL,
   headers: {
@@ -25,8 +60,7 @@ export const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     const sessionId = useSessionStore.getState().sessionId;
-    const res = await fetch("/api/get-token");
-    const { accessToken } = await res.json();
+    const accessToken = await getAccessToken();
     if (sessionId) {
       config.headers["X-Session-Id"] = sessionId;
     }
@@ -62,6 +96,7 @@ axiosInstance.interceptors.response.use(
         const newAccessToken = await handleRefreshToken();
         if (newAccessToken) {
           setAuthCookies(newAccessToken, refreshToken)
+          clearTokenCache();
           localStorage.setItem("accessToken", newAccessToken);
           originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
           return axiosInstance(originalRequest);
