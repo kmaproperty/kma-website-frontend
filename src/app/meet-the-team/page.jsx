@@ -94,7 +94,12 @@ const MeetTheTeam = () => {
                         >
                             <Image height={46} width={46} src="assets/app/instagram.svg" className='w-6 h-6' />
                         </a>
-                        <a className='flex w-10 h-10 items-center justify-center rounded-full bg-white' href='#'>
+                        <a
+                            className='flex w-10 h-10 items-center justify-center rounded-full bg-white'
+                            href='https://www.linkedin.com/company/kma-global-properties-pvt-ltd/?viewAsMember=true'
+                            target='_blank'
+                            rel='noopener noreferrer'
+                        >
                             <Image height={46} width={46} src="assets/app/linkedin.svg" className='w-6 h-6' />
                         </a>
                         <a

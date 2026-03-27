@@ -2,6 +2,7 @@
 import { submitContactForm } from '@/services/contactService';
 import React, { cache } from 'react'
 import { toast } from 'react-toastify';
+import { stateCityMap } from '@/lib/constants';
 
 const JoinUsForm = () => {
   const [formValue, setFormValue] = React.useState({
@@ -14,7 +15,16 @@ const JoinUsForm = () => {
     message: ''
   });
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    if (e.target.name === 'state') {
+      setFormValue({
+        ...formValue,
+        state: e.target.value,
+        city: '',
+      });
+      return;
+    }
+
     setFormValue({
       ...formValue,
       [e.target.name]: e.target.value
@@ -59,8 +69,33 @@ const JoinUsForm = () => {
           <input type="text" value={formValue.firstName} onChange={handleChange} name="firstName" placeholder='Last Name' className='w-full border border-[#D9D9D9] rounded-full px-5 py-3' />
         </div>
         <div className='flex gap-4'>
-          <input type="text" value={formValue.state} onChange={handleChange} name="state" placeholder='State' className='w-full border border-[#D9D9D9] rounded-full px-5 py-3' />
-          <input type="text" name="city" value={formValue.city} onChange={handleChange} placeholder='City' className='w-full border border-[#D9D9D9] rounded-full px-5 py-3' />
+          <select
+            name="state"
+            value={formValue.state}
+            onChange={handleChange}
+            className='w-full border border-[#D9D9D9] rounded-full px-5 py-3 bg-white'
+          >
+            <option value="">Select State</option>
+            {Object.keys(stateCityMap).map((state) => (
+              <option key={state} value={state}>
+                {state}
+              </option>
+            ))}
+          </select>
+          <select
+            name="city"
+            value={formValue.city}
+            onChange={handleChange}
+            disabled={!formValue.state}
+            className='w-full border border-[#D9D9D9] rounded-full px-5 py-3 bg-white disabled:bg-[#F5F5F5] disabled:cursor-not-allowed'
+          >
+            <option value="">Select City</option>
+            {(stateCityMap[formValue.state] || []).map((city) => (
+              <option key={city} value={city}>
+                {city}
+              </option>
+            ))}
+          </select>
         </div>
         <div className='flex gap-4'>
             <input type="email" name="email" value={formValue.email} onChange={handleChange} placeholder='Email address' className='w-full border border-[#D9D9D9] rounded-full px-5 py-3' />
