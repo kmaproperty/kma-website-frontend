@@ -73,7 +73,11 @@ const DynamicSelect = ({
       ...base,
       fontSize: "0.875rem",
       borderRadius: 8,
-      zIndex: 50,
+      zIndex: 9999,
+    }),
+    menuPortal: (base) => ({
+      ...base,
+      zIndex: 9999,
     }),
     option: (base, state) => ({
       ...base,

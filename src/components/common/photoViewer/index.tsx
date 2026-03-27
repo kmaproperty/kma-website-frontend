@@ -117,6 +117,7 @@ const PhotoViewer: React.FC<PhotoViewerProps> = ({
                 minHeight="30px"
                 options={options}
                 value={data.view}
+                menuPortalTarget={typeof window !== 'undefined' ? document.body : null}
                 onChange={(val) => {
                     if(onRoomChange){
                         onRoomChange(val, id)

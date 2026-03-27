@@ -1118,10 +1118,10 @@ const { data: amenitiesList } = useQuery({
             </span>
           </div>
 
-          {dynamicFieldDetails.amenities.length > 0 && <div className="flex gap-4 flex-wrap pt-2">
+          {dynamicFieldDetails.amenities.length > 0 && <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 pt-2">
             {dynamicFieldDetails.amenities.map((item) => {
               return (
-                <div className="flex-1">
+                <div key={item}>
                   <CustomCheckbox
                     label={item}
                     value={item}
