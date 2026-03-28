@@ -193,7 +193,7 @@ export default function HomeHeader() {
 
 
 const navigatePostProperty = () => {
-  router.push('/post-property')
+  router.push('/user-flow')
 }
 
 const navigateDashboard = () => {
