@@ -105,10 +105,12 @@ export default function SignUp() {
         mobile: mobileInput.value,
         code: mobileInput.code,
         ownerType: selectedPartnerType,
-        ...(selectedPartnerType == USER_TYPE.OWNER ? {propertyIntent: propertyIntent,} : '')
+        ...(selectedPartnerType == USER_TYPE.OWNER ? {propertyIntent: propertyIntent,} : ''),
+        isOtp: true,
+        flow: "signup",
       })
       toast.success(response.otp)
-      router.push(`/verify-otp${params}`)
+      router.push(`/user-flow${params}`)
     },
     onError: (error: any) => {
       if(Array.isArray(error.message)){

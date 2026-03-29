@@ -104,6 +104,7 @@ export default function SignupOtpCard() {
       code,
       ownerType,
       ...(ownerType == USER_TYPE.OWNER ? { propertyIntent } : ""),
+      postProperty: true,
     });
     router.replace(`/user-flow${params}`);
   };
