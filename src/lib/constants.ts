@@ -214,11 +214,3 @@ export const PRICE_OPTIONS_THOUSAND_LAKH = [
   { label: "50 Lakh", value: 5000000 },
   { label: "75 Lakh", value: 7500000 },
 ];
-
-export const stateCityMap: Record<string, string[]> = {
-  Maharashtra: ["Mumbai", "Pune", "Nagpur", "Nashik"],
-  Karnataka: ["Bengaluru", "Mysuru", "Mangaluru", "Hubballi"],
-  Gujarat: ["Ahmedabad", "Surat", "Vadodara", "Rajkot"],
-  Delhi: ["New Delhi", "Dwarka", "Rohini", "Saket"],
-  Telangana: ["Hyderabad", "Warangal", "Nizamabad", "Khammam"],
-};

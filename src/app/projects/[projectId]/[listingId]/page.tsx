@@ -1185,7 +1185,12 @@ export default function ListingDetailsPage() {
                                 {Array.from({ length: 5 }).map((_, idx) => (
                                   <Star
                                     key={`${review.id}-star-${idx}`}
-                                    className="h-5 w-5 fill-[#F5A524] text-[#F5A524]"
+                                    className="h-5 w-5"
+                                    fill={idx < review.rating ? "#F5A524" : "none"}
+                                    stroke="#F5A524"
+                                    style={{
+                                      color: idx < review.rating ? "#F5A524" : "#E5E7EB", // Tailwind slate-200
+                                    }}
                                   />
                                 ))}
                               </div>

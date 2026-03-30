@@ -566,3 +566,43 @@ export const submitChannelPartnerReview = async (
         throw error.response?.data ?? error;
     }
 };
+
+export interface EndUserStateCityRow {
+    id: string;
+    name: string;
+    code: string;
+    state: string;
+}
+
+export interface EndUserStatesResponse {
+    success: boolean;
+    data: string[];
+}
+
+export interface EndUserStateCitiesResponse {
+    success: boolean;
+    data: EndUserStateCityRow[];
+}
+
+export const getEndUserStates = async (): Promise<string[]> => {
+    try {
+        const response = await axiosInstance.get<EndUserStatesResponse>("end-user/states");
+        return Array.isArray(response.data.data) ? response.data.data : [];
+    } catch (error: any) {
+        throw error.response?.data ?? error;
+    }
+};
+
+export const getEndUserStateCities = async (
+    state: string
+): Promise<EndUserStateCityRow[]> => {
+    try {
+        const encoded = encodeURIComponent(state);
+        const response = await axiosInstance.get<EndUserStateCitiesResponse>(
+            `end-user/states/${encoded}/cities`
+        );
+        return Array.isArray(response.data.data) ? response.data.data : [];
+    } catch (error: any) {
+        throw error.response?.data ?? error;
+    }
+};
