@@ -469,6 +469,19 @@ export const getTopProperties = async ({cityId}: GetTopPropertiesPayload) : Prom
     }
 }
 
+export const getFeaturedProperties = async ({cityId}: GetTopPropertiesPayload) : Promise<GetTopPropertiesResponse> => {
+    try{
+        const response = await axiosInstance.get<GetTopPropertiesResponse>(
+      "end-user/featured-properties", {
+        params: {cityId}
+      });
+
+    return response.data;
+    }catch(error: any){
+        throw error.response?.data ?? error;
+    }
+}
+
 export interface GetPropertiesCountPayload {
     page?: string;
     limit?: string;
