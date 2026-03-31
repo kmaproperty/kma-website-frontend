@@ -3,7 +3,7 @@
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import {
@@ -32,6 +32,8 @@ import { useProjectsStore } from "../_store/useProjectsStore";
 import { cx } from "../_utils/format";
 import ImageCarousel from "./ImageCarousel";
 import ProjectCallBackModal from "./ProjectCallBackModal";
+import LoginCard from "@/components/channelParterner/loginCard";
+import LoginOtpCard from "@/components/channelParterner/loginOtpCard";
 
 function FeaturePill({
   icon,
@@ -62,6 +64,8 @@ export default function ProjectCard({
   const [isCallBackModalOpen, setIsCallBackModalOpen] = React.useState(false);
   const [isQuickCallBackModalOpen, setIsQuickCallBackModalOpen] = React.useState(false);
   const [isAuthChecking, setIsAuthChecking] = React.useState(false);
+  const [isFavoriteAuthChecking, setIsFavoriteAuthChecking] = React.useState(false);
+  const searchParams = useSearchParams();
   const [userContact, setUserContact] = React.useState<{
     name: string;
     email: string;
@@ -80,6 +84,54 @@ export default function ProjectCard({
   const isFav = favoriteOverride ?? Boolean(project.isFavorite);
 
   const queryClient = useQueryClient();
+  const isLoginParam = searchParams.get("isLogin") === "true";
+  const isOtpParam = searchParams.get("isOtp") === "true";
+  const flowParam = searchParams.get("flow");
+  const isFavoriteAuthDialogOpen = isLoginParam || (isOtpParam && flowParam === "login");
+
+  const openFavoriteAuthDialog = () => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const currentSearchParams = new URLSearchParams(window.location.search);
+    currentSearchParams.delete("isOtp");
+    currentSearchParams.delete("flow");
+    currentSearchParams.delete("mobile");
+    currentSearchParams.delete("code");
+    currentSearchParams.delete("redirect");
+    currentSearchParams.set("isLogin", "true");
+
+    const redirectParams = new URLSearchParams(window.location.search);
+    redirectParams.delete("isLogin");
+    redirectParams.delete("isOtp");
+    redirectParams.delete("flow");
+    redirectParams.delete("mobile");
+    redirectParams.delete("code");
+    redirectParams.delete("redirect");
+    const redirectSearch = redirectParams.toString();
+    const redirect = `${window.location.pathname}${redirectSearch ? `?${redirectSearch}` : ""}`;
+
+    currentSearchParams.set("redirect", redirect);
+    router.replace(`${window.location.pathname}?${currentSearchParams.toString()}`);
+  };
+
+  const closeFavoriteAuthDialog = () => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const nextParams = new URLSearchParams(window.location.search);
+    nextParams.delete("isLogin");
+    nextParams.delete("isOtp");
+    nextParams.delete("flow");
+    nextParams.delete("mobile");
+    nextParams.delete("code");
+    nextParams.delete("redirect");
+    const query = nextParams.toString();
+    router.replace(`${window.location.pathname}${query ? `?${query}` : ""}`);
+  };
+
   const { mutate: updateFavorite, isPending: isFavoriteUpdating } = useMutation({
     mutationFn: async ({
       propertyId,
@@ -103,9 +155,26 @@ export default function ProjectCard({
     },
   });
 
-  const handleFavoriteClick = () => {
-    if (isFavoriteUpdating) {
+  const handleFavoriteClick = async () => {
+    if (isFavoriteUpdating || isFavoriteAuthChecking) {
       return;
+    }
+
+    setIsFavoriteAuthChecking(true);
+    try {
+      const response = await fetch("/api/get-token");
+      const data = (await response.json()) as { accessToken?: string | null };
+      const isUserLoggedIn = Boolean(data?.accessToken);
+
+      if (!isUserLoggedIn) {
+        openFavoriteAuthDialog();
+        return;
+      }
+    } catch {
+      openFavoriteAuthDialog();
+      return;
+    } finally {
+      setIsFavoriteAuthChecking(false);
     }
 
     const nextIsFavorite = !isFav;
@@ -269,11 +338,11 @@ export default function ProjectCard({
           <button
             type="button"
             onClick={handleFavoriteClick}
-            disabled={isFavoriteUpdating}
+            disabled={isFavoriteUpdating || isFavoriteAuthChecking}
             className={cx(
               "absolute right-3 top-3 rounded-full p-2 backdrop-blur transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/30",
               isFav ? "text-[#E11D48]" : "text-white",
-              isFavoriteUpdating && "cursor-not-allowed opacity-70"
+              (isFavoriteUpdating || isFavoriteAuthChecking) && "cursor-not-allowed opacity-70"
             )}
             aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
             // style={{
@@ -504,6 +573,31 @@ export default function ProjectCard({
         onClose={() => setIsCallBackModalOpen(false)}
         project={project}
       />
+      <Dialog
+        open={isFavoriteAuthDialogOpen}
+        onClose={closeFavoriteAuthDialog}
+        slotProps={{
+          paper: {
+            sx: {
+              borderRadius: "0.75rem",
+            },
+          },
+        }}
+      >
+        <DialogContent sx={{ padding: 0 }}>
+          <div className="relative w-full rounded-xl bg-white sm:w-[460px]">
+            <button
+              type="button"
+              onClick={closeFavoriteAuthDialog}
+              className="absolute right-4 top-4 z-10 rounded-full p-1 text-[#1E2236] transition hover:bg-black/5"
+              aria-label="Close login dialog"
+            >
+              ✕
+            </button>
+            {isOtpParam && flowParam === "login" ? <LoginOtpCard /> : <LoginCard />}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
