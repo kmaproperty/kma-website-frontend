@@ -106,7 +106,7 @@ export default function FeaturedProperties({ topProperties }) {
       <div className="flex-1 w-full  2md:min-w-0 -mx-2 feature-property">
         <Slider ref={sliderRef} {...settings} className="mt-10">
           {filteredProperties.map((item, index) => {
-            const img = item?.images?.length > 0 ? item.images[0]?.fileKey : null;
+            const img = item?.imageUrl || (item?.images?.length > 0 ? item.images[0]?.url : null);
             const size = item?.units?.length > 0 ? item.units[0]?.size : null;
             const ratingNumber = Math.max(
               0,
@@ -132,7 +132,7 @@ export default function FeaturedProperties({ topProperties }) {
                     <div className="relative">
                       {img ? (
                         <Image
-                          src={profileBaseUrl + img}
+                          src={img}
                           width={600}
                           height={400}
                           alt="property"
