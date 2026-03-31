@@ -42,6 +42,7 @@ export default function LeadSummaryListClient() {
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [crmLoadingLeadId, setCrmLoadingLeadId] = useState<string | null>(null);
 
   // Read filter values from the shared projects store (FiltersSidebar writes here)
   const storeFilters = useProjectsStore((s) => s.filters);
@@ -147,6 +148,52 @@ export default function LeadSummaryListClient() {
     }
   };
 
+  const handleCrmDashboard = async (lead: LeadItem) => {
+    const crmEndpoint =
+      "https://www.zohoapis.in/crm/v7/functions/properties_from_website_to_crm/actions/execute?auth_type=apikey&zapikey=1003.bd10ff840aa25477a4646948c5bb8f92.537526bc9225f903d9ac7966fb1ea927";
+    const firstProperty = lead.propertyContacts?.[0]?.property;
+    const propertyContact = lead.propertyContacts?.[0];
+
+    // Keep all fields non-empty to avoid Zoho Deluge .get() errors.
+    const payload = {
+      customer: {
+        name: lead.name?.trim() || "Unknown Customer",
+        email: lead.email?.trim() || "no-email@example.com",
+        phone: lead.phone?.trim() || "0000000000",
+        website_user_id: lead.id || `lead-${Date.now()}`,
+      },
+      property: {
+        property_name: stripHtml(firstProperty?.title || "Unknown Property"),
+        type: lead.propertyTypes?.[0] || lead.buildingType || "Unknown",
+        price: firstProperty?.price ?? firstProperty?.monthlyRent ?? 0,
+        location:
+          firstProperty?.localityName ||
+          lead.locations?.[0] ||
+          firstProperty?.societyName ||
+          "Unknown",
+        status: lead.status || "NEW",
+        website_property_id: propertyContact?.propertyId || firstProperty?.id || "UNKNOWN_PROPERTY",
+      },
+    };
+
+    setCrmLoadingLeadId(lead.id);
+    try {
+      const response = await fetch(crmEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
+      console.log("CRM sync success", result);
+    } catch (error) {
+      console.error("Failed to sync lead to CRM", error);
+    } finally {
+      setCrmLoadingLeadId(null);
+    }
+  };
+
   const formatBudget = (min?: number | null, max?: number | null) => {
     if (!min && !max) return "";
     const fmt = (v: number) => {
@@ -221,7 +268,7 @@ export default function LeadSummaryListClient() {
                   ))}
                 </div>
 
-                <div className="flex items-center gap-2">
+                {/* <div className="flex items-center gap-2">
                   <button
                     onClick={handleSync}
                     disabled={syncing}
@@ -238,7 +285,7 @@ export default function LeadSummaryListClient() {
                     <Download className="h-3.5 w-3.5" />
                     {exporting ? "Exporting..." : "Export Leads"}
                   </button>
-                </div>
+                </div> */}
               </div>
 
               <p className="mb-3 text-xs text-text-gray">
@@ -271,9 +318,9 @@ export default function LeadSummaryListClient() {
                         <div className="flex items-center justify-between gap-3">
                           <div className="flex items-center gap-2">
                             <p className="text-[18px] font-semibold text-text-black">{item.name}</p>
-                            <button className="rounded-md border border-[#e1e1e1] bg-[#f2f2f4] p-1.5 text-[#8f8fa0]">
+                            {/* <button className="rounded-md border border-[#e1e1e1] bg-[#f2f2f4] p-1.5 text-[#8f8fa0]">
                               <Share2 className="h-3.5 w-3.5" />
-                            </button>
+                            </button> */}
                           </div>
                           <p className="text-sm text-[#8c8c8c]">{formatTimeAgo(item.lastContactedAt)}</p>
                         </div>
@@ -344,14 +391,18 @@ export default function LeadSummaryListClient() {
 
                         <div className="my-3 border-t border-[#e5e5e5]" />
                         <div className="flex justify-end">
-                          <button className="inline-flex items-center gap-2 rounded-md border border-[#8bcf97] bg-[#f5fff6] px-4 py-2 text-sm font-medium text-[#4a9e5a]">
+                          <button
+                            onClick={() => handleCrmDashboard(item)}
+                            disabled={crmLoadingLeadId === item.id}
+                            className="inline-flex items-center gap-2 rounded-md border border-[#8bcf97] bg-[#f5fff6] px-4 py-2 text-sm font-medium text-[#4a9e5a] disabled:opacity-60"
+                          >
                             <span className="grid h-4 w-4 grid-cols-2 gap-0.5">
                               <span className="rounded-[1px] bg-[#7fc78c]" />
                               <span className="rounded-[1px] bg-[#7fc78c]" />
                               <span className="rounded-[1px] bg-[#7fc78c]" />
                               <span className="rounded-[1px] bg-[#7fc78c]" />
                             </span>
-                            CRM Dashboard
+                            {crmLoadingLeadId === item.id ? "Syncing CRM..." : "CRM Dashboard"}
                           </button>
                         </div>
                       </article>

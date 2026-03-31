@@ -359,7 +359,7 @@ export default function ChannelPartnerDetailsClient({
       id: r.id,
       name: r.reviewerName || "User",
       role: "",
-      rating: r.rating,
+      rating: r.overallRating,
       reviewText: r.review,
       createdAt: r.createdAt?.slice(0, 10) ?? "",
     }));

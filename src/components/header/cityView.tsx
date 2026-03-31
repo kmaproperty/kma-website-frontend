@@ -1,21 +1,20 @@
 import { getUserCoordinates } from "@/api/hooks/useGeoloaction";
-import { getSelectedCity, setSelectedCity } from "@/store/homeHeaderSlice";
+import { getSelectedCity, setSelectedCity, type HeaderState } from "@/store/homeHeaderSlice";
 import { useHeaderStore } from "@/store/useHeaderStore";
 import { InputBase } from "@mui/material";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import type { City } from "@/services/homeService";
 
 export default function CityView({ handleScroll }: { handleScroll?: () => void }) {
   const dispatch = useDispatch();
   const selectedCity = useSelector(getSelectedCity);
   const { cityData, fetchCities, cityLoader } = useHeaderStore();
   
-  const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
   const [cityInput, setCityInput] = useState("");
   const [detecting, setDetecting] = useState(false)
-  const allCities = cityData?.allCities ?? [];
-  const featuredCity = cityData?.featuredCities ?? [];
+  const allCities = (cityData?.allCities ?? []) as City[];
 
 
   const fetchLocation = async () => {
@@ -30,9 +29,9 @@ export default function CityView({ handleScroll }: { handleScroll?: () => void }
     }
   };
 
-  const filterdList = (value) => {
+  const filterdList = (value: string): City[] => {
     if(value){
-      let data = allCities?.filter(item => {
+      const data = allCities?.filter(item => {
         const name = item.name
         return name.toLowerCase().includes(value.toLowerCase())
       }) ?? []
@@ -51,8 +50,8 @@ export default function CityView({ handleScroll }: { handleScroll?: () => void }
     }
   }
 
-  const handleSelectCity = (city) => {
-    dispatch(setSelectedCity(city))
+  const handleSelectCity = (city: City) => {
+    dispatch(setSelectedCity(city as unknown as HeaderState["selectedCity"]))
     if(handleScroll){
       handleScroll()
     }
@@ -61,6 +60,13 @@ export default function CityView({ handleScroll }: { handleScroll?: () => void }
   useEffect(() => {
     setDetecting(false)
   },[cityLoader])
+
+  const normalizedSearch = cityInput.trim().toLowerCase();
+  const gridCities = normalizedSearch
+    ? allCities.filter((city) => city.name.toLowerCase().includes(normalizedSearch))
+    : allCities;
+
+  const otherCities = filterdList(cityInput);
 
   return (
     <div className="p-2 w-full sm:w-[330px]">
@@ -98,28 +104,16 @@ export default function CityView({ handleScroll }: { handleScroll?: () => void }
         />
         <p className="text-sm text-[#757BEE]">Detect My Location {detecting && <span className="text-text-gray text-xs">(Detecting...)</span>}</p>
       </div>
-      <div className="flex flex-wrap gap-1.5 mt-4">
-        
-
-
-
-        {
-          featuredCity.map(item => {
-            return(
-              <div onClick={() => handleSelectCity(item)} className={`flex flex-1 flex-col justify-center items-center gap-1.5 bg-[#F3F3F3] rounded-[5px] px-3 sm:px-1 py-3 ${selectedCity?.id == item.id ? 'grayscale-0' : 'grayscale'} hover:grayscale-0 cursor-pointer`}>
-                {/* <Image
-                  src={profileBaseUrl + item.icon}
-                  width={600}
-                  height={600}
-                  alt="city"
-                  className="w-[45px] h-[34px]"
-                /> */}
-                <p className="text-xs text-black">{item.name}</p>
-              </div>
-            )
-          })
-        }
-        
+      <div className="flex flex-wrap gap-1.5 mt-4 max-h-[180px] overflow-y-auto pr-1">
+        {gridCities.map((item) => (
+          <div
+            key={item.id}
+            onClick={() => handleSelectCity(item)}
+            className={`flex flex-1 flex-col justify-center items-center gap-1.5 bg-[#F3F3F3] rounded-[5px] px-3 sm:px-1 py-3 ${selectedCity?.id == item.id ? 'grayscale-0' : 'grayscale'} hover:grayscale-0 cursor-pointer`}
+          >
+            <p className="text-xs text-black">{item.name}</p>
+          </div>
+        ))}
       </div>
       <div className="mt-4">
         <p className="text-base text-text-black font-medium">Other Cities</p>
@@ -133,19 +127,21 @@ export default function CityView({ handleScroll }: { handleScroll?: () => void }
                   <div className="border-b border-border mx-2"></div>
             </>)
           }
-          {filterdList(cityInput)?.map((item, index) => {
-            return (
-              <>
-                <p onClick={() => handleSelectCity(item)} className="text-sm text-text-black hover:bg-list-background cursor-pointer px-2 py-1.5 my-1 rounded-lg">
-                  {item.name}
-                </p>
-                {index != allCities.length - 1 && (
-                  <div className="border-b border-border mx-2"></div>
-                )}
-              </>
-            );
-          })}
-          {filterdList(cityInput)?.length == 0 && (
+          {normalizedSearch.length > 0 &&
+            otherCities?.map((item, index) => {
+              return (
+                <>
+                  <p onClick={() => handleSelectCity(item)} className="text-sm text-text-black hover:bg-list-background cursor-pointer px-2 py-1.5 my-1 rounded-lg">
+                    {item.name}
+                  </p>
+                  {index !== otherCities.length - 1 && (
+                    <div className="border-b border-border mx-2"></div>
+                  )}
+                </>
+              );
+            })}
+
+          {normalizedSearch.length > 0 && otherCities?.length === 0 && (
             <div className="flex justify-center">
               <p className="text-text-gray">No city found</p>
             </div>

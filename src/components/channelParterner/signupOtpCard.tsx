@@ -76,11 +76,10 @@ export default function SignupOtpCard() {
 
   const verifyOtp = (value: string) => {
     if (ownerType && mobileNumber && value.length == 4) {
-      const shouldSendRole = ownerType !== USER_TYPE.OWNER && ownerType !== USER_TYPE.CHANNEL_PARTNER;
       const payload: ValidateOtpPayload = {
         phone: mobileNumber,
         otp: value,
-        ...(shouldSendRole ? { role: ownerType as UserType } : {}),
+        role: ownerType as UserType,
       };
       setOtpError("");
       handleVerifyOtp(payload);
@@ -104,6 +103,7 @@ export default function SignupOtpCard() {
       code,
       ownerType,
       ...(ownerType == USER_TYPE.OWNER ? { propertyIntent } : ""),
+      postProperty: true,
     });
     router.replace(`/user-flow${params}`);
   };
