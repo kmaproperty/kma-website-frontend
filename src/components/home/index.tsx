@@ -13,6 +13,7 @@ import {
   GetExplorePayload,
   GetExploreResponse,
   getTopProperties,
+  getFeaturedProperties,
   GetTopPropertiesPayload,
   GetTopPropertiesResponse,
 } from "@/services/homeService";
@@ -74,6 +75,21 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
         cityId: selectedCity?.id ?? null
       };
       return getTopProperties(payload);
+    },
+    select: (response: GetTopPropertiesResponse) => {
+      return response;
+    },
+    enabled: Boolean(selectedCity?.id),
+    staleTime: 60_000,
+  });
+
+  const { data: featuredData } = useQuery({
+    queryKey: ["featured-properties-list", selectedCity?.id ?? null],
+    queryFn: () => {
+      const payload: GetTopPropertiesPayload = {
+        cityId: selectedCity?.id ?? null
+      };
+      return getFeaturedProperties(payload);
     },
     select: (response: GetTopPropertiesResponse) => {
       return response;
@@ -160,9 +176,9 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
           </div>
         </div>
       )}
-      {Array.isArray(data?.properties) && data?.properties.length > 0 && <div className="bg-[#F2F2F2] flex justify-center">
+      {Array.isArray(featuredData?.properties) && featuredData?.properties.length > 0 && <div className="bg-[#F2F2F2] flex justify-center">
         <div className="my-16 w-[90%] md:w-[75%]">
-          <LazyFeaturedProperties topProperties={data?.properties ?? []} />
+          <LazyFeaturedProperties topProperties={featuredData?.properties ?? []} />
         </div>
       </div>}
 
