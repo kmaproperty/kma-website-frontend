@@ -11,6 +11,7 @@ import ContactFormComponent from '@/components/contactUs/contactForm';
 import Link from 'next/link';
 import ContactTable from '../../components/contactUs/ContactTable';
 import AccordionComponent from '@/components/common/accordion';
+import AboutusDataSync from '@/components/footer/AboutusDataSync';
 
 const HelpCenter = () => {
 
@@ -166,9 +167,8 @@ const HelpCenter = () => {
                 </div>
             </div>
             <div className="bg-text-black flex justify-center">
-                <div className="my-13 w-[75%]">
+                    <AboutusDataSync />
                     <HomeFooter tab={1} />
-                </div>
             </div>
         </div>
     )

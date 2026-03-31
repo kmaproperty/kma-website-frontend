@@ -39,14 +39,6 @@ const ContactUs = async () => {
             link: 'https://www.google.com/maps/place/Gurugram,+Haryana/@28.4594965,76.9904873,12z/data=!3m1!4b1!4m6!3m5!1s0x390d19d582e38859:0x2cf5fe8e5c64b1e!8m2!3d28.4594965!4d77.0266383!16zL20vMDVfMjg0?entry=ttu'
         }
     ]);
-    let propertyMasterData: any = await fetchPropertyMasterData();
-    if (propertyMasterData?.success) {
-        propertyMasterData = propertyMasterData.data;
-    } else {
-        propertyMasterData = [];
-    }
-
-    let propertyCitiesData: any = await fetchPropertyCitiesData();
 
     const breadcrumps = [
         {
@@ -171,10 +163,8 @@ const ContactUs = async () => {
                 </div>
             </div>
             <div className="bg-text-black flex justify-center">
-                <div className="my-13 w-[75%]">
                     <AboutusDataSync />
-                    <HomeFooter />
-                </div>
+                    <HomeFooter tab={1} />
             </div>
         </div>
     )
