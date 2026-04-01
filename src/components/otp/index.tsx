@@ -91,7 +91,7 @@ export default function Otp() {
       setOtp('')
       toast.success(res.message)
       queryClient.clear();
-      router.replace('/profile')
+      router.replace('/user-dashboard')
     },
     onError: (err: any) => {
       console.error("OTP Verify Error:", err);

@@ -60,14 +60,6 @@ export default function LoginOtpCard() {
         return;
       }
 
-      if (response.user.role === "CHANNEL_PARTNER" && !response.kycCompleted) {
-        router.replace("/profile");
-        return;
-      }
-      if (response.propertyCount === 0) {
-        router.replace("/profile");
-        return;
-      }
       router.replace("/user-dashboard");
     },
     onError: (error: any) => {

@@ -48,7 +48,7 @@ const activeStep = useSelector(getActiveStep);
         }
       }else if(userDashboardDetails.role == USER_TYPE.CHANNEL_PARTNER){
         if(!userDashboardDetails?.kycStatus?.kyc_completed){
-          router.replace('/profile')
+          router.replace('/kyc')
         }
       }
     }

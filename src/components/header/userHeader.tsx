@@ -70,7 +70,7 @@ export default function UserHeader() {
         if(userDashboardDetails?.kycStatus?.kyc_status == 'in_review'){
           toast.info('Your KYC is under review. You can post property once it is approved.')
         }else{
-          router.push('/profile')
+          router.push('/kyc')
         }
       }
     }else if(userDashboardDetails?.role == USER_TYPE.OWNER){
