@@ -178,7 +178,7 @@ export default function UploadPhoto() {
     setFile(null)
     stopCamera()
     setPreview(null)
-    router.push('/profile')
+    router.push('/user-dashboard')
   }
 
   useEffect(() => {

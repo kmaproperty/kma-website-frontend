@@ -136,7 +136,7 @@ export default function BankDetails({isPopup = false, onClose}) {
     if(isPopup){
       onClose(false)
     }else{
-      router.push('/profile')
+      router.push('/user-dashboard')
     }
   }
 

@@ -93,7 +93,7 @@ export default function AggrementVerification({event}) {
   }, [event]);
 
   const handleCancel = () => {
-    router.push('/profile')
+    router.push('/user-dashboard')
   }
   
   return (

@@ -128,7 +128,7 @@ export default function AadharVerification(){
 
 
   const handleCancel = () => {
-    router.push('/profile')
+    router.push('/user-dashboard')
   }
 
     return(
