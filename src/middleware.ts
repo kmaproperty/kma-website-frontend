@@ -17,8 +17,11 @@ export default function middleware(req: NextRequest) {
   const event = searchParams.get('event')
   const isLegacySignupPage =
     pathname === "/signup" ||
+    pathname === "/verify-otp";
+
+  // Pages that require auth (post-OTP account creation flow)
+  const isAccountCreationPage =
     pathname === "/create-account" ||
-    pathname === "/verify-otp" ||
     pathname === "/additional-details";
 
   // Public pages (no login required)
@@ -36,12 +39,20 @@ export default function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // Legacy signup routes should never be used anymore.
+  // Legacy signup routes redirect to user-flow.
   if (isLegacySignupPage) {
     if (accessToken) {
       return NextResponse.redirect(new URL("/user-dashboard", req.url));
     }
     return NextResponse.redirect(new URL("/user-flow?isLogin=true", req.url));
+  }
+
+  // Account creation pages: require auth (user just verified OTP)
+  if (isAccountCreationPage) {
+    if (accessToken) {
+      return NextResponse.next();
+    }
+    return NextResponse.redirect(new URL("/user-flow?postProperty=true", req.url));
   }
 
   // Allow logged-in users to stay in user-flow.

@@ -381,13 +381,10 @@ export default function CreateAccount({ step }: { step: number }) {
     if (!userData) {
       clearAuthCookies()
       localStorage.clear()
-      router.push("/signup");
+      router.push("/user-flow?postProperty=true");
       return;
     }
     setUserData(userData);
-    if(!formData.partnerCode){
-      router.replace('/create-account')
-    }
   }, []);
 
   const dynamicClass = (flag: string) => {

@@ -121,7 +121,7 @@ export default function CreateAccountOtp() {
       ownerType: ownerType,
       ...(ownerType == USER_TYPE.OWNER ? {propertyIntent: propertyIntent,} : '')
     })
-    router.push(`/signup${params}`)
+    router.push(`/user-flow?postProperty=true&${params.replace('?', '')}`)
   }
 
   useEffect(() => {
