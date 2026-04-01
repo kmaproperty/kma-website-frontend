@@ -112,7 +112,7 @@ export default function BankDetails({isPopup = false, onClose}) {
       account_number: formData.accountNumber,
       ifsc_code: formData.ifscCode,
       bank_name: formData.bankName,
-      account_holder_name: formData.accountNumber,
+      account_holder_name: formData.holderName,
     };
 
     handleBankDetails(payload);

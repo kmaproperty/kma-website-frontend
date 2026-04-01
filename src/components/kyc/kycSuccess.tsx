@@ -10,7 +10,7 @@ export default function KycSuccess(){
             <p className="text-text-gray text-sm font-semibold">Profile Complete</p>
             <div className="flex flex-wrap justify-center gap-2 mt-8">
                <button onClick={() => {
-                router.push('/my-dashboard')
+                router.push('/user-dashboard')
                }}  className="w-full md:w-[130px] text-sm 1xl:text-base px-12 py-3 border border-blue text-center cursor-pointer rounded-full bg-light-purple">
                  <span className="gap-3 relative flex justify-center">
                      <p className={`text-nowrap font-medium`}>Back to Home</p>
