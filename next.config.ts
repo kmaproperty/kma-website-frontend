@@ -16,6 +16,7 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         hostname: "kma-property.s3.ap-south-1.amazonaws.com",
