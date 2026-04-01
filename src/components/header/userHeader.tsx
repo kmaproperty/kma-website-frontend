@@ -96,7 +96,7 @@ export default function UserHeader() {
       </div>
 
       <div className="flex flex-row justify-center items-center gap-12 w-full px-8">
-        {[{name:"Dashboard", route: 'user-dashboard'}, {name: "Leads", route:'lead-summary/list'}, {name: "Listing", route: 'my-listing'}].map((item) => (
+        {[{name:"Dashboard", route: 'user-dashboard'}, {name: "Listing", route: 'my-listing'}, {name: "Leads", route:'lead-summary/list'}].map((item) => (
           <p
             key={item.name}
             onClick={() => handleRedirect(`/${item.route}`)}

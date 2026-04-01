@@ -141,7 +141,7 @@ export default function CreateAccount({ step }: { step: number }) {
       localStorage.setItem("user", JSON.stringify(response.user));
       dispatch(resetForm())
       toast.success(response.message)
-      router.replace('/profile')
+      router.replace('/post-property')
     },
     onError: (error: any) => {
       if(Array.isArray(error.message)){
@@ -167,7 +167,7 @@ export default function CreateAccount({ step }: { step: number }) {
       localStorage.setItem("user", JSON.stringify(response.user));
       dispatch(resetForm())
       toast.success(response.message)
-      router.push('/profile')
+      router.push('/post-property')
     },
     onError: (error: any) => {
       if(Array.isArray(error.message)){
