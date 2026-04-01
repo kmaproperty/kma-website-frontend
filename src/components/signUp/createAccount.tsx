@@ -167,7 +167,7 @@ export default function CreateAccount({ step }: { step: number }) {
       localStorage.setItem("user", JSON.stringify(response.user));
       dispatch(resetForm())
       toast.success(response.message)
-      router.push('/post-property')
+      router.push('/kyc')
     },
     onError: (error: any) => {
       if(Array.isArray(error.message)){
