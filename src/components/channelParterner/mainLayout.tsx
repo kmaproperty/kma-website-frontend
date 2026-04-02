@@ -3,13 +3,18 @@
 import ContactInformation from "../contactInformation";
 import CopyRightFooter from "../footer/copyrightFooter";
 import HomeHeader from "../header/homeHeader";
+import PostPropertyFlowHeader from "../header/postPropertyFlowHeader";
+import { useSearchParams } from "next/navigation";
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
+  const searchParams = useSearchParams();
+  const isPostPropertyFlow = searchParams.get("postProperty") === "true";
+
   return (
     <div>
       <div className="relative w-full min-h-[calc(100dvh-10dvh)] md:min-h-[calc(100dvh-7dvh)] bg-background-gray overflow-hidden">
         <div className="absolute w-full flex justify-center top-0 z-10">
-          <HomeHeader />
+          {isPostPropertyFlow ? <PostPropertyFlowHeader /> : <HomeHeader />}
         </div>
         <div className="absolute w-full h-[450px] bg-blue rounded-b-[25px] sm:rounded-b-[60px] lg:rounded-b-[80px] xl:rounded-b-[100px]" />
 
