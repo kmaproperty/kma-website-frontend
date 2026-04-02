@@ -35,7 +35,7 @@ const LOGGED_IN_MENU_BASE: MenuItem[] = [
   { label: "Contacted Properties", icon: "/assets/home-contact-blue.svg", route: "/contact-us" },
   { label: "My Reviews (New)", icon: "/assets/review-blue.svg", route: "/profile" },
   { label: "My Services", icon: "/assets/service-blue.svg", route: "/"},
-  { label: "Refer And Earn", icon: "/assets/refer-earn-blue.svg", route: "/join-us" },
+  { label: "Refer And Earn", icon: "/assets/refer-earn-blue.svg", route: "/refer-and-earn" },
   { label: "Help", icon: "/assets/help-blue.svg", route: "/help-center" },
 ];
 
@@ -46,7 +46,7 @@ const GUEST_MENU_BASE: MenuItem[] = [
   { label: "Contacted Properties", icon: "/assets/home-contact-blue.svg" },
   { label: "My Reviews (New)", icon: "/assets/review-blue.svg" },
   { label: "My Services", icon: "/assets/service-blue.svg" },
-  { label: "Refer And Earn", icon: "/assets/refer-earn-blue.svg", route: "/join-us" },
+  { label: "Refer And Earn", icon: "/assets/refer-earn-blue.svg", route: "/refer-and-earn" },
   { label: "Help", icon: "/assets/help-blue.svg", route: "/help-center" },
 ];
 

@@ -316,7 +316,7 @@ const handleHeaderSubMenuClick = (label: string) => {
                     handleOpenMenu(event, item.value);
                   } else {
                     resetMenuState();
-                    router.push("/about-us");
+                    router.push("/refer-and-earn");
                   }
                 }}
                 key={item.value}

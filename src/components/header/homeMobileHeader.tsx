@@ -81,7 +81,7 @@ export default function HomeMobileHeader({
                 key={item.value}
                 onClick={() => {
                   if (item.value === "refer_and_earn") {
-                    router.push("/about-us");
+                    router.push("/refer-and-earn");
                     onClose();
                   } else {
                     openSubMenu(item.value);
