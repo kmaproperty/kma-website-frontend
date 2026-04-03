@@ -107,6 +107,7 @@ export default function LoginCard() {
 
   const handleCreateAccountRedirect = () => {
     const params = createURLSearchParam({
+      ...(loginRole === "OWNER_CP" ? { postProperty: true } : {}),
       ...(mobileInput.value ? { mobile: mobileInput.value } : {}),
       ...(redirect ? { redirect } : {}),
     });

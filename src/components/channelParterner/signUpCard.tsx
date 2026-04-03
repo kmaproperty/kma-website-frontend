@@ -192,14 +192,14 @@ export default function SignUpCard() {
         </p>
       </div>
 
-      <div className="mt-6 pt-4 border-t border-border">
+      {/* <div className="mt-6 pt-4 border-t border-border">
         <p className="text-sm text-text-gray">
           Want to list your property?{" "}
           <span onClick={handleRedirectToPostProperty} className="font-semibold underline text-text-black cursor-pointer">
             Register as Owner / Channel Partner
           </span>
         </p>
-      </div>
+      </div> */}
     </div>
   );
 }
