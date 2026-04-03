@@ -55,6 +55,7 @@ export default function LoginOtpCard() {
 
       // If profile is incomplete (user verified OTP but never filled details), send to create-account
       if (response.requiredOtherDetails) {
+        document.cookie = "profileIncomplete=true;path=/;max-age=86400";
         router.replace("/create-account");
         return;
       }

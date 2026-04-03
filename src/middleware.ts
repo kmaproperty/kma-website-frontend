@@ -4,6 +4,7 @@ export default function middleware(req: NextRequest) {
   const { pathname, searchParams } = req.nextUrl;
   const accessToken = req.cookies.get("accessToken")?.value;
   const refreshToken = req.cookies.get("refreshToken")?.value;
+  const profileIncomplete = req.cookies.get("profileIncomplete")?.value === "true";
 
   const isHomePage = pathname === "/";
   const isAbooutUsPage = pathname === "/about-us";
@@ -27,6 +28,20 @@ export default function middleware(req: NextRequest) {
   const isAccountCreationPage =
     pathname === "/create-account" ||
     pathname === "/additional-details";
+
+  // If profile is incomplete (Owner/CP verified OTP but didn't fill details),
+  // force them to /create-account — don't let them access anything else
+  if (accessToken && profileIncomplete) {
+    if (isAccountCreationPage) {
+      return NextResponse.next();
+    }
+    // Clear cookies and redirect to login if they try to go anywhere else
+    const response = NextResponse.redirect(new URL("/user-flow?isLogin=true", req.url));
+    response.cookies.delete("accessToken");
+    response.cookies.delete("refreshToken");
+    response.cookies.delete("profileIncomplete");
+    return response;
+  }
 
   // Public pages (no login required)
   if (
@@ -74,8 +89,8 @@ export default function middleware(req: NextRequest) {
   }
 
   return NextResponse.next();
-} 
+}
 
 export const config = {
   matcher: ['/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.png$|.*\\.svg$.*|.*\\.jpg$).*)'],
-} 
+}
