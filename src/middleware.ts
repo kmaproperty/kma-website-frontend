@@ -14,6 +14,8 @@ export default function middleware(req: NextRequest) {
   const isContactUsPage = pathname === '/contact-us';
   const isHelpCenterPage = pathname === '/help-center';
   const isJoinUsPage = pathname === '/join-us';
+  const isProfilePage = pathname === "/profile";
+  const isReferAndEarnPage = pathname === "/refer-and-earn";
   const event = searchParams.get('event')
   const isLegacySignupPage =
     pathname === "/signup" ||
@@ -34,7 +36,9 @@ export default function middleware(req: NextRequest) {
     isRecentlyViewedPage ||
     isContactUsPage ||
     isHelpCenterPage ||
-    isJoinUsPage
+    isJoinUsPage ||
+    isProfilePage ||
+    isReferAndEarnPage
   ) {
     return NextResponse.next();
   }
