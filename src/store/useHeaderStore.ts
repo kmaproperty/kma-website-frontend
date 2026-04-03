@@ -28,7 +28,10 @@ function getStoredUserRole(): string | null {
   if (!raw) return null;
   try {
     const parsed: unknown = JSON.parse(raw);
-    if (isRecord(parsed) && typeof parsed.role === "string") return parsed.role;
+    if (!isRecord(parsed)) return null;
+    // If user has no name, profile is incomplete — treat as not logged in for header
+    if (!parsed.name || (typeof parsed.name === "string" && !parsed.name.trim())) return null;
+    if (typeof parsed.role === "string") return parsed.role;
     return null;
   } catch {
     return null;
