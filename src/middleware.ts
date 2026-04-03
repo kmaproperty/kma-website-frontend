@@ -35,8 +35,12 @@ export default function middleware(req: NextRequest) {
     if (isAccountCreationPage) {
       return NextResponse.next();
     }
-    // Redirect to create-account — don't let them go anywhere else
-    return NextResponse.redirect(new URL("/create-account", req.url));
+    // Clear cookies (log out) and send to home page
+    const response = NextResponse.redirect(new URL("/", req.url));
+    response.cookies.delete("accessToken");
+    response.cookies.delete("refreshToken");
+    response.cookies.delete("profileIncomplete");
+    return response;
   }
 
   // Public pages (no login required)
