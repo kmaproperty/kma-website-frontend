@@ -139,8 +139,7 @@ export default function CreateAccount({ step }: { step: number }) {
     },
     onSuccess: (response: CreateOwnerResponse) => {
       localStorage.setItem("user", JSON.stringify(response.user));
-      document.cookie = "profileIncomplete=;path=/;max-age=0;expires=Thu, 01 Jan 1970 00:00:00 GMT";
-      dispatch(resetForm())
+            dispatch(resetForm())
       toast.success(response.message)
       router.replace('/post-property')
     },
@@ -166,8 +165,7 @@ export default function CreateAccount({ step }: { step: number }) {
     },
     onSuccess: (response: CreateOwnerResponse) => {
       localStorage.setItem("user", JSON.stringify(response.user));
-      document.cookie = "profileIncomplete=;path=/;max-age=0;expires=Thu, 01 Jan 1970 00:00:00 GMT";
-      dispatch(resetForm())
+            dispatch(resetForm())
       toast.success(response.message)
       router.push('/kyc')
     },

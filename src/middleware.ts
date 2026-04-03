@@ -4,7 +4,6 @@ export default function middleware(req: NextRequest) {
   const { pathname, searchParams } = req.nextUrl;
   const accessToken = req.cookies.get("accessToken")?.value;
   const refreshToken = req.cookies.get("refreshToken")?.value;
-  const profileIncomplete = req.cookies.get("profileIncomplete")?.value === "true";
 
   const isHomePage = pathname === "/";
   const isAbooutUsPage = pathname === "/about-us";
@@ -29,7 +28,7 @@ export default function middleware(req: NextRequest) {
     pathname === "/create-account" ||
     pathname === "/additional-details";
 
-  // Public pages (no login required) — always accessible
+  // Public pages (no login required)
   if (
     isHomePage ||
     isAbooutUsPage ||
@@ -61,16 +60,6 @@ export default function middleware(req: NextRequest) {
       return NextResponse.next();
     }
     return NextResponse.redirect(new URL("/user-flow?postProperty=true", req.url));
-  }
-
-  // If profile is incomplete (Owner/CP verified OTP but didn't fill details),
-  // don't let them access protected pages — clear cookies and send to home
-  if (accessToken && profileIncomplete) {
-    const response = NextResponse.redirect(new URL("/", req.url));
-    response.cookies.delete("accessToken");
-    response.cookies.delete("refreshToken");
-    response.cookies.delete("profileIncomplete");
-    return response;
   }
 
   // Protect all remaining routes: unauthenticated users must enter via user-flow (login).
