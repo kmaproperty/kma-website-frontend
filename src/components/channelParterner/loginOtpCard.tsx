@@ -53,6 +53,12 @@ export default function LoginOtpCard() {
       toast.success(response.message);
       queryClient.clear();
 
+      // If profile is incomplete (user verified OTP but never filled details), send to create-account
+      if (response.requiredOtherDetails) {
+        router.replace("/create-account");
+        return;
+      }
+
       const safeRedirect =
         redirect && redirect.startsWith("/") && !redirect.startsWith("//") ? redirect : null;
       if (safeRedirect) {
