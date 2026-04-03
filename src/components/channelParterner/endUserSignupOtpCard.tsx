@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { usePathname, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useRouter } from "nextjs-toploader/app";
 import { toast } from "react-toastify";
 
@@ -10,25 +10,25 @@ import OtpInput from "../common/optInput";
 import Spinner from "../common/spinner";
 import { OTP_RESEND_TIME } from "@/lib/enums";
 import { createURLSearchParam, setAuthCookies } from "@/lib/helper";
-import {
-  OtpPayload,
-  resendOtpApiHandler,
-  SendOtpResponse,
-  validateOtpApiHandler,
-  ValidateOtpPayload,
-  ValidateOtpResponse,
-} from "@/services/authService";
 import { matchIsNumeric } from "@/lib/commonValidator";
+import {
+  EndUserVerifyOtpPayload,
+  verifyEndUserSignupOtpApiHandler,
+  ValidateOtpResponse,
+  sendEndUserSignupOtpApiHandler,
+  EndUserSignupPayload,
+  EndUserSignupResponse,
+} from "@/services/authService";
 
-export default function LoginOtpCard() {
+export default function EndUserSignupOtpCard() {
   const queryClient = useQueryClient();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
 
   const mobileNumber = searchParams.get("mobile");
   const code = searchParams.get("code");
-  const redirect = searchParams.get("redirect");
+  const fullName = searchParams.get("fullName");
+  const email = searchParams.get("email");
 
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState("");
@@ -36,9 +36,10 @@ export default function LoginOtpCard() {
   const [isEnableOtpResend, setIsEnableOtpResend] = useState(false);
 
   const { mutate: resendOtp } = useMutation({
-    mutationFn: (payload: OtpPayload): Promise<SendOtpResponse> => resendOtpApiHandler(payload),
+    mutationFn: (payload: EndUserSignupPayload): Promise<EndUserSignupResponse> =>
+      sendEndUserSignupOtpApiHandler(payload),
     onSuccess: (response) => {
-      toast.success(response.otp);
+      toast.success(response.otp ?? response.message);
     },
     onError: (error: any) => {
       toast.error(error?.message ?? "Unable to resend OTP");
@@ -46,27 +47,14 @@ export default function LoginOtpCard() {
   });
 
   const { mutate: verifyOtp, isPending } = useMutation({
-    mutationFn: (payload: ValidateOtpPayload): Promise<ValidateOtpResponse> => validateOtpApiHandler(payload),
+    mutationFn: (payload: EndUserVerifyOtpPayload): Promise<ValidateOtpResponse> =>
+      verifyEndUserSignupOtpApiHandler(payload),
     onSuccess: async (response) => {
       await setAuthCookies(response.accessToken, response.refreshToken);
       localStorage.setItem("user", JSON.stringify(response.user));
       toast.success(response.message);
       queryClient.clear();
-
-      const safeRedirect =
-        redirect && redirect.startsWith("/") && !redirect.startsWith("//") ? redirect : null;
-      if (safeRedirect) {
-        router.replace(safeRedirect);
-        return;
-      }
-
-      // Role-based redirect for Owner/Channel Partner
-      const userRole = response.user?.role;
-      if (userRole === "CHANNEL_PARTNER" && !response.kycCompleted) {
-        router.replace("/kyc");
-      } else {
-        router.replace("/user-dashboard");
-      }
+      router.replace("/projects");
     },
     onError: (error: any) => {
       setOtpError(error?.message ?? "Invalid OTP");
@@ -74,42 +62,39 @@ export default function LoginOtpCard() {
   });
 
   const handleOtpResend = () => {
-    if (!isEnableOtpResend || !mobileNumber || isPending) {
-      return;
-    }
-    resendOtp({ phone: mobileNumber });
+    if (!isEnableOtpResend || !mobileNumber || !fullName || !email || isPending) return;
+    resendOtp({ name: fullName, email, phone: mobileNumber });
     setOtpTimer(OTP_RESEND_TIME);
     setIsEnableOtpResend(false);
   };
 
   const handleChangeNumber = () => {
-    const params = createURLSearchParam({
-      mobile: mobileNumber,
-      code,
-      isLogin: true,
-      ...(redirect ? { redirect } : {}),
-    });
-    router.replace(`${pathname}${params}`);
+    const params = createURLSearchParam({ mobile: mobileNumber, code });
+    router.replace(`/user-flow${params}`);
   };
 
   const handleVerifyOtp = (value: string) => {
-    if (!mobileNumber || value.length !== 4) {
+    if (!mobileNumber || !fullName || !email || value.length !== 4) {
       setOtpError("Enter OTP");
       return;
     }
-
     setOtpError("");
-    verifyOtp({ phone: mobileNumber, otp: value });
+    verifyOtp({ name: fullName, email, phone: mobileNumber, otp: value });
   };
+
+  useEffect(() => {
+    if (!mobileNumber || !fullName || !email) {
+      router.replace("/user-flow");
+      return;
+    }
+  }, [mobileNumber, fullName, email, router]);
 
   useEffect(() => {
     if (otpTimer <= 0) {
       setIsEnableOtpResend(true);
       return;
     }
-    const interval = setInterval(() => {
-      setOtpTimer((prev) => prev - 1);
-    }, 1000);
+    const interval = setInterval(() => setOtpTimer((prev) => prev - 1), 1000);
     return () => clearInterval(interval);
   }, [otpTimer]);
 

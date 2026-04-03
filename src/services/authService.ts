@@ -151,6 +151,101 @@ export const createChannelPartnerApiHandler = async (payload: CreateChannelPartn
         throw error.response?.data ?? error;
     }
 }
+// ── End-User Auth ────────────────────────────────────────────────────
+
+export interface EndUserSignupPayload {
+  name: string;
+  email: string;
+  phone: string;
+}
+
+export interface EndUserSignupResponse {
+  success: boolean;
+  message: string;
+  phone: string;
+  otp?: string;
+}
+
+export const sendEndUserSignupOtpApiHandler = async (
+  payload: EndUserSignupPayload
+): Promise<EndUserSignupResponse> => {
+  try {
+    const response = await axiosInstance.post<EndUserSignupResponse>(
+      "end-user/signup",
+      payload
+    );
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data ?? error;
+  }
+};
+
+export interface EndUserVerifyOtpPayload {
+  name: string;
+  email: string;
+  phone: string;
+  otp: string;
+}
+
+export const verifyEndUserSignupOtpApiHandler = async (
+  payload: EndUserVerifyOtpPayload
+): Promise<ValidateOtpResponse> => {
+  try {
+    const sessionId = typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("kma-end-user-session") || "{}")?.state?.sessionId
+      : null;
+    const response = await axiosInstance.post<ValidateOtpResponse>(
+      "end-user/verify-otp",
+      payload,
+      sessionId ? { headers: { "X-Session-Id": sessionId } } : undefined
+    );
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data ?? error;
+  }
+};
+
+export interface EndUserLoginPayload {
+  phone: string;
+}
+
+export const sendEndUserLoginOtpApiHandler = async (
+  payload: EndUserLoginPayload
+): Promise<EndUserSignupResponse> => {
+  try {
+    const response = await axiosInstance.post<EndUserSignupResponse>(
+      "end-user/login",
+      payload
+    );
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data ?? error;
+  }
+};
+
+export interface EndUserVerifyLoginOtpPayload {
+  phone: string;
+  otp: string;
+}
+
+export const verifyEndUserLoginOtpApiHandler = async (
+  payload: EndUserVerifyLoginOtpPayload
+): Promise<ValidateOtpResponse> => {
+  try {
+    const sessionId = typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("kma-end-user-session") || "{}")?.state?.sessionId
+      : null;
+    const response = await axiosInstance.post<ValidateOtpResponse>(
+      "end-user/verify-login-otp",
+      payload,
+      sessionId ? { headers: { "X-Session-Id": sessionId } } : undefined
+    );
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data ?? error;
+  }
+};
+
 export const handleRefreshToken = async (): Promise<string | null> => {
   // const refreshToken = localStorage.getItem("refreshToken");
    const res = await fetch("/api/get-token");

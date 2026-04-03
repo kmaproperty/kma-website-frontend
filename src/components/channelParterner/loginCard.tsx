@@ -10,7 +10,16 @@ import MobileInput from "../common/mobileInput";
 import Spinner from "../common/spinner";
 import { mobileNumberValidator } from "@/lib/commonValidator";
 import { createURLSearchParam } from "@/lib/helper";
-import { OtpPayload, sendSignInOtpApiHandler, SendOtpResponse } from "@/services/authService";
+import {
+  OtpPayload,
+  sendSignInOtpApiHandler,
+  SendOtpResponse,
+  EndUserLoginPayload,
+  EndUserSignupResponse,
+  sendEndUserLoginOtpApiHandler,
+} from "@/services/authService";
+
+type LoginRole = "END_USER" | "OWNER_CP";
 
 interface MobileState {
   value: string;
@@ -23,6 +32,8 @@ export default function LoginCard() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const redirect = searchParams.get("redirect");
+
+  const [loginRole, setLoginRole] = useState<LoginRole>("END_USER");
   const [mobileInput, setMobileInput] = useState<MobileState>({
     value: "",
     code: "+91",
@@ -34,7 +45,7 @@ export default function LoginCard() {
     setMobileInput({ value, code, validationMessage });
   };
 
-  const { mutate: sendOtp, isPending } = useMutation({
+  const { mutate: sendOwnerCpOtp, isPending: isOwnerCpPending } = useMutation({
     mutationFn: async (payload: OtpPayload): Promise<SendOtpResponse> => sendSignInOtpApiHandler(payload),
     onSuccess: (response) => {
       const params = createURLSearchParam({
@@ -56,13 +67,42 @@ export default function LoginCard() {
     },
   });
 
+  const { mutate: sendEndUserOtp, isPending: isEndUserPending } = useMutation({
+    mutationFn: async (payload: EndUserLoginPayload): Promise<EndUserSignupResponse> =>
+      sendEndUserLoginOtpApiHandler(payload),
+    onSuccess: (response) => {
+      const params = createURLSearchParam({
+        mobile: mobileInput.value,
+        code: mobileInput.code,
+        isOtp: true,
+        flow: "enduser-login",
+        ...(redirect ? { redirect } : {}),
+      });
+      toast.success(response.otp);
+      router.replace(`${pathname}${params}`);
+    },
+    onError: (error: any) => {
+      if (Array.isArray(error?.message)) {
+        error.message.forEach((item: string) => toast.error(item));
+        return;
+      }
+      toast.error(error?.message ?? "Unable to send OTP");
+    },
+  });
+
+  const isPending = isOwnerCpPending || isEndUserPending;
+
   const handleContinue = () => {
     const validationMessage = mobileNumberValidator(mobileInput.value);
     if (validationMessage) {
       setMobileInput((prev) => ({ ...prev, validationMessage }));
       return;
     }
-    sendOtp({ phone: mobileInput.value });
+    if (loginRole === "END_USER") {
+      sendEndUserOtp({ phone: mobileInput.value });
+    } else {
+      sendOwnerCpOtp({ phone: mobileInput.value });
+    }
   };
 
   const handleCreateAccountRedirect = () => {
@@ -79,14 +119,39 @@ export default function LoginCard() {
       style={{ boxShadow: "0px 4px 20px 0px #0000000D", flexGrow: 11 }}
     >
       <p className="text-text-black font-semibold text-[2rem] leading-[2.3rem] mb-2">
-        Buy or Rent Property - <span className="text-accent">Absolutely FREE!</span>
+        Welcome Back!
       </p>
       <p className="text-sm md:text-base text-text-gray pb-4 border-b border-border">
-        Find your next home without paying any service charges. Connect directly with property owners and get
-        the best deals instantly.
+        Login to your KMA account to continue.
       </p>
 
-      <p className="text-sm lg:text-base text-text-black font-medium mt-6">Mobile Number</p>
+      <p className="text-sm lg:text-base text-text-black font-medium mt-6 mb-2">I am a</p>
+      <div className="flex gap-3 mb-6">
+        <button
+          type="button"
+          onClick={() => { setLoginRole("END_USER"); setMobileInput((p) => ({ ...p, validationMessage: "" })); }}
+          className={`flex-1 py-2.5 px-4 rounded-full text-sm font-medium border transition cursor-pointer ${
+            loginRole === "END_USER"
+              ? "bg-blue text-white border-blue"
+              : "bg-white text-text-black border-border hover:border-blue"
+          }`}
+        >
+          User
+        </button>
+        <button
+          type="button"
+          onClick={() => { setLoginRole("OWNER_CP"); setMobileInput((p) => ({ ...p, validationMessage: "" })); }}
+          className={`flex-1 py-2.5 px-4 rounded-full text-sm font-medium border transition cursor-pointer ${
+            loginRole === "OWNER_CP"
+              ? "bg-blue text-white border-blue"
+              : "bg-white text-text-black border-border hover:border-blue"
+          }`}
+        >
+          Owner / Channel Partner
+        </button>
+      </div>
+
+      <p className="text-sm lg:text-base text-text-black font-medium">Mobile Number</p>
       <p className="text-sm text-text-gray mb-2">We&apos;ll send you a verification code to get started.</p>
       <MobileInput
         placeHolder="Enter your mobile number"

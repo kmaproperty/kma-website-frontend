@@ -11,6 +11,7 @@ export const USER_TYPE = {
   OWNER: "OWNER",
   CHANNEL_PARTNER: "CHANNEL_PARTNER",
   ADMIN: "ADMIN",
+  END_USER: "END_USER",
 } as const
 
 export const KYC_STATUS = {
@@ -24,6 +25,7 @@ export const userType = {
    OWNER: "Owner",
   CHANNEL_PARTNER: "Channel Partner",
   ADMIN: "Admin",
+  END_USER: "End User",
 }
 export const LIST_TYPE = {
     SELL: 'SELL',

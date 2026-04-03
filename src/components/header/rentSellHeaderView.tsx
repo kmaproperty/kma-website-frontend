@@ -83,7 +83,7 @@ export default function RentSellHeaderView({ type, onClose }: { type: string; on
                         const basePath = selectedCity?.id ? `/projects/${selectedCity.id}` : "/projects";
                         const params = new URLSearchParams();
                         params.set('propertyTypeId', item.id);
-                        params.set('listingType', type);
+                        if (listingTypeId) params.set('listingTypeId', listingTypeId);
                         router.push(`${basePath}?${params.toString()}`);
                       }}
                       className="cursor-pointer text-sm mt-1  text-text-black break-inside-avoid hover:underline"

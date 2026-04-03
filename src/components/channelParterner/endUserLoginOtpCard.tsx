@@ -10,17 +10,17 @@ import OtpInput from "../common/optInput";
 import Spinner from "../common/spinner";
 import { OTP_RESEND_TIME } from "@/lib/enums";
 import { createURLSearchParam, setAuthCookies } from "@/lib/helper";
-import {
-  OtpPayload,
-  resendOtpApiHandler,
-  SendOtpResponse,
-  validateOtpApiHandler,
-  ValidateOtpPayload,
-  ValidateOtpResponse,
-} from "@/services/authService";
 import { matchIsNumeric } from "@/lib/commonValidator";
+import {
+  EndUserVerifyLoginOtpPayload,
+  verifyEndUserLoginOtpApiHandler,
+  ValidateOtpResponse,
+  EndUserLoginPayload,
+  EndUserSignupResponse,
+  sendEndUserLoginOtpApiHandler,
+} from "@/services/authService";
 
-export default function LoginOtpCard() {
+export default function EndUserLoginOtpCard() {
   const queryClient = useQueryClient();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -36,9 +36,10 @@ export default function LoginOtpCard() {
   const [isEnableOtpResend, setIsEnableOtpResend] = useState(false);
 
   const { mutate: resendOtp } = useMutation({
-    mutationFn: (payload: OtpPayload): Promise<SendOtpResponse> => resendOtpApiHandler(payload),
+    mutationFn: (payload: EndUserLoginPayload): Promise<EndUserSignupResponse> =>
+      sendEndUserLoginOtpApiHandler(payload),
     onSuccess: (response) => {
-      toast.success(response.otp);
+      toast.success(response.otp ?? response.message);
     },
     onError: (error: any) => {
       toast.error(error?.message ?? "Unable to resend OTP");
@@ -46,7 +47,8 @@ export default function LoginOtpCard() {
   });
 
   const { mutate: verifyOtp, isPending } = useMutation({
-    mutationFn: (payload: ValidateOtpPayload): Promise<ValidateOtpResponse> => validateOtpApiHandler(payload),
+    mutationFn: (payload: EndUserVerifyLoginOtpPayload): Promise<ValidateOtpResponse> =>
+      verifyEndUserLoginOtpApiHandler(payload),
     onSuccess: async (response) => {
       await setAuthCookies(response.accessToken, response.refreshToken);
       localStorage.setItem("user", JSON.stringify(response.user));
@@ -60,13 +62,7 @@ export default function LoginOtpCard() {
         return;
       }
 
-      // Role-based redirect for Owner/Channel Partner
-      const userRole = response.user?.role;
-      if (userRole === "CHANNEL_PARTNER" && !response.kycCompleted) {
-        router.replace("/kyc");
-      } else {
-        router.replace("/user-dashboard");
-      }
+      router.replace("/projects");
     },
     onError: (error: any) => {
       setOtpError(error?.message ?? "Invalid OTP");
@@ -74,9 +70,7 @@ export default function LoginOtpCard() {
   });
 
   const handleOtpResend = () => {
-    if (!isEnableOtpResend || !mobileNumber || isPending) {
-      return;
-    }
+    if (!isEnableOtpResend || !mobileNumber || isPending) return;
     resendOtp({ phone: mobileNumber });
     setOtpTimer(OTP_RESEND_TIME);
     setIsEnableOtpResend(false);
@@ -97,19 +91,23 @@ export default function LoginOtpCard() {
       setOtpError("Enter OTP");
       return;
     }
-
     setOtpError("");
     verifyOtp({ phone: mobileNumber, otp: value });
   };
+
+  useEffect(() => {
+    if (!mobileNumber) {
+      router.replace("/user-flow?isLogin=true");
+      return;
+    }
+  }, [mobileNumber, router]);
 
   useEffect(() => {
     if (otpTimer <= 0) {
       setIsEnableOtpResend(true);
       return;
     }
-    const interval = setInterval(() => {
-      setOtpTimer((prev) => prev - 1);
-    }, 1000);
+    const interval = setInterval(() => setOtpTimer((prev) => prev - 1), 1000);
     return () => clearInterval(interval);
   }, [otpTimer]);
 

@@ -202,7 +202,11 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
     appliedQueryRef.current = queryKey;
 
     const ltId = searchParams.get('listingTypeId') || searchParams.get('listingType');
-    if (ltId) setListingTypeId(ltId);
+    if (ltId) {
+      // If it's a name like "rent"/"sale" instead of UUID, ignore it (backend expects UUID)
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(ltId);
+      if (isUuid) setListingTypeId(ltId);
+    }
 
     const patch: Partial<typeof filters> = {};
 
