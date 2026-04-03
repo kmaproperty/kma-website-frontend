@@ -1,6 +1,6 @@
 'use client'
 
-import HomeHeader from "../header/homeHeader";
+import UserHeader from "../header/userHeader";
 
 
 export default function MainLayout({ children }:{children:React.ReactNode}) {
@@ -8,7 +8,7 @@ export default function MainLayout({ children }:{children:React.ReactNode}) {
     <div className="">
       <div className="relative w-full min-h-[calc(100dvh-10dvh)] md:min-h-[calc(100dvh-7dvh)] bg-background-gray">
         <div className="absolute w-full flex justify-center 2md:top-6">
-          <HomeHeader />
+          <UserHeader />
         </div>
         <div className="absolute w-full h-[450px] bg-blue rounded-b-[25px] sm:rounded-b-[60px] lg:rounded-b-[80px] xl:rounded-b-[100px]">
           
