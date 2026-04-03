@@ -110,6 +110,7 @@ export default function LoginCard() {
       ...(loginRole === "OWNER_CP" ? { postProperty: true } : {}),
       ...(mobileInput.value ? { mobile: mobileInput.value } : {}),
       ...(redirect ? { redirect } : {}),
+      ...(loginRole === "OWNER_CP" ? { postProperty: true } : {}),
     });
     router.replace(`${pathname}${params}`);
   };
