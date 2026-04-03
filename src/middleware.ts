@@ -35,12 +35,8 @@ export default function middleware(req: NextRequest) {
     if (isAccountCreationPage) {
       return NextResponse.next();
     }
-    // Clear cookies and redirect to login if they try to go anywhere else
-    const response = NextResponse.redirect(new URL("/user-flow?isLogin=true", req.url));
-    response.cookies.delete("accessToken");
-    response.cookies.delete("refreshToken");
-    response.cookies.delete("profileIncomplete");
-    return response;
+    // Redirect to create-account — don't let them go anywhere else
+    return NextResponse.redirect(new URL("/create-account", req.url));
   }
 
   // Public pages (no login required)
