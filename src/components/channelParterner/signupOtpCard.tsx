@@ -44,8 +44,8 @@ export default function SignupOtpCard() {
     },
     onSuccess: async (response: ValidateOtpResponse) => {
       await setAuthCookies(response.accessToken, response.refreshToken);
-      localStorage.setItem("user", JSON.stringify(response.user));
       document.cookie = "profileIncomplete=true;path=/;max-age=86400";
+      localStorage.removeItem("user");
       const params = createURLSearchParam({
         ...(ownerType == USER_TYPE.OWNER ? { propertyIntent: propertyIntent } : ""),
       });

@@ -24,6 +24,11 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 
 function getStoredUserRole(): string | null {
   if (typeof window === "undefined") return null;
+  // If no accessToken cookie, user is logged out — clear stale localStorage
+  if (!document.cookie.split(";").some((c) => c.trim().startsWith("accessToken="))) {
+    localStorage.removeItem("user");
+    return null;
+  }
   const raw = localStorage.getItem("user");
   if (!raw) return null;
   try {
