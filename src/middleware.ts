@@ -29,21 +29,7 @@ export default function middleware(req: NextRequest) {
     pathname === "/create-account" ||
     pathname === "/additional-details";
 
-  // If profile is incomplete (Owner/CP verified OTP but didn't fill details),
-  // force them to /create-account — don't let them access anything else
-  if (accessToken && profileIncomplete) {
-    if (isAccountCreationPage) {
-      return NextResponse.next();
-    }
-    // Clear cookies (log out) and send to home page
-    const response = NextResponse.redirect(new URL("/", req.url));
-    response.cookies.delete("accessToken");
-    response.cookies.delete("refreshToken");
-    response.cookies.delete("profileIncomplete");
-    return response;
-  }
-
-  // Public pages (no login required)
+  // Public pages (no login required) — always accessible
   if (
     isHomePage ||
     isAbooutUsPage ||
@@ -77,10 +63,14 @@ export default function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/user-flow?postProperty=true", req.url));
   }
 
-  // Allow logged-in users to stay in user-flow.
-  // This prevents "user-flow" login from being forced to /user-dashboard.
-  if (accessToken && isUserFlowPage) {
-    return NextResponse.next();
+  // If profile is incomplete (Owner/CP verified OTP but didn't fill details),
+  // don't let them access protected pages — clear cookies and send to home
+  if (accessToken && profileIncomplete) {
+    const response = NextResponse.redirect(new URL("/", req.url));
+    response.cookies.delete("accessToken");
+    response.cookies.delete("refreshToken");
+    response.cookies.delete("profileIncomplete");
+    return response;
   }
 
   // Protect all remaining routes: unauthenticated users must enter via user-flow (login).
