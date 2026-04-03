@@ -29,10 +29,10 @@ type MenuItem = {
 const baseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
 
 const LOGGED_IN_MENU_BASE: MenuItem[] = [
-  { label: "Recently Search", icon: "/assets/home-search-blue.svg", route: "/projects" },
-  { label: "Recently Viewed", icon: "/assets/home-recent-blue.svg", route: "/recently-viewed" },
-  { label: "Saved Properties", icon: "/assets/home-save-blue.svg", route: "/recently-viewed" },
-  { label: "Contacted Properties", icon: "/assets/home-contact-blue.svg", route: "/contact-us" },
+  { label: "Recently Search", icon: "/assets/home-search-blue.svg", route: "/recently-viewed?tab=recentSearch" },
+  { label: "Recently Viewed", icon: "/assets/home-recent-blue.svg", route: "/recently-viewed?tab=recentlyViewed" },
+  { label: "Saved Properties", icon: "/assets/home-save-blue.svg", route: "/recently-viewed?tab=saved" },
+  { label: "Contacted Properties", icon: "/assets/home-contact-blue.svg", route: "/recently-viewed?tab=contacted" },
   { label: "My Reviews (New)", icon: "/assets/review-blue.svg", route: "/profile" },
   { label: "My Services", icon: "/assets/service-blue.svg", route: "/"},
   { label: "Refer And Earn", icon: "/assets/refer-earn-blue.svg", route: "/refer-and-earn" },
@@ -40,10 +40,10 @@ const LOGGED_IN_MENU_BASE: MenuItem[] = [
 ];
 
 const GUEST_MENU_BASE: MenuItem[] = [
-  { label: "Recently Search", icon: "/assets/home-search-blue.svg", route: "/projects" },
-  { label: "Recently Viewed", icon: "/assets/home-recent-blue.svg", route: "/recently-viewed" },
-  { label: "Saved Properties", icon: "/assets/home-save-blue.svg", route: "/recently-viewed" },
-  { label: "Contacted Properties", icon: "/assets/home-contact-blue.svg", route: "/contact-us" },
+  { label: "Recently Search", icon: "/assets/home-search-blue.svg", route: "/recently-viewed?tab=recentSearch" },
+  { label: "Recently Viewed", icon: "/assets/home-recent-blue.svg", route: "/recently-viewed?tab=recentlyViewed" },
+  { label: "Saved Properties", icon: "/assets/home-save-blue.svg", route: "/recently-viewed?tab=saved" },
+  { label: "Contacted Properties", icon: "/assets/home-contact-blue.svg", route: "/recently-viewed?tab=contacted" },
   { label: "My Reviews (New)", icon: "/assets/review-blue.svg", route: "/profile" },
   { label: "My Services", icon: "/assets/service-blue.svg", route: "/" },
   { label: "Refer And Earn", icon: "/assets/refer-earn-blue.svg", route: "/refer-and-earn" },

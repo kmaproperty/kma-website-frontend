@@ -451,14 +451,14 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="text-xs font-medium text-text-light-gray">
           Home <span className="px-1">/</span>
-          <span className="text-white"> New Project in {initialProjects[0]?.city}</span>
+          <span className="text-white"> New Properties in {initialProjects[0]?.city}</span>
         </div>
       </div>
 
       <section className="mt-7 w-full px-4 sm:px-6 lg:px-8">
         <div className="relative">
           <h1 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">
-            All Property List
+            All Properties List
           </h1>
 
           <div className="mt-4 flex flex-row space-between gap-3 rounded-[28px]  bg-white p-4  sm:p-5 lg:absolute lg:right-0 lg:top-15 lg:mt-0 lg:w-[73%] lg:max-w-[73%] lg:rounded-[34px_34px_0_0] lg:border-b-0">

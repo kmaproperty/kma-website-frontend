@@ -231,12 +231,29 @@ export default function EditProfileScreen() {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<ProfileTab>("activity");
 
+  const { data: tokenData, isPending: tokenPending } = useQuery({
+    queryKey: ["client-access-token"],
+    queryFn: async () => {
+      const res = await fetch("/api/get-token");
+      return res.json() as Promise<{ accessToken?: string | null }>;
+    },
+    staleTime: 60_000,
+  });
+  const isLoggedIn = Boolean(tokenData?.accessToken);
+
   const { data: profileResponse, isLoading: profileLoading, refetch: refetchProfile } = useQuery({
     queryKey: ["user-profile"],
     queryFn: async (): Promise<UserProfileResponse> => userProfileApiHandler(),
     staleTime: 60 * 1000,
+    enabled: isLoggedIn,
   });
   const user = profileResponse?.user;
+
+  useEffect(() => {
+    if (!isLoggedIn && activeTab === "edit") {
+      setActiveTab("activity");
+    }
+  }, [isLoggedIn, activeTab]);
 
   const { mutate: handleLogoutApi, isPending } = useMutation({
     mutationFn: async (): Promise<UserLogoutResponse> => {
@@ -257,7 +274,7 @@ export default function EditProfileScreen() {
 
   const renderContent = () => {
     if (activeTab === "activity") return <MyActivityScreen />;
-    if (activeTab === "reviews") return <MyReviewsScreen />;
+    if (activeTab === "reviews") return <MyReviewsScreen fetchEnabled={isLoggedIn} />;
     if (user) return <EditProfileContent user={user} onSuccess={() => refetchProfile()} />;
     return null;
   };
@@ -267,11 +284,13 @@ export default function EditProfileScreen() {
       <div className="flex flex-col gap-5 lg:flex-row">
         <aside className="w-full rounded-2xl bg-[#EFEFEF] p-4 lg:w-[240px]">
           <div className="flex flex-col items-center border-b border-border pb-5">
-            {profileLoading ? (
+            {tokenPending || (isLoggedIn && profileLoading) ? (
               <div className="flex h-[78px] w-[78px] animate-pulse items-center justify-center rounded-full bg-white shadow-sm" />
             ) : (
               <div className="flex h-[78px] w-[78px] overflow-hidden rounded-full bg-white text-lg font-semibold text-text-black shadow-sm">
-                {user?.profileImage ? (
+                {!isLoggedIn ? (
+                  <Image src="/assets/profile.png" width={78} height={78} alt="Profile" className="object-cover" />
+                ) : user?.profileImage ? (
                   <Image
                     src={getProfileImageUrl(user.profileImage)}
                     width={78}
@@ -286,8 +305,12 @@ export default function EditProfileScreen() {
                 )}
               </div>
             )}
-            <p className="mt-3 text-sm font-medium text-text-black">{profileLoading ? "..." : user?.name ?? "User"}</p>
-            <p className="mt-1 text-xs text-text-gray">{user?.phone ? (user.phone.startsWith('+') ? user.phone : `+91 ${user.phone}`) : ""}</p>
+            <p className="mt-3 text-sm font-medium text-text-black">
+              {tokenPending || (isLoggedIn && profileLoading) ? "..." : !isLoggedIn ? "Guest" : user?.name ?? "User"}
+            </p>
+            <p className="mt-1 text-xs text-text-gray">
+              {isLoggedIn && user?.phone ? (user.phone.startsWith("+") ? user.phone : `+91 ${user.phone}`) : ""}
+            </p>
           </div>
 
           <div className="pt-4">
@@ -321,32 +344,36 @@ export default function EditProfileScreen() {
               <span>My Reviews</span>
             </button>
 
-            <div className="mt-3 border-t border-border pt-3">
-              <button
-                onClick={() => setActiveTab("edit")}
-                className={`relative flex w-full items-center gap-2 rounded-lg px-2 py-2.5 text-left text-sm transition ${
-                  activeTab === "edit"
-                    ? "bg-white font-medium text-blue shadow-[0_1px_2px_rgba(15,23,42,0.08)]"
-                    : "text-text-black hover:bg-white/70"
-                }`}
-              >
-                {activeTab === "edit" ? (
-                  <span className="absolute -left-4 top-2.5 h-5 w-[2.5px] rounded-r-sm bg-blue" />
-                ) : null}
-                <Image src="/assets/edit-pen-blue.svg" width={14} height={14} alt="edit profile" />
-                <span>Edit Profile</span>
-              </button>
-            </div>
+            {isLoggedIn && (
+              <div className="mt-3 border-t border-border pt-3">
+                <button
+                  onClick={() => setActiveTab("edit")}
+                  className={`relative flex w-full items-center gap-2 rounded-lg px-2 py-2.5 text-left text-sm transition ${
+                    activeTab === "edit"
+                      ? "bg-white font-medium text-blue shadow-[0_1px_2px_rgba(15,23,42,0.08)]"
+                      : "text-text-black hover:bg-white/70"
+                  }`}
+                >
+                  {activeTab === "edit" ? (
+                    <span className="absolute -left-4 top-2.5 h-5 w-[2.5px] rounded-r-sm bg-blue" />
+                  ) : null}
+                  <Image src="/assets/edit-pen-blue.svg" width={14} height={14} alt="edit profile" />
+                  <span>Edit Profile</span>
+                </button>
+              </div>
+            )}
           </div>
 
-          <button
-            type="button"
-            onClick={() => handleLogoutApi()}
-            disabled={isPending}
-            className="mt-7 flex h-[42px] w-full items-center justify-center rounded-lg border border-border bg-white text-sm font-medium text-text-black transition hover:bg-[#F9FAFB] disabled:opacity-70"
-          >
-            {isPending ? "Logging out..." : "Logout"}
-          </button>
+          {isLoggedIn && (
+            <button
+              type="button"
+              onClick={() => handleLogoutApi()}
+              disabled={isPending}
+              className="mt-7 flex h-[42px] w-full items-center justify-center rounded-lg border border-border bg-white text-sm font-medium text-text-black transition hover:bg-[#F9FAFB] disabled:opacity-70"
+            >
+              {isPending ? "Logging out..." : "Logout"}
+            </button>
+          )}
         </aside>
 
         <div className="flex-1">{renderContent()}</div>

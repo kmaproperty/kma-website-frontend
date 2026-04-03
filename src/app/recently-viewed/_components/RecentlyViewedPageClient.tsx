@@ -13,6 +13,8 @@ import { useFavoriteProperties } from "@/api/hooks/useFavoriteProperties";
 import type { RecentSearchItem } from "@/api/actions/propertyActions";
 import { mapApiPropertyToProject } from "@/app/projects/_utils/mapApiPropertyToProject";
 import { Search } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 
 const awsBaseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
 const fallbackProjectImage = "/assets/properties_pic_1.png";
@@ -297,12 +299,28 @@ const allActivityProjects: ActivityProject[] = Array.from({ length: 24 }).map((_
 const PAGE_SIZE = 12;
 const RECENT_SEARCH_PAGE_SIZE = 10;
 
+const ACTIVITY_TAB_KEYS: ActivitySection[] = ["recentSearch", "saved", "contacted", "recentlyViewed"];
+
 export default function RecentlyViewedPageClient() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [activeSection, setActiveSection] = useState<ActivitySection>("recentlyViewed");
   const [activeIntent, setActiveIntent] = useState<"buy" | "rent" | "commercial">("buy");
   const [sortBy, setSortBy] = useState<SortType>("latest");
   const [searchSortBy, setSearchSortBy] = useState<"recent" | "relevance">("recent");
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab && ACTIVITY_TAB_KEYS.includes(tab as ActivitySection)) {
+      setActiveSection(tab as ActivitySection);
+    }
+  }, [searchParams]);
+
+  const selectActivityTab = (key: ActivitySection) => {
+    setActiveSection(key);
+    router.replace(`/recently-viewed?tab=${key}`, { scroll: false });
+  };
 
   const listingTypeApi = activeIntent === "buy" ? "sale" : activeIntent === "rent" ? "rent" : undefined;
   const sortApi: "newest" | "oldest" | "price_high" | "price_low" | undefined =
@@ -512,7 +530,7 @@ export default function RecentlyViewedPageClient() {
                   <button
                     key={tab.key}
                     type="button"
-                    onClick={() => setActiveSection(tab.key)}
+                    onClick={() => selectActivityTab(tab.key)}
                     className={`inline-flex h-9 items-center overflow-hidden rounded border text-xs ${
                       isActive ? "border-[#0C145E] bg-white text-[#0C145E]" : "border-[#E4E7EE] bg-white text-[#8A90A2]"
                     }`}

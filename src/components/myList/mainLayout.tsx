@@ -1,14 +1,33 @@
-'use client'
+"use client";
 
+import { Suspense } from "react";
+import { usePathname } from "next/navigation";
 import UserHeader from "../header/userHeader";
+import HomeHeader from "../header/homeHeader";
 
+/** All project browse + detail + nested routes (listing, gallery, reviews, …). */
+function isProjectsSectionPath(pathname: string) {
+  return pathname === "/projects" || pathname.startsWith("/projects/");
+}
 
-export default function MainLayout({ children }:{children:React.ReactNode}) {
+function MainLayoutHeaderSwitcher() {
+  const pathname = usePathname();
+  const useHomeHeader =
+    pathname === "/recently-viewed" || isProjectsSectionPath(pathname);
+  if (useHomeHeader) {
+    return <HomeHeader />;
+  }
+  return <UserHeader />;
+}
+
+export default function MainLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="">
       <div className="relative w-full min-h-[calc(100dvh-10dvh)] md:min-h-[calc(100dvh-7dvh)] bg-background-gray">
         <div className="absolute w-full flex justify-center 2md:top-6">
-          <UserHeader />
+          <Suspense fallback={<UserHeader />}>
+            <MainLayoutHeaderSwitcher />
+          </Suspense>
         </div>
         <div className="absolute w-full h-[450px] bg-blue rounded-b-[25px] sm:rounded-b-[60px] lg:rounded-b-[80px] xl:rounded-b-[100px]">
           

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import MainLayout from "@/components/myList/mainLayout";
 import HomeFooter from "@/components/footer/homeFooter";
 import AboutusDataSync from "@/components/footer/AboutusDataSync";
@@ -22,7 +23,9 @@ export default async function RecentlyViewedPage() {
     <>
       <HeaderDataSync propertyMasterData={propertyMasterData} />
       <MainLayout>
-        <RecentlyViewedPageClient />
+        <Suspense fallback={null}>
+          <RecentlyViewedPageClient />
+        </Suspense>
       </MainLayout>
       <AboutusDataSync />
       <HomeFooter />
