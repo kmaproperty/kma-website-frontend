@@ -42,7 +42,7 @@ import MainLayout from "@/components/myList/mainLayout";
 import { useProjectsStore } from "@/app/projects/_store/useProjectsStore";
 import { useRouter } from "nextjs-toploader/app";
 
-const placeholderImage = "/assets/property/img-1.png";
+const placeholderImage = "";
 
 const awsBaseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
 
@@ -427,9 +427,10 @@ export default function ListingDetailsPage() {
   const activeLocalityPlaces = nearbyPlacesCache[activeLocalityCategory] ?? [];
 
   // Show login prompt when guest user has exceeded 3 free views
-  if (viewLimitExceeded) {
+  if (true) {
     return (
       <MainLayout>
+        <div className="h-[calc(100dvh-10dvh)] w-full flex flex-row  justify-center items-center">
         <div className="flex flex-col items-center justify-center min-h-[60vh] px-4">
           <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
             <div className="w-16 h-16 bg-blue/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -454,6 +455,7 @@ export default function ListingDetailsPage() {
               Go Back
             </button>
           </div>
+        </div>
         </div>
       </MainLayout>
     );

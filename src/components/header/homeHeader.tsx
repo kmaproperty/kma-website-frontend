@@ -238,7 +238,7 @@ const handleHeaderSubMenuClick = (label: string) => {
         ].join(" ")}
       >
         <div
-          onClick={() => router.push("/")}
+          // onClick={() => router.push("/")}
           className="flex items-center px-1.5 shrink-0 cursor-pointer"
         >
           <Image

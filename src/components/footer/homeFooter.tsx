@@ -280,8 +280,8 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
               <ul className="space-y-3 text-[13px] text-white/90">
                 {[
                   { label: "About Us", href: "/about-us" },
-                  { label: "Careers", href: "/about-us" },
-                  { label: "Services", href: "/about-us" },
+                  // { label: "Careers", href: "/about-us" },
+                  // { label: "Services", href: "/about-us" },
                   { label: "Contact Us", href: "/contact-us" },
                   { label: "Terms & Conditions", href: "/about-us" },
                   { label: "Privacy Policy", href: "/about-us" },
@@ -315,7 +315,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
             </div>
           </motion.div>
 
-          <div className="border-t border-text-gray/60 my-8" />
+          {/* <div className="border-t border-text-gray/60 my-8" /> */}
 
           {/* Gallery Section */}
           <motion.div
@@ -323,7 +323,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
             className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-10 items-center"
             animate={isInView ? "visible" : "hidden"}
           >
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            {/* <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <Image
                 src="/assets/kma-logo-white.svg"
                 width={100}
@@ -348,9 +348,9 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
                   Nice Gallery
                 </p>
               </div>
-            </div>
+            </div> */}
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+            {/* <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
               {[1, 2, 3, 4, 5].map((i) => (
                 <div
                   key={i}
@@ -374,7 +374,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
                   </div>
                 </div>
               ))}
-            </div>
+            </div> */}
           </motion.div>
         </div>
       </div>
