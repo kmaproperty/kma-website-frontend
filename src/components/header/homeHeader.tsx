@@ -332,7 +332,7 @@ const handleHeaderSubMenuClick = (label: string) => {
             onMouseEnter={(event) => { cancelCloseTimer(); setHoveredMenu("more"); handleOpenMenu(event, "more"); }}
             onMouseLeave={() => scheduleClose()}
             onClick={(event) => handleOpenMenu(event, "more")}
-            className="flex justify-center items-center h-[30px] pt-1"
+            className="flex justify-center items-center h-[30px] pt-1 mr-10"
           >
             <Image
               src="/assets/more-white.svg"
