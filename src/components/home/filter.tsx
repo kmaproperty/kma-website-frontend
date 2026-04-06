@@ -22,7 +22,7 @@ export default function Filter() {
   const selectedCity = useSelector(getSelectedCity);
   const cityData = useSelector(getCityData);
   const propertyMasterData = useSelector(getPropertyMasterData);
-  
+
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [popperType, setPopperType] = useState(null)
 
@@ -39,7 +39,7 @@ export default function Filter() {
   const [selectedFurnishType, setSelectedFurnishType] = useState([])
   const [selectedProjectStatus, setSelectedProjectStatus] = useState([])
   const [selectedPostedBy, setSelectedPostedBy] = useState([])
-  const [transactionBy, setTransactionBy] = useState({name: 'Buy', value: 'sale'})
+  const [transactionBy, setTransactionBy] = useState({ name: 'Buy', value: 'sale' })
   const [citySelectionError, setCitySelectionError] = useState(false)
 
   const handlePopperOpen = (event: React.MouseEvent<HTMLElement>, type) => {
@@ -56,7 +56,7 @@ export default function Filter() {
     setSelectedFurnishType([])
     setSelectedProjectStatus([])
     setSelectedPostedBy([])
-    setTransactionBy({name: 'Buy', value: 'sale'})
+    setTransactionBy({ name: 'Buy', value: 'sale' })
     setSearch('')
   }
 
@@ -158,17 +158,17 @@ export default function Filter() {
       let payload: GetPropertiesCountPayload = {
         page: '1',
         limit: '5',
-        ...(selectedCity?.id ? {cityId: selectedCity?.id ?? null,} : {}),
-        ...(deferredSearch ? {search: deferredSearch ?? null,} : {}),
-        ...(listId ? {listingTypeIds: listId,} : {}),
-        ...(categoryIds ? {categoryIds: categoryIds,} : {}),
-        ...(plotPropertyTypeIds && selectedPropertyType.length === 0 ? {propertyTypeIds: plotPropertyTypeIds,} : {}),
-        ...(selectedPropertyType.length > 0 ? {propertyTypeIds: selectedPropertyType.map(item => item.id).join(',') ?? '',} : {}),
-        ...(selectedFurnishType.length > 0 ? {furnishingTypes: selectedFurnishType.map(item => item.value).join(',') ?? '',} : {}),
-        ...(selectedPossessionStatus.length > 0 ? {constructionStatuses: selectedPossessionStatus.map(item => item.value).join(',') ?? '',} : {}),
-        ...(selectedMinBudget  ? {minPrice: selectedMinBudget?.value ?? 0,} : {}),
-        ...(selectedMaxBudget  ? {maxPrice: selectedMaxBudget?.value ?? 0,} : {}),
-        ...(selectedPostedBy.length > 0  ? {postedBy: selectedPostedBy.map(item => item.value).join(',') ?? '',} : {}),
+        ...(selectedCity?.id ? { cityId: selectedCity?.id ?? null, } : {}),
+        ...(deferredSearch ? { search: deferredSearch ?? null, } : {}),
+        ...(listId ? { listingTypeIds: listId, } : {}),
+        ...(categoryIds ? { categoryIds: categoryIds, } : {}),
+        ...(plotPropertyTypeIds && selectedPropertyType.length === 0 ? { propertyTypeIds: plotPropertyTypeIds, } : {}),
+        ...(selectedPropertyType.length > 0 ? { propertyTypeIds: selectedPropertyType.map(item => item.id).join(',') ?? '', } : {}),
+        ...(selectedFurnishType.length > 0 ? { furnishingTypes: selectedFurnishType.map(item => item.value).join(',') ?? '', } : {}),
+        ...(selectedPossessionStatus.length > 0 ? { constructionStatuses: selectedPossessionStatus.map(item => item.value).join(',') ?? '', } : {}),
+        ...(selectedMinBudget ? { minPrice: selectedMinBudget?.value ?? 0, } : {}),
+        ...(selectedMaxBudget ? { maxPrice: selectedMaxBudget?.value ?? 0, } : {}),
+        ...(selectedPostedBy.length > 0 ? { postedBy: selectedPostedBy.map(item => item.value).join(',') ?? '', } : {}),
       };
       return getPropertiesCountApiHandler(payload);
     },
@@ -182,35 +182,49 @@ export default function Filter() {
   const allCities = useMemo(() => {
     const cities = cityData?.allCities ?? []
     return Array.isArray(cities)
-      ? cities.map((item => ({...item, label: item.name, value: item.id})))
+      ? cities.map((item => ({ ...item, label: item.name, value: item.id })))
       : []
   }, [cityData])
 
   const selectedCityValue = useMemo(
-    () => (selectedCity ? {...selectedCity, label: selectedCity.name, value:selectedCity.id} : null),
+    () => (selectedCity ? { ...selectedCity, label: selectedCity.name, value: selectedCity.id } : null),
     [selectedCity]
   )
-  
+
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex justify-center font-medium text-blue overflow-auto no-scrollbar">
+    <div className="flex flex-col 2md:gap-2">
+
+      <div className="hidden 2md:flex justify-center font-medium text-blue overflow-auto no-scrollbar">
         {
           filterTypeList.map((item, index) => {
-            return(
+            return (
               <button key={item.value} onClick={() => handleFilterType(item.value)} className={`w-fit 2md:w-[110px] ${index == 0 ? '' : 'ml-2'} flex-shrink-0 ${filterType == item.value ? 'animated-button' : 'animated-button-white'} px-5 2md:px-8 py-1 2md:py-2 border border-transparent text-center cursor-pointer`}>
-          <span className="gap-3 relative flex justify-center">
-            <p className={`text-nowrap text-xs 2md:text-sm 1xl:text-base`}>
-              {item.label}
-            </p>
-          </span>
-        </button>
+                <span className="gap-3 relative flex justify-center">
+                  <p className={`text-nowrap text-xs 2md:text-sm 1xl:text-base`}>
+                    {item.label}
+                  </p>
+                </span>
+              </button>
             )
           })
         }
-        
-        
       </div>
-      <div className="flex flex-col rounded-[10px] bg-white mt-1 p-4">
+      <div className="2md:hidden flex 2md:justify-center font-medium text-blue overflow-auto no-scrollbar 2md:bg-transparent bg-[#01004842] 2md:rounded-0 rounded-t-[10px]">
+        {
+          filterTypeList.map((item, index) => {
+            return (
+              <button key={item.value} onClick={() => handleFilterType(item.value)} className={`w-fit !border-0 before:!border-0 !rounded-none before:!rounded-none before:!bg-[#010048] ${index == 0 ? '' : 'ml-0 !border-l !border-[#FFFFFF1A]'} flex-shrink-0 ${filterType == item.value ? 'animated-button !bg-[#010048] !font-medium' : 'animated-button-white !bg-transparent !font-normal'} !text-white px-3.5 py-3 border border-transparent text-center cursor-pointer`}>
+                <span className="gap-3 relative flex justify-center">
+                  <p className={`text-nowrap text-sm`}>
+                    {item.label}
+                  </p>
+                </span>
+              </button>
+            )
+          })
+        }
+      </div>
+      <div className="flex flex-col rounded-[10px] 2md:bg-white 2md:mt-1 2md:p-4">
         <div className="hidden 2md:flex h-[35px] 2md:h-[40px]">
           <div className="flex-1">
             <DynamicAsyncAutocomplete
@@ -238,7 +252,7 @@ export default function Filter() {
                   borderBottomLeftRadius: "9999px",
                   boxShadow: "none",
                   height: "40px",
-                  paddingRight: '5px !important' ,
+                  paddingRight: '5px !important',
                   "& fieldset": {
                     borderColor: "var(--color-border)",
                     boxShadow: "none",
@@ -340,8 +354,8 @@ export default function Filter() {
             </button>
           </div>
         </div>
-        <div className="flex flex-col gap-2 2md:hidden">
-          <div className="flex-1">
+        <div className="flex gap-2 2md:hidden bg-white p-2 rounded-b-[10px]">
+          <div className="flex-auto flex items-center pr-2 border-r border-[#D9D9D9]">
             <DynamicAsyncAutocomplete
               isMulti={false}
               isError={citySelectionError && !selectedCity?.id}
@@ -360,16 +374,19 @@ export default function Filter() {
                 );
               }}
               value={selectedCityValue}
-              minHeight={"35px"}
               styles={{
                 "& .MuiOutlinedInput-root": {
-                  borderRadius: "9999px",
+                  borderRadius: "0px",
+                  border: "0px",
                   boxShadow: "none",
-                  paddingRight: '5px',
-                  height: "35px",
+                  padding: '0px !important',
+                  height: "auto",
+                  width: "60px",
+
                   "& fieldset": {
                     borderColor: "var(--color-border)",
                     boxShadow: "none",
+                    border: "0px",
                   },
                   "&:hover fieldset": {
                     borderColor: "var(--color-border)",
@@ -385,6 +402,10 @@ export default function Filter() {
                     boxShadow: "none",
                   },
                 },
+                "&.MuiInputBase-input": {
+                  padding: '0px !important',
+                  fontSize: "14px",
+                },
                 "& .MuiInputBase-input::placeholder": {
                   color: "var(--color-text-gray)",
                   opacity: 1,
@@ -393,29 +414,15 @@ export default function Filter() {
                 },
               }}
             />
+            <Image
+              src={"/assets/small-up-arrow-blue.svg"}
+              width={12}
+              height={12}
+              alt="arrow"
+              className="shrink-0"
+            />
           </div>
-          <div className="flex justify-between items-center px-4 flex-3 border border-border rounded-full">
-            <div className="flex w-full">
-              <Image
-                src="/assets/search-gray.svg"
-                width={16}
-                height={16}
-                alt="search"
-              />
-              <InputBase
-                placeholder="Search by Locality"
-                fullWidth
-                value={search}
-                onChange={(event) => {
-                  setSearch(event.target.value)
-                }}
-                className="w-full h-full px-3 text-xs rounded-full"
-                inputProps={{
-                  className:
-                    "font-ibm-plex-sans! text-sm text-text-gray placeholder:!text-text-gray placeholder:!text-sm placeholder:!opacity-100",
-                }}
-              />
-            </div>
+          <div className="flex justify-between items-center flex-[100%]">
             <button
               type="button"
               className="cursor-pointer"
@@ -443,9 +450,32 @@ export default function Filter() {
                 alt="Location finder"
               />
             </button>
+            <div className="flex w-full">
+
+              <InputBase
+                placeholder="Search by Locality"
+                fullWidth
+                value={search}
+                onChange={(event) => {
+                  setSearch(event.target.value)
+                }}
+                className="w-full h-full px-3 text-xs rounded-full"
+                inputProps={{
+                  className:
+                    "font-ibm-plex-sans! text-sm text-text-gray placeholder:!text-text-gray placeholder:!text-sm placeholder:!opacity-100",
+                }}
+              />
+              <Image
+                src="/assets/search-gray.svg"
+                width={16}
+                height={16}
+                alt="search"
+              />
+            </div>
+
           </div>
         </div>
-        <div className="flex justify-center gap-3 pt-2 2md:pt-3">
+        <div className="flex flex-col md:flex-row justify-center gap-3 pt-2 2md:pt-3">
           {['commercial'].includes(filterType) && <div
             onClick={(event) => handlePopperOpen(event, 'transactiontype')}
             className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
@@ -459,11 +489,11 @@ export default function Filter() {
               className="mt-1"
             />
           </div>}
-          {['rent', 'sale', 'projects','commercial', 'plot_land'].includes(filterType) && <div
+          {['rent', 'sale', 'projects', 'commercial', 'plot_land'].includes(filterType) && <div
             onClick={(event) => handlePopperOpen(event, 'budget')}
             className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
           >
-            {(!selectedMinBudget && !selectedMaxBudget) ? 'Budget' : (selectedMinBudget && !selectedMaxBudget) ? 'Above' + selectedMinBudget?.label : selectedMinBudget?.label + ' - ' + selectedMaxBudget?.label }
+            {(!selectedMinBudget && !selectedMaxBudget) ? 'Budget' : (selectedMinBudget && !selectedMaxBudget) ? 'Above' + selectedMinBudget?.label : selectedMinBudget?.label + ' - ' + selectedMaxBudget?.label}
             <Image
               src={"/assets/small-up-arrow-blue.svg"}
               width={12}
@@ -476,7 +506,7 @@ export default function Filter() {
             onClick={(event) => handlePopperOpen(event, 'projectstatus')}
             className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
           >
-            {selectedProjectStatus.length > 0 ? selectedProjectStatus[0].name + (selectedProjectStatus.length > 1 ? ' +1': '') : 'Project Status'}
+            {selectedProjectStatus.length > 0 ? selectedProjectStatus[0].name + (selectedProjectStatus.length > 1 ? ' +1' : '') : 'Project Status'}
             <Image
               src={"/assets/small-up-arrow-blue.svg"}
               width={12}
@@ -489,7 +519,7 @@ export default function Filter() {
             onClick={(event) => handlePopperOpen(event, 'propertytype')}
             className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
           >
-           {selectedPropertyType.length > 0 ? selectedPropertyType[0].name + (selectedPropertyType.length > 1 ? " +1" : '')  : ' Property Type'}
+            {selectedPropertyType.length > 0 ? selectedPropertyType[0].name + (selectedPropertyType.length > 1 ? " +1" : '') : ' Property Type'}
             <Image
               src={"/assets/small-up-arrow-blue.svg"}
               width={12}
@@ -502,7 +532,7 @@ export default function Filter() {
             onClick={(event) => handlePopperOpen(event, 'possessionstatus')}
             className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
           >
-            {selectedPossessionStatus.length > 0 ? selectedPossessionStatus[0].name + (selectedPossessionStatus.length > 1 ? ' +1': '') : 'Possession Status'}
+            {selectedPossessionStatus.length > 0 ? selectedPossessionStatus[0].name + (selectedPossessionStatus.length > 1 ? ' +1' : '') : 'Possession Status'}
             <Image
               src={"/assets/small-up-arrow-blue.svg"}
               width={12}
@@ -515,7 +545,7 @@ export default function Filter() {
             onClick={(event) => handlePopperOpen(event, 'furnishType')}
             className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
           >
-            {selectedFurnishType.length > 0 ? selectedFurnishType[0].name + (selectedFurnishType.length > 1 ? ' +1': '') : 'Furnishing Status'}
+            {selectedFurnishType.length > 0 ? selectedFurnishType[0].name + (selectedFurnishType.length > 1 ? ' +1' : '') : 'Furnishing Status'}
             <Image
               src={"/assets/small-up-arrow-blue.svg"}
               width={12}
@@ -528,7 +558,7 @@ export default function Filter() {
             onClick={(event) => handlePopperOpen(event, 'postedby')}
             className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
           >
-            {selectedPostedBy.length > 0 ? selectedPostedBy[0].name + (selectedPostedBy.length > 1 ? ' +1': '') : 'Posted By'}
+            {selectedPostedBy.length > 0 ? selectedPostedBy[0].name + (selectedPostedBy.length > 1 ? ' +1' : '') : 'Posted By'}
             <Image
               src={"/assets/small-up-arrow-blue.svg"}
               width={12}
@@ -539,52 +569,52 @@ export default function Filter() {
           </div>}
         </div>
         <div className="2md:hidden flex-1 mt-2">
-            <button onClick={handleSearchClick} disabled={explorePropertyCount === 0} className={`animated-button px-[30px] py-[9px] ml-2 h-full w-[calc(100%-0.5rem)] ${explorePropertyCount === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
-              <span className="flex items-center justify-center gap-[6px] relative z-11">
-                <Image
-                  src="/assets/white-search.svg"
-                  width={16}
-                  height={16}
-                  alt="Search"
-                />
-                <p className="text-nowrap font-medium text-xs lg:text-sm">
-                  Search
-                </p>
-              </span>
-            </button>
-          </div>
+          <button onClick={handleSearchClick} disabled={explorePropertyCount === 0} className={`animated-button px-[30px] py-[9px] ml-2 h-full w-[calc(100%-0.5rem)] ${explorePropertyCount === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
+            <span className="flex items-center justify-center gap-[6px] relative z-11">
+              <Image
+                src="/assets/white-search.svg"
+                width={16}
+                height={16}
+                alt="Search"
+              />
+              <p className="text-nowrap font-medium text-xs lg:text-sm">
+                Search
+              </p>
+            </span>
+          </button>
+        </div>
       </div>
 
       <Popper
-          open={openType}
-          anchorEl={anchorEl}
-          placement="bottom-start"
-          modifiers={[
-            {
-              name: "offset",
-              options: {
-                offset: [0, 20],
-              },
+        open={openType}
+        anchorEl={anchorEl}
+        placement="bottom-start"
+        modifiers={[
+          {
+            name: "offset",
+            options: {
+              offset: [0, 20],
             },
-          ]}
+          },
+        ]}
+      >
+        <ClickAwayListener
+          onClickAway={() => {
+            setAnchorEl(null)
+            setPopperType('')
+          }}
         >
-          <ClickAwayListener
-                      onClickAway={() => {
-                        setAnchorEl(null)
-                        setPopperType('')
-                      }}
-                    >
-                      <div className="bg-white overflow-hidden p-2 rounded-[10px] shadow-xl">
-                        {popperType == 'budget' && <PriceRangeMenu filterType={filterType} selectedMinBudget={selectedMinBudget} setSelectedMinBudget={setSelectedMinBudget} selectedMaxBudget={selectedMaxBudget} setSelectedMaxBudget={setSelectedMaxBudget}/>}
-                        {popperType == 'propertytype' && <PropertyTypeMenu isCommercial={filterType == 'commercial'} propertyMasterData={propertyMasterData} filterType={filterType == 'projects' ? 'rent' : filterType == 'commercial' ? transactionBy?.value : filterType} selectedPropertyType={selectedPropertyType} setSelectedPropertyType={setSelectedPropertyType}/>}
-                        {popperType == 'possessionstatus' && <PossessionStatusMenu selectedPossessionStatus={selectedPossessionStatus} setSelectedPossessionStatus={setSelectedPossessionStatus}/>}
-                        {popperType == 'furnishType' && <FurnishTypeMenu selectedFurnishType={selectedFurnishType} setSelectedFurnishType={setSelectedFurnishType}/>}
-                        {popperType == 'projectstatus' && <ProjectStatusMenu selectedProjectStatus={selectedProjectStatus} setSelectedProjectStatus={setSelectedProjectStatus}/>}
-                        {popperType == 'postedby' && <PostedByMenu selectedPostedBy={selectedPostedBy} setSelectedPostedBy={setSelectedPostedBy}/>}
-                        {popperType == 'transactiontype' && <TransactionByMenu transactionBy={transactionBy} setTransactionBy={setTransactionBy} setSelectedPropertyType={setSelectedPropertyType}/>}
-                      </div>
-                    </ClickAwayListener>
-        </Popper>
+          <div className="bg-white overflow-hidden p-2 rounded-[10px] shadow-xl">
+            {popperType == 'budget' && <PriceRangeMenu filterType={filterType} selectedMinBudget={selectedMinBudget} setSelectedMinBudget={setSelectedMinBudget} selectedMaxBudget={selectedMaxBudget} setSelectedMaxBudget={setSelectedMaxBudget} />}
+            {popperType == 'propertytype' && <PropertyTypeMenu isCommercial={filterType == 'commercial'} propertyMasterData={propertyMasterData} filterType={filterType == 'projects' ? 'rent' : filterType == 'commercial' ? transactionBy?.value : filterType} selectedPropertyType={selectedPropertyType} setSelectedPropertyType={setSelectedPropertyType} />}
+            {popperType == 'possessionstatus' && <PossessionStatusMenu selectedPossessionStatus={selectedPossessionStatus} setSelectedPossessionStatus={setSelectedPossessionStatus} />}
+            {popperType == 'furnishType' && <FurnishTypeMenu selectedFurnishType={selectedFurnishType} setSelectedFurnishType={setSelectedFurnishType} />}
+            {popperType == 'projectstatus' && <ProjectStatusMenu selectedProjectStatus={selectedProjectStatus} setSelectedProjectStatus={setSelectedProjectStatus} />}
+            {popperType == 'postedby' && <PostedByMenu selectedPostedBy={selectedPostedBy} setSelectedPostedBy={setSelectedPostedBy} />}
+            {popperType == 'transactiontype' && <TransactionByMenu transactionBy={transactionBy} setTransactionBy={setTransactionBy} setSelectedPropertyType={setSelectedPropertyType} />}
+          </div>
+        </ClickAwayListener>
+      </Popper>
     </div>
   );
 }

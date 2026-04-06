@@ -14,6 +14,10 @@ export default function middleware(req: NextRequest) {
   const isContactUsPage = pathname === '/contact-us';
   const isHelpCenterPage = pathname === '/help-center';
   const isJoinUsPage = pathname === '/join-us';
+  const isProfilePage = pathname === "/profile";
+  const isReferAndEarnPage = pathname === "/refer-and-earn";
+  const isChannelPartnerPage =
+    pathname === "/channel-partner" || pathname.startsWith("/channel-partner/");
   const event = searchParams.get('event')
   const isLegacySignupPage =
     pathname === "/signup" ||
@@ -34,7 +38,10 @@ export default function middleware(req: NextRequest) {
     isRecentlyViewedPage ||
     isContactUsPage ||
     isHelpCenterPage ||
-    isJoinUsPage
+    isJoinUsPage ||
+    isProfilePage ||
+    isReferAndEarnPage ||
+    isChannelPartnerPage
   ) {
     return NextResponse.next();
   }
@@ -55,20 +62,14 @@ export default function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/user-flow?postProperty=true", req.url));
   }
 
-  // Allow logged-in users to stay in user-flow.
-  // This prevents "user-flow" login from being forced to /user-dashboard.
-  if (accessToken && isUserFlowPage) {
-    return NextResponse.next();
-  }
-
   // Protect all remaining routes: unauthenticated users must enter via user-flow (login).
   if (!accessToken && !event) {
     return NextResponse.redirect(new URL('/user-flow?isLogin=true', req.url));
   }
 
   return NextResponse.next();
-} 
+}
 
 export const config = {
   matcher: ['/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.png$|.*\\.svg$.*|.*\\.jpg$).*)'],
-} 
+}

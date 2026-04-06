@@ -152,8 +152,8 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
   return (
     <div className="overflow-hidden">
       <HeaderDataSync propertyMasterData={propertyMasterData} propertyCitiesData={propertyCitiesData} />
-      <div className="relative ">
-        <BannerSlider bannerHeight={'min-h-[700px] 2md:min-h-auto 2md:h-[90vh]'} backgroundImages={imageSlider} overlayClass='gradient-overlay' />
+      <div className="relative">
+        <BannerSlider bannerHeight={'h-full min-h-full'} backgroundImages={imageSlider} overlayClass='gradient-overlay' />
         <MainHome topProperties={data?.properties ?? []} />
       </div>
       <div className="my-16 flex justify-center overflow-hidden">

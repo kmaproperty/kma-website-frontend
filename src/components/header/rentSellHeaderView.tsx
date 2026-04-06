@@ -47,7 +47,7 @@ export default function RentSellHeaderView({ type, onClose }: { type: string; on
   }, [propertyList, availablePropertyTypeIds, selectedCity?.id]);
 
   return (
-    <div className="flex  flex-col 2md:flex-row justify-start overflow-hidden rounded-xl h-full 2md:h-[280px]">
+    <div className="flex flex-col 2md:flex-row justify-start overflow-hidden rounded-xl h-full 2md:h-[280px]">
       <div className="flex flex-col gap-6 2md:gap-0 justify-between bg-blue pl-8 pt-8 pb-3 pr-5">
         <div className="flex flex-col gap-2">
           {
@@ -83,7 +83,7 @@ export default function RentSellHeaderView({ type, onClose }: { type: string; on
                         const basePath = selectedCity?.id ? `/projects/${selectedCity.id}` : "/projects";
                         const params = new URLSearchParams();
                         params.set('propertyTypeId', item.id);
-                        params.set('listingType', type);
+                        if (listingTypeId) params.set('listingTypeId', listingTypeId);
                         router.push(`${basePath}?${params.toString()}`);
                       }}
                       className="cursor-pointer text-sm mt-1  text-text-black break-inside-avoid hover:underline"

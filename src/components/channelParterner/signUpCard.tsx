@@ -11,9 +11,11 @@ import MobileInput from "../common/mobileInput";
 import Spinner from "../common/spinner";
 import { mobileNumberValidator } from "@/lib/commonValidator";
 import { createURLSearchParam } from "@/lib/helper";
-import { OtpPayload, sendSignUpOtpApiHandler, SendOtpResponse } from "@/services/authService";
-import { USER_TYPE } from "@/lib/enums";
-import { UserType } from "@/types/user";
+import {
+  EndUserSignupPayload,
+  EndUserSignupResponse,
+  sendEndUserSignupOtpApiHandler,
+} from "@/services/authService";
 
 interface MobileState {
   value: string;
@@ -31,7 +33,6 @@ export default function SignUpCard() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const mobileNumber = searchParams.get("mobile");
-  const defaultUserType = USER_TYPE.CHANNEL_PARTNER as UserType;
 
   const [mobileInput, setMobileInput] = useState<MobileState>({
     value: "",
@@ -50,16 +51,17 @@ export default function SignUpCard() {
   };
 
   const { mutate: handleSendOtp, isPending } = useMutation({
-    mutationFn: async (payload: OtpPayload): Promise<SendOtpResponse> => {
-      return await sendSignUpOtpApiHandler(payload);
+    mutationFn: async (payload: EndUserSignupPayload): Promise<EndUserSignupResponse> => {
+      return await sendEndUserSignupOtpApiHandler(payload);
     },
-    onSuccess: (response: SendOtpResponse) => {
+    onSuccess: (response: EndUserSignupResponse) => {
       const params = createURLSearchParam({
         mobile: mobileInput.value,
         code: mobileInput.code,
+        fullName: formState.fullName,
+        email: formState.email,
         isOtp: true,
-        flow: "signup",
-        ownerType: defaultUserType,
+        flow: "enduser-signup",
       });
       toast.success(response.otp);
       router.replace(`${pathname}${params}`);
@@ -96,12 +98,20 @@ export default function SignUpCard() {
       setMobileInput({ ...mobileInput, validationMessage: msg });
       return;
     }
-    const payload = { phone: mobileInput.value, role: defaultUserType };
-    handleSendOtp(payload);
+    handleSendOtp({
+      name: formState.fullName.trim(),
+      email: formState.email.trim(),
+      phone: mobileInput.value,
+    });
   };
 
   const handleRedirectToLogin = () => {
     const params = createURLSearchParam({ isLogin: true });
+    router.replace(`${pathname}${params}`);
+  };
+
+  const handleRedirectToPostProperty = () => {
+    const params = createURLSearchParam({ postProperty: true });
     router.replace(`${pathname}${params}`);
   };
 
@@ -181,6 +191,15 @@ export default function SignUpCard() {
           </span>
         </p>
       </div>
+
+      {/* <div className="mt-6 pt-4 border-t border-border">
+        <p className="text-sm text-text-gray">
+          Want to list your property?{" "}
+          <span onClick={handleRedirectToPostProperty} className="font-semibold underline text-text-black cursor-pointer">
+            Register as Owner / Channel Partner
+          </span>
+        </p>
+      </div> */}
     </div>
   );
 }

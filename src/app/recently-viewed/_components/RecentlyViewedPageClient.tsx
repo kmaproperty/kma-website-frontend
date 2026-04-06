@@ -5,8 +5,7 @@ import type { Project } from "@/app/projects/_types";
 import ProjectsPagination from "@/app/projects/_components/ProjectsPagination";
 import Image from "next/image";
 import Link from "next/link";
-import { Bath, BedDouble, ChevronDown, ChevronLeft, ChevronRight, Heart, Images, LogIn, Maximize2, Video } from "lucide-react";
-import { useRouter } from "nextjs-toploader/app";
+import { Bath, BedDouble, ChevronDown, ChevronLeft, ChevronRight, Heart, Images, Maximize2, Video } from "lucide-react";
 import { useRecentlyViewedProperties } from "@/api/hooks/useRecentlyViewedProperties";
 import { useRecentlySearched } from "@/api/hooks/useRecentlySearched";
 import { useContactedProperties } from "@/api/hooks/useContactedProperties";
@@ -14,6 +13,8 @@ import { useFavoriteProperties } from "@/api/hooks/useFavoriteProperties";
 import type { RecentSearchItem } from "@/api/actions/propertyActions";
 import { mapApiPropertyToProject } from "@/app/projects/_utils/mapApiPropertyToProject";
 import { Search } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 
 const awsBaseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
 const fallbackProjectImage = "/assets/properties_pic_1.png";
@@ -298,15 +299,28 @@ const allActivityProjects: ActivityProject[] = Array.from({ length: 24 }).map((_
 const PAGE_SIZE = 12;
 const RECENT_SEARCH_PAGE_SIZE = 10;
 
+const ACTIVITY_TAB_KEYS: ActivitySection[] = ["recentSearch", "saved", "contacted", "recentlyViewed"];
+
 export default function RecentlyViewedPageClient() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [activeSection, setActiveSection] = useState<ActivitySection>("recentlyViewed");
   const [activeIntent, setActiveIntent] = useState<"buy" | "rent" | "commercial">("buy");
   const [sortBy, setSortBy] = useState<SortType>("latest");
   const [searchSortBy, setSearchSortBy] = useState<"recent" | "relevance">("recent");
   const [currentPage, setCurrentPage] = useState(1);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const guestPreviewCount = 8;
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab && ACTIVITY_TAB_KEYS.includes(tab as ActivitySection)) {
+      setActiveSection(tab as ActivitySection);
+    }
+  }, [searchParams]);
+
+  const selectActivityTab = (key: ActivitySection) => {
+    setActiveSection(key);
+    router.replace(`/recently-viewed?tab=${key}`, { scroll: false });
+  };
 
   const listingTypeApi = activeIntent === "buy" ? "sale" : activeIntent === "rent" ? "rent" : undefined;
   const sortApi: "newest" | "oldest" | "price_high" | "price_low" | undefined =
@@ -364,7 +378,7 @@ export default function RecentlyViewedPageClient() {
     limit: PAGE_SIZE,
     listingType: listingTypeApi,
     sort: sortApi,
-    enabled: activeSection === "saved" && isLoggedIn,
+    enabled: activeSection === "saved",
   });
 
   const recentlyViewedAsActivityProjects = useMemo<ActivityProject[]>(() => {
@@ -442,9 +456,7 @@ export default function RecentlyViewedPageClient() {
       ? contactedAsActivityProjects
       : isSavedTab
         ? savedAsActivityProjects
-        : isLoggedIn
-          ? paginatedMock
-          : filteredMockProjects.slice(0, guestPreviewCount);
+        : paginatedMock;
 
   const showingCount = isRecentSearchTab
     ? recentSearches.length
@@ -486,28 +498,6 @@ export default function RecentlyViewedPageClient() {
     setCurrentPage(1);
   }, [activeSection, activeIntent, sortBy, searchSortBy]);
 
-  useEffect(() => {
-    const readAuthState = () => {
-      try {
-        const rawUser = localStorage.getItem("user");
-        if (!rawUser) {
-          setIsLoggedIn(false);
-          return;
-        }
-        const parsed = JSON.parse(rawUser) as { role?: string };
-        setIsLoggedIn(Boolean(parsed?.role));
-      } catch {
-        setIsLoggedIn(false);
-      }
-    };
-    readAuthState();
-    window.addEventListener("storage", readAuthState);
-    return () => window.removeEventListener("storage", readAuthState);
-  }, []);
-
-  const shouldShowGuestLock = !isRecentSearchTab && !isContactedTab && !isLoggedIn && visibleProjects.length > 0;
-  const shouldRenderGuestOverlay = shouldShowGuestLock && visibleProjects.length > 4;
-
   return (
     <div className="w-full">
       <section className="relative">
@@ -540,7 +530,7 @@ export default function RecentlyViewedPageClient() {
                   <button
                     key={tab.key}
                     type="button"
-                    onClick={() => setActiveSection(tab.key)}
+                    onClick={() => selectActivityTab(tab.key)}
                     className={`inline-flex h-9 items-center overflow-hidden rounded border text-xs ${
                       isActive ? "border-[#0C145E] bg-white text-[#0C145E]" : "border-[#E4E7EE] bg-white text-[#8A90A2]"
                     }`}
@@ -723,11 +713,10 @@ export default function RecentlyViewedPageClient() {
             !(isContactedTab && (isContactedLoading || isContactedError)) &&
             !(isSavedTab && (isFavoritesLoading || isFavoritesError)) && (
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-            {visibleProjects.map((project, index) => {
-              const blurForGuest = !isLoggedIn && index >= 4;
+            {visibleProjects.map((project) => {
               const detailsHref = `/projects/${project.id}/${project.id}`;
               return (
-                <div key={project.id} className={blurForGuest ? "pointer-events-none select-none blur-[2.5px]" : ""}>
+                <div key={project.id}>
                   <CompactPropertyCard project={project} detailsHref={detailsHref} />
                 </div>
               );
@@ -735,38 +724,7 @@ export default function RecentlyViewedPageClient() {
           </div>
           )}
 
-          {shouldRenderGuestOverlay && (
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex h-[42%] items-end justify-center bg-gradient-to-t from-white via-white/90 to-transparent pb-8">
-              <div className="pointer-events-auto flex flex-col items-center gap-3 rounded-xl px-5 py-4 text-center">
-                <p className="text-[28px] font-semibold leading-tight text-[#111827]">Login To View All The Properties</p>
-                <button
-                  type="button"
-                  onClick={() => router.push("/user-flow?isLogin=true&redirect=/recently-viewed")}
-                  className="inline-flex h-11 items-center gap-2 rounded-full bg-[#0C145E] px-7 text-sm font-medium text-white transition hover:opacity-95"
-                >
-                  <LogIn className="h-4 w-4" />
-                  Login
-                </button>
-              </div>
-            </div>
-          )}
         </div>
-
-        {shouldShowGuestLock && !shouldRenderGuestOverlay && (
-          <div className="mt-4 flex justify-center rounded-xl border border-[#E6E8EF] bg-[#F8F9FC] px-4 py-6 text-center">
-            <div className="flex flex-col items-center gap-3">
-              <p className="text-xl font-semibold leading-tight text-[#111827] sm:text-2xl">Login To View All The Properties</p>
-              <button
-                type="button"
-                onClick={() => router.push("/user-flow?isLogin=true&redirect=/recently-viewed")}
-                className="inline-flex h-11 items-center gap-2 rounded-full bg-[#0C145E] px-7 text-sm font-medium text-white transition hover:opacity-95"
-              >
-                <LogIn className="h-4 w-4" />
-                Login
-              </button>
-            </div>
-          </div>
-        )}
 
         {((isRecentSearchTab && recentSearches.length === 0) || (!isRecentSearchTab && visibleProjects.length === 0)) &&
           !isRecentlyViewedLoading &&
@@ -781,9 +739,7 @@ export default function RecentlyViewedPageClient() {
                   : isContactedTab
                     ? "No contacted properties yet."
                     : isSavedTab
-                      ? isLoggedIn
-                        ? "No saved properties yet."
-                        : "Login to view your saved properties."
+                      ? "No saved properties yet."
                       : "No properties available for this filter."}
             </div>
           )}

@@ -63,10 +63,12 @@ export default function ProfileMenu({ anchorEl, open, handleClose }) {
         My Profile
       </MenuItem>
 
-      <Divider className="m-0!" />
+      <Divider className="m-0!" /> */}
 
       <MenuItem
-        onClick={() => {}}
+        onClick={() => {
+          router.replace("/");
+        }}
         className="text-sm! py-3! px-6!"
         sx={{
           "&.MuiMenuItem-root:hover": {
@@ -77,7 +79,7 @@ export default function ProfileMenu({ anchorEl, open, handleClose }) {
         Go to Kma.com
       </MenuItem>
 
-      <Divider className="m-0!" /> */}
+      <Divider className="m-0!" />
 
       <MenuItem
         onClick={handleLogout}

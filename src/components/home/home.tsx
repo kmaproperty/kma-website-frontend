@@ -20,12 +20,12 @@ export default function MainHome({ topProperties }: MainHomeProps) {
         <HomeHeader />
       </div>
     </div>
-    <div className="absolute w-[100%] h-[88vh] top-0">
+    <div className="relative w-[100%] top-0 2xl:py-[150px] 1xl:py-[120px] xl:py-[110px] lg:py-[90px] 2md:py-[80px] md:py-[70px] sm:py-[60px] py-[50px] 2md:px-0 px-3">
       <div>
         <Social/>
       </div>
-      <div className="flex flex-col items-center pt-[85px]">
-        <div className="w-[75%] mt-[45px] flex justify-between gap-5 overflow-x-auto no-scrollbar">
+      <div className="flex flex-col items-center">
+        <div className="2md:w-[75%] mt-[45px] flex justify-between gap-5 overflow-x-auto no-scrollbar">
           <div className="w-[100%] lg:w-[50%]">
             <BannerText />
           </div>
@@ -35,7 +35,7 @@ export default function MainHome({ topProperties }: MainHomeProps) {
         </div>
       </div>
       <div className="flex justify-center mt-10">
-        <div className="w-[75%] lg:w-[55%]">
+        <div className="w-full 2md:w-[75%] lg:w-[55%] border border-white 2md:border-transparent rounded-md px-5 py-8 2md:p-0 2md:backdrop-filter-none backdrop-blur-[13px] bg-white/50 2md:bg-transparent">
           <Filter />
         </div>
       </div>

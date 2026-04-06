@@ -198,3 +198,12 @@ body {
     max-width: 100% !important;
   }
 }
+
+
+
+.home_hero_slider .slick-slider,
+.home_hero_slider .slick-slider .slick-list,
+.home_hero_slider .slick-slider .slick-list .slick-track,
+.home_hero_slider .slick-slider .slick-list .slick-track .slick-slide>div {
+ height: 100%;
+}

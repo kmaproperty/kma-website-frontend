@@ -5,6 +5,8 @@ import LoginOtpCard from "@/components/channelParterner/loginOtpCard";
 import MainLayout from "@/components/channelParterner/mainLayout";
 import SignUpCard from "@/components/channelParterner/signUpCard";
 import SignupOtpCard from "@/components/channelParterner/signupOtpCard";
+import EndUserSignupOtpCard from "@/components/channelParterner/endUserSignupOtpCard";
+import EndUserLoginOtpCard from "@/components/channelParterner/endUserLoginOtpCard";
 import SignUp from "@/components/signUp/signUp";
 
 interface UserFlowPageProps {
@@ -32,12 +34,19 @@ export default async function UserFlowPage({ searchParams }: UserFlowPageProps) 
   if (isOtp && flow === "login") {
     cardContent = <LoginOtpCard />;
   }
-  if (isOtp && flow !== "login") {
+  if (isOtp && flow === "enduser-login") {
+    cardContent = <EndUserLoginOtpCard />;
+  }
+  if (isOtp && flow === "enduser-signup") {
+    cardContent = <EndUserSignupOtpCard />;
+  }
+  if (isOtp && flow === "signup") {
     cardContent = <SignupOtpCard />;
   }
 
-  const isLoginView = isLogin || (isOtp && flow === "login");
+  const isLoginView = isLogin || (isOtp && (flow === "login" || flow === "enduser-login"));
   const isPostPropertyView = isPostProperty && !isOtp;
+  const isEndUserSignup = !isLogin && !isPostProperty && !isOtp;
 
   return (
     <MainLayout>
@@ -45,8 +54,8 @@ export default async function UserFlowPage({ searchParams }: UserFlowPageProps) 
         cardContent={cardContent}
         infoContent={
           <InfoSection
-            titlePrefix={isPostPropertyView ? "Upload Your Property in 3 Easy Steps" : isLoginView ? "Welcome Back" : "New To KMA?"}
-            title={isPostPropertyView ? "" : isLoginView ? "Login To Your Account" : "Create An Account"}
+            titlePrefix={isPostPropertyView ? "Upload Your Property in 3 Easy Steps" : isLoginView ? "Welcome Back" : isEndUserSignup ? "Find Your Dream Home" : "New To KMA?"}
+            title={isPostPropertyView ? "" : isLoginView ? "Login To Your Account" : isEndUserSignup ? "Create An Account" : "Create An Account"}
           />
         }
       />

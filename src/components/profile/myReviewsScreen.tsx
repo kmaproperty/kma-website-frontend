@@ -96,7 +96,7 @@ function ReviewCard({ review }: { review: MyReviewItem }) {
   );
 }
 
-export default function MyReviewsScreen() {
+export default function MyReviewsScreen({ fetchEnabled = true }: { fetchEnabled?: boolean }) {
   const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState<"newest" | "oldest">("newest");
   const [sortOpen, setSortOpen] = useState(false);
@@ -111,7 +111,7 @@ export default function MyReviewsScreen() {
     isLoading,
     isError,
     refetch,
-  } = useMyReviews({ page, limit: PAGE_SIZE, sortBy });
+  } = useMyReviews({ page, limit: PAGE_SIZE, sortBy, enabled: fetchEnabled });
 
   return (
     <div className="rounded-xl bg-white p-4 sm:p-5">
@@ -120,6 +120,7 @@ export default function MyReviewsScreen() {
           My Reviews
         </h2>
 
+        {fetchEnabled && (
         <div className="flex items-center gap-2 self-start sm:self-auto">
           <span className="text-sm font-medium text-text-black">Sort By :</span>
           <div className="relative">
@@ -183,9 +184,16 @@ export default function MyReviewsScreen() {
             )}
           </div>
         </div>
+        )}
       </div>
 
-      {isLoading && (
+      {!fetchEnabled && (
+        <div className="mt-5 rounded-xl border border-[#E6E8EC] p-8 text-center">
+          <p className="text-sm text-text-gray">Sign in to see reviews you have submitted.</p>
+        </div>
+      )}
+
+      {fetchEnabled && isLoading && (
         <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <div
@@ -196,7 +204,7 @@ export default function MyReviewsScreen() {
         </div>
       )}
 
-      {isError && (
+      {fetchEnabled && isError && (
         <div className="mt-5 rounded-xl border border-[#E6E8EC] bg-[#FEF2F2] p-6 text-center">
           <p className="text-sm text-[#991B1B]">Failed to load your reviews.</p>
           <button
@@ -209,7 +217,7 @@ export default function MyReviewsScreen() {
         </div>
       )}
 
-      {!isLoading && !isError && reviews.length === 0 && (
+      {fetchEnabled && !isLoading && !isError && reviews.length === 0 && (
         <div className="mt-5 rounded-xl border border-[#E6E8EC] p-8 text-center">
           <p className="text-sm text-text-gray">You haven’t submitted any reviews yet.</p>
           <p className="mt-1 text-xs text-text-gray">
@@ -218,7 +226,7 @@ export default function MyReviewsScreen() {
         </div>
       )}
 
-      {!isLoading && !isError && reviews.length > 0 && (
+      {fetchEnabled && !isLoading && !isError && reviews.length > 0 && (
         <>
           <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {reviews.map((review) => (

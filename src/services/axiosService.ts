@@ -109,15 +109,19 @@ axiosInstance.interceptors.response.use(
         clearAuthCookies()
         window.location.href = "/signup"
       }
-    }else if(error.response?.status === 401){
+    } else if (error.response?.status === 401) {
       // Don't redirect for view-limit 401s (guest user exceeded 3 free views)
       const data = error.response?.data;
       if (data?.requiresLogin === true && data?.remainingViews === 0) {
         return Promise.reject(data);
       }
+      // Guests have no refresh token — let callers handle 401 (empty states, login CTAs)
+      if (!refreshToken) {
+        return Promise.reject(error?.response?.data ?? error);
+      }
       localStorage.clear();
-      clearAuthCookies()
-      window.location.href = "/signup"
+      clearAuthCookies();
+      window.location.href = "/signup";
     }
     return Promise.reject(error?.response?.data ?? error);
   }

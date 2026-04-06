@@ -139,7 +139,7 @@ export default function CreateAccount({ step }: { step: number }) {
     },
     onSuccess: (response: CreateOwnerResponse) => {
       localStorage.setItem("user", JSON.stringify(response.user));
-      dispatch(resetForm())
+            dispatch(resetForm())
       toast.success(response.message)
       router.replace('/post-property')
     },
@@ -165,7 +165,7 @@ export default function CreateAccount({ step }: { step: number }) {
     },
     onSuccess: (response: CreateOwnerResponse) => {
       localStorage.setItem("user", JSON.stringify(response.user));
-      dispatch(resetForm())
+            dispatch(resetForm())
       toast.success(response.message)
       router.push('/kyc')
     },

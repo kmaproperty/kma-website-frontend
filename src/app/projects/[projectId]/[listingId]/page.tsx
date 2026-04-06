@@ -23,12 +23,9 @@ import {
   PhoneCall,
   School,
   ShieldCheck,
-  Sofa,
   Star,
   Trees,
-  Tv,
   UtensilsCrossed,
-  WavesLadder,
   ChevronLeft,
   Share2,
 } from "lucide-react";
@@ -37,7 +34,6 @@ import {
   addEndUserFavoriteAction,
   removeEndUserFavoriteAction,
   getNearbyPlacesAction,
-  NearbyPlace,
 } from "@/api/actions/propertyActions";
 import { usePropertyDetails } from "@/api/hooks/usePropertyDetails";
 import { useSimilarProperties } from "@/api/hooks/useSimilarProperties";
@@ -46,13 +42,7 @@ import MainLayout from "@/components/myList/mainLayout";
 import { useProjectsStore } from "@/app/projects/_store/useProjectsStore";
 import { useRouter } from "nextjs-toploader/app";
 
-const galleryImages = [
-  "/assets/property/img-1.png",
-  "/assets/property/img-2.png",
-  "/assets/property/img-3.png",
-  "/assets/property/img-4.png",
-  "/assets/properties_pic_1.png",
-];
+const placeholderImage = "/assets/property/img-1.png";
 
 const awsBaseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
 
@@ -88,38 +78,7 @@ const asNumber = (value: unknown): number | null => {
 const formatInr = (value: number) =>
   new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(value);
 
-const propertyInformation = [
-  ["Listing Type", "Rent"],
-  ["Building Type", "Residential"],
-  ["Property Type", "Apartment"],
-  ["City", "Gurgaon"],
-  ["Micro market", "Sohna Road"],
-  ["Locality", "Sector 49"],
-  ["Project Name", "Orchid Petals"],
-  ["Area", "2337 Sq.Ft. (Area)"],
-  ["Facing", "North West"],
-  ["View", "Park View"],
-  ["Built in", "2018"],
-  ["Age", "Less than 1 year"],
-  ["Additional Rooms", "Servant room, Study"],
-  ["Total Floor Count", "28"],
-  ["Floor Number", "15"],
-  ["Tower/Block", "B"],
-];
 
-const furnishingDetails = [
-  { label: "1 Water Purifier", icon: "/assets/water-purifier.png" },
-  { label: "5 Fan", icon: "/assets/fan.png" },
-  { label: "4 Exhaust Fan", icon: "/assets/external-fan.png" },
-  { label: "4 Geyser", icon: "/assets/geyser.png" },
-  { label: "1 Stove", icon: "/assets/stove.png" },
-  { label: "10 Light", icon: "/assets/light.png" },
-  { label: "5 Curtains", icon: "/assets/curtains.png" },
-  { label: "1 Modular Kitchen", icon: "/assets/kitchen.png" },
-  { label: "1 Chimney", icon: "/assets/chimeny.png" },
-  { label: "4 AC", icon: "/assets/air-conditioner.png" },
-  { label: "4 Wardrobe", icon: "/assets/wardrobe.png" },
-];
 
 const furnishingIconMap: Record<string, string> = {
   "water purifier": "/assets/water-purifier.png",
@@ -164,166 +123,9 @@ const localityCategories = [
   { key: "restaurants", label: "Restaurants", icon: UtensilsCrossed },
 ] as const;
 
-const localityPlacesByCategory: Record<
-  (typeof localityCategories)[number]["key"],
-  Array<{ name: string; distance: string }>
-> = {
-  schools: [
-    { name: "Disneyland Nursery School", distance: "0.2km" },
-    { name: "Green Valley Public School", distance: "0.5km" },
-    { name: "Oxford Kids Academy", distance: "0.8km" },
-    { name: "Little Learners School", distance: "1.1km" },
-  ],
-  busStops: [
-    { name: "Rapid Bus Stop", distance: "0.4km" },
-    { name: "Sector 51 Main Stop", distance: "0.7km" },
-    { name: "Orchid Chowk Stop", distance: "1.0km" },
-    { name: "Metro Feeder Point", distance: "1.4km" },
-  ],
-  hospitals: [
-    { name: "City Hospital", distance: "0.8km" },
-    { name: "Apex Multispeciality", distance: "1.3km" },
-    { name: "LifeCare Hospital", distance: "1.8km" },
-    { name: "Sunrise Medical Center", distance: "2.1km" },
-  ],
-  clinics: [
-    { name: "Family Care Clinic", distance: "0.3km" },
-    { name: "Orchid Dental Care", distance: "0.9km" },
-    { name: "Wellness Clinic", distance: "1.2km" },
-    { name: "Prime Health Clinic", distance: "1.6km" },
-  ],
-  gym: [
-    { name: "Urban Gym", distance: "1.1km" },
-    { name: "PowerHouse Fitness", distance: "1.4km" },
-    { name: "Anytime Fitness", distance: "1.9km" },
-    { name: "FitNest Studio", distance: "2.2km" },
-  ],
-  restaurants: [
-    { name: "Spice Junction", distance: "0.6km" },
-    { name: "Olive Bistro", distance: "0.9km" },
-    { name: "The Curry House", distance: "1.5km" },
-    { name: "Garden Dine", distance: "1.8km" },
-  ],
-};
 
-const amenities = [
-  { icon: <Dumbbell className="h-5 w-5" />, label: "Gymnasium" },
-  { icon: <WavesLadder className="h-5 w-5" />, label: "Swimming Pool" },
-  { icon: <Tv className="h-5 w-5" />, label: "Badminton Court(s)" },
-  { icon: <Building2 className="h-5 w-5" />, label: "Squash Court" },
-  { icon: <CheckCircle2 className="h-5 w-5" />, label: "Kids' Play Areas" },
-  { icon: <Trees className="h-5 w-5" />, label: "Jogging / Cycle Track" },
-  { icon: <ShieldCheck className="h-5 w-5" />, label: "Power Backup" },
-  { icon: <House className="h-5 w-5" />, label: "Central AC" },
-  // Duplicates per image
-  { icon: <Dumbbell className="h-5 w-5" />, label: "Gymnasium" },
-  { icon: <WavesLadder className="h-5 w-5" />, label: "Swimming Pool" },
-  { icon: <Tv className="h-5 w-5" />, label: "Badminton Court(s)" },
-  { icon: <Building2 className="h-5 w-5" />, label: "Squash Court" },
-  { icon: <CheckCircle2 className="h-5 w-5" />, label: "Kids' Play Areas" },
-  { icon: <Trees className="h-5 w-5" />, label: "Jogging / Cycle Track" },
-  { icon: <ShieldCheck className="h-5 w-5" />, label: "Power Backup" },
-  { icon: <House className="h-5 w-5" />, label: "Central AC" },
-];
 
-const ratingBreakdown = [
-  { stars: 5, width: "55%" },
-  { stars: 4, width: "60%" },
-  { stars: 3, width: "47%" },
-  { stars: 2, width: "47%" },
-  { stars: 1, width: "38%" },
-];
 
-const featureRatings = [
-  { icon: <CarFront className="h-4 w-4" />, label: "Connectivity", score: "4.3/5" },
-  { icon: <MapPin className="h-4 w-4" />, label: "Neighbourhood", score: "4.3/5" },
-  { icon: <ShieldCheck className="h-4 w-4" />, label: "Safety", score: "4.3/5" },
-  { icon: <Trees className="h-4 w-4" />, label: "Livability", score: "4.3/5" },
-];
-
-const goodThings = [
-  "Spacious & Large Room Sizes",
-  "Well-maintained and clean area",
-  "Peaceful location",
-  "Lots of Green & Open Areas",
-];
-
-const badThings = ["Smaller Room Sizes", "Water supply system issues", "Noise pollution in some areas"];
-
-const reviews = [
-  {
-    id: "r1",
-    name: "Meera",
-    role: "Teacher from India",
-    rating: 5,
-    review: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-    avatar: "/assets/profile.png",
-  },
-  {
-    id: "r2",
-    name: "Rahul",
-    role: "Software Engineer from India",
-    rating: 5,
-    review: "Great society with clean surroundings, good security and smooth connectivity.",
-    avatar: "/assets/profile.png",
-  },
-  {
-    id: "r3",
-    name: "Aisha",
-    role: "Consultant from UAE",
-    rating: 4,
-    review: "Amenities are impressive and maintenance quality is consistently reliable.",
-    avatar: "/assets/profile.png",
-  },
-  {
-    id: "r4",
-    name: "Karan",
-    role: "Entrepreneur from India",
-    rating: 5,
-    review: "Spacious layouts, peaceful environment and responsive management team.",
-    avatar: "/assets/profile.png",
-  },
-  {
-    id: "r5",
-    name: "Naina",
-    role: "Designer from India",
-    rating: 4,
-    review: "Location is convenient and there are enough open areas for families.",
-    avatar: "/assets/profile.png",
-  },
-  {
-    id: "r6",
-    name: "Vikram",
-    role: "Analyst from India",
-    rating: 5,
-    review: "Well-connected locality with dependable services and modern facilities.",
-    avatar: "/assets/profile.png",
-  },
-  {
-    id: "r7",
-    name: "Priya",
-    role: "Doctor from India",
-    rating: 4,
-    review: "The neighbourhood feels safe and daily essentials are available nearby.",
-    avatar: "/assets/profile.png",
-  },
-  {
-    id: "r8",
-    name: "Arjun",
-    role: "Architect from India",
-    rating: 5,
-    review: "Good value for the area with excellent community upkeep and support.",
-    avatar: "/assets/profile.png",
-  },
-  {
-    id: "r9",
-    name: "Sara",
-    role: "Researcher from India",
-    rating: 5,
-    review: "A balanced mix of comfort, amenities and accessibility for long-term living.",
-    avatar: "/assets/profile.png",
-  },
-];
 
 const formatListedOn = (dateStr: string) => {
   if (!dateStr) return "";
@@ -420,26 +222,23 @@ export default function ListingDetailsPage() {
       .map((item) => toFullAssetUrl(asString(item?.fileKey)))
       .filter((url): url is string => Boolean(url));
 
-    const uniqueMediaUrls = Array.from(new Set(withUrl));
-    return uniqueMediaUrls.length > 0 ? uniqueMediaUrls : galleryImages;
+    return Array.from(new Set(withUrl));
   }, [propertyDetails]);
 
   const displayGallery = useMemo(() => {
-    const nextImages = resolvedGalleryImages.length > 0 ? resolvedGalleryImages : galleryImages;
-    return nextImages.slice(0, 5);
+    return resolvedGalleryImages.slice(0, 5);
   }, [resolvedGalleryImages]);
 
   const propertyTitle =
     asString(propertyDetails?.propertyName) ??
     asString(propertyDetails?.title) ??
-    "Orchid Petals";
+    "Property Details";
   const propertyAddress =
     asString(detailsResponse?.location?.address) ??
     asString(propertyDetails?.address) ??
-    "9, S Isbloom 189, 3rd floor, Sector 51, Gurgaon";
+    "";
   const propertyDescription =
-    asString(propertyDetails?.description) ??
-    "For sale in Gurgaon's Sector 93, this 2-bedroom, 2-bathroom apartment in Signature Orchard Avenue 2 offers a comfortable living space of 890 square feet.";
+    asString(propertyDetails?.description) ?? "";
 
   const monthlyRent = asNumber(propertyDetails?.monthlyRent);
   const salePrice = asNumber(propertyDetails?.price);
@@ -457,36 +256,22 @@ export default function ListingDetailsPage() {
       : "Deposit Amount: Two months";
 
   const quickFactsData = useMemo(() => {
-    const bedrooms = asString(propertyDetails?.bhkTypeName) ?? asString(propertyDetails?.bhkType) ?? "4 Bedrooms";
-    const furnishing =
-      asString(propertyDetails?.furnishType) ??
-      "Semi-furnished";
-    const bathrooms =
-      asNumber(propertyDetails?.bathRooms) ??
-      asNumber(propertyDetails?.bathrooms) ??
-      4;
+    const bedrooms = asString(propertyDetails?.bhkTypeName) ?? asString(propertyDetails?.bhkType);
+    const furnishing = asString(propertyDetails?.furnishType);
+    const bathrooms = asNumber(propertyDetails?.bathRooms) ?? asNumber(propertyDetails?.bathrooms);
     const area = asNumber(propertyDetails?.buildUpAreaSqFt) ?? asNumber(propertyDetails?.builtUpArea);
-    const facing = asString(propertyDetails?.facing) ?? "Park View";
+    const facing = asString(propertyDetails?.facing);
     const floor = asNumber(propertyDetails?.floorNumber);
     const totalFloors = asNumber(propertyDetails?.totalFloorCount) ?? asNumber(propertyDetails?.totalFloors);
 
-    return [
-      { icon: <Image src="/assets/app/bed.svg" width={20} height={20} alt="area" className="h-5 w-5" />, label: bedrooms },
-      { icon: <Image src="/assets/app/sofa.svg" width={20} height={20} alt="area" className="h-5 w-5" />, label: furnishing },
-      { icon: <Bath strokeWidth={1.5} className="h-5 w-5" />, label: `${bathrooms} Bathrooms` },
-      {
-        icon: <Image src="/assets/app/area.svg" width={20} height={20} alt="area" className="h-5 w-5" />,
-        label: area ? `${formatInr(area)} Sq. Ft (Built-up Area)` : "2337 Sq. Ft (Built-up Area)",
-      },
-      { icon: <Trees strokeWidth={1.5} className="h-5 w-5" />, label: facing },
-      {
-        icon: <Building2 className="h-5 w-5" strokeWidth={1.5} />,
-        label:
-          floor && totalFloors
-            ? `${floor}th Floor out of ${totalFloors} Floors`
-            : "15th Floor out of 28 Floors",
-      },
-    ];
+    const facts: Array<{ icon: React.ReactNode; label: string }> = [];
+    if (bedrooms) facts.push({ icon: <Image src="/assets/app/bed.svg" width={20} height={20} alt="bedrooms" className="h-5 w-5" />, label: bedrooms });
+    if (furnishing) facts.push({ icon: <Image src="/assets/app/sofa.svg" width={20} height={20} alt="furnishing" className="h-5 w-5" />, label: furnishing });
+    if (bathrooms) facts.push({ icon: <Bath strokeWidth={1.5} className="h-5 w-5" />, label: `${bathrooms} Bathrooms` });
+    if (area) facts.push({ icon: <Image src="/assets/app/area.svg" width={20} height={20} alt="area" className="h-5 w-5" />, label: `${formatInr(area)} Sq. Ft (Built-up Area)` });
+    if (facing) facts.push({ icon: <Trees strokeWidth={1.5} className="h-5 w-5" />, label: facing });
+    if (floor && totalFloors) facts.push({ icon: <Building2 className="h-5 w-5" strokeWidth={1.5} />, label: `${floor}th Floor out of ${totalFloors} Floors` });
+    return facts;
   }, [propertyDetails]);
 
   const propertyInfoData = useMemo(() => {
@@ -514,10 +299,7 @@ export default function ListingDetailsPage() {
       ["Tower/Block", asString(propertyDetails?.towerOrBlock)],
     ];
 
-    return propertyInformation.map(([label, fallback]) => {
-      const match = fromApi.find(([apiLabel]) => apiLabel === label);
-      return [label, match?.[1] ?? fallback] as [string, string];
-    });
+    return fromApi.filter(([, value]) => value != null) as Array<[string, string]>;
   }, [propertyDetails]);
 
   const resolvedReviews = useMemo(() => {
@@ -531,7 +313,7 @@ export default function ListingDetailsPage() {
         avatar: "/assets/profile.png",
       }));
     }
-    return reviews;
+    return [];
   }, [apiSampleReviews]);
 
   const reviewsPerPage = 3;
@@ -642,11 +424,7 @@ export default function ListingDetailsPage() {
       .finally(() => setNearbyLoading(false));
   }, [activeLocalityCategory, lat, lng]);
 
-  const cachedPlaces = nearbyPlacesCache[activeLocalityCategory];
-  const activeLocalityPlaces =
-    cachedPlaces && cachedPlaces.length > 0
-      ? cachedPlaces
-      : localityPlacesByCategory[activeLocalityCategory];
+  const activeLocalityPlaces = nearbyPlacesCache[activeLocalityCategory] ?? [];
 
   // Show login prompt when guest user has exceeded 3 free views
   if (viewLimitExceeded) {
@@ -686,7 +464,7 @@ export default function ListingDetailsPage() {
 
       <div className="pt-10 pb-6">
         <div className="text-sm text-white absolute top-35 left-62">
-          Home / Property for Rent in Gurgaon / Flats for Rent in Gurgaon / Flats for Rent in Sector 49 /  4 Bedroom 2337 Sq.Ft. Apartment in Sector 49 Gurgaon
+          Home / {propertyTitle}
         </div>
         <h2 className="text-4xl mb-8 rounded-lg font-semibold text-white">
           Property Details
@@ -725,7 +503,7 @@ export default function ListingDetailsPage() {
             <section className="mt-4 flex gap-3">
               <div className="relative h-[250px] w-[60%] overflow-hidden rounded-sm sm:h-[480px]">
                 <Image
-                  src={displayGallery[0]}
+                  src={displayGallery[0] ?? placeholderImage}
                   alt="Property cover"
                   fill
                   className="object-cover"
@@ -757,7 +535,7 @@ export default function ListingDetailsPage() {
                         href={`/projects/${params?.projectId ?? ""}/${listingId || ""}/gallery`}
                         className="absolute inset-0 flex items-center justify-center bg-black/45 text-sm font-semibold text-white"
                       >
-                        View all 20+
+                        View all {resolvedGalleryImages.length}+
                       </Link>
                     ) : null}
                   </div>
@@ -804,24 +582,12 @@ export default function ListingDetailsPage() {
 
               <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-[1fr_310px]">
                 <main className="space-y-5">
-                  <section className="rounded-xl">
-                    <h2 className="text-xl font-semibold text-text-black">Key highlights</h2>
-                    <div className="mt-3 text-sm leading-6 text-text-gray" dangerouslySetInnerHTML={{ __html: propertyDescription }} />
-                    <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-text-gray">
-                      <li>
-                        Located on the 9th floor in a 14-storey building with one
-                        dedicated parking spot.
-                      </li>
-                      <li>
-                        Includes gymnasium, badminton court, tennis court, kids&apos; play
-                        area, jogging and cycle track, power backup and clubhouse.
-                      </li>
-                      <li>
-                        Less than one year old property with excellent finish quality and
-                        a practical family-focused layout.
-                      </li>
-                    </ul>
-                  </section>
+                  {propertyDescription ? (
+                    <section className="rounded-xl">
+                      <h2 className="text-xl font-semibold text-text-black">Key highlights</h2>
+                      <p className="mt-3 text-sm leading-6 text-text-gray">{propertyDescription}</p>
+                    </section>
+                  ) : null}
 
                   <section className="rounded-xl">
                     <h2 className="text-xl font-semibold text-text-black">
@@ -842,32 +608,28 @@ export default function ListingDetailsPage() {
                     </div>
                   </section>
 
-                  <section className="rounded-xl">
-                    <h2 className="text-xl font-semibold text-text-black">Furnishing Details</h2>
-                    <div className="mt-4 rounded-lg bg-white px-5 py-4 grid grid-cols-1  gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-4">
-                      {(Array.isArray(propertyDetails?.furnishingsCounts) && propertyDetails.furnishingsCounts.length > 0
-                        ? propertyDetails.furnishingsCounts.map((f: { item: string; count: number }) => ({
-                          label: `${f.count} ${f.item}`,
-                          icon: getFurnishingIcon(f.item),
-                        }))
-                        : furnishingDetails
-                      ).map((item: { label: string; icon: string }) => (
-                        <div
-                          key={item.label}
-                          className="inline-flex items-center gap-3 leading-none text-text-black"
-                        >
-                          <Image
-                            src={item.icon}
-                            alt={item.label}
-                            width={24}
-                            height={24}
-                            className="h-6 w-6 object-contain"
-                          />
-                          <span className="text-sm font-medium text-text-black">{item.label}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
+                  {Array.isArray(propertyDetails?.furnishingsCounts) && propertyDetails.furnishingsCounts.length > 0 ? (
+                    <section className="rounded-xl">
+                      <h2 className="text-xl font-semibold text-text-black">Furnishing Details</h2>
+                      <div className="mt-4 rounded-lg bg-white px-5 py-4 grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-4">
+                        {propertyDetails.furnishingsCounts.map((f: { item: string; count: number }) => (
+                          <div
+                            key={`${f.count}-${f.item}`}
+                            className="inline-flex items-center gap-3 leading-none text-text-black"
+                          >
+                            <Image
+                              src={getFurnishingIcon(f.item)}
+                              alt={f.item}
+                              width={24}
+                              height={24}
+                              className="h-6 w-6 object-contain"
+                            />
+                            <span className="text-sm font-medium text-text-black">{f.count} {f.item}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </section>
+                  ) : null}
 
                   <section className="rounded-xl p-4">
                     <h2 className="text-xl font-semibold text-text-black">Locality</h2>
@@ -909,52 +671,45 @@ export default function ListingDetailsPage() {
                           );
                         })}
                       </div>
-                      {activeLocalityPlaces.map((place) => (
-                        <div
-                          key={place.name}
-                          className="grid grid-cols-1 gap-3 py-5 sm:grid-cols-2 sm:gap-6"
-                        >
-                          <div className="inline-flex items-start gap-3 text-sm text-text-black">
+                      {nearbyLoading ? (
+                        <p className="py-5 text-sm text-text-gray">Loading nearby places...</p>
+                      ) : activeLocalityPlaces.length > 0 ? (
+                        activeLocalityPlaces.map((place) => (
+                          <div
+                            key={place.name}
+                            className="inline-flex items-start gap-3 py-4 text-sm text-text-black"
+                          >
                             <School className="mt-0.5 h-6 w-6 text-[#05085E]" />
                             <div>
                               <p className="font-medium text-text-black">{place.name}</p>
                               <span className="mt-1 block text-[#888888]">{place.distance}</span>
                             </div>
                           </div>
-                          <div className="inline-flex items-start gap-3 text-sm text-text-black">
-                            <School className="mt-0.5 h-6 w-6 text-[#05085E]" />
-                            <div>
-                              <p className="font-medium text-text-black">{place.name}</p>
-                              <span className="mt-1 block text-[#888888]">{place.distance}</span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+                        ))
+                      ) : (
+                        <p className="py-5 text-sm text-text-gray">No nearby places found.</p>
+                      )}
                     </div>
                   </section>
 
-                  <section className="rounded-xl">
-                    <h2 className="text-xl font-semibold text-text-black">Amenities</h2>
-                    <div className="mt-4 rounded-lg bg-white p-4 grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
-                      {(Array.isArray(propertyDetails?.amenitiesList) && propertyDetails.amenitiesList.length > 0
-                        ? propertyDetails.amenitiesList.map((name: string) => ({
-                          icon: <CheckCircle2 className="h-5 w-5" />,
-                          label: name,
-                        }))
-                        : amenities
-                      ).map((amenity: { icon: React.ReactNode; label: string }) => (
-                        <div
-                          key={amenity.label}
-                          className="inline-flex items-center gap-3"
-                        >
-                          <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-[#E7E7E9] text-text-black">
-                            {amenity.icon}
-                          </span>
-                          <span className="text-sm font-medium text-text-black">{amenity.label}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
+                  {Array.isArray(propertyDetails?.amenitiesList) && propertyDetails.amenitiesList.length > 0 ? (
+                    <section className="rounded-xl">
+                      <h2 className="text-xl font-semibold text-text-black">Amenities</h2>
+                      <div className="mt-4 rounded-lg bg-white p-4 grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
+                        {propertyDetails.amenitiesList.map((name: string) => (
+                          <div
+                            key={name}
+                            className="inline-flex items-center gap-3"
+                          >
+                            <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-[#E7E7E9] text-text-black">
+                              <CheckCircle2 className="h-5 w-5" />
+                            </span>
+                            <span className="text-sm font-medium text-text-black">{name}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </section>
+                  ) : null}
 
                   <section className="rounded-xl">
                     <h2 className="text-xl font-semibold text-text-black">
@@ -1002,10 +757,10 @@ export default function ListingDetailsPage() {
                       <div className="mt-4 border-t border-[#D4D5D8] pt-5">
                         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                           {[
-                            [apiChannelPartner?.buyersServed != null && apiChannelPartner.buyersServed > 0 ? `${apiChannelPartner.buyersServed}+` : "500+", "Buyers Served"],
-                            [apiChannelPartner?.yearsOfExperience != null ? String(apiChannelPartner.yearsOfExperience) : "21", "Years of Experience"],
-                            [apiChannelPartner?.propertyHoldings != null ? String(apiChannelPartner.propertyHoldings) : "44", "Property Holdings"],
-                            [apiChannelPartner?.areasOfOperation != null && apiChannelPartner.areasOfOperation > 0 ? `${apiChannelPartner.areasOfOperation}+` : "20+", "Areas of Operation"],
+                            [apiChannelPartner?.buyersServed != null && apiChannelPartner.buyersServed > 0 ? `${apiChannelPartner.buyersServed}+` : "—", "Buyers Served"],
+                            [apiChannelPartner?.yearsOfExperience != null ? String(apiChannelPartner.yearsOfExperience) : "—", "Years of Experience"],
+                            [apiChannelPartner?.propertyHoldings != null ? String(apiChannelPartner.propertyHoldings) : "—", "Property Holdings"],
+                            [apiChannelPartner?.areasOfOperation != null && apiChannelPartner.areasOfOperation > 0 ? `${apiChannelPartner.areasOfOperation}+` : "—", "Areas of Operation"],
                           ].map(([value, label]) => (
                             <div key={label} className="flex items-center  gap-3">
                               <p className="text-3xl leading-none font-semibold text-[#05085E]">{value}</p>
@@ -1017,8 +772,8 @@ export default function ListingDetailsPage() {
 
                       <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
                         {[
-                          ["Property for Rent", apiChannelPartner?.propertyListings?.rent != null ? String(apiChannelPartner.propertyListings.rent) : "21"],
-                          ["Property for Sale", apiChannelPartner?.propertyListings?.sale != null ? String(apiChannelPartner.propertyListings.sale) : "21"],
+                          ["Property for Rent", apiChannelPartner?.propertyListings?.rent != null ? String(apiChannelPartner.propertyListings.rent) : "—"],
+                          ["Property for Sale", apiChannelPartner?.propertyListings?.sale != null ? String(apiChannelPartner.propertyListings.sale) : "—"],
                         ].map(([label, count]) => (
                           <button
                             key={label}
@@ -1109,33 +864,37 @@ export default function ListingDetailsPage() {
                             ))}
                           </div>
 
-                          <div className="border-b border-[#CFCFD2] py-4">
-                            <h4 className="text-md font-semibold text-text-black">What&apos;s good</h4>
-                            <div className="mt-3 flex flex-wrap gap-2">
-                              {(apiRatings?.likes?.length ? apiRatings.likes : goodThings).map((item) => (
-                                <span
-                                  key={item}
-                                  className="rounded-full bg-[#f5f5f5] px-3 py-1.5 text-xs text-gray-600"
-                                >
-                                  {item}
-                                </span>
-                              ))}
+                          {apiRatings?.likes?.length ? (
+                            <div className="border-b border-[#CFCFD2] py-4">
+                              <h4 className="text-md font-semibold text-text-black">What&apos;s good</h4>
+                              <div className="mt-3 flex flex-wrap gap-2">
+                                {apiRatings.likes.map((item: string) => (
+                                  <span
+                                    key={item}
+                                    className="rounded-full bg-[#f5f5f5] px-3 py-1.5 text-xs text-gray-600"
+                                  >
+                                    {item}
+                                  </span>
+                                ))}
+                              </div>
                             </div>
-                          </div>
+                          ) : null}
 
-                          <div className="pt-4">
-                            <h4 className="text-sm font-semibold text-text-black">What&apos;s bad</h4>
-                            <div className="mt-3 flex flex-wrap gap-2">
-                              {(apiRatings?.dislikes?.length ? apiRatings.dislikes : badThings).map((item) => (
-                                <span
-                                  key={item}
-                                  className="rounded-full bg-[#f5f5f5] px-3 py-1.5 text-xs text-gray-600"
-                                >
-                                  {item}
-                                </span>
-                              ))}
+                          {apiRatings?.dislikes?.length ? (
+                            <div className="pt-4">
+                              <h4 className="text-sm font-semibold text-text-black">What&apos;s bad</h4>
+                              <div className="mt-3 flex flex-wrap gap-2">
+                                {apiRatings.dislikes.map((item: string) => (
+                                  <span
+                                    key={item}
+                                    className="rounded-full bg-[#f5f5f5] px-3 py-1.5 text-xs text-gray-600"
+                                  >
+                                    {item}
+                                  </span>
+                                ))}
+                              </div>
                             </div>
-                          </div>
+                          ) : null}
                         </div>
                       </div>
 
@@ -1160,6 +919,9 @@ export default function ListingDetailsPage() {
                         </div>
 
                         <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                          {currentReviews.length === 0 && (
+                            <p className="text-sm text-text-gray col-span-full">No reviews yet. Be the first to add one!</p>
+                          )}
                           {currentReviews.map((review) => (
                             <article
                               key={review.id}
@@ -1440,8 +1202,8 @@ export default function ListingDetailsPage() {
                   </p>
                   {(() => {
                     const cp = apiChannelPartner;
-                    const specialistName = asString(cp?.name) ?? "Manjeet Skyzen";
-                    const specialistFirm = asString(cp?.firmName) ?? "KMA Real Partner";
+                    const specialistName = asString(cp?.name) ?? "KMA Property";
+                    const specialistFirm = asString(cp?.firmName) ?? "";
                     const specialistImage = toFullAssetUrl(cp?.profileImage) || "/assets/profile.png";
                     const phone = asString(cp?.phone);
                     const cleanPhone = phone?.replace(/\D/g, "") ?? "";

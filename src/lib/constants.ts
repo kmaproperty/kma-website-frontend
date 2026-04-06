@@ -1,29 +1,35 @@
 
 export const headerMenuList = [
-    {
-        label: 'Rent',
-        value: 'rent'
-    },
-    {
-        label: 'Buy',
-        value: 'sale'
-    },
-    // {
-    //     label: 'Projects',
-    //     value: 'project'
-    // },
-    {
-        label: 'Channel Partner',
-        value: 'channel_partner'
-    },
-    {
-        label: 'Refer & Earn',
-        value: 'refer_and_earn'
-    },
-    {
-        label: 'Help',
-        value: 'help'
-    }
+  {
+    img: '/assets/rent.svg',
+    label: 'Rent',
+    value: 'rent'
+  },
+  {
+    img: '/assets/buy.svg',
+    label: 'Buy',
+    value: 'sale'
+  },
+  // {
+    // img: '/assets/location-blue.svg',
+  //     label: 'Projects',
+  //     value: 'project'
+  // },
+  {
+    img: '/assets/channel-partner.svg',
+    label: 'Channel Partner',
+    value: 'channel_partner'
+  },
+  {
+    img: '/assets/refer-and-earn.svg',
+    label: 'Refer & Earn',
+    value: 'refer_and_earn'
+  },
+  {
+    img: ''    ,
+    label: 'Help',
+    value: 'help'
+  }
 ]
 export const helpMenuList = [
   {
@@ -74,7 +80,7 @@ export const moreMenuList = [
 export const filterTypeList = [
   {
     label: 'For Buy',
-    value: 'sale' 
+    value: 'sale'
   },
   {
     label: 'Rental',
@@ -90,7 +96,7 @@ export const filterTypeList = [
   }
 ]
 
-export const possessionStatus =[
+export const possessionStatus = [
   {
     name: 'Ready to Move',
     value: 'ready_to_move'
@@ -135,7 +141,7 @@ export const projectStatus = [
   },
 ]
 
-export const postedBy =[
+export const postedBy = [
   {
     name: 'Owner',
     value: 'owner'
@@ -146,7 +152,7 @@ export const postedBy =[
   },
 ]
 
-export const transectionType =[
+export const transectionType = [
   {
     name: 'Buy',
     value: 'sale'

@@ -20,8 +20,8 @@ const RenderSliderBody = ({
   priority?: boolean;
 }) => {
   return (
-    <div className={`relative w-[100%] ${bannerHeight}`}>
-      <div className="absolute inset-0 gradient-mask">
+    <div className={`relative w-full ${bannerHeight}`}>
+      <div className="absolute w-full h-full inset-0 gradient-mask">
         <Image
           alt={sliderItem.alt ?? "banner"}
           className="object-cover"
@@ -60,7 +60,7 @@ export default function BannerSlider({
   }, []);
 
   return (
-    <div>
+    <div className="absolute top-0 left-0 w-full h-full home_hero_slider">
       <Slider {...settings}>
         {backgroundImages.map((sliderItem, index) => {
           return (
