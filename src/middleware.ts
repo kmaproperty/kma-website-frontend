@@ -15,7 +15,7 @@ export default function middleware(req: NextRequest) {
   const isHelpCenterPage = pathname === '/help-center';
   const isJoinUsPage = pathname === '/join-us';
   const isProfilePage = pathname === "/profile";
-  const isReferAndEarnPage = pathname === "/refer-and-earn";
+  const isReferAndEarnPage = pathname === "/refer-and-earn" || pathname.startsWith("/refer-and-earn/");
   const isChannelPartnerPage =
     pathname === "/channel-partner" || pathname.startsWith("/channel-partner/");
   const event = searchParams.get('event')

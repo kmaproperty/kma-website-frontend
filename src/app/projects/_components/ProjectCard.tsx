@@ -87,7 +87,9 @@ export default function ProjectCard({
   const isLoginParam = searchParams.get("isLogin") === "true";
   const isOtpParam = searchParams.get("isOtp") === "true";
   const flowParam = searchParams.get("flow");
-  const isFavoriteAuthDialogOpen = isLoginParam || (isOtpParam && flowParam === "login");
+  const isOtpStep =
+    isOtpParam && (flowParam === "login" || flowParam === "enduser-login");
+  const isFavoriteAuthDialogOpen = isLoginParam || isOtpStep;
 
   const openFavoriteAuthDialog = () => {
     if (typeof window === "undefined") {
@@ -594,7 +596,7 @@ export default function ProjectCard({
             >
               ✕
             </button>
-            {isOtpParam && flowParam === "login" ? <LoginOtpCard /> : <LoginCard />}
+            {isOtpStep ? <LoginOtpCard /> : <LoginCard />}
           </div>
         </DialogContent>
       </Dialog>
