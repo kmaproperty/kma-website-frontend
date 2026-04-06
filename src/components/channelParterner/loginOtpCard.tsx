@@ -67,10 +67,12 @@ export default function LoginOtpCard() {
         return;
       }
 
-      // Role-based redirect for Owner/Channel Partner
+      // Role-based redirect
       const userRole = response.user?.role;
       if (userRole === "CHANNEL_PARTNER" && !response.kycCompleted) {
         router.replace("/kyc");
+      } else if (userRole === "END_USER" || userRole === "USER") {
+        router.replace("/");
       } else {
         router.replace("/user-dashboard");
       }

@@ -1,5 +1,35 @@
 import { NextResponse, NextRequest } from "next/server";
 
+// Decode JWT payload without a library (base64url → JSON)
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
+    const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const json = atob(base64);
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+}
+
+// Routes that only OWNER and CHANNEL_PARTNER should access
+const SELLER_ONLY_ROUTES = [
+  "/user-dashboard",
+  "/my-listing",
+  "/post-property",
+  "/kyc",
+  "/sign-document",
+  "/document-signed-success",
+  "/lead-summary",
+];
+
+function isSellerOnlyRoute(pathname: string): boolean {
+  return SELLER_ONLY_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(route + "/")
+  );
+}
+
 export default function middleware(req: NextRequest) {
   const { pathname, searchParams } = req.nextUrl;
   const accessToken = req.cookies.get("accessToken")?.value;
@@ -65,6 +95,15 @@ export default function middleware(req: NextRequest) {
   // Protect all remaining routes: unauthenticated users must enter via user-flow (login).
   if (!accessToken && !event) {
     return NextResponse.redirect(new URL('/user-flow?isLogin=true', req.url));
+  }
+
+  // Role-based protection: block END_USER from seller-only routes
+  if (accessToken && isSellerOnlyRoute(pathname)) {
+    const payload = decodeJwtPayload(accessToken);
+    const role = payload?.role as string | undefined;
+    if (role === "END_USER" || role === "USER") {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
   }
 
   return NextResponse.next();

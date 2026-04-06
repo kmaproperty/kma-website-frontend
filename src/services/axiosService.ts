@@ -101,13 +101,13 @@ axiosInstance.interceptors.response.use(
           originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
           return axiosInstance(originalRequest);
         }else{
-          window.location.href = '/signup'
+          window.location.href = '/user-flow?isLogin=true'
         }
       } catch (refreshError) {
         console.error("Token refresh failed", refreshError);
         localStorage.clear();
         clearAuthCookies()
-        window.location.href = "/signup"
+        window.location.href = "/user-flow?isLogin=true"
       }
     } else if (error.response?.status === 401) {
       // Don't redirect for view-limit 401s (guest user exceeded 3 free views)
@@ -121,7 +121,7 @@ axiosInstance.interceptors.response.use(
       }
       localStorage.clear();
       clearAuthCookies();
-      window.location.href = "/signup";
+      window.location.href = "/user-flow?isLogin=true";
     }
     return Promise.reject(error?.response?.data ?? error);
   }

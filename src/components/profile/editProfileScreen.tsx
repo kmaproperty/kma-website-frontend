@@ -265,10 +265,12 @@ export default function EditProfileScreen() {
       queryClient.clear();
       router.replace("/");
     },
-    onError: (error: unknown) => {
-      const err = error as { message?: string | string[] };
-      const message = Array.isArray(err?.message) ? err.message.join(", ") : err?.message ?? "Unable to logout";
-      toast.error(message);
+    onError: async () => {
+      // Even if logout API fails (401/token expired), still clear local state and redirect
+      localStorage.clear();
+      await clearAuthCookies();
+      queryClient.clear();
+      router.replace("/");
     },
   });
 
