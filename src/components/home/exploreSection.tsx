@@ -71,7 +71,20 @@ export default function ExploreSection({ explorePropertyList = [] }: ExploreSect
   const sliderRef = useRef<Slider | null>(null);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
-  const list = Array.isArray(explorePropertyList) ? explorePropertyList : [];
+  // Deduplicate by name — merge property counts for same type (e.g. Builder Floor sale + rent)
+  const list = (() => {
+    const raw = Array.isArray(explorePropertyList) ? explorePropertyList : [];
+    const map = new Map<string, ExplorePropertyItem>();
+    for (const item of raw) {
+      const existing = map.get(item.name);
+      if (existing) {
+        existing.propertyCount += item.propertyCount;
+      } else {
+        map.set(item.name, { ...item });
+      }
+    }
+    return Array.from(map.values());
+  })();
 
   const settings = {
       dots: false,
