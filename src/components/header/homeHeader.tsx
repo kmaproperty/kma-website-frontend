@@ -238,7 +238,7 @@ export default function HomeHeader() {
                 : "bg-white/10 bg-clip-padding backdrop-filter backdrop-blur-[30px] translate-y-[20px] border-[#FFFFFF33]",
             ].join(" ")}
           >
-            <div className="flex items-center">
+            <div className="flex items-center shrink-0">
               <Image
                 onClick={toggleDrawer}
                 src={'/assets/bar.svg'}

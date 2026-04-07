@@ -568,7 +568,7 @@ export default function Filter() {
             />
           </div>}
         </div>
-        <div className="2md:hidden flex-1 mt-2">
+        <div className="2md:hidden hidden flex-1 mt-2">
           <button onClick={handleSearchClick} disabled={explorePropertyCount === 0} className={`animated-button px-[30px] py-[9px] w-full h-full w-[calc(100%-0.5rem)] ${explorePropertyCount === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
             <span className="flex items-center justify-center gap-[6px] relative z-11">
               <Image
