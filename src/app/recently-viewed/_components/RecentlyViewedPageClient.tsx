@@ -5,14 +5,25 @@ import type { Project } from "@/app/projects/_types";
 import ProjectsPagination from "@/app/projects/_components/ProjectsPagination";
 import Image from "next/image";
 import Link from "next/link";
-import { Bath, BedDouble, ChevronDown, ChevronLeft, ChevronRight, Heart, Images, Maximize2, Video } from "lucide-react";
+import {
+  Bath,
+  BedDouble,
+  ChevronDown,
+  Grid3X3,
+  Heart,
+  LayoutList,
+  LogIn,
+  MapPin,
+  Maximize2,
+  Search,
+  Star,
+} from "lucide-react";
 import { useRecentlyViewedProperties } from "@/api/hooks/useRecentlyViewedProperties";
 import { useRecentlySearched } from "@/api/hooks/useRecentlySearched";
 import { useContactedProperties } from "@/api/hooks/useContactedProperties";
 import { useFavoriteProperties } from "@/api/hooks/useFavoriteProperties";
 import type { RecentSearchItem } from "@/api/actions/propertyActions";
 import { mapApiPropertyToProject } from "@/app/projects/_utils/mapApiPropertyToProject";
-import { Search } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "nextjs-toploader/app";
 
@@ -34,91 +45,124 @@ type ActivityProject = Project & {
   viewedAt: string;
 };
 
-function CompactPropertyCard({ project, detailsHref }: { project: ActivityProject; detailsHref: string }) {
+/* ── Property type badge color map ── */
+const PROPERTY_TYPE_COLORS: Record<string, string> = {
+  apartment: "bg-[#4A90D9]",
+  villa: "bg-[#27AE60]",
+  plot: "bg-[#8E44AD]",
+  penthouse: "bg-[#E67E22]",
+  ind_floor: "bg-[#16A085]",
+  retail_shop: "bg-[#C0392B]",
+  office_space: "bg-[#2C3E50]",
+};
+
+/* ── Property Card (Figma-matched) ── */
+function PropertyCard({
+  project,
+  detailsHref,
+  blurred = false,
+}: {
+  project: ActivityProject;
+  detailsHref: string;
+  blurred?: boolean;
+}) {
+  const badgeColor = PROPERTY_TYPE_COLORS[project.propertyType ?? ""] ?? "bg-[#4A90D9]";
+  const listedDate = project.viewedAt
+    ? (() => {
+        try {
+          const d = new Date(project.viewedAt);
+          return Number.isFinite(d.getTime())
+            ? d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
+            : null;
+        } catch {
+          return null;
+        }
+      })()
+    : null;
+
   return (
-    <Link href={detailsHref} className="block">
-      <article className="w-full overflow-hidden rounded-lg border border-[#E6E8EF] bg-white shadow-[0_4px_14px_rgba(10,24,61,0.08)] transition hover:-translate-y-[1px] hover:shadow-[0_8px_18px_rgba(10,24,61,0.11)]">
-        <div className="relative h-[145px]">
+    <Link
+      href={blurred ? "#" : detailsHref}
+      className={`block ${blurred ? "pointer-events-none select-none" : ""}`}
+      tabIndex={blurred ? -1 : undefined}
+    >
+      <article className="h-full overflow-hidden rounded-xl bg-white shadow-[0_2px_12px_rgba(0,0,0,0.08)] transition hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(0,0,0,0.12)]">
+        {/* Image */}
+        <div className="relative h-[180px]">
           <Image
             src={project.images?.[0] || fallbackProjectImage}
             alt={project.title}
             fill
             className="object-cover"
           />
-          <div className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/35 p-1 text-white">
-            <ChevronLeft className="h-3 w-3" />
-          </div>
-          <div className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/35 p-1 text-white">
-            <ChevronRight className="h-3 w-3" />
-          </div>
+          {/* Property type badge */}
+          <span
+            className={`absolute left-3 top-3 rounded-md px-2.5 py-1 text-[11px] font-semibold text-white capitalize ${badgeColor}`}
+          >
+            {project.propertyType?.replace("_", " ") ?? "Property"}
+          </span>
+          {/* Favorite heart */}
           <button
             type="button"
             aria-label="Add to favorites"
-            className="absolute right-2 top-2 rounded-full bg-black/35 p-1 text-white transition hover:bg-black/50"
+            className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-[#8A90A2] shadow-sm transition hover:text-red-500"
           >
-            <Heart className="h-3.5 w-3.5" />
+            <Heart className="h-4 w-4" />
           </button>
-          <div className="absolute bottom-2 left-2 flex items-center gap-1.5 rounded-full bg-white/90 px-1.5 py-0.5">
-            <Image
-              src={project.agent?.avatarUrl || "/assets/profile.png"}
-              alt={project.agent?.name || "agent"}
-              width={20}
-              height={20}
-              className="h-5 w-5 rounded-full object-cover"
-            />
-          </div>
-          <div className="absolute bottom-2 right-2 flex items-center gap-1.5 rounded-full bg-black/45 px-2 py-0.5 text-[10px] text-white">
-            <span>{`1/${project.mediaCounts?.photos ?? 1}`}</span>
-            <span className="inline-flex items-center gap-1">
-              <Images className="h-2.5 w-2.5" />
-              {project.mediaCounts?.photos ?? 0}
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <Video className="h-2.5 w-2.5" />
-              {project.mediaCounts?.videos ?? 0}
-            </span>
-          </div>
         </div>
 
-        <div className="p-2.5">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-1 text-[11px] text-[#FFB200]">
-              <span>★★★★★</span>
-              <span className="text-[#8A90A2]">—</span>
-            </div>
-            <span className="rounded bg-[#6D5CF6] px-1.5 py-0.5 text-[9px] font-medium text-white capitalize">
-              {project.propertyType ?? "Property"}
-            </span>
+        {/* Content */}
+        <div className="p-4">
+          {/* Stars */}
+          <div className="flex items-center gap-0.5">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <Star key={i} className="h-3.5 w-3.5 fill-[#FFB300] text-[#FFB300]" />
+            ))}
           </div>
 
-          <h3 className="mt-1.5 line-clamp-1 text-base font-semibold text-[#1E2236]">
+          {/* Title */}
+          <h3 className="mt-2 line-clamp-1 text-base font-bold text-[#1B1B4B]">
             {project.title}
           </h3>
-          <p className="mt-1 line-clamp-1 text-xs text-[#8A90A2]">{project.address}</p>
 
-          <p className="mt-2 text-2xl leading-none font-semibold text-[#131A55]">
-            {project.priceLabel}
+          {/* Address */}
+          <p className="mt-1 flex items-center gap-1 text-xs text-[#8A90A2]">
+            <MapPin className="h-3 w-3 shrink-0 text-[#8A90A2]" />
+            <span className="line-clamp-1">{project.address || "—"}</span>
           </p>
 
-          <div className="mt-2 border-t border-[#ECEEF4] pt-2 text-xs text-[#8A90A2]">
-            <p className="mt-1">
-              Possession: <span className="text-[#343A4F] capitalize">{project.possessionStatus?.replace("_", " ") ?? "—"}</span>
+          {/* Price */}
+          <p className="mt-2.5 text-lg font-bold text-[#1B1B4B]">{project.priceLabel}</p>
+
+          {/* Listed on / Possession */}
+          <div className="mt-2 space-y-0.5 text-xs text-[#6B7280]">
+            {listedDate && (
+              <p>
+                Listed on: <span className="text-[#343A4F]">{listedDate}</span>
+              </p>
+            )}
+            <p>
+              Possession Info:{" "}
+              <span className="text-[#343A4F] capitalize">
+                {project.possessionStatus?.replace("_", " ") ?? "—"}
+              </span>
             </p>
           </div>
 
-          <div className="mt-2.5 grid grid-cols-3 gap-1.5 border-t border-[#ECEEF4] pt-2 text-[11px] text-[#3B4259]">
-            <div className="inline-flex items-center gap-1 rounded bg-[#F7F8FC] px-1.5 py-1">
-              <BedDouble className="h-3 w-3 text-[#8A90A2]" />
-              <span>{project.bedrooms ?? "—"} Bed</span>
-            </div>
-            <div className="inline-flex items-center gap-1 rounded bg-[#F7F8FC] px-1.5 py-1">
-              <Bath className="h-3 w-3 text-[#8A90A2]" />
-              <span>— Bath</span>
-            </div>
-            <div className="inline-flex items-center gap-1 rounded bg-[#F7F8FC] px-1.5 py-1">
-              <Maximize2 className="h-3 w-3 text-[#8A90A2]" />
-              <span>{project.plotAreaSqYd != null ? `${project.plotAreaSqYd} Sq Yd` : "—"}</span>
-            </div>
+          {/* Divider + Specs */}
+          <div className="mt-3 flex items-center gap-4 border-t border-[#ECEEF4] pt-3 text-xs text-[#3B4259]">
+            <span className="inline-flex items-center gap-1">
+              <BedDouble className="h-3.5 w-3.5 text-[#8A90A2]" />
+              {project.bedrooms ?? "—"} Bed
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <Bath className="h-3.5 w-3.5 text-[#8A90A2]" />
+              — Bath
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <Maximize2 className="h-3.5 w-3.5 text-[#8A90A2]" />
+              {project.plotAreaSqYd != null ? `${project.plotAreaSqYd} Sq Yd` : "—"}
+            </span>
           </div>
         </div>
       </article>
@@ -126,13 +170,22 @@ function CompactPropertyCard({ project, detailsHref }: { project: ActivityProjec
   );
 }
 
-function RecentSearchCard({ search, searchAgainHref }: { search: RecentSearchItem; searchAgainHref: string }) {
+/* ── Recent Search Card ── */
+function RecentSearchCard({
+  search,
+  searchAgainHref,
+}: {
+  search: RecentSearchItem;
+  searchAgainHref: string;
+}) {
   const dateLabel =
     search.createdAt &&
     (() => {
       try {
         const d = new Date(search.createdAt);
-        return Number.isFinite(d.getTime()) ? d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "";
+        return Number.isFinite(d.getTime())
+          ? d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
+          : "";
       } catch {
         return "";
       }
@@ -141,13 +194,13 @@ function RecentSearchCard({ search, searchAgainHref }: { search: RecentSearchIte
   const filterLabels: string[] = [];
   if (search.filters?.propertyType) filterLabels.push(search.filters.propertyType);
   if (search.filters?.bhk) filterLabels.push(`${search.filters.bhk} BHK`);
-  const filterText = filterLabels.length ? filterLabels.join(" • ") : null;
+  const filterText = filterLabels.length ? filterLabels.join(" / ") : null;
 
   return (
-    <article className="flex flex-col gap-2 rounded-lg border border-[#E6E8EF] bg-white p-4 shadow-[0_4px_14px_rgba(10,24,61,0.08)] transition hover:shadow-[0_8px_18px_rgba(10,24,61,0.11)]">
-      <div className="flex items-start justify-between gap-2">
+    <article className="flex flex-col gap-2 rounded-xl border border-[#E6E8EF] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition hover:shadow-[0_6px_20px_rgba(0,0,0,0.1)]">
+      <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <p className="line-clamp-2 text-sm font-medium text-[#1E2236]">{search.searchQuery}</p>
+          <p className="line-clamp-2 text-sm font-semibold text-[#1B1B4B]">{search.searchQuery}</p>
           {(search.location || search.city) && (
             <p className="mt-1 line-clamp-1 text-xs text-[#8A90A2]">
               {[search.location, search.city].filter(Boolean).join(", ")}
@@ -156,16 +209,12 @@ function RecentSearchCard({ search, searchAgainHref }: { search: RecentSearchIte
           {search.priceRange && (
             <p className="mt-0.5 text-xs text-[#343A4F]">Price: {search.priceRange}</p>
           )}
-          {filterText && (
-            <p className="mt-0.5 text-xs text-[#6B7280]">{filterText}</p>
-          )}
-          {dateLabel && (
-            <p className="mt-1 text-[10px] text-[#8A90A2]">Searched on {dateLabel}</p>
-          )}
+          {filterText && <p className="mt-0.5 text-xs text-[#6B7280]">{filterText}</p>}
+          {dateLabel && <p className="mt-1 text-[10px] text-[#8A90A2]">Searched on {dateLabel}</p>}
         </div>
         <Link
           href={searchAgainHref}
-          className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#0C145E] px-3 py-1.5 text-xs font-medium text-white transition hover:opacity-90"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[#1B1B4B] px-4 py-2 text-xs font-medium text-white transition hover:opacity-90"
         >
           <Search className="h-3.5 w-3.5" />
           Search again
@@ -175,130 +224,19 @@ function RecentSearchCard({ search, searchAgainHref }: { search: RecentSearchIte
   );
 }
 
+/* ── Tab config ── */
 const ACTIVITY_TABS: Array<{
   key: ActivitySection;
   label: string;
-  icon: string;
 }> = [
-  { key: "recentSearch", label: "Recently Search", icon: "/assets/home-search-blue.svg" },
-  { key: "recentlyViewed", label: "Recently Viewed", icon: "/assets/home-recent-blue.svg" },
-  { key: "saved", label: "Saved Properties", icon: "/assets/home-save-blue.svg" },
-  { key: "contacted", label: "Contacted", icon: "/assets/home-contact-blue.svg" },
+  { key: "recentSearch", label: "Recently Search" },
+  { key: "recentlyViewed", label: "Recently Viewed" },
+  { key: "saved", label: "Saved Properties" },
+  { key: "contacted", label: "Contacted" },
 ];
-
-const allActivityProjects: ActivityProject[] = Array.from({ length: 24 }).map((_, idx) => {
-  const sectionMap: ActivitySection[] = [
-    "recentlyViewed",
-    "recentlyViewed",
-    "saved",
-    "recentSearch",
-    "contacted",
-    "recentlyViewed",
-    "saved",
-    "recentSearch",
-    "recentlyViewed",
-    "contacted",
-    "recentlyViewed",
-    "saved",
-    "recentlyViewed",
-    "recentSearch",
-    "saved",
-    "recentlyViewed",
-    "contacted",
-    "recentlyViewed",
-    "saved",
-    "recentSearch",
-    "recentlyViewed",
-    "contacted",
-    "recentlyViewed",
-    "saved",
-  ];
-  const intentMap: Array<"sale" | "rent"> = [
-    "sale",
-    "sale",
-    "rent",
-    "sale",
-    "sale",
-    "rent",
-    "sale",
-    "rent",
-    "sale",
-    "sale",
-    "rent",
-    "sale",
-    "sale",
-    "rent",
-    "sale",
-    "sale",
-    "rent",
-    "sale",
-    "sale",
-    "rent",
-    "sale",
-    "sale",
-    "rent",
-    "sale",
-  ];
-  const titleMap = [
-    "Royal Apartment",
-    "Maple Residency",
-    "Skyline Heights",
-    "Palm Enclave",
-    "City View Towers",
-    "Harmony Homes",
-    "Willow Greens",
-    "Trinity Suites",
-  ];
-  const localityMap = [
-    "Willow Crest",
-    "Sector 56",
-    "DLF Phase 3",
-    "Golf Course Road",
-    "South City",
-    "Sector 67",
-    "Sohna Road",
-    "New Chandigarh",
-  ];
-  const intent = intentMap[idx] ?? "sale";
-  const title = `${titleMap[idx % titleMap.length]} ${idx + 1}`;
-  const locality = localityMap[idx % localityMap.length];
-
-  return {
-    id: `recent-${idx + 1}`,
-    title,
-    address: `${25 + idx}, ${locality} Apartment`,
-    city: "Chandigarh",
-    postedBy: idx % 2 === 0 ? "owner" : "channel_partner",
-    listingIntent: intent,
-    priceValue: intent === "rent" ? 45000 + idx * 500 : 9000000 + idx * 350000,
-    priceLabel:
-      intent === "rent"
-        ? `₹ ${(45000 + idx * 500).toLocaleString("en-IN")} / month`
-        : `₹ ${(9000000 + idx * 350000).toLocaleString("en-IN")}`,
-    plotAreaSqYd: 180 + idx * 2,
-    bedrooms: 2 + (idx % 3),
-    view: "Park Facing",
-    furnishing: idx % 2 === 0 ? "furnished" : "semi-furnished",
-    images: ["/assets/properties_pic_1.png"],
-    mediaCounts: { photos: 10, videos: 2 },
-    agent: {
-      name: idx % 2 === 0 ? "KMA Expert" : "Channel Partner",
-      badge: idx % 2 === 0 ? "Owner" : "Channel Partner",
-      avatarUrl: "/assets/profile.png",
-    },
-    tags: ["prime_location", "safe_secure_locality"],
-    buildingType: idx % 4 === 0 ? "commercial" : "residential",
-    propertyType: "apartment",
-    locality,
-    possessionStatus: idx % 3 === 0 ? "under_construction" : "ready_to_move",
-    activitySection: sectionMap[idx] ?? "recentlyViewed",
-    viewedAt: new Date(Date.now() - idx * 86400000).toISOString(),
-  };
-});
 
 const PAGE_SIZE = 12;
 const RECENT_SEARCH_PAGE_SIZE = 10;
-
 const ACTIVITY_TAB_KEYS: ActivitySection[] = ["recentSearch", "saved", "contacted", "recentlyViewed"];
 
 export default function RecentlyViewedPageClient() {
@@ -309,7 +247,20 @@ export default function RecentlyViewedPageClient() {
   const [sortBy, setSortBy] = useState<SortType>("latest");
   const [searchSortBy, setSearchSortBy] = useState<"recent" | "relevance">("recent");
   const [currentPage, setCurrentPage] = useState(1);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
+  /* ── Login check ── */
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  useEffect(() => {
+    try {
+      const user = localStorage.getItem("user");
+      setIsLoggedIn(!!user);
+    } catch {
+      setIsLoggedIn(false);
+    }
+  }, []);
+
+  /* ── URL tab sync ── */
   useEffect(() => {
     const tab = searchParams.get("tab");
     if (tab && ACTIVITY_TAB_KEYS.includes(tab as ActivitySection)) {
@@ -322,10 +273,23 @@ export default function RecentlyViewedPageClient() {
     router.replace(`/recently-viewed?tab=${key}`, { scroll: false });
   };
 
-  const listingTypeApi = activeIntent === "buy" ? "sale" : activeIntent === "rent" ? "rent" : undefined;
-  const sortApi: "newest" | "oldest" | "price_high" | "price_low" | undefined =
-    sortBy === "latest" ? "newest" : sortBy === "price_low_high" ? "price_low" : sortBy === "price_high_low" ? "price_high" : "newest";
+  /* ── API params ── */
+  const listingTypeApi: "sale" | "rent" | undefined =
+    activeIntent === "buy" ? "sale" : activeIntent === "rent" ? "rent" : undefined;
 
+  const buildingTypeFilter: "commercial" | undefined =
+    activeIntent === "commercial" ? "commercial" : undefined;
+
+  const sortApi: "newest" | "oldest" | "price_high" | "price_low" | undefined =
+    sortBy === "latest"
+      ? "newest"
+      : sortBy === "price_low_high"
+        ? "price_low"
+        : sortBy === "price_high_low"
+          ? "price_high"
+          : "newest";
+
+  /* ── Hooks ── */
   const {
     properties: apiRecentlyViewed,
     total: recentlyViewedTotal,
@@ -335,7 +299,7 @@ export default function RecentlyViewedPageClient() {
   } = useRecentlyViewedProperties({
     page: currentPage,
     limit: PAGE_SIZE,
-    listingType: listingTypeApi,
+    listingType: activeIntent === "commercial" ? undefined : listingTypeApi,
     sort: sortApi,
     enabled: activeSection === "recentlyViewed",
   });
@@ -362,7 +326,7 @@ export default function RecentlyViewedPageClient() {
   } = useContactedProperties({
     page: currentPage,
     limit: PAGE_SIZE,
-    listingType: listingTypeApi,
+    listingType: activeIntent === "commercial" ? undefined : listingTypeApi,
     sort: sortApi,
     enabled: activeSection === "contacted",
   });
@@ -376,67 +340,65 @@ export default function RecentlyViewedPageClient() {
   } = useFavoriteProperties({
     page: currentPage,
     limit: PAGE_SIZE,
-    listingType: listingTypeApi,
+    listingType: activeIntent === "commercial" ? undefined : listingTypeApi,
     sort: sortApi,
     enabled: activeSection === "saved",
   });
 
-  const recentlyViewedAsActivityProjects = useMemo<ActivityProject[]>(() => {
-    const mapOptions = { toFullAssetUrl, fallbackImage: fallbackProjectImage };
-    return apiRecentlyViewed.map((item) => {
-      const project = mapApiPropertyToProject(item, mapOptions);
-      return {
-        ...project,
-        activitySection: "recentlyViewed" as const,
-        viewedAt: "",
-      };
-    });
-  }, [apiRecentlyViewed]);
+  /* ── Map API data to ActivityProject ── */
+  const mapOptions = { toFullAssetUrl, fallbackImage: fallbackProjectImage };
 
-  const contactedAsActivityProjects = useMemo<ActivityProject[]>(() => {
-    const mapOptions = { toFullAssetUrl, fallbackImage: fallbackProjectImage };
-    return contactedProperties.map((item) => {
-      const project = mapApiPropertyToProject(item, mapOptions);
-      return {
-        ...project,
-        activitySection: "contacted" as const,
-        viewedAt: "",
-      };
-    });
-  }, [contactedProperties]);
+  const recentlyViewedAsActivityProjects = useMemo<ActivityProject[]>(
+    () =>
+      apiRecentlyViewed.map((item) => {
+        const project = mapApiPropertyToProject(item, mapOptions);
+        return { ...project, activitySection: "recentlyViewed" as const, viewedAt: "" };
+      }),
+    [apiRecentlyViewed]
+  );
 
-  const savedAsActivityProjects = useMemo<ActivityProject[]>(() => {
-    const mapOptions = { toFullAssetUrl, fallbackImage: fallbackProjectImage };
-    return favoriteProperties.map((item) => {
-      const project = mapApiPropertyToProject(item, mapOptions);
-      return {
-        ...project,
-        activitySection: "saved" as const,
-        viewedAt: "",
-      };
-    });
-  }, [favoriteProperties]);
+  const contactedAsActivityProjects = useMemo<ActivityProject[]>(
+    () =>
+      contactedProperties.map((item) => {
+        const project = mapApiPropertyToProject(item, mapOptions);
+        return { ...project, activitySection: "contacted" as const, viewedAt: "" };
+      }),
+    [contactedProperties]
+  );
 
-  const filteredMockProjects = useMemo(() => {
-    const bySection = allActivityProjects.filter((project) => project.activitySection === activeSection);
-    const byIntent = bySection.filter((project) => {
-      if (activeIntent === "buy") return project.listingIntent === "sale";
-      if (activeIntent === "rent") return project.listingIntent === "rent";
-      return project.buildingType === "commercial";
-    });
-    const sorted = [...byIntent].sort((a, b) => {
-      if (sortBy === "latest") return new Date(b.viewedAt).getTime() - new Date(a.viewedAt).getTime();
-      if (sortBy === "price_low_high") return a.priceValue - b.priceValue;
-      return b.priceValue - a.priceValue;
-    });
-    return sorted;
-  }, [activeIntent, activeSection, sortBy]);
+  const savedAsActivityProjects = useMemo<ActivityProject[]>(
+    () =>
+      favoriteProperties.map((item) => {
+        const project = mapApiPropertyToProject(item, mapOptions);
+        return { ...project, activitySection: "saved" as const, viewedAt: "" };
+      }),
+    [favoriteProperties]
+  );
 
+  /* ── Filter for commercial on client side ── */
+  const filterByBuildingType = (projects: ActivityProject[]) => {
+    if (buildingTypeFilter) {
+      return projects.filter((p) => p.buildingType === "commercial");
+    }
+    return projects;
+  };
+
+  /* ── Compute visible projects ── */
   const isRecentlyViewedTab = activeSection === "recentlyViewed";
   const isRecentSearchTab = activeSection === "recentSearch";
   const isContactedTab = activeSection === "contacted";
   const isSavedTab = activeSection === "saved";
-  const mockTotalPages = Math.max(1, Math.ceil(filteredMockProjects.length / PAGE_SIZE));
+
+  const visibleProjects: ActivityProject[] = filterByBuildingType(
+    isRecentlyViewedTab
+      ? recentlyViewedAsActivityProjects
+      : isContactedTab
+        ? contactedAsActivityProjects
+        : isSavedTab
+          ? savedAsActivityProjects
+          : []
+  );
+
   const totalPages = isRecentlyViewedTab
     ? apiTotalPages
     : isRecentSearchTab
@@ -445,22 +407,9 @@ export default function RecentlyViewedPageClient() {
         ? contactedTotalPages
         : isSavedTab
           ? favoritesTotalPages
-          : mockTotalPages;
-  const paginatedMock = useMemo(() => {
-    const start = (currentPage - 1) * PAGE_SIZE;
-    return filteredMockProjects.slice(start, start + PAGE_SIZE);
-  }, [currentPage, filteredMockProjects]);
-  const visibleProjects: ActivityProject[] = isRecentlyViewedTab
-    ? recentlyViewedAsActivityProjects
-    : isContactedTab
-      ? contactedAsActivityProjects
-      : isSavedTab
-        ? savedAsActivityProjects
-        : paginatedMock;
+          : 1;
 
-  const showingCount = isRecentSearchTab
-    ? recentSearches.length
-    : visibleProjects.length;
+  const showingCount = isRecentSearchTab ? recentSearches.length : visibleProjects.length;
   const totalCount = isRecentSearchTab
     ? recentlySearchedTotal
     : isRecentlyViewedTab
@@ -469,60 +418,102 @@ export default function RecentlyViewedPageClient() {
         ? contactedTotal
         : isSavedTab
           ? favoritesTotal
-          : filteredMockProjects.length;
+          : 0;
   const rangeStart =
     showingCount > 0
       ? (currentPage - 1) * (isRecentSearchTab ? RECENT_SEARCH_PAGE_SIZE : PAGE_SIZE) + 1
       : 0;
   const rangeEnd = showingCount > 0 ? rangeStart + showingCount - 1 : 0;
 
+  /* ── Tab counts ── */
   const activityTabs = useMemo(
     () =>
       ACTIVITY_TABS.map((tab) => ({
         ...tab,
         count:
           tab.key === "recentlyViewed"
-            ? String(recentlyViewedTotal)
+            ? recentlyViewedTotal
             : tab.key === "recentSearch"
-              ? String(recentlySearchedTotal)
+              ? recentlySearchedTotal
               : tab.key === "contacted"
-                ? String(contactedTotal)
+                ? contactedTotal
                 : tab.key === "saved"
-                  ? String(favoritesTotal)
-                  : "0",
+                  ? favoritesTotal
+                  : 0,
       })),
     [recentlyViewedTotal, recentlySearchedTotal, contactedTotal, favoritesTotal]
   );
 
+  /* ── Reset page on filter change ── */
   useEffect(() => {
     setCurrentPage(1);
   }, [activeSection, activeIntent, sortBy, searchSortBy]);
 
+  /* ── Loading / Error states ── */
+  const isCurrentLoading =
+    (isRecentlyViewedTab && isRecentlyViewedLoading) ||
+    (isRecentSearchTab && isRecentlySearchedLoading) ||
+    (isContactedTab && isContactedLoading) ||
+    (isSavedTab && isFavoritesLoading);
+
+  const isCurrentError =
+    (isRecentlyViewedTab && isRecentlyViewedError) ||
+    (isRecentSearchTab && isRecentlySearchedError) ||
+    (isContactedTab && isContactedError) ||
+    (isSavedTab && isFavoritesError);
+
+  const isEmpty =
+    !isCurrentLoading &&
+    !isCurrentError &&
+    ((isRecentSearchTab && recentSearches.length === 0) ||
+      (!isRecentSearchTab && visibleProjects.length === 0));
+
+  const emptyMessage = isRecentlyViewedTab
+    ? "No recently viewed properties yet."
+    : isRecentSearchTab
+      ? "No recent searches yet."
+      : isContactedTab
+        ? "No contacted properties yet."
+        : isSavedTab
+          ? "No saved properties yet."
+          : "No properties available for this filter.";
+
+  /* ── Login gate: first 4 visible, rest blurred ── */
+  const LOGIN_GATE_VISIBLE_COUNT = 4;
+  const shouldGateLogin = !isLoggedIn && !isRecentSearchTab && visibleProjects.length > LOGIN_GATE_VISIBLE_COUNT;
+
   return (
-    <div className="w-full">
+    <div className="w-full bg-[#F5F5F5] min-h-screen">
+      {/* ════════════════ HERO SECTION ════════════════ */}
       <section className="relative">
-        <div className="relative h-[310px] overflow-hidden rounded-[0_0_28px_28px] sm:rounded-[0_0_44px_44px]">
-          {/* <Image src="/assets/properties_pic_1.png" alt="recently viewed hero" fill className="object-cover" /> */}
-          {/* <div className="absolute inset-0 bg-[#020C2A]/65" /> */}
+        <div className="relative h-[320px] w-full overflow-hidden">
+          {/* Dark cityscape background */}
+          <Image
+            src="/assets/properties_pic_1.png"
+            alt="Track your journey hero"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-[#020C2A]/75" />
 
-          <div className="relative z-10 px-4 pt-4 sm:px-6 lg:px-8">
-            <p className="text-xs font-medium text-white/90">
-              Home <span className="px-1">/</span> Recently Viewed
+          {/* Content */}
+          <div className="relative z-10 flex h-full flex-col items-center justify-center px-4 text-center">
+            <h1 className="text-4xl font-bold text-white sm:text-5xl">
+              Track Your <span className="text-[#F5A623]">Journey</span>
+            </h1>
+            <p className="mx-auto mt-4 max-w-[600px] text-sm leading-relaxed text-white/80 sm:text-base">
+              Browse your recently searched, saved, contacted, and viewed properties all in one
+              place.
             </p>
-
-            <div className="mt-14 text-center">
-              <h1 className="text-4xl font-semibold text-white sm:text-5xl">Track Your Journey</h1>
-              <p className="mx-auto mt-3 max-w-[540px] text-sm text-white/80 sm:text-base">
-                Review your recently searched, viewed, saved, and contacted properties all in one place.
-              </p>
-            </div>
           </div>
         </div>
 
-        <div className="absolute left-0 right-0 top-[245px] z-20 w-full rounded-xl border border-[#EAECF0] bg-white p-4 sm:p-5">
-          <h3 className="text-[22px] font-semibold text-[#1E2236]">Filter</h3>
-
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+        {/* ════════════════ FILTER BAR ════════════════ */}
+        <div className="relative z-20 mx-auto -mt-10 w-[calc(100%-2rem)] max-w-7xl rounded-xl border border-[#EAECF0] bg-white p-5 shadow-[0_4px_24px_rgba(0,0,0,0.08)] sm:p-6 lg:w-[calc(100%-4rem)]">
+          {/* Top row: Filter label + tabs */}
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="text-lg font-bold text-[#1B1B4B]">Filter</span>
             <div className="flex flex-wrap items-center gap-2">
               {activityTabs.map((tab) => {
                 const isActive = tab.key === activeSection;
@@ -531,222 +522,208 @@ export default function RecentlyViewedPageClient() {
                     key={tab.key}
                     type="button"
                     onClick={() => selectActivityTab(tab.key)}
-                    className={`inline-flex h-9 items-center overflow-hidden rounded border text-xs ${
-                      isActive ? "border-[#0C145E] bg-white text-[#0C145E]" : "border-[#E4E7EE] bg-white text-[#8A90A2]"
+                    className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition ${
+                      isActive
+                        ? "bg-[#FFB300] text-[#1B1B4B] shadow-sm"
+                        : "bg-[#F5F5F5] text-[#6B7280] hover:bg-[#E8E8E8]"
                     }`}
                   >
-                    <span className="inline-flex items-center gap-1.5 px-2.5">
-                      <Image
-                        src={tab.icon}
-                        width={12}
-                        height={12}
-                        alt={tab.label}
-                        className={isActive ? "" : "opacity-70"}
-                      />
-                      <span>{tab.label}</span>
-                    </span>
+                    <span>{tab.label}</span>
                     <span
-                      className={`inline-flex h-full min-w-7 items-center justify-center border-l px-2 text-[11px] font-semibold ${
-                        isActive
-                          ? "border-[#0C145E] bg-[#0C145E] text-white"
-                          : "border-[#E4E7EE] bg-[#F8F9FC] text-[#0C145E]"
+                      className={`inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] font-bold ${
+                        isActive ? "bg-[#1B1B4B] text-white" : "bg-white text-[#1B1B4B]"
                       }`}
                     >
-                      {tab.count}
+                      {String(tab.count).padStart(2, "0")}
                     </span>
                   </button>
                 );
               })}
             </div>
+          </div>
 
-            <div className="flex flex-wrap items-center gap-5 pr-1">
+          {/* Bottom row: Property type toggles + results info + sort + view mode */}
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
+            {/* Buy / Rent / Commercial */}
+            <div className="flex items-center gap-1 rounded-full bg-[#F5F5F5] p-1">
               {(["buy", "rent", "commercial"] as const).map((intent) => {
                 const isSelected = activeIntent === intent;
                 return (
-                  <label key={intent} className="inline-flex cursor-pointer items-center gap-1.5 text-xs text-[#3B4259] sm:text-sm">
-                    <button
-                      type="button"
-                      onClick={() => setActiveIntent(intent)}
-                      className={`flex h-4 w-4 items-center justify-center rounded-full border ${
-                        isSelected ? "border-[#0C145E]" : "border-[#A5A7B5]"
-                      }`}
-                      aria-label={`Filter ${intent}`}
-                      aria-pressed={isSelected}
-                    >
-                      {isSelected ? <span className="h-2 w-2 rounded-full bg-[#0C145E]" /> : null}
-                    </button>
-                    <span className="capitalize">{intent}</span>
-                  </label>
+                  <button
+                    key={intent}
+                    type="button"
+                    onClick={() => setActiveIntent(intent)}
+                    className={`rounded-full px-5 py-1.5 text-sm font-medium capitalize transition ${
+                      isSelected
+                        ? "bg-[#1B1B4B] text-white shadow-sm"
+                        : "text-[#6B7280] hover:text-[#1B1B4B]"
+                    }`}
+                  >
+                    {intent}
+                  </button>
                 );
               })}
+            </div>
+
+            {/* Right side: results count + sort + view toggle */}
+            <div className="flex flex-wrap items-center gap-4">
+              <span className="text-sm text-[#6B7280]">
+                Showing {showingCount > 0 ? `${rangeStart}-${rangeEnd}` : "0"} of {totalCount}{" "}
+                Results
+              </span>
+
+              {/* Sort */}
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-[#343A4F]">Sort By:</span>
+                {isRecentSearchTab ? (
+                  <div className="relative">
+                    <select
+                      value={searchSortBy}
+                      onChange={(e) => setSearchSortBy(e.target.value as "recent" | "relevance")}
+                      className="h-9 min-w-[140px] appearance-none rounded-lg border border-[#E3E6EF] bg-[#F8F9FC] pl-3 pr-8 text-sm text-[#6B7280] outline-none"
+                    >
+                      <option value="recent">Most recent</option>
+                      <option value="relevance">Relevance</option>
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9CA3AF]" />
+                  </div>
+                ) : (
+                  <div className="relative">
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value as SortType)}
+                      className="h-9 min-w-[140px] appearance-none rounded-lg border border-[#E3E6EF] bg-[#F8F9FC] pl-3 pr-8 text-sm text-[#6B7280] outline-none"
+                    >
+                      <option value="latest">Relevance</option>
+                      <option value="price_low_high">Price: Low to High</option>
+                      <option value="price_high_low">Price: High to Low</option>
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9CA3AF]" />
+                  </div>
+                )}
+              </div>
+
+              {/* Grid/List toggle */}
+              <div className="flex items-center rounded-lg border border-[#E3E6EF] overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setViewMode("grid")}
+                  className={`p-2 transition ${
+                    viewMode === "grid" ? "bg-[#1B1B4B] text-white" : "bg-white text-[#6B7280] hover:bg-[#F5F5F5]"
+                  }`}
+                  aria-label="Grid view"
+                >
+                  <Grid3X3 className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode("list")}
+                  className={`p-2 transition ${
+                    viewMode === "list" ? "bg-[#1B1B4B] text-white" : "bg-white text-[#6B7280] hover:bg-[#F5F5F5]"
+                  }`}
+                  aria-label="List view"
+                >
+                  <LayoutList className="h-4 w-4" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="mt-[90px] rounded-xl">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h2 className="text-xl font-semibold text-[#1E2236] sm:text-2xl">
-              {isRecentlyViewedTab
-                ? "Your Recent Picks (Recently Viewed)"
-                : isRecentSearchTab
-                  ? "Recently Searched"
-                  : isContactedTab
-                    ? "Contacted Properties"
-                    : isSavedTab
-                      ? "Saved Properties"
-                      : "Your Activity"}
-            </h2>
-            <p className="mt-1 text-sm text-[#8A90A2]">
-              {isRecentSearchTab
-                ? "Your recent search queries. Search again to see current results."
-                : isContactedTab
-                  ? "Properties you have contacted or inquired about."
-                  : isSavedTab
-                    ? "Properties you have saved as favorites."
-                    : "A quick look at the properties that caught your eye."}
-            </p>
+      {/* ════════════════ PROPERTY GRID ════════════════ */}
+      <section className="mx-auto max-w-7xl px-4 pb-16 pt-10 sm:px-6 lg:px-8">
+        {/* Loading */}
+        {isCurrentLoading && (
+          <div className="flex min-h-[200px] items-center justify-center rounded-xl bg-white py-12 shadow-sm">
+            <div className="flex flex-col items-center gap-3">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#E3E6EF] border-t-[#FFB300]" />
+              <p className="text-sm text-[#6B7280]">Loading...</p>
+            </div>
           </div>
+        )}
 
-          <div className="flex items-center gap-2 self-end">
-            {isRecentSearchTab ? (
-              <>
-                <label htmlFor="search-sort" className="text-sm font-medium text-[#343A4F]">
-                  Sort By :
-                </label>
-                <div className="relative">
-                  <select
-                    id="search-sort"
-                    value={searchSortBy}
-                    onChange={(e) => setSearchSortBy(e.target.value as "recent" | "relevance")}
-                    className="h-9 min-w-[140px] appearance-none rounded border border-[#E3E6EF] bg-[#F8F9FC] pl-3 pr-8 text-sm text-[#6B7280] outline-none"
+        {/* Error */}
+        {isCurrentError && !isCurrentLoading && (
+          <div className="rounded-xl bg-white p-8 text-center text-sm text-[#6B7280] shadow-sm">
+            Unable to load data. Please try again later.
+          </div>
+        )}
+
+        {/* Recent Searches */}
+        {isRecentSearchTab && !isCurrentLoading && !isCurrentError && (
+          <div className="space-y-3">
+            {recentSearches.map((search) => (
+              <RecentSearchCard
+                key={search.id}
+                search={search}
+                searchAgainHref={`/projects?q=${encodeURIComponent(search.searchQuery)}`}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Property cards */}
+        {!isRecentSearchTab && !isCurrentLoading && !isCurrentError && visibleProjects.length > 0 && (
+          <div className="relative">
+            <div
+              className={`grid gap-5 ${
+                viewMode === "grid"
+                  ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                  : "grid-cols-1 sm:grid-cols-2"
+              }`}
+            >
+              {visibleProjects.map((project, idx) => {
+                const detailsHref = `/projects/${project.id}/${project.id}`;
+                const isBlurred = shouldGateLogin && idx >= LOGIN_GATE_VISIBLE_COUNT;
+                return (
+                  <div
+                    key={project.id}
+                    className={isBlurred ? "blur-[6px] opacity-60 transition" : ""}
                   >
-                    <option value="recent">Most recent</option>
-                    <option value="relevance">Relevance</option>
-                  </select>
-                  <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9CA3AF]" />
-                </div>
-              </>
-            ) : (
-              <>
-                <label htmlFor="recent-sort" className="text-sm font-medium text-[#343A4F]">
-                  Sort By :
-                </label>
-                <div className="relative">
-                  <select
-                    id="recent-sort"
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value as SortType)}
-                    className="h-9 min-w-[140px] appearance-none rounded border border-[#E3E6EF] bg-[#F8F9FC] pl-3 pr-8 text-sm text-[#6B7280] outline-none"
+                    <PropertyCard
+                      project={project}
+                      detailsHref={detailsHref}
+                      blurred={isBlurred}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Login gate overlay */}
+            {shouldGateLogin && (
+              <div className="absolute inset-x-0 bottom-0 top-[calc(25%+60px)] flex items-center justify-center">
+                <div className="flex flex-col items-center gap-4 rounded-2xl bg-white/95 px-10 py-8 shadow-xl backdrop-blur-sm">
+                  <p className="text-lg font-bold text-[#1B1B4B]">Login To View All The Properties</p>
+                  <Link
+                    href="/login"
+                    className="inline-flex items-center gap-2 rounded-lg bg-[#27AE60] px-8 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-[#219A52]"
                   >
-                    <option value="latest">Relevance</option>
-                    <option value="price_low_high">Price: Low to High</option>
-                    <option value="price_high_low">Price: High to Low</option>
-                  </select>
-                  <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9CA3AF]" />
+                    <LogIn className="h-4 w-4" />
+                    Login
+                  </Link>
                 </div>
-              </>
+              </div>
             )}
           </div>
-        </div>
+        )}
 
-        <p className="mt-5 text-sm font-medium text-[#6B7280]">
-          Showing{" "}
-          {showingCount > 0 ? `${rangeStart}-${rangeEnd}` : "0"} of {totalCount} Results
-        </p>
-
-        <div className="relative mt-4">
-          {isRecentlyViewedTab && isRecentlyViewedLoading && (
-            <div className="flex min-h-[200px] items-center justify-center rounded-xl border border-[#E6E8EF] bg-[#F8F9FC] py-12">
-              <p className="text-sm text-[#6B7280]">Loading recently viewed properties…</p>
-            </div>
-          )}
-          {isRecentlyViewedTab && isRecentlyViewedError && !isRecentlyViewedLoading && (
-            <div className="rounded-xl border border-[#E6E8EF] bg-[#F8F9FC] p-8 text-center text-sm text-[#6B7280]">
-              Unable to load recently viewed properties. Please try again later.
-            </div>
-          )}
-          {isRecentSearchTab && isRecentlySearchedLoading && (
-            <div className="flex min-h-[200px] items-center justify-center rounded-xl border border-[#E6E8EF] bg-[#F8F9FC] py-12">
-              <p className="text-sm text-[#6B7280]">Loading recent searches…</p>
-            </div>
-          )}
-          {isRecentSearchTab && isRecentlySearchedError && !isRecentlySearchedLoading && (
-            <div className="rounded-xl border border-[#E6E8EF] bg-[#F8F9FC] p-8 text-center text-sm text-[#6B7280]">
-              Unable to load recent searches. Please try again later.
-            </div>
-          )}
-          {isContactedTab && isContactedLoading && (
-            <div className="flex min-h-[200px] items-center justify-center rounded-xl border border-[#E6E8EF] bg-[#F8F9FC] py-12">
-              <p className="text-sm text-[#6B7280]">Loading contacted properties…</p>
-            </div>
-          )}
-          {isContactedTab && isContactedError && !isContactedLoading && (
-            <div className="rounded-xl border border-[#E6E8EF] bg-[#F8F9FC] p-8 text-center text-sm text-[#6B7280]">
-              Unable to load contacted properties. Please try again later.
-            </div>
-          )}
-          {isSavedTab && isFavoritesLoading && (
-            <div className="flex min-h-[200px] items-center justify-center rounded-xl border border-[#E6E8EF] bg-[#F8F9FC] py-12">
-              <p className="text-sm text-[#6B7280]">Loading saved properties…</p>
-            </div>
-          )}
-          {isSavedTab && isFavoritesError && !isFavoritesLoading && (
-            <div className="rounded-xl border border-[#E6E8EF] bg-[#F8F9FC] p-8 text-center text-sm text-[#6B7280]">
-              Unable to load saved properties. Please try again later.
-            </div>
-          )}
-          {isRecentSearchTab && !isRecentlySearchedLoading && !isRecentlySearchedError && (
-            <div className="space-y-3">
-              {recentSearches.map((search) => (
-                <RecentSearchCard
-                  key={search.id}
-                  search={search}
-                  searchAgainHref={`/projects?q=${encodeURIComponent(search.searchQuery)}`}
-                />
-              ))}
-            </div>
-          )}
-          {!isRecentSearchTab &&
-            !(isRecentlyViewedTab && (isRecentlyViewedLoading || isRecentlyViewedError)) &&
-            !(isContactedTab && (isContactedLoading || isContactedError)) &&
-            !(isSavedTab && (isFavoritesLoading || isFavoritesError)) && (
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-            {visibleProjects.map((project) => {
-              const detailsHref = `/projects/${project.id}/${project.id}`;
-              return (
-                <div key={project.id}>
-                  <CompactPropertyCard project={project} detailsHref={detailsHref} />
-                </div>
-              );
-            })}
+        {/* Empty state */}
+        {isEmpty && (
+          <div className="rounded-xl bg-white p-10 text-center shadow-sm">
+            <p className="text-sm text-[#6B7280]">{emptyMessage}</p>
           </div>
-          )}
+        )}
 
-        </div>
-
-        {((isRecentSearchTab && recentSearches.length === 0) || (!isRecentSearchTab && visibleProjects.length === 0)) &&
-          !isRecentlyViewedLoading &&
-          !isRecentlySearchedLoading &&
-          !isContactedLoading &&
-          !isFavoritesLoading && (
-            <div className="mt-4 rounded-xl border border-border bg-white p-8 text-center text-text-gray">
-              {isRecentlyViewedTab
-                ? "No recently viewed properties yet."
-                : isRecentSearchTab
-                  ? "No recent searches yet."
-                  : isContactedTab
-                    ? "No contacted properties yet."
-                    : isSavedTab
-                      ? "No saved properties yet."
-                      : "No properties available for this filter."}
-            </div>
-          )}
-
-        {totalPages > 1 && (
-          <div className="mt-2 flex justify-end">
-            <ProjectsPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+        {/* Pagination */}
+        {totalPages > 1 && !shouldGateLogin && (
+          <div className="mt-8 flex justify-center">
+            <ProjectsPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
           </div>
         )}
       </section>
