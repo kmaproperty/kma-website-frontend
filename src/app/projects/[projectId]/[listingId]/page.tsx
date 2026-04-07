@@ -427,7 +427,7 @@ export default function ListingDetailsPage() {
   const activeLocalityPlaces = nearbyPlacesCache[activeLocalityCategory] ?? [];
 
   // Show login prompt when guest user has exceeded 3 free views
-  if (true) {
+  if (viewLimitExceeded) {
     return (
       <MainLayout>
         <div className="h-[calc(100dvh-10dvh)] w-full flex flex-row  justify-center items-center">
