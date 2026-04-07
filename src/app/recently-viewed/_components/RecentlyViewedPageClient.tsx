@@ -322,7 +322,7 @@ export default function RecentlyViewedPageClient() {
     router.replace(`/recently-viewed?tab=${key}`, { scroll: false });
   };
 
-  const listingTypeApi = activeIntent === "buy" ? "sale" : activeIntent === "rent" ? "rent" : undefined;
+  const listingTypeApi = activeIntent === "buy" ? "sale" : activeIntent === "rent" ? "rent" : "sale";
   const sortApi: "newest" | "oldest" | "price_high" | "price_low" | undefined =
     sortBy === "latest" ? "newest" : sortBy === "price_low_high" ? "price_low" : sortBy === "price_high_low" ? "price_high" : "newest";
 
