@@ -394,33 +394,34 @@ export default function HomeHeader() {
                 onMouseLeave={() => scheduleClose()}
                 className="flex flex-row gap-2.5 items-center cursor-pointer"
               >
-                <Image
-                  onClick={(event) => {
-                    setProfileMenu("profile");
-                    setanchorEl(event.currentTarget);
-                    setCityMenu(false);
-                    setType(null);
-                  }}
-                  src={headerAvatarSrc}
-                  height={40}
-                  width={40}
-                  className="w-[28px] h-[28px] sm:w-[35px] sm:h-[35px] rounded-[50%] object-cover"
-                  alt="profile"
-                />
-                <Image
-                  onClick={(event) => {
-                    setProfileMenu("profile");
-                    setanchorEl(event.currentTarget);
-                    setCityMenu(false);
-                    setType(null);
-                  }}
-                  src="/assets/down-arrow-white.svg"
-                  width={12}
-                  height={5}
-                  alt="Down Arrow"
-                  className="md:block hidden w-[10px] h-full"
-                />
-
+                <div className="flex items-center justify-between gap-[6px] relative z-11">
+                  <Image
+                    onClick={(event) => {
+                      setProfileMenu("profile");
+                      setanchorEl(event.currentTarget);
+                      setCityMenu(false);
+                      setType(null);
+                    }}
+                    src={headerAvatarSrc}
+                    height={40}
+                    width={40}
+                    className="w-[28px] h-[28px] sm:w-[35px] sm:h-[35px] rounded-[50%] object-cover"
+                    alt="profile"
+                  />
+                  <Image
+                    // onClick={(event) => {
+                    //   setProfileMenu("profile");
+                    //   setanchorEl(event.currentTarget);
+                    //   setCityMenu(false);
+                    //   setType(null);
+                    // }}
+                    src="/assets/down-arrow-white.svg"
+                    width={12}
+                    height={5}
+                    alt="Down Arrow"
+                    className="md:block hidden w-[10px] h-full"
+                  />
+                </div>
               </div>
             </div>
 

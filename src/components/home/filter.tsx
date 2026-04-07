@@ -475,10 +475,10 @@ export default function Filter() {
 
           </div>
         </div>
-        <div className="flex flex-col md:flex-row justify-center gap-3 pt-2 2md:pt-3">
+        <div className="flex flex-wrap justify-center 2md:gap-3 gap-2 pt-2 2md:pt-3">
           {['commercial'].includes(filterType) && <div
             onClick={(event) => handlePopperOpen(event, 'transactiontype')}
-            className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
+            className="sm:min-w-fit min-w-[150px] min-[400px]:w-fit w-full text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
           >
             {transactionBy ? transactionBy?.name : 'Transaction Type'}
             <Image
@@ -491,7 +491,7 @@ export default function Filter() {
           </div>}
           {['rent', 'sale', 'projects', 'commercial', 'plot_land'].includes(filterType) && <div
             onClick={(event) => handlePopperOpen(event, 'budget')}
-            className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
+            className="sm:min-w-fit min-w-[150px] min-[375px]:w-fit w-full text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
           >
             {(!selectedMinBudget && !selectedMaxBudget) ? 'Budget' : (selectedMinBudget && !selectedMaxBudget) ? 'Above' + selectedMinBudget?.label : selectedMinBudget?.label + ' - ' + selectedMaxBudget?.label}
             <Image
@@ -504,7 +504,7 @@ export default function Filter() {
           </div>}
           {['projects'].includes(filterType) && <div
             onClick={(event) => handlePopperOpen(event, 'projectstatus')}
-            className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
+            className="sm:min-w-fit min-w-[150px] min-[375px]:w-fit w-full text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
           >
             {selectedProjectStatus.length > 0 ? selectedProjectStatus[0].name + (selectedProjectStatus.length > 1 ? ' +1' : '') : 'Project Status'}
             <Image
@@ -517,7 +517,7 @@ export default function Filter() {
           </div>}
           {['rent', 'sale', 'projects', 'commercial'].includes(filterType) && <div
             onClick={(event) => handlePopperOpen(event, 'propertytype')}
-            className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
+            className="sm:min-w-fit min-w-[150px] min-[375px]:w-fit w-full text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
           >
             {selectedPropertyType.length > 0 ? selectedPropertyType[0].name + (selectedPropertyType.length > 1 ? " +1" : '') : ' Property Type'}
             <Image
@@ -530,7 +530,7 @@ export default function Filter() {
           </div>}
           {['sale'].includes(filterType) && <div
             onClick={(event) => handlePopperOpen(event, 'possessionstatus')}
-            className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
+            className="sm:min-w-fit min-w-[150px] min-[375px]:w-fit w-full text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
           >
             {selectedPossessionStatus.length > 0 ? selectedPossessionStatus[0].name + (selectedPossessionStatus.length > 1 ? ' +1' : '') : 'Possession Status'}
             <Image
@@ -543,7 +543,7 @@ export default function Filter() {
           </div>}
           {['rent'].includes(filterType) && <div
             onClick={(event) => handlePopperOpen(event, 'furnishType')}
-            className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
+            className="sm:min-w-fit min-w-[150px] min-[375px]:w-fit w-full text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
           >
             {selectedFurnishType.length > 0 ? selectedFurnishType[0].name + (selectedFurnishType.length > 1 ? ' +1' : '') : 'Furnishing Status'}
             <Image
@@ -556,7 +556,7 @@ export default function Filter() {
           </div>}
           {['plot_land'].includes(filterType) && <div
             onClick={(event) => handlePopperOpen(event, 'postedby')}
-            className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
+            className="sm:min-w-fit min-w-[150px] min-[375px]:w-fit w-full text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
           >
             {selectedPostedBy.length > 0 ? selectedPostedBy[0].name + (selectedPostedBy.length > 1 ? ' +1' : '') : 'Posted By'}
             <Image
@@ -569,7 +569,7 @@ export default function Filter() {
           </div>}
         </div>
         <div className="2md:hidden flex-1 mt-2">
-          <button onClick={handleSearchClick} disabled={explorePropertyCount === 0} className={`animated-button px-[30px] py-[9px] ml-2 h-full w-[calc(100%-0.5rem)] ${explorePropertyCount === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
+          <button onClick={handleSearchClick} disabled={explorePropertyCount === 0} className={`animated-button px-[30px] py-[9px] w-full h-full w-[calc(100%-0.5rem)] ${explorePropertyCount === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
             <span className="flex items-center justify-center gap-[6px] relative z-11">
               <Image
                 src="/assets/white-search.svg"

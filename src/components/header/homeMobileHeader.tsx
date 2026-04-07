@@ -146,7 +146,7 @@ export default function HomeMobileHeader({
             >
               <div className="flex items-center gap-2">
                 <Image
-                  src="/assets/more-white.svg"
+                  src="/assets/more-icon.svg"
                   className="text-gray-300"
                   width={20}
                   height={20}
