@@ -15,7 +15,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getPropertiesCountApiHandler, GetPropertiesCountPayload, GetPropertiesCountResponse } from "@/services/homeService";
 import { useDispatch, useSelector } from "react-redux";
 import { getSelectedCity, getCityData, getPropertyMasterData, setSelectedCity } from "@/store/homeHeaderSlice";
-import { toast } from "react-toastify";
+import { Id, toast } from "react-toastify";
 
 export default function Filter() {
   const dispatch = useDispatch();
@@ -31,6 +31,8 @@ export default function Filter() {
   //Filter state 
   const [filterType, setFilterType] = useState('sale')
   const [search, setSearch] = useState('')
+  const [detectedLocationSearch, setDetectedLocationSearch] = useState('')
+  const [isDetectingLocation, setIsDetectingLocation] = useState(false)
   const deferredSearch = useDeferredValue(search)
   const [selectedMinBudget, setSelectedMinBudget] = useState(null)
   const [selectedMaxBudget, setSelectedMaxBudget] = useState(null)
@@ -58,6 +60,32 @@ export default function Filter() {
     setSelectedPostedBy([])
     setTransactionBy({name: 'Buy', value: 'sale'})
     setSearch('')
+    setDetectedLocationSearch('')
+  }
+
+  const handleDetectLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation is not supported by your browser")
+      return
+    }
+
+    setIsDetectingLocation(true)
+    const loadingToastId: Id = toast.loading("Fetching coordinates...")
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setDetectedLocationSearch(`${position.coords.latitude},${position.coords.longitude}`)
+        setSearch('')
+        setIsDetectingLocation(false)
+        toast.dismiss(loadingToastId)
+        toast.success("Location detected successfully")
+      },
+      () => {
+        setIsDetectingLocation(false)
+        toast.dismiss(loadingToastId)
+        toast.error("Unable to detect location. Please allow location access.")
+      }
+    )
   }
 
   const handleSearchClick = () => {
@@ -71,6 +99,7 @@ export default function Filter() {
 
     const masterData = Array.isArray(propertyMasterData) ? propertyMasterData : [];
     const params = new URLSearchParams();
+    const effectiveSearch = deferredSearch.trim() || detectedLocationSearch;
 
     if (filterType === 'sale' || filterType === 'rent') {
       const listId = masterData.find(item => item.code == filterType)?.id;
@@ -97,7 +126,7 @@ export default function Filter() {
       }
     }
 
-    if (deferredSearch) params.set('search', deferredSearch);
+    if (effectiveSearch) params.set('search', effectiveSearch);
     if (selectedPropertyType.length > 0) params.set('propertyTypeIds', selectedPropertyType.map(item => item.id).join(','));
     if (selectedFurnishType.length > 0) params.set('furnishingTypes', selectedFurnishType.map(item => item.value).join(','));
     if (selectedPossessionStatus.length > 0) params.set('constructionStatuses', selectedPossessionStatus.map(item => item.value).join(','));
@@ -123,10 +152,12 @@ export default function Filter() {
       selectedProjectStatus.map((i) => i?.value).join(","),
       selectedPostedBy.map((i) => i?.value).join(","),
       transactionBy?.value ?? null,
+      detectedLocationSearch,
     ],
     queryFn: () => {
       // "sale" and "rent" are listing types; "plot_land" and "commercial" are categories
       const masterData = Array.isArray(propertyMasterData) ? propertyMasterData : [];
+      const effectiveSearch = deferredSearch.trim() || detectedLocationSearch;
       let listId: string | null = null;
       let categoryIds: string | null = null;
       let plotPropertyTypeIds: string | null = null;
@@ -159,7 +190,7 @@ export default function Filter() {
         page: '1',
         limit: '5',
         ...(selectedCity?.id ? {cityId: selectedCity?.id ?? null,} : {}),
-        ...(deferredSearch ? {search: deferredSearch ?? null,} : {}),
+        ...(effectiveSearch ? {search: effectiveSearch ?? null,} : {}),
         ...(listId ? {listingTypeIds: listId,} : {}),
         ...(categoryIds ? {categoryIds: categoryIds,} : {}),
         ...(plotPropertyTypeIds && selectedPropertyType.length === 0 ? {propertyTypeIds: plotPropertyTypeIds,} : {}),
@@ -280,6 +311,7 @@ export default function Filter() {
                 value={search}
                 onChange={(event) => {
                   setSearch(event.target.value)
+                  if (detectedLocationSearch) setDetectedLocationSearch('')
                 }}
                 className="w-full h-full px-3 text-xs rounded-full"
                 inputProps={{
@@ -290,23 +322,10 @@ export default function Filter() {
             </div>
             <button
               type="button"
-              className="cursor-pointer"
-              title="Detect my location"
-              onClick={() => {
-                if (!navigator.geolocation) {
-                  toast.error("Geolocation is not supported by your browser")
-                  return
-                }
-                navigator.geolocation.getCurrentPosition(
-                  (position) => {
-                    setSearch(`${position.coords.latitude},${position.coords.longitude}`)
-                    toast.success("Location detected successfully")
-                  },
-                  (error) => {
-                    toast.error("Unable to detect location. Please allow location access.")
-                  }
-                )
-              }}
+              className={`${isDetectingLocation ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`}
+              title={isDetectingLocation ? "Fetching coordinates..." : "Detect my location"}
+              onClick={handleDetectLocation}
+              disabled={isDetectingLocation}
             >
               <Image
                 src="/assets/blue-location-tracker.svg"
@@ -408,6 +427,7 @@ export default function Filter() {
                 value={search}
                 onChange={(event) => {
                   setSearch(event.target.value)
+                  if (detectedLocationSearch) setDetectedLocationSearch('')
                 }}
                 className="w-full h-full px-3 text-xs rounded-full"
                 inputProps={{
@@ -418,23 +438,10 @@ export default function Filter() {
             </div>
             <button
               type="button"
-              className="cursor-pointer"
-              title="Detect my location"
-              onClick={() => {
-                if (!navigator.geolocation) {
-                  toast.error("Geolocation is not supported by your browser")
-                  return
-                }
-                navigator.geolocation.getCurrentPosition(
-                  (position) => {
-                    setSearch(`${position.coords.latitude},${position.coords.longitude}`)
-                    toast.success("Location detected successfully")
-                  },
-                  (error) => {
-                    toast.error("Unable to detect location. Please allow location access.")
-                  }
-                )
-              }}
+              className={`${isDetectingLocation ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`}
+              title={isDetectingLocation ? "Fetching coordinates..." : "Detect my location"}
+              onClick={handleDetectLocation}
+              disabled={isDetectingLocation}
             >
               <Image
                 src="/assets/blue-location-tracker.svg"
