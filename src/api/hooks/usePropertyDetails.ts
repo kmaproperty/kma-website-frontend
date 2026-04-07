@@ -18,7 +18,7 @@ export const usePropertyDetails = ({
 
   return useQuery<GetEndUserPropertyDetailsResponse>({
     queryKey: ["end-user-property-details", id ?? null, sessionId],
-    queryFn: () => getEndUserPropertyDetailsAction({ id: String(id) }),
+    queryFn: () => getEndUserPropertyDetailsAction({ id: String(id), sessionId: sessionId ?? undefined }),
     enabled: Boolean(id) && enabled,
     staleTime: 60_000,
     retry: (failureCount, error: unknown) => {
