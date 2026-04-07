@@ -227,15 +227,15 @@ export default function HomeHeader() {
   return (
     <>
       <div className="sticky top-0 z-50 w-full flex justify-center">
-        <div className="w-[90%] mx-auto max-w-[1440px] mt-[25px]">
+        <div className="w-[90%] mx-auto max-w-[1440px]">
 
           <div
             ref={headerBarRef}
             className={[
-              "rounded-[200px] px-3 lg:px-7 py-2 lg:py-4 flex justify-between items-center border border-1 transition-colors duration-300",
+              "rounded-[200px] px-3 lg:px-7 py-2 lg:py-4 flex justify-between items-center border border-1 transition-colors transition-transform duration-300",
               isScrolled
-                ? "bg-blue shadow-xl border-[#FFFFFF1F]"
-                : "bg-white/10 bg-clip-padding backdrop-filter backdrop-blur-[30px] border-[#FFFFFF33]",
+                ? "bg-blue shadow-xl border-[#FFFFFF1F] translate-y-[0px]"
+                : "bg-white/10 bg-clip-padding backdrop-filter backdrop-blur-[30px] translate-y-[20px] border-[#FFFFFF33]",
             ].join(" ")}
           >
             <div className="flex items-center">

@@ -282,12 +282,12 @@ export default function Filter() {
           </div>
           <div className="flex justify-between items-center px-4 flex-3 border-r border-t border-b border-border rounded-r-full">
             <div className="flex w-full">
-              <Image
+              {/* <Image
                 src="/assets/search-gray.svg"
                 width={16}
                 height={16}
                 alt="search"
-              />
+              /> */}
               <InputBase
                 placeholder="Search by Locality"
                 fullWidth
@@ -355,7 +355,7 @@ export default function Filter() {
           </div>
         </div>
         <div className="flex gap-2 2md:hidden bg-white p-2 rounded-b-[10px]">
-          <div className="flex-auto flex items-center pr-2 border-r border-[#D9D9D9]">
+          <div className="hidden flex-auto flex items-center pr-2 border-r border-[#D9D9D9]">
             <DynamicAsyncAutocomplete
               isMulti={false}
               isError={citySelectionError && !selectedCity?.id}
@@ -465,17 +465,17 @@ export default function Filter() {
                     "font-ibm-plex-sans! text-sm text-text-gray placeholder:!text-text-gray placeholder:!text-sm placeholder:!opacity-100",
                 }}
               />
-              <Image
+              {/* <Image
                 src="/assets/search-gray.svg"
                 width={16}
                 height={16}
                 alt="search"
-              />
+              /> */}
             </div>
 
           </div>
         </div>
-        <div className="flex flex-wrap justify-center 2md:gap-3 gap-2 pt-2 2md:pt-3">
+        <div className="hidden 2md:flex flex-wrap justify-center 2md:gap-3 gap-2 pt-2 2md:pt-3">
           {['commercial'].includes(filterType) && <div
             onClick={(event) => handlePopperOpen(event, 'transactiontype')}
             className="sm:min-w-fit min-w-[150px] min-[400px]:w-fit w-full text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
