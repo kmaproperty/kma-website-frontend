@@ -104,6 +104,21 @@ export default function HomeSuccessStories() {
     },
   });
 
+  const averageRating = Number(reviewData?.statistics?.averageRating ?? 0);
+  const totalReviews = reviewData?.statistics?.totalCount ?? 0;
+  const trustedByText =
+    reviewData?.trustedByText ??
+    `Trusted by ${reviewData?.statistics?.totalEndUsers ?? 0}+ customers`;
+
+  const getProfileImageSrc = (image?: string | null) => {
+    if (!image) return null;
+    if (image.startsWith("http://") || image.startsWith("https://")) {
+      return image;
+    }
+    if (!profileBaseUrl) return image;
+    return `${profileBaseUrl}${image}`;
+  };
+
   return (
     <>
       <div ref={ref} className="my-16 w-[90%] 2md:w-[75%] z-10">
@@ -130,21 +145,17 @@ export default function HomeSuccessStories() {
             <div className="flex gap-3">
               <div className="flex flex-col gap-1">
                 <p className="text-text-black text-base font-medium">
-                  Trusted by 50K+ customers
+                  {trustedByText}
                 </p>
 
                 <div className="flex gap-1 items-center">
-                  <RatingStars
-                    rating={reviewData?.statistics?.averageRating}
-                    total={5}
-                  />
+                  <RatingStars rating={averageRating} total={5} />
                   <p className="text-text-black text-xs">
-                    {reviewData?.statistics?.averageRating}/5.0
+                    {averageRating}/5.0
                   </p>
                   <p className="border-l border-border h-full border-1"></p>
                   <p className="text-text-gray text-xs">
-                    {" "}
-                    {reviewData?.statistics?.totalCount} Reviews
+                    {totalReviews} Reviews
                   </p>
                 </div>
               </div>
@@ -179,9 +190,15 @@ export default function HomeSuccessStories() {
                       {item.review}
                     </p>
                     <div className="flex justify-start items-center gap-2">
-                      {item.endUser?.profileImage ? (
+                      {getProfileImageSrc(
+                        item.endUser?.profileImage || item.profileImage
+                      ) ? (
                         <Image
-                          src={profileBaseUrl + item.endUser?.profileImage}
+                          src={
+                            getProfileImageSrc(
+                              item.endUser?.profileImage || item.profileImage
+                            ) as string
+                          }
                           width={28}
                           height={28}
                           alt="profile"
@@ -240,9 +257,15 @@ export default function HomeSuccessStories() {
                       {item.review}
                     </p>
                     <div className="flex justify-start items-center gap-2">
-                      {item.endUser?.profileImage ? (
+                      {getProfileImageSrc(
+                        item.endUser?.profileImage || item.profileImage
+                      ) ? (
                         <Image
-                          src={profileBaseUrl + item.endUser?.profileImage}
+                          src={
+                            getProfileImageSrc(
+                              item.endUser?.profileImage || item.profileImage
+                            ) as string
+                          }
                           width={28}
                           height={28}
                           alt="profile"

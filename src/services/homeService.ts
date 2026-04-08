@@ -256,19 +256,22 @@ export interface User {
 }
 export interface Rating {
     id: string;
-    rating: string;
+    rating: number | string;
     review: string;
     name: string;
+    email?: string;
+    profileImage?: string | null;
     endUser: User | null;
     createdAt: string
 }
 
 export interface GetUserReviewApiHandlerResponse {
-    success: true,
+    success: boolean,
     reviews: Rating[],
     statistics: {
         totalCount: number,
-        averageRating: number
+        averageRating: number,
+        totalEndUsers?: number
     },
     trustedByText: string
 }
