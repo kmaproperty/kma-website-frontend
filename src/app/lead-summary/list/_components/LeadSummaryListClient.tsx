@@ -153,6 +153,16 @@ export default function LeadSummaryListClient() {
       "https://www.zohoapis.in/crm/v7/functions/properties_from_website_to_crm/actions/execute?auth_type=apikey&zapikey=1003.bd10ff840aa25477a4646948c5bb8f92.537526bc9225f903d9ac7966fb1ea927";
     const firstProperty = lead.propertyContacts?.[0]?.property;
     const propertyContact = lead.propertyContacts?.[0];
+    const propertyAny = (firstProperty ?? {}) as Record<string, unknown>;
+
+    const getString = (value: unknown, fallback = "NA") => {
+      if (typeof value === "string" && value.trim()) return value.trim();
+      if (typeof value === "number") return String(value);
+      return fallback;
+    };
+
+    const getNumber = (value: unknown, fallback = 0) =>
+      typeof value === "number" && Number.isFinite(value) ? value : fallback;
 
     // Keep all fields non-empty to avoid Zoho Deluge .get() errors.
     const payload = {
@@ -163,15 +173,48 @@ export default function LeadSummaryListClient() {
         website_user_id: lead.id || `lead-${Date.now()}`,
       },
       property: {
+        available_for: getString(propertyAny.availableFor, getString(lead.buildingType)),
+        property_type: getString(lead.propertyTypes?.[0]),
         property_name: stripHtml(firstProperty?.title || "Unknown Property"),
-        type: lead.propertyTypes?.[0] || lead.buildingType || "Unknown",
-        price: firstProperty?.price ?? firstProperty?.monthlyRent ?? 0,
-        location:
-          firstProperty?.localityName ||
-          lead.locations?.[0] ||
-          firstProperty?.societyName ||
-          "Unknown",
-        status: lead.status || "NEW",
+        property_sub_type: getString(propertyAny.propertySubType),
+        zone: getString(propertyAny.zone),
+        sector: getString(lead.locations?.[0]),
+        bhk: getString(propertyAny.bhk),
+        bhk_type: getString(firstProperty?.bhkTypeName),
+        property_area_in: getString(firstProperty?.areaUnit, "sq_ft"),
+        property_area: getNumber(firstProperty?.area),
+        carpet_area_in: getString(propertyAny.carpetAreaUnit, "sq_ft"),
+        carpet_area: getNumber(propertyAny.carpetArea),
+        build_up_area_in: getString(propertyAny.buildUpAreaUnit, "sq_ft"),
+        buildup_area: getNumber(propertyAny.buildUpArea),
+        availability_by: getString(propertyAny.availabilityBy),
+        maintenance_cost: getNumber(propertyAny.maintenanceCost),
+        security: getNumber(propertyAny.security),
+        amount: getNumber(firstProperty?.price ?? firstProperty?.monthlyRent),
+        brokerage: getNumber(propertyAny.brokerage),
+        owner_name: getString(propertyAny.ownerName),
+        owner_mobile_no: getString(propertyAny.ownerMobileNo),
+        no_of_bedroom: getNumber(propertyAny.numberOfBedroom),
+        no_of_washroom: getNumber(propertyAny.numberOfWashroom),
+        no_of_kitchen: getNumber(propertyAny.numberOfKitchen),
+        no_of_drawing_room: getNumber(propertyAny.numberOfDrawingRoom),
+        no_of_balcony: getNumber(propertyAny.numberOfBalcony),
+        no_of_utility: getNumber(propertyAny.numberOfUtility),
+        no_of_parking: getNumber(propertyAny.numberOfParking),
+        total_floor: getNumber(propertyAny.totalFloor),
+        floor_no: getNumber(propertyAny.floorNo),
+        furnish_status: getString(propertyAny.furnishStatus),
+        facing: getString(propertyAny.facing),
+        quality_rating: getString(propertyAny.qualityRating),
+        basic_amenities: Array.isArray(propertyAny.basicAmenities)
+          ? propertyAny.basicAmenities.join(", ")
+          : getString(propertyAny.basicAmenities),
+        featured_amenities: Array.isArray(propertyAny.featuredAmeneties)
+          ? propertyAny.featuredAmeneties.join(", ")
+          : getString(propertyAny.featuredAmeneties),
+        nearby_location: getString(
+          firstProperty?.localityName || firstProperty?.societyName || lead.locations?.[0]
+        ),
         website_property_id: propertyContact?.propertyId || firstProperty?.id || "UNKNOWN_PROPERTY",
       },
     };
