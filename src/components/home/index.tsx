@@ -23,6 +23,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getSelectedCity, setAboutusData } from "@/store/homeHeaderSlice";
 import HeaderDataSync from "../header/HeaderDataSync";
 import { useHeaderStore } from "@/store/useHeaderStore";
+import SuccessStoriesSection from "./successStoriesSection";
 
 const LazyNeedSection = dynamic(() => import("./needSection"), { loading: () => <div className="min-h-[200px]" /> });
 const LazyRealEstateSection = dynamic(() => import("./realEstetSection"), { loading: () => <div className="min-h-[200px]" /> });
@@ -35,6 +36,7 @@ const LazyChannelPartnerSection = dynamic(() => import("./channelPartnerSection"
 const LazyAppDownloadSection = dynamic(() => import("./appDownloadSection"), { loading: () => <div className="min-h-[200px]" /> });
 const LazyBlogSection = dynamic(() => import("./blogSection"), { loading: () => <div className="min-h-[200px]" /> });
 const LazyHomeFooter = dynamic(() => import("../footer/homeFooter"), { loading: () => <div className="min-h-[200px]" /> });
+const LazyHomeSuccessStories = dynamic(() => import("./homeSuccessStories"), { loading: () => <div className="min-h-[200px]" /> });
 
 export default function Home({ propertyMasterData, propertyCitiesData }) {
   const dispatch = useDispatch();
@@ -183,7 +185,8 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
       </div>}
 
       <div className="relative bg-[#F2F2F2] flex justify-center overflow-hidden">
-        <LazySuccessStoriesSection />
+            {/* <LazySuccessStoriesSection /> */}
+            <LazyHomeSuccessStories />
       </div>
 
       <div className="relative bg-text-black flex justify-center overflow-hidden">

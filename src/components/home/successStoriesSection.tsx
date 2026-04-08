@@ -1,14 +1,13 @@
 "use client";
 import Image from "next/image";
-import SectionHeader from "../common/home/secionHeader";
-import { delay, motion, useInView } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   getUserReviewApiHandler,
   GetUserReviewApiHandlerResponse,
+  Rating,
 } from "@/services/homeService";
-import Link from "next/link";
 
 function Star({
   fill = 100,
@@ -53,24 +52,6 @@ function RatingStars({
   );
 }
 
-const leftVariant = {
-  hidden: { x: -300, opacity: 0 },
-  visible: {
-    x: 0,
-    opacity: 1,
-    transition: { duration: 1, ease: "easeInOut" as const },
-  },
-};
-
-const rightVariant = {
-  hidden: { x: "100%", opacity: 0 },
-  visible: {
-    x: 0,
-    opacity: 1,
-    transition: { duration: 1, ease: "easeOut" as const },
-  },
-};
-
 const bottomVariant = {
   hidden: { y: "100%", opacity: 0 },
   visible: {
@@ -104,218 +85,318 @@ export default function SuccessStoriesSection() {
     },
   });
 
+  const totalReviews =
+    reviewData?.statistics?.totalCount ?? reviewData?.reviews?.length ?? 0;
+  const averageRating = Number(reviewData?.statistics?.averageRating ?? 0);
+  const reviews = reviewData?.reviews ?? [];
+
   return (
     <>
-      <div ref={ref} className="my-16 w-[90%] 2md:w-[75%] z-10">
-        <div className="grid grid-cols-1 2md:grid-cols-[1.2fr_1fr_1fr]">
-          <motion.div
-            className="col-span-1 flex gap-4 flex-col"
-            initial="hidden"
-            variants={leftVariant}
-            animate={isInView ? "visible" : "hidden"}
-          >
-            <div className=" w-[80%]">
-              <SectionHeader
-                isInView={isInView}
-                hideButton={true}
-                heading="Success stories in their own words"
-                subHeading="Read what our satisfied clients have to say about their experiences with our platform."
-              />
-            </div>
-            <Link href="/about-us" className="w-fit text-sm 1xl:text-base animated-button px-8 py-2 border border-blue text-center cursor-pointer">
-              <span className="gap-3 relative flex justify-center">
-                <p className={`text-nowrap`}>View More</p>
-              </span>
-            </Link>
-            <div className="flex gap-3">
-              <div className="flex flex-col gap-1">
-                <p className="text-text-black text-base font-medium">
-                  Trusted by 50K+ customers
-                </p>
+      <div ref={ref} className="w-[92%] 2md:w-[75%] z-10">
+        {/* Header row (matches Figma page header) */}
+        <motion.div
+          className="mb-6 flex items-center justify-between"
+          initial="hidden"
+          variants={topVariant}
+          animate={isInView ? "visible" : "hidden"}
+        >
+          <h1 className="text-white text-2xl 2md:text-3xl font-semibold">
+            Success Stories
+          </h1>
 
-                <div className="flex gap-1 items-center">
-                  <RatingStars
-                    rating={reviewData?.statistics?.averageRating}
-                    total={5}
-                  />
-                  <p className="text-text-black text-xs">
-                    {reviewData?.statistics?.averageRating}/5.0
-                  </p>
-                  <p className="border-l border-border h-full border-1"></p>
-                  <p className="text-text-gray text-xs">
-                    {" "}
-                    {reviewData?.statistics?.totalCount} Reviews
+          <button
+            type="button"
+            className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs text-white border border-white/20"
+          >
+            <span>Mar 2026 - Feb 2026</span>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="opacity-90"
+            >
+              <path
+                d="M7 10l5 5 5-5"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        </motion.div>
+
+        {/* Main card */}
+        <motion.div
+          className="rounded-[12px] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.08)] overflow-hidden"
+          initial="hidden"
+          variants={bottomVariant}
+          animate={isInView ? "visible" : "hidden"}
+        >
+          {/* Stats row */}
+          <div className="grid grid-cols-1 2md:grid-cols-3 border-b border-[#EEF0F3]">
+            <div className="p-6 2md:p-8 border-b 2md:border-b-0 2md:border-r border-[#EEF0F3]">
+              <p className="text-[11px] text-[#6B7280]">Total Reviews</p>
+              <div className="mt-2 flex items-end gap-2">
+                <p className="text-2xl font-semibold text-[#111827]">
+                  {totalReviews >= 1000
+                    ? `${(totalReviews / 1000).toFixed(1)}K`
+                    : totalReviews}
+                </p>
+                <p className="text-[11px] text-[#22C55E] font-medium">
+                  +12%
+                </p>
+              </div>
+              <p className="mt-1 text-[11px] text-[#9CA3AF]">
+                Growth in reviews this year
+              </p>
+            </div>
+
+            <div className="p-6 2md:p-8 border-b 2md:border-b-0 2md:border-r border-[#EEF0F3]">
+              <p className="text-[11px] text-[#6B7280]">Average Rating</p>
+              <div className="mt-2 flex items-center gap-3">
+                <p className="text-2xl font-semibold text-[#111827]">
+                  {averageRating ? averageRating.toFixed(1) : "0.0"}
+                </p>
+                <div className="flex items-center gap-2">
+                  <RatingStars rating={averageRating} total={5} />
+                  <p className="text-[11px] text-[#6B7280]">
+                    Average rating during the period
                   </p>
                 </div>
               </div>
-              <div className="2md:-mt-8">
-                <Image
-                  src={"/assets/stories/arrow.svg"}
-                  width={100}
-                  height={100}
-                  alt="arrow"
-                  className="transform scale-y-[-1] 2md:scale-y-[1]"
-                />
+            </div>
+
+            {/* lightweight "chart" placeholder */}
+            <div className="p-6 2md:p-8">
+              <div className="flex flex-col gap-2">
+                {[80, 60, 45, 35, 25].map((w, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="h-[6px] w-full rounded-full bg-[#EEF0F3] overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-[#1E3A8A]"
+                        style={{ width: `${w}%` }}
+                      />
+                    </div>
+                    <p className="w-8 text-right text-[11px] text-[#6B7280]">
+                      {5 - i}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
-          </motion.div>
-          <div className="flex gap-4 col-span-2">
-            <div className="flex flex-1 flex-col gap-4">
-              {reviewData?.reviews?.slice(0, 2).map((item) => {
-                return (
-                  <motion.div
-                    className="bg-white rounded-[8px] p-4 flex flex-col items-start gap-2"
-                    variants={topVariant}
-                    animate={isInView ? "visible" : "hidden"}
-                  >
-                    <Image
-                      src={"/assets/stories/quote.svg"}
-                      width={20}
-                      height={20}
-                      alt="quote"
+          </div>
+
+          {/* Reviews header + controls */}
+          <div className="p-6 2md:p-8">
+            <div className="flex flex-col gap-4 2md:flex-row 2md:items-center 2md:justify-between">
+              <div>
+                <p className="text-sm font-semibold text-[#111827]">
+                  All Reviews ({totalReviews})
+                </p>
+                <p className="mt-1 text-[11px] text-[#9CA3AF]">0.20</p>
+              </div>
+
+              <div className="flex flex-col gap-3 2md:flex-row 2md:items-center">
+                <div className="flex items-center gap-2">
+                  <div className="relative">
+                    <input
+                      placeholder=""
+                      className="h-9 w-[240px] max-w-full rounded-[6px] border border-[#EEF0F3] bg-white pl-3 pr-9 text-xs text-[#111827] outline-none"
+                      readOnly
                     />
-                    <RatingStars rating={Number(item.rating)} total={5} />
-                    <p className="text-sm text-text-gray line-clamp-2">
-                      {item.review}
-                    </p>
-                    <div className="flex justify-start items-center gap-2">
-                      {item.endUser?.profileImage ? (
-                        <Image
-                          src={profileBaseUrl + item.endUser?.profileImage}
-                          width={28}
-                          height={28}
-                          alt="profile"
-                          className="rounded-full object-cover"
+                    <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]">
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M21 21l-4.35-4.35"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
                         />
-                      ) : (
-                        <div
-                          className="
-                          h-[35px] w-[35px]
-                          rounded-full
-                          bg-gray-300
-                          flex items-center justify-center
-                          text-sm font-semibold text-gray-700
-                          uppercase
-                          "
-                        >
-                          {item.name?.charAt(0)}
-                        </div>
-                      )}
-                      <p className="text-text-black font-medium text-sm">
-                        {item.name}
-                      </p>
-                      <Image
-                        src={"/assets/stories/dot.svg"}
-                        width={5}
-                        height={5}
-                        alt="dot"
-                      />
-                      <p className="text-text-gray text-sm">India</p>
+                        <circle
+                          cx="11"
+                          cy="11"
+                          r="7"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        />
+                      </svg>
                     </div>
-                  </motion.div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4 text-xs text-[#6B7280]">
+                  <button type="button" className="hover:text-[#111827]">
+                    Filter
+                  </button>
+                  <button type="button" className="hover:text-[#111827]">
+                    Rating
+                  </button>
+                  <button type="button" className="hover:text-[#111827]">
+                    Sort by
+                  </button>
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 hover:text-[#111827]"
+                  >
+                    <span>Recommended</span>
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M7 10l5 5 5-5"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  className="h-9 rounded-[6px] bg-blue px-4 text-xs font-medium text-white"
+                >
+                  Write Review
+                </button>
+              </div>
+            </div>
+
+            {/* Review list */}
+            <div className="mt-6 rounded-[8px] border border-[#EEF0F3]">
+              {(reviews.length
+                ? (reviews as (Rating | null)[])
+                : (Array.from({ length: 4 }).map(() => null) as (Rating | null)[])
+              ).map((item: Rating | null, idx: number) => {
+                const name = item?.name ?? "Meera";
+                const rating = Number(item?.rating ?? 4.2);
+                const review =
+                  item?.review ??
+                  "This society has been a great and harmonious place. The security, amenities, and maintenance are consistently reliable...";
+                const profileImage =
+                  item?.endUser?.profileImage && profileBaseUrl
+                    ? profileBaseUrl + item.endUser?.profileImage
+                    : null;
+
+                return (
+                  <div
+                    key={item?.id ?? idx}
+                    className="px-5 py-5 2md:px-6 2md:py-6 border-b last:border-b-0 border-[#EEF0F3]"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex gap-3">
+                        {profileImage ? (
+                          <Image
+                            src={profileImage}
+                            width={36}
+                            height={36}
+                            alt="profile"
+                            className="rounded-full object-cover h-9 w-9"
+                          />
+                        ) : (
+                          <div className="h-9 w-9 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold text-gray-700 uppercase">
+                            {name?.charAt(0)}
+                          </div>
+                        )}
+
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-[#111827]">
+                            {name}
+                          </p>
+                          <div className="mt-1 flex items-center gap-2">
+                            <RatingStars rating={rating} total={5} />
+                            <p className="text-[11px] text-[#6B7280]">
+                              {rating.toFixed(1)}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        className="flex items-center gap-2 text-xs text-[#6B7280]"
+                      >
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M7 10v10h10V10"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinejoin="round"
+                          />
+                          <path
+                            d="M9 10l3-6 3 6"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                        Helpful
+                      </button>
+                    </div>
+
+                    <p className="mt-4 text-xs leading-5 text-[#6B7280]">
+                      {review}
+                    </p>
+                  </div>
                 );
               })}
             </div>
-            <div className="flex flex-1 flex-col gap-4 mt-4">
-              {reviewData?.reviews?.slice(2, 4).map((item) => {
-                return (
-                  <motion.div
-                    className="bg-white rounded-[8px] p-4 flex flex-col items-start gap-2"
-                    variants={topVariant}
-                    animate={isInView ? "visible" : "hidden"}
-                  >
-                    <Image
-                      src={"/assets/stories/quote.svg"}
-                      width={20}
-                      height={20}
-                      alt="quote"
-                    />
-                    {/* <div className="flex">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} />
-                  ))}
-                </div> */}
-                    <RatingStars rating={Number(item.rating)} total={5} />
-                    <p className="text-sm text-text-gray line-clamp-2">
-                      {item.review}
-                    </p>
-                    <div className="flex justify-start items-center gap-2">
-                      {item.endUser?.profileImage ? (
-                        <Image
-                          src={profileBaseUrl + item.endUser?.profileImage}
-                          width={28}
-                          height={28}
-                          alt="profile"
-                          className="rounded-full object-cover"
-                        />
-                      ) : (
-                        <div
-                          className="
-                          h-[35px] w-[35px]
-                          rounded-full
-                          bg-gray-300
-                          flex items-center justify-center
-                          text-sm font-semibold text-gray-700
-                          uppercase
-                          "
-                        >
-                          {item.name?.charAt(0)}
-                        </div>
-                      )}
-                      <p className="text-text-black font-medium text-sm">
-                        {item.name}
-                      </p>
-                      <Image
-                        src={"/assets/stories/dot.svg"}
-                        width={5}
-                        height={5}
-                        alt="dot"
-                      />
-                      <p className="text-text-gray text-sm">India</p>
-                    </div>
-                  </motion.div>
-                );
-              })}
+
+            {/* Pagination */}
+            <div className="mt-5 flex items-center justify-end gap-2 text-xs text-[#6B7280]">
+              <button
+                type="button"
+                className="h-7 rounded-[4px] px-3 border border-[#EEF0F3] bg-white"
+              >
+                Prev
+              </button>
+              <button
+                type="button"
+                className="h-7 w-7 rounded-[4px] border border-[#1E3A8A] bg-[#1E3A8A] text-white"
+              >
+                1
+              </button>
+              <button
+                type="button"
+                className="h-7 w-7 rounded-[4px] border border-[#EEF0F3] bg-white"
+              >
+                2
+              </button>
+              <button
+                type="button"
+                className="h-7 w-7 rounded-[4px] border border-[#EEF0F3] bg-white"
+              >
+                3
+              </button>
+              <button
+                type="button"
+                className="h-7 rounded-[4px] px-3 border border-[#EEF0F3] bg-white"
+              >
+                Next
+              </button>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
-      <motion.div
-        className="absolute bottom-0 left-0"
-        variants={bottomVariant}
-        animate={isInView ? "visible" : "hidden"}
-      >
-        <Image
-          src={"/assets/stories/building.svg"}
-          width={200}
-          height={200}
-          alt="building"
-        />
-      </motion.div>
-      <motion.div
-        className="absolute top-0 right-10"
-        variants={topVariant}
-        animate={isInView ? "visible" : "hidden"}
-      >
-        <Image
-          src={"/assets/stories/top-square.svg"}
-          width={200}
-          height={200}
-          alt="building"
-        />
-      </motion.div>
-      <motion.div
-        className="absolute right-0 bottom-2"
-        variants={rightVariant}
-        animate={isInView ? "visible" : "hidden"}
-      >
-        <Image
-          src={"/assets/stories/bottom-square.svg"}
-          width={140}
-          height={100}
-          alt="building"
-        />
-      </motion.div>
     </>
   );
 }
