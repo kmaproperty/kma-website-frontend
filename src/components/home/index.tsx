@@ -1,6 +1,7 @@
 "use client";
 import BannerSlider from "./bannerSlider";
 import MainHome from "./home";
+import { useRouter } from "nextjs-toploader/app";
 import HomeHeader from "../header/homeHeader";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Image from "next/image";
@@ -157,9 +158,13 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
     enabled: Boolean(selectedCity?.id),
     // staleTime: 60_000,
   });
+  
+  const router = useRouter();
+  const navigatePostProperty = () => {
+    router.push('/user-flow?postProperty=true')
+  }
 
-
-
+  
   const { data } = useQuery({
     queryKey: ["top-properties-list", selectedCity?.id ?? null],
     queryFn: () => {
@@ -222,6 +227,12 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
   }, [dispatch, fetchAboutusData]);
 
   useEffect(() => {
+    const onOpen = () => setMobileFilterOpen(true);
+    window.addEventListener("open-home-filter", onOpen);
+    return () => window.removeEventListener("open-home-filter", onOpen);
+  }, []);
+
+  useEffect(() => {
     if (!propertyCitiesData) {
       fetchCities({});
     }
@@ -244,7 +255,7 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
   return (
     <div className="overflow-hidden">
       <HeaderDataSync propertyMasterData={propertyMasterData} propertyCitiesData={propertyCitiesData} />
-      <div className="fixed top-0 left-0 right-0 z-[60] flex justify-center pointer-events-none">
+      <div className="fixed top-0 left-0 right-0 z-[103] flex justify-center pointer-events-none">
         <div className="pointer-events-auto w-full flex justify-center">
           <HomeHeader />
         </div>
@@ -254,7 +265,7 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
         <MainHome topProperties={data?.properties ?? []} />
 
         {mobileFilterOpen && (
-          <div className="2md:hidden fixed inset-0 z-[10000] bg-white">
+          <div className="2md:hidden fixed inset-0 z-[103] bg-white">
             <div className="bg-[#010048] text-white px-5 pt-4 pb-6 rounded-b-[20px]">
               <div className="flex items-center justify-between">
                 <button
@@ -516,7 +527,7 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
         )}
 
         {cityModalOpen && (
-          <div className="fixed inset-0 z-[10002] bg-black/60 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[104] bg-black/60 flex items-center justify-center p-4">
             <div className="w-full max-w-[420px] bg-white rounded-xl overflow-auto shadow-2xl">
               <div className="p-5 gap-2 flex items-center justify-between">
                 <h3 className="text-xl font-semibold text-text-black">Select City</h3>
@@ -623,7 +634,7 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
 
 
 
-        <div className="md:hidden block fixed bottom-0 left-0 right-0 z-[9999] bg-white rounded-t-[18px] shadow-[0px_-8px_20px_0px_#00000026]">
+        <div className="md:hidden block fixed bottom-0 left-0 right-0 z-[99] bg-white rounded-t-[18px] shadow-[0px_-8px_20px_0px_#00000026]">
           <div className="flex justify-between items-center gap-2 py-3 sm:px-6 px-2">
 
             <div className="flex-1 text-[#888888] hover:text-[#010048] cursor-pointer flex flex-col items-center text-center">
@@ -650,7 +661,7 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
 
 
             <div className="flex-1 text-[#888888] hover:text-[#010048] cursor-pointer flex flex-col items-center text-center">
-              <button className="hover:rotate-180 rotate-0 transition-transform duration-500 ease-in-out bg-[#03017B] cursor-pointer -mt-10 text-white w-[65px] h-[65px] rounded-full shadow-lg flex flex-col items-center justify-center">
+              <button onClick={navigatePostProperty} className="hover:rotate-180 rotate-0 transition-transform duration-500 ease-in-out bg-[#03017B] cursor-pointer -mt-10 text-white w-[65px] h-[65px] rounded-full shadow-lg flex flex-col items-center justify-center">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M21.6667 13.3333H13.3333V21.6667C13.3333 22.1087 13.1577 22.5326 12.8452 22.8452C12.5326 23.1577 12.1087 23.3333 11.6667 23.3333C11.2246 23.3333 10.8007 23.1577 10.4882 22.8452C10.1756 22.5326 10 22.1087 10 21.6667V13.3333H1.66667C1.22464 13.3333 0.800716 13.1577 0.488156 12.8452C0.175595 12.5326 0 12.1087 0 11.6667C0 11.2246 0.175595 10.8007 0.488156 10.4882C0.800716 10.1756 1.22464 10 1.66667 10H10V1.66667C10 1.22464 10.1756 0.800715 10.4882 0.488155C10.8007 0.175594 11.2246 0 11.6667 0C12.1087 0 12.5326 0.175594 12.8452 0.488155C13.1577 0.800715 13.3333 1.22464 13.3333 1.66667V10H21.6667C22.1087 10 22.5326 10.1756 22.8452 10.4882C23.1577 10.8007 23.3333 11.2246 23.3333 11.6667C23.3333 12.1087 23.1577 12.5326 22.8452 12.8452C22.5326 13.1577 22.1087 13.3333 21.6667 13.3333Z" fill="white" />
                 </svg>
@@ -719,7 +730,7 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
       {/* <div className="">
         <LazyAppDownloadSection />
       </div> */}
-      <div className="flex justify-center overflow-hidden">
+      <div className="flex justify-center overflow-hidden hidden">
         <div className="my-16 w-[90%] 2md:w-[75%]">
           <LazyBlogSection />
         </div>

@@ -36,8 +36,9 @@ export default function HomeMobileHeader({
   };
 
   return (
+    <>
     <div
-      className={`pt-5 px-4 pb-6 fixed top-0 left-0 w-[85%] h-[100dvh] flex flex-col bg-white z-[9999] transition-transform duration-500 ease-in-out overflow-y-auto 2md:hidden ${open ? "translate-x-0" : "-translate-x-full"
+      className={`pt-5 px-4 pb-6 fixed top-0 left-0 w-[85%] h-[100dvh] flex flex-col bg-white z-[99] transition-transform duration-500 ease-in-out overflow-y-auto 2md:hidden ${open ? "translate-x-0" : "-translate-x-full"
         }`}
     >
 
@@ -251,5 +252,12 @@ export default function HomeMobileHeader({
 
 
     </div>
+
+<div
+      className={`pointer-events-none fixed top-0 left-0 w-screen h-[100dvh] flex flex-col bg-black/50 z-[98] transition-opacity duration-500 ease-in-out ${
+        open ? "opacity-100" : "opacity-0"
+      }`}
+    ></div>
+    </>
   );
 }

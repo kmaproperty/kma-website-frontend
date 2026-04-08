@@ -354,7 +354,7 @@ export default function Filter() {
             </button>
           </div>
         </div>
-        <div className="flex gap-2 2md:hidden bg-white p-2 rounded-b-[10px]">
+        <div className="flex gap-2 2md:hidden bg-white py-2 px-4 rounded-b-[10px]">
           <div className="hidden flex-auto flex items-center pr-2 border-r border-[#D9D9D9]">
             <DynamicAsyncAutocomplete
               isMulti={false}
@@ -423,7 +423,7 @@ export default function Filter() {
             />
           </div>
           <div className="flex justify-between items-center flex-[100%]">
-            <button
+            {/* <button
               type="button"
               className="cursor-pointer"
               title="Detect my location"
@@ -449,9 +449,26 @@ export default function Filter() {
                 height={20}
                 alt="Location finder"
               />
-            </button>
-            <div className="flex w-full">
+            </button> */}
+            <div className="flex items-center w-full">
 
+              {/* <InputBase
+                placeholder="Search by Locality"
+                fullWidth
+                value={search}
+                onChange={(event) => {
+                  setSearch(event.target.value)
+                }}
+                onClick={() => setMobileFilterOpen(true)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") setMobileFilterOpen(true);
+              }}
+                className="w-full h-full text-xs rounded-full"
+                inputProps={{
+                  className:
+                    "font-ibm-plex-sans! text-sm text-text-gray placeholder:!text-text-gray placeholder:!text-sm placeholder:!opacity-100",
+                }}
+              /> */}
               <InputBase
                 placeholder="Search by Locality"
                 fullWidth
@@ -459,18 +476,27 @@ export default function Filter() {
                 onChange={(event) => {
                   setSearch(event.target.value)
                 }}
-                className="w-full h-full px-3 text-xs rounded-full"
+                onFocus={() => window.dispatchEvent(new Event("open-home-filter"))}
+                className="w-full h-full text-xs rounded-full"
                 inputProps={{
                   className:
                     "font-ibm-plex-sans! text-sm text-text-gray placeholder:!text-text-gray placeholder:!text-sm placeholder:!opacity-100",
+                  onClick: () => window.dispatchEvent(new Event("open-home-filter")),
+                  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => {
+                    if (e.key === "Enter" || e.key === " ") window.dispatchEvent(new Event("open-home-filter"));
+                  },
                 }}
               />
-              {/* <Image
+
+                
+
+              <Image
                 src="/assets/search-gray.svg"
                 width={16}
                 height={16}
                 alt="search"
-              /> */}
+                className="shrink-0 w-4 h-4"
+              />
             </div>
 
           </div>

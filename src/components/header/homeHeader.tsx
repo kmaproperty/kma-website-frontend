@@ -261,7 +261,7 @@ export default function HomeHeader() {
               </div>
             </div>
 
-            <div className="hidden sm:flex flex-row justify-between items-center gap-1 w-full px-4 text-center">
+            <div className="flex flex-row justify-between items-center gap-1 w-full 2md:px-4 text-center">
               <div
                 onMouseEnter={(event) => {
                   cancelCloseTimer();
@@ -276,7 +276,7 @@ export default function HomeHeader() {
                   setanchorEl(event.currentTarget);
                   setCityMenu(true);
                 }}
-                className="hidden sm:flex items-center justify-between cursor-pointer"
+                className="flex items-center justify-between cursor-pointer"
               >
                 <Image
                   src="/assets/location-white.svg"
@@ -354,7 +354,7 @@ export default function HomeHeader() {
               </div>
             </div>
             <div className="flex items-center justify-start gap-2.5 shrink-0">
-              {!userRole && <button onClick={navigatePostProperty} className="animated-button px-[10px] sm:px-[20px] py-[6px] sm:py-[9px] cursor-pointer">
+              {!userRole && <button onClick={navigatePostProperty} className="hidden 2md:block animated-button px-[10px] sm:px-[20px] py-[6px] sm:py-[9px] cursor-pointer">
                 <span className="flex items-center justify-between gap-[6px] relative z-11">
                   <Image
                     src="/assets/home-white.svg"
