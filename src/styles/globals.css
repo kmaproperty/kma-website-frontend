@@ -156,7 +156,7 @@ body {
 }
 
 
-/* Equal height slick cards */
+/* Equal height slick cards — slide width comes from react-slick (JS), not fixed CSS */
 .feature-property .slick-track {
   display: flex !important;
   align-items: stretch;
@@ -164,45 +164,17 @@ body {
 
 .feature-property .slick-slide {
   height: auto !important;
-  max-width: 344px !important;
-  width: 344px !important;
 }
 
 .feature-property .slick-slide > div {
   height: 100%;
-  max-width: 344px !important;
-  width: 344px !important;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 
 
-
-
-
-@media (max-width: 1279px) {
-  .feature-property .slick-slide,
-  .feature-property .slick-slide > div {
-    max-width: 344px !important;
-    width: 344px !important;
-  }
-}
-
-/* <= 1023px (slidesToShow: 2) */
-@media (max-width: 1023px) {
-  .feature-property .slick-slide,
-  .feature-property .slick-slide > div {
-    max-width: 344px !important;
-    width: 344px !important;
-  }
-}
-
-/* <= 639px (slidesToShow: 1) */
-@media (max-width: 639px) {
-  .feature-property .slick-slide,
-  .feature-property .slick-slide > div {
-    max-width: 100% !important;
-  }
-}
 
 
 

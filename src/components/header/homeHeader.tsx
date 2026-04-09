@@ -469,7 +469,7 @@ export default function HomeHeader() {
                     <RentSellHeaderView type={type} onClose={resetMenuState} />
                   ))}
                 {cityMenu && (
-                  <Paper className="w-auto min-w-[180px]! rounded-2xl! px-2 py-2 shadow-xl border border-gray-200 bg-white relative z-[9999]">
+                  <Paper className="w-auto min-w-[180px]! max-w-[calc(100vw-24px)] rounded-2xl! px-2 py-2 shadow-xl border border-gray-200 bg-white relative z-[9999] ">
                     <CityView handleScroll={handleScroll} />
                   </Paper>
                 )}

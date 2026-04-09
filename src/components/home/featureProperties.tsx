@@ -1,8 +1,8 @@
 "use client";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { useRef, useState } from "react";
-import Slider from "react-slick";
+import { useLayoutEffect, useRef, useState } from "react";
+import Slider, { type Settings } from "react-slick";
 import { motion, useInView } from "framer-motion";
 import SectionHeader from "../common/home/secionHeader";
 import Image from "next/image";
@@ -47,14 +47,32 @@ function Star({
   );
 }
 
+/** Same breakpoints we used in `responsive` (max-width style). */
+function getFeaturedSlidesToShow(viewportWidth: number, total: number): number {
+  if (total <= 0) return 1;
+  if (viewportWidth <= 640) return 1;
+  if (viewportWidth <= 1024) return Math.min(2, total);
+  if (viewportWidth <= 1280) return Math.min(3, total);
+  return Math.min(4, total);
+}
+
 export default function FeaturedProperties({ topProperties }) {
   const router = useRouter();
   const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
-  const sliderRef = useRef(null);
+  const sliderRef = useRef<InstanceType<typeof Slider> | null>(null);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
   const [listingFilter, setListingFilter] = useState<"Sale" | "Rent">("Sale");
+  const [windowWidth, setWindowWidth] = useState<number | null>(null);
+
+  // react-slick ^0.31 often ignores `responsive` on first paint; drive slidesToShow from real width instead.
+  useLayoutEffect(() => {
+    const update = () => setWindowWidth(window.innerWidth);
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
 
   const filteredProperties = (topProperties ?? []).filter((item: any) => {
     if (!item?.listingType) return true;
@@ -79,16 +97,21 @@ export default function FeaturedProperties({ topProperties }) {
   };
 
   const slidesCount = filteredProperties.length;
-  const settings = {
-    slidesToShow: Math.min(4, slidesCount),
+  const slidesToShow =
+    windowWidth == null
+      ? 1
+      : getFeaturedSlidesToShow(windowWidth, slidesCount);
+  const showSliderArrows =
+    windowWidth != null && slidesCount > slidesToShow;
+  const settings: Settings = {
+    slidesToShow: slidesCount > 0 ? Math.min(slidesToShow, slidesCount) : 1,
     slidesToScroll: 1,
     infinite: false,
     arrows: false,
-    responsive: [
-      { breakpoint: 1280, settings: { slidesToShow: 3 } },
-      { breakpoint: 1024, settings: { slidesToShow: 2 } },
-      { breakpoint: 640, settings: { slidesToShow: 1 } },
-    ],
+    swipe: true,
+    touchMove: true,
+    adaptiveHeight: false,
+    variableWidth: false,
   };
 
   return (
@@ -103,8 +126,13 @@ export default function FeaturedProperties({ topProperties }) {
         onListingFilterChange={setListingFilter}
       />
 
-      <div className="flex-1 w-full  2md:min-w-0 -mx-2 feature-property">
-        <Slider ref={sliderRef} {...settings} className="mt-10">
+      <div className="flex-1 w-full min-w-0 2md:min-w-0 -mx-2 feature-property">
+        <Slider
+          key={`featured-${slidesToShow}-${slidesCount}-${listingFilter}`}
+          ref={sliderRef}
+          {...settings}
+          className="mt-10"
+        >
           {filteredProperties.map((item, index) => {
             const img = item?.imageUrl || (item?.images?.length > 0 ? item.images[0]?.url : null);
             const size = item?.units?.length > 0 ? item.units[0]?.size : null;
@@ -122,7 +150,7 @@ export default function FeaturedProperties({ topProperties }) {
             return (
               <motion.div
                 key={item?.id ?? index}
-                className="px-1.5 w-[320px] h-[500px]"
+                className="px-2 sm:px-1.5 w-full min-w-0 max-w-full h-[500px]"
                 variants={index == 0 || index == 1 ? topVariant : bottomVariant}
                 animate={isInView ? "visible" : "hidden"}
               >
@@ -312,39 +340,43 @@ export default function FeaturedProperties({ topProperties }) {
 
       {/* ---------- CONTROLS ---------- */}
       <motion.div
-        className="mt-10 flex justify-end gap-6"
+        className="mt-10 flex flex-wrap justify-center sm:justify-end gap-4 sm:gap-6"
         variants={bottomVariant}
         animate={isInView ? "visible" : "hidden"}
       >
         <div className="flex gap-3">
-          <button
-            type="button"
-            onClick={() => sliderRef.current?.slickPrev()}
-            className="bg-blue text-white cursor-pointer w-8 h-8 rounded-full flex justify-center"
-          >
-            <Image
-              src="/assets/explore/left-arrow.svg"
-              alt="left-arrow"
-              width={14}
-              height={14}
-            />
-          </button>
+          {showSliderArrows && (
+            <button
+              type="button"
+              onClick={() => sliderRef.current?.slickPrev?.()}
+              className="bg-blue text-white cursor-pointer w-8 h-8 rounded-full flex justify-center"
+            >
+              <Image
+                src="/assets/explore/left-arrow.svg"
+                alt="left-arrow"
+                width={14}
+                height={14}
+              />
+            </button>
+          )}
 
-          <button
-            type="button"
-            onClick={() => sliderRef.current?.slickNext()}
-            className="bg-blue text-white cursor-pointer w-8 h-8 rounded-full flex justify-center"
-          >
-            <Image
-              src="/assets/explore/right-arrow.svg"
-              alt="left-arrow"
-              width={14}
-              height={14}
-            />
-          </button>
+          {showSliderArrows && (
+            <button
+              type="button"
+              onClick={() => sliderRef.current?.slickNext?.()}
+              className="bg-blue text-white cursor-pointer w-8 h-8 rounded-full flex justify-center"
+            >
+              <Image
+                src="/assets/explore/right-arrow.svg"
+                alt="left-arrow"
+                width={14}
+                height={14}
+              />
+            </button>
+          )}
           <button onClick={() => router.push('/projects')} className="w-auto text-xs 1xl:text-sm animated-button px-6 py-1.5 border border-blue text-center cursor-pointer">
             <span className="gap-3 relative flex justify-center">
-              <p className={`text-nowrap`}>All View</p>
+              <p className="text-nowrap">View all</p>
             </span>
           </button>
         </div>
