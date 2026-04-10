@@ -9,6 +9,8 @@ export default function PostPropertyFlowHeader() {
         <div className="rounded-[200px] h-[50px] 2md:h-[63px] px-4 lg:px-7 pt-[4px] flex justify-between items-center border border-[#FFFFFF33] bg-white/10 bg-clip-padding backdrop-filter backdrop-blur-[20px]">
           <a
             href="/api/redirect-to-buyer?path=/"
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center px-1.5 shrink-0 cursor-pointer"
           >
             <Image
@@ -22,6 +24,8 @@ export default function PostPropertyFlowHeader() {
 
           <a
             href="/api/redirect-to-buyer?path=/"
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center gap-2 text-gray-100 text-xs sm:text-sm cursor-pointer px-2 py-1 rounded-full hover:bg-white/10 transition-colors duration-200"
           >
             <Image src="/assets/home-white.svg" width={14} height={14} alt="home" />

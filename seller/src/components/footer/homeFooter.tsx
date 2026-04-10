@@ -287,6 +287,8 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
                   <li key={item.label}>
                     <a
                       href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="text-[#fffc] hover:text-white hover:underline cursor-pointer"
                     >
                       {item.label}

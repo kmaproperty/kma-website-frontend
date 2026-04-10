@@ -83,7 +83,7 @@ export default function UserHeader() {
 
   return (
     <div className="bg-white/10 rounded-[200px] bg-clip-padding backdrop-filter w-[80%]  backdrop-blur-[20px] h-[63px] px-7 pt-[4px] flex justify-between items-center border border-1 border-[#FFFFFF33] z-3">
-      <a href="/api/redirect-to-buyer?path=/" className="flex items-center px-1.5 shrink-0 cursor-pointer">
+      <a href="/api/redirect-to-buyer?path=/" target="_blank" rel="noopener noreferrer" className="flex items-center px-1.5 shrink-0 cursor-pointer">
         <Image
           src="/assets/kma-logo-white.svg"
           width={100}

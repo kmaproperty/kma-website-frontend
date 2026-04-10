@@ -65,7 +65,7 @@ export default function ProfileMenu({ anchorEl, open, handleClose }) {
 
       <MenuItem
         onClick={() => {
-          window.location.href = "/api/redirect-to-buyer?path=/";
+          window.open("/api/redirect-to-buyer?path=/", "_blank");
         }}
         className="text-sm! py-3! px-6!"
         sx={{
