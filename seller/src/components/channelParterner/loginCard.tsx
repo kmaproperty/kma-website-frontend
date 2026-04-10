@@ -131,7 +131,7 @@ export default function LoginCard() {
       <div className="flex gap-3 mb-6">
         <button
           type="button"
-          onClick={() => { window.location.href = `${process.env.NEXT_PUBLIC_BUYER_URL || "http://localhost:3001"}/user-flow?isLogin=true`; }}
+          onClick={() => { window.location.href = `/api/redirect-to-buyer?path=/user-flow?isLogin=true`; }}
           className="flex-1 py-2.5 px-4 rounded-full text-sm font-medium border transition cursor-pointer bg-white text-text-black border-border hover:border-blue"
         >
           User

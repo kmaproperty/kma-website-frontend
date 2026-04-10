@@ -65,8 +65,7 @@ export default function ProfileMenu({ anchorEl, open, handleClose }) {
 
       <MenuItem
         onClick={() => {
-          const buyerAppUrl = process.env.NEXT_PUBLIC_BUYER_URL || "http://localhost:3001";
-          window.location.href = buyerAppUrl;
+          window.location.href = "/api/redirect-to-buyer?path=/";
         }}
         className="text-sm! py-3! px-6!"
         sx={{

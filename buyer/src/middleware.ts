@@ -1,7 +1,50 @@
 import { NextResponse, NextRequest } from "next/server";
 
 export default function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl;
+  const { pathname, searchParams } = req.nextUrl;
+
+  // Cross-app auth: seller passes tokens via URL params
+  const tokenParam = searchParams.get("_token");
+  const refreshParam = searchParams.get("_refresh");
+  const roleParam = searchParams.get("_role");
+  const nameParam = searchParams.get("_name");
+  if (tokenParam) {
+    const cleanUrl = req.nextUrl.clone();
+    cleanUrl.searchParams.delete("_token");
+    cleanUrl.searchParams.delete("_refresh");
+    cleanUrl.searchParams.delete("_role");
+    cleanUrl.searchParams.delete("_name");
+    const response = NextResponse.redirect(cleanUrl);
+    response.cookies.set("accessToken", tokenParam, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      path: "/",
+      maxAge: 60 * 60,
+    });
+    if (refreshParam) {
+      response.cookies.set("refreshToken", refreshParam, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        path: "/",
+        maxAge: 60 * 60 * 24 * 7,
+      });
+    }
+    // Store user info in a JS-readable cookie so the header can pick it up
+    if (roleParam) {
+      const userObj = JSON.stringify({ role: roleParam, name: nameParam || "" });
+      response.cookies.set("kma_user", userObj, {
+        httpOnly: false,
+        secure: true,
+        sameSite: "strict",
+        path: "/",
+        maxAge: 60 * 60,
+      });
+    }
+    return response;
+  }
+
   const accessToken = req.cookies.get("accessToken")?.value;
 
   const isPublicPage =

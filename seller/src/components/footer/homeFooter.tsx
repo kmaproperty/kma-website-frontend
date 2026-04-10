@@ -279,10 +279,10 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
               </h3>
               <ul className="space-y-3 text-[13px] text-white/90">
                 {[
-                  { label: "About Us", href: `${process.env.NEXT_PUBLIC_BUYER_URL || "http://localhost:3001"}/about-us` },
-                  { label: "Contact Us", href: `${process.env.NEXT_PUBLIC_BUYER_URL || "http://localhost:3001"}/contact-us` },
-                  { label: "Terms & Conditions", href: `${process.env.NEXT_PUBLIC_BUYER_URL || "http://localhost:3001"}/about-us` },
-                  { label: "Privacy Policy", href: `${process.env.NEXT_PUBLIC_BUYER_URL || "http://localhost:3001"}/about-us` },
+                  { label: "About Us", href: `/api/redirect-to-buyer?path=/about-us` },
+                  { label: "Contact Us", href: `/api/redirect-to-buyer?path=/contact-us` },
+                  { label: "Terms & Conditions", href: `/api/redirect-to-buyer?path=/about-us` },
+                  { label: "Privacy Policy", href: `/api/redirect-to-buyer?path=/about-us` },
                 ].map((item) => (
                   <li key={item.label}>
                     <a

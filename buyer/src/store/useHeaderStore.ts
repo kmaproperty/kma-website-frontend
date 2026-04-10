@@ -24,18 +24,32 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 
 function getStoredUserRole(): string | null {
   if (typeof window === "undefined") return null;
+  // Check localStorage first
   const raw = localStorage.getItem("user");
-  if (!raw) return null;
-  try {
-    const parsed: unknown = JSON.parse(raw);
-    if (!isRecord(parsed)) return null;
-    // If user has no name, profile is incomplete — treat as not logged in for header
-    if (!parsed.name || (typeof parsed.name === "string" && !parsed.name.trim())) return null;
-    if (typeof parsed.role === "string") return parsed.role;
-    return null;
-  } catch {
-    return null;
+  if (raw) {
+    try {
+      const parsed: unknown = JSON.parse(raw);
+      if (isRecord(parsed) && typeof parsed.role === "string") {
+        if (parsed.name && (typeof parsed.name !== "string" || parsed.name.trim())) {
+          return parsed.role;
+        }
+      }
+    } catch { /* ignore */ }
   }
+  // Fallback: check kma_user cookie (set by cross-app auth from seller)
+  try {
+    const cookie = document.cookie.split("; ").find((c) => c.startsWith("kma_user="));
+    if (cookie) {
+      const decoded = decodeURIComponent(cookie.split("=")[1]);
+      const parsed: unknown = JSON.parse(decoded);
+      if (isRecord(parsed) && typeof parsed.role === "string") {
+        // Sync to localStorage so subsequent checks work
+        localStorage.setItem("user", decoded);
+        return parsed.role;
+      }
+    }
+  } catch { /* ignore */ }
+  return null;
 }
 
 /**
