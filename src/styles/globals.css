@@ -184,7 +184,9 @@ body {
 .home_hero_slider .slick-slider .slick-list .slick-track .slick-slide>div {
  height: 100%;
 }
-
+.non_home_page_slider .home_hero_slider {
+  position: inherit !important;
+}
 @media (max-width: 863px) {
   .gradient-mask {
     mask-image: none;

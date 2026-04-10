@@ -2,7 +2,7 @@ import React from 'react'
 
 const PageTitle = ({ title, description, breadcrumps, actions }) => {
     return (
-        <div className='flex flex-col items-center max-w-[610px]'>
+        <div className='flex flex-col items-center max-w-[610px] px-4'>
             <h1 className="text-[40px] text-center font-semibold text-white">{title}</h1>
             {description && <p className="text-white text-center text-md mt-4 leading-7 font-light">{description}</p>}
             {/* {actions && (

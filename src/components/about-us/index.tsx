@@ -69,34 +69,34 @@ export default function AboutUsComponent({
       alt: "Background Image 1",
     },
   ]
- 
+
   return (
     <div>
       <HeaderDataSync propertyMasterData={propertyMasterData} propertyCitiesData={propertyCitiesData} />
-      <div className="relative">
-        <BannerSlider bannerHeight={'min-h-[600px] 2md:h-[60vh]'} backgroundImages={sliderImage} overlayClass='about-us-gradient-overlay'/>
+      <div className="relative non_home_page_slider">
+        <BannerSlider bannerHeight={'min-h-[600px] 2md:h-[60vh]'} backgroundImages={sliderImage} overlayClass='about-us-gradient-overlay' />
         <div className="absolute flex flex-col items-center top-0 w-[100%] ">
           <HomeHeader />
           <div className="mt-[150px]">
-          <PageTitle
-            title="About Us"
-            description="Discover who we are, what we stand for, and how we make your real estate journey smooth and successful."
-            breadcrumps={breadcrumps}
-          />
+            <PageTitle
+              title="About Us"
+              description="Discover who we are, what we stand for, and how we make your real estate journey smooth and successful."
+              breadcrumps={breadcrumps}
+            />
+          </div>
         </div>
-        </div>
-        
+
       </div>
-      <div className="w-full py-[120px] px-[50px]">
-        <div className="flex items-center justify-between gap-6 max-w-[1444px] mx-auto">
-          <div className="w-[50%]">
+      <div className="w-full px-4 2xl:py-[120px] xl:py-20 lg:py-16 md:py-12 py-10">
+        <div className="flex xl:flex-row flex-col-reverse items-center justify-between max-w-[1444px] mx-auto gap-6">
+          <div className="xl:w-[50%] w-full">
             <SectionHeading
               title="Who We Are"
               subtitle="About KMA Properties"
               type={"left"}
               description="KMA Property Group, established on January 1, 2025, is a beacon of excellence in Gurugram’s high-end property market. We specialize in the sale, purchase, and rental of luxury properties, offering personalized experiences to clients who demand sophistication, trust, and lasting value."
             />
-            <div className="grid grid-cols-2 grid-rows-2 gap-x-8 gap-y-4 mt-6 w-fit">
+            <div className="grid sm:grid-cols-2 grid-cols-1 gap-x-8 gap-y-4 mt-6 w-fit">
               <div className="flex items-center gap-2">
                 <CircleCheckBig className="w-5 h-5 text-[#010048]" />
                 <p className={`text-[#5C727D] text-md leading-7 font-normal`}>
@@ -122,11 +122,11 @@ export default function AboutUsComponent({
                 </p>
               </div>
             </div>
-            <div className="w-full  px-8 py-3 rounded-lg border border-dashed border-gray-400 grid grid-cols-4 gap-10 justify-between mt-10">
+            <div className="w-full 2xl:px-8 px-5 py-3 rounded-lg border border-dashed border-gray-400 grid 2xl:grid-cols-4 xl:grid-cols-2 md:grid-cols-4 sm:grid-cols-2 grid-cols-1 2xl:gap-10 gap-5 justify-between md:mt-10 mt-6  ">
               {
                 companyStats.map((stat) => (
                   <div key={stat.title}>
-                    <h3 className="text-[36px] font-semibold text-[#010048]">
+                    <h3 className="2xl:text-[36px] xl:text-[28px] text-[22px] font-semibold text-[#010048]">
                       {stat.value}
                     </h3>
                     <p className={`text-[#5C727D] text-md leading-7 font-normal`}>
@@ -138,8 +138,8 @@ export default function AboutUsComponent({
             </div>
             <div className="mt-8">
               <h2 className={`text-[28px] leading-11 font-semibold text-[#010048]`}>Founder’s Profile</h2>
-              <div className="flex items-center gap-3 mt-5">
-                <div className="px-5 py-2 border border-gray-200 flex items-center gap-4 rounded-lg">
+              <div className="flex flex-wrap items-center gap-3 mt-5">
+                <div className="sm:w-fit w-full px-5 py-2 border border-gray-200 flex items-center gap-4 rounded-lg">
                   <Image
                     src="/assets/aboutUs/avatar.png"
                     alt="About Us"
@@ -149,10 +149,10 @@ export default function AboutUsComponent({
                   />
                   <div className="space-y-1.5">
                     <h3 className="text-[16px] font-medium text-[#010048]">Dwayne Douglas</h3>
-                    <p className="text-[13px] font-medium text-[#fff] w-full text-center px-3 py-0.5 rounded-sm" style={{background: "linear-gradient(90deg, #C75C10 0%, #CE9554 100%)"}}>Founder</p>
+                    <p className="text-[13px] font-medium text-[#fff] w-full text-center px-3 py-0.5 rounded-sm" style={{ background: "linear-gradient(90deg, #C75C10 0%, #CE9554 100%)" }}>Founder</p>
                   </div>
                 </div>
-                <div className="px-5 py-2 border border-gray-200 flex items-center gap-4 rounded-lg">
+                <div className="sm:w-fit w-full px-5 py-2 border border-gray-200 flex items-center gap-4 rounded-lg">
                   <Image
                     src="/assets/aboutUs/avatar.png"
                     alt="About Us"
@@ -162,7 +162,7 @@ export default function AboutUsComponent({
                   />
                   <div className="space-y-1.5">
                     <h3 className="text-[16px] font-medium text-[#010048]">Dwayne Douglas</h3>
-                    <p className="text-[13px] w-full text-center font-medium text-[#fff] px-3 py-0.5 rounded-sm" style={{background: "linear-gradient(90deg, #C75C10 0%, #CE9554 100%)"}}>CO-Founder</p>
+                    <p className="text-[13px] w-full text-center font-medium text-[#fff] px-3 py-0.5 rounded-sm" style={{ background: "linear-gradient(90deg, #C75C10 0%, #CE9554 100%)" }}>CO-Founder</p>
                   </div>
                 </div>
               </div>
@@ -171,22 +171,24 @@ export default function AboutUsComponent({
           <Image
             src="/assets/aboutUs/who-we-are-graphic.png"
             alt="About Us"
-            className="w-[45%] max-w-[600px]"
+            className="xl:w-[45%] w-full max-w-[600px]"
             width={600}
             height={600}
           />
         </div>
       </div>
-      <div className="w-full pt-[100px] pr-[50px] bg-[#F2F2F2]">
-        <div className="flex items-center justify-between gap-6 max-w-[1680] mr-auto">
-          <Image
-            src="/assets/aboutUs/hand-presenting-model.png"
-            alt="About Us"
-            className="w-[60%] object-cover max-w-[930px]"
-            width={930}
-            height={600}
-          />
-          <div className="w-[40%] space-y-3">
+      <div className="w-full relative 2xl:pt-[100px] xl:pt-20 bg-[#F2F2F2]">
+        <div className="flex xl:flex-row flex-col-reverse items-center justify-between max-w-[1444px] mx-auto">
+          <div className="xl:w-[50%] w-full">
+            <Image
+               src="/assets/aboutUs/hand-presenting-model.png"
+               alt="About Us"
+              className="xl:w-[50%] w-full xl:absolute top-0 left-0 h-full object-cover"
+              width={930}
+              height={600}
+            />
+          </div>
+          <div className="xl:w-[50%] w-full space-y-3 xl:pl-[50px] py-10 px-4 xl:min-h-[579px] flex flex-col justify-center">
             <SectionHeading
               title="Our Story"
               subtitle="Shaping Gurugram’s Skyline, One Icon at a Time"
@@ -210,10 +212,10 @@ export default function AboutUsComponent({
           </div>
         </div>
       </div>
-      <div className="w-full px-[50px] py-[100px]">
-        <div className="max-w-[1444px] mx-auto ">
+      <div className="w-full px-4 2xl:py-[100px] xl:py-20 lg:py-16 md:py-12 py-10">
+        <div className="max-w-[1444px] mx-auto">
           <h2 className={`text-[28px] leading-11 font-semibold text-[#010048] text-center`}>A Service You Can Trust and Feel Confident In</h2>
-          <div className="grid grid-cols-4 gap-x-8 gap-y-4 mt-10 items-center">
+          <div className="grid xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-5 md:mt-10 mt-6 items-center">
             <div className="bg-[#F2F2F2] px-8 py-5 rounded-lg flex flex-col gap-1 h-full justify-center">
               <div className="bg-white w-[60px] h-[60px] flex items-center justify-center rounded-lg mb-2">
                 <BadgePercent className="w-8 h-8 text-[#010048]" />
@@ -261,16 +263,18 @@ export default function AboutUsComponent({
           </div>
         </div>
       </div>
-      <div className="w-full bg-[#010048] pr-[50px]">
-        <div className="flex items-center justify-between gap-6 max-w-[1680] mr-auto">
-          <Image
-            src="/assets/aboutUs/about-video-thumbnail.png"
-            alt="About Us"
-            className="w-[60%] max-w-[946] object-cover aspect-video"
-            width={946}
-            height={600}
-          />
-          <div className="w-[40%] space-y-3">
+      <div className="w-full relative">
+        <div className="flex xl:flex-row flex-col items-center justify-between max-w-[1444px] mx-auto">
+          <div className="xl:w-[50%] w-full">
+            <Image
+              src="/assets/aboutUs/about-video-thumbnail.png"
+              alt="About Us"
+              className="xl:w-[50%] w-full xl:absolute top-0 left-0 h-full object-cover"
+              width={946}
+              height={600}
+            />
+          </div>
+          <div className="xl:w-[50%] w-full space-y-3 xl:pl-[50px] py-10 px-4 xl:min-h-[579px] flex flex-col justify-center bg-[#010048]">
             <SectionHeading
               title="Why Choose Us?"
               lineTop
@@ -284,17 +288,17 @@ export default function AboutUsComponent({
           </div>
         </div>
       </div>
-      <div className="w-full px-[50px] py-[100px]">
-        <div className="max-w-[1444px] mx-auto ">
+      <div className="w-full px-4 2xl:py-[100px] xl:py-20 lg:py-16 md:py-12 py-10">
+        <div className="max-w-[1444px] mx-auto">
           <SectionHeading
             title="Team Members"
             subtitle="immediate help got from our team"
             type={"center"}
             description=""
           />
-          <div className="grid grid-cols-4 gap-x-8 gap-y-4 mt-10 items-center">
+          <div className="grid xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 sm:gap-x-8 sm:gap-y-4 gap-5 md:mt-10 mt-6 items-center">
             <div
-              className="rounded-lg relative aspect-square"
+              className="rounded-lg relative aspect-square bg-cover"
               style={{ backgroundImage: "url(assets/aboutUs/team-1.png)" }}
             >
               <div className="absolute right-6 top-0 z-10">
@@ -325,7 +329,7 @@ export default function AboutUsComponent({
                   </a>
                 </div>
               </div>
-              <div className="absolute right-0 bottom-[50px] bg-black/30 rounded-bl-lg rounded-tl-lg backdrop-blur-sm p-2.5 px-5 w-[75%] border-l-2 border-l-[#010048]">
+              <div className="absolute right-0 md:bottom-[50px] bottom-6 bg-black/30 rounded-bl-lg rounded-tl-lg backdrop-blur-sm p-2.5 px-5 md:w-[75%] w-[85%] border-l-2 border-l-[#010048]">
                 <h3 className="text-white text-[20px] uppercase leading-5 font-medium mb-0">
                   katherine legge
                 </h3>
@@ -333,7 +337,7 @@ export default function AboutUsComponent({
               </div>
             </div>
             <div
-              className="rounded-lg relative aspect-square"
+              className="rounded-lg relative aspect-square bg-cover"
               style={{ backgroundImage: "url(assets/aboutUs/team-2.png)" }}
             >
               <div className="absolute right-6 top-0 z-10">
@@ -364,7 +368,7 @@ export default function AboutUsComponent({
                   </a>
                 </div>
               </div>
-              <div className="absolute right-0 bottom-[50px] bg-black/30 rounded-bl-lg rounded-tl-lg backdrop-blur-sm p-2.5 px-5 w-[75%] border-l-2 border-l-[#010048]">
+              <div className="absolute right-0 md:bottom-[50px] bottom-6 bg-black/30 rounded-bl-lg rounded-tl-lg backdrop-blur-sm p-2.5 px-5 md:w-[75%] w-[85%] border-l-2 border-l-[#010048]">
                 <h3 className="text-white text-[20px] uppercase leading-5 font-medium mb-0">
                   katherine legge
                 </h3>
@@ -372,7 +376,7 @@ export default function AboutUsComponent({
               </div>
             </div>
             <div
-              className="rounded-lg relative aspect-square"
+              className="rounded-lg relative aspect-square bg-cover"
               style={{ backgroundImage: "url(assets/aboutUs/team-3.png)" }}
             >
               <div className="absolute right-6 top-0 z-10">
@@ -403,7 +407,7 @@ export default function AboutUsComponent({
                   </a>
                 </div>
               </div>
-              <div className="absolute right-0 bottom-[50px] bg-black/30 rounded-bl-lg rounded-tl-lg backdrop-blur-sm p-2.5 px-5 w-[75%] border-l-2 border-l-[#010048]">
+              <div className="absolute right-0 md:bottom-[50px] bottom-6 bg-black/30 rounded-bl-lg rounded-tl-lg backdrop-blur-sm p-2.5 px-5 md:w-[75%] w-[85%] border-l-2 border-l-[#010048]">
                 <h3 className="text-white text-[20px] uppercase leading-5 font-medium mb-0">
                   katherine legge
                 </h3>
@@ -411,7 +415,7 @@ export default function AboutUsComponent({
               </div>
             </div>
             <div
-              className="rounded-lg relative aspect-square"
+              className="rounded-lg relative aspect-square bg-cover"
               style={{ backgroundImage: "url(assets/aboutUs/team-4.png)" }}
             >
               <div className="absolute right-6 top-0 z-10">
@@ -442,7 +446,7 @@ export default function AboutUsComponent({
                   </a>
                 </div>
               </div>
-              <div className="absolute right-0 bottom-[50px] bg-black/30 rounded-bl-lg rounded-tl-lg backdrop-blur-sm p-2.5 px-5 w-[75%] border-l-2 border-l-[#010048]">
+              <div className="absolute right-0 md:bottom-[50px] bottom-6 bg-black/30 rounded-bl-lg rounded-tl-lg backdrop-blur-sm p-2.5 px-5 md:w-[75%] w-[85%] border-l-2 border-l-[#010048]">
                 <h3 className="text-white text-[20px] uppercase leading-5 font-medium mb-0">
                   katherine legge
                 </h3>
@@ -458,7 +462,7 @@ export default function AboutUsComponent({
         </div>
       </div> */}
       <div className="">
-          <HomeFooter />
+        <HomeFooter />
       </div>
     </div>
   );
