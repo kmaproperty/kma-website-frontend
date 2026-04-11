@@ -42,37 +42,16 @@ export async function middleware(req: NextRequest) {
     }
 
     const response = NextResponse.redirect(cleanUrl);
-    response.cookies.set("accessToken", finalAccessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60,
-      ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
-    });
+    const domainPart = COOKIE_DOMAIN ? `; Domain=${COOKIE_DOMAIN}` : "";
+    response.headers.append("Set-Cookie", `accessToken=${finalAccessToken}; Path=/; Max-Age=3600; HttpOnly; Secure; SameSite=Lax${domainPart}`);
     if (finalRefreshToken) {
-      response.cookies.set("refreshToken", finalRefreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "lax",
-        path: "/",
-        maxAge: 60 * 60 * 24 * 7,
-        ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
-      });
+      response.headers.append("Set-Cookie", `refreshToken=${finalRefreshToken}; Path=/; Max-Age=604800; HttpOnly; Secure; SameSite=Lax${domainPart}`);
     }
     // Store user info in JS-readable cookie — keep ORIGINAL role so UI shows "Seller Dashboard"
-    // crossApp flag tells the header to use end-user/profile API (since token is END_USER)
     if (originalRole) {
       const isCrossApp = originalRole === "OWNER" || originalRole === "CHANNEL_PARTNER";
-      const userObj = JSON.stringify({ role: originalRole, name: originalName, ...(isCrossApp ? { crossApp: true } : {}) });
-      response.cookies.set("kma_user", userObj, {
-        httpOnly: false,
-        secure: true,
-        sameSite: "lax",
-        path: "/",
-        maxAge: 60 * 60,
-        ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
-      });
+      const userObj = encodeURIComponent(JSON.stringify({ role: originalRole, name: originalName, ...(isCrossApp ? { crossApp: true } : {}) }));
+      response.headers.append("Set-Cookie", `kma_user=${userObj}; Path=/; Max-Age=3600; Secure; SameSite=Lax${domainPart}`);
     }
     return response;
   }

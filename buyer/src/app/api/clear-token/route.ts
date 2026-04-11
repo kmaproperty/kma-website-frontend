@@ -2,23 +2,18 @@ import { NextResponse } from "next/server";
 
 const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN;
 
-const clearOpts = () => {
-  const opts: Record<string, unknown> = {
-    httpOnly: true,
-    secure: true,
-    expires: new Date(0),
-    path: "/",
-  };
-  if (COOKIE_DOMAIN) opts.domain = COOKIE_DOMAIN;
-  return opts;
-};
+function clearCookie(name: string, httpOnly = true): string {
+  let cookie = `${name}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure; SameSite=Lax`;
+  if (httpOnly) cookie += "; HttpOnly";
+  if (COOKIE_DOMAIN) cookie += `; Domain=${COOKIE_DOMAIN}`;
+  return cookie;
+}
 
 export async function POST() {
   const response = NextResponse.json({ message: "Cookies cleared" });
-
-  response.cookies.set("accessToken", "", clearOpts());
-  response.cookies.set("refreshToken", "", clearOpts());
-  response.cookies.set("kma_user", "", { ...clearOpts(), httpOnly: false });
+  response.headers.append("Set-Cookie", clearCookie("accessToken"));
+  response.headers.append("Set-Cookie", clearCookie("refreshToken"));
+  response.headers.append("Set-Cookie", clearCookie("kma_user", false));
 
   return response;
 }
