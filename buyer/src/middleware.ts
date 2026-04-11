@@ -1,6 +1,8 @@
 import { NextResponse, NextRequest } from "next/server";
 
-export default function middleware(req: NextRequest) {
+const BACKEND_URL = process.env.BACKEND_URL || "http://15.207.193.17:3000";
+
+export async function middleware(req: NextRequest) {
   const { pathname, searchParams } = req.nextUrl;
 
   // Cross-app auth: seller passes tokens via URL params
@@ -14,16 +16,40 @@ export default function middleware(req: NextRequest) {
     cleanUrl.searchParams.delete("_refresh");
     cleanUrl.searchParams.delete("_role");
     cleanUrl.searchParams.delete("_name");
+
+    let finalAccessToken = tokenParam;
+    let finalRefreshToken = refreshParam || "";
+    const originalRole = roleParam || "";
+    const originalName = nameParam || "";
+
+    // Owner/CP arriving from seller: swap for END_USER tokens so all buyer APIs work
+    if (roleParam === "OWNER" || roleParam === "CHANNEL_PARTNER") {
+      try {
+        const res = await fetch(`${BACKEND_URL}/end-user/cross-app-login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ accessToken: tokenParam }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          finalAccessToken = data.accessToken;
+          finalRefreshToken = data.refreshToken;
+        }
+      } catch {
+        // If swap fails, fall through with original tokens
+      }
+    }
+
     const response = NextResponse.redirect(cleanUrl);
-    response.cookies.set("accessToken", tokenParam, {
+    response.cookies.set("accessToken", finalAccessToken, {
       httpOnly: true,
       secure: true,
       sameSite: "strict",
       path: "/",
       maxAge: 60 * 60,
     });
-    if (refreshParam) {
-      response.cookies.set("refreshToken", refreshParam, {
+    if (finalRefreshToken) {
+      response.cookies.set("refreshToken", finalRefreshToken, {
         httpOnly: true,
         secure: true,
         sameSite: "strict",
@@ -31,9 +57,9 @@ export default function middleware(req: NextRequest) {
         maxAge: 60 * 60 * 24 * 7,
       });
     }
-    // Store user info in a JS-readable cookie so the header can pick it up
-    if (roleParam) {
-      const userObj = JSON.stringify({ role: roleParam, name: nameParam || "" });
+    // Store user info in JS-readable cookie — keep ORIGINAL role so UI shows "Seller Dashboard"
+    if (originalRole) {
+      const userObj = JSON.stringify({ role: originalRole, name: originalName });
       response.cookies.set("kma_user", userObj, {
         httpOnly: false,
         secure: true,
