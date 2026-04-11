@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 
 const BACKEND_URL = process.env.BACKEND_URL || "http://15.207.193.17:3000";
+const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN || undefined; // '.kmaglobalproperty.com' in prod
 
 export async function middleware(req: NextRequest) {
   const { pathname, searchParams } = req.nextUrl;
@@ -44,17 +45,19 @@ export async function middleware(req: NextRequest) {
     response.cookies.set("accessToken", finalAccessToken, {
       httpOnly: true,
       secure: true,
-      sameSite: "strict",
+      sameSite: "lax",
       path: "/",
       maxAge: 60 * 60,
+      ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
     });
     if (finalRefreshToken) {
       response.cookies.set("refreshToken", finalRefreshToken, {
         httpOnly: true,
         secure: true,
-        sameSite: "strict",
+        sameSite: "lax",
         path: "/",
         maxAge: 60 * 60 * 24 * 7,
+        ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
       });
     }
     // Store user info in JS-readable cookie — keep ORIGINAL role so UI shows "Seller Dashboard"
@@ -65,9 +68,10 @@ export async function middleware(req: NextRequest) {
       response.cookies.set("kma_user", userObj, {
         httpOnly: false,
         secure: true,
-        sameSite: "strict",
+        sameSite: "lax",
         path: "/",
         maxAge: 60 * 60,
+        ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
       });
     }
     return response;
