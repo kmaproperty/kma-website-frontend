@@ -58,8 +58,10 @@ export async function middleware(req: NextRequest) {
       });
     }
     // Store user info in JS-readable cookie — keep ORIGINAL role so UI shows "Seller Dashboard"
+    // crossApp flag tells the header to use end-user/profile API (since token is END_USER)
     if (originalRole) {
-      const userObj = JSON.stringify({ role: originalRole, name: originalName });
+      const isCrossApp = originalRole === "OWNER" || originalRole === "CHANNEL_PARTNER";
+      const userObj = JSON.stringify({ role: originalRole, name: originalName, ...(isCrossApp ? { crossApp: true } : {}) });
       response.cookies.set("kma_user", userObj, {
         httpOnly: false,
         secure: true,

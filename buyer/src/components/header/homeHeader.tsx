@@ -32,15 +32,18 @@ export default function HomeHeader() {
     fetchCities,
     propertyMasterData,
     userRole,
+    crossApp,
   } = useHeaderStore(true);
   const isEndUser = userRole === USER_TYPE.END_USER || userRole === USER_TYPE.USER;
   const isLoggedIn = Boolean(userRole === USER_TYPE.CHANNEL_PARTNER || userRole === USER_TYPE.OWNER || isEndUser);
   const isSeller = Boolean(userRole === USER_TYPE.CHANNEL_PARTNER || userRole === USER_TYPE.OWNER);
 
   const { data: profileResponse } = useQuery({
-    queryKey: ["user-profile", userRole],
+    queryKey: ["user-profile", userRole, crossApp],
     queryFn: async () => {
-      if (isSeller) {
+      // Cross-app users have END_USER tokens but OWNER/CP role in cookie
+      // Always use end-user/profile since the token is END_USER
+      if (isSeller && !crossApp) {
         return userProfileApiHandler();
       }
       const res = await endUserProfileApiHandler();

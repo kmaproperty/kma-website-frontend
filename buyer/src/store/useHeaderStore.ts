@@ -22,6 +22,18 @@ import type { CitiesResponse } from "@/services/homeService";
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null;
 
+function isCrossAppUser(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const raw = localStorage.getItem("user");
+    if (raw) {
+      const parsed: unknown = JSON.parse(raw);
+      if (isRecord(parsed) && parsed.crossApp === true) return true;
+    }
+  } catch { /* ignore */ }
+  return false;
+}
+
 function getStoredUserRole(): string | null {
   if (typeof window === "undefined") return null;
   // Check localStorage first
@@ -43,7 +55,7 @@ function getStoredUserRole(): string | null {
       const decoded = decodeURIComponent(cookie.split("=")[1]);
       const parsed: unknown = JSON.parse(decoded);
       if (isRecord(parsed) && typeof parsed.role === "string") {
-        // Sync to localStorage so subsequent checks work
+        // Sync to localStorage so subsequent checks work — include crossApp flag
         localStorage.setItem("user", decoded);
         return parsed.role;
       }
@@ -109,6 +121,8 @@ export function useHeaderStore(syncUserRole = false) {
     [fetchCities]
   );
 
+  const crossApp = syncUserRole ? isCrossAppUser() : false;
+
   return {
     selectedCity,
     aboutsUsData,
@@ -116,6 +130,7 @@ export function useHeaderStore(syncUserRole = false) {
     cityLoader: isLoading,
     propertyMasterData: Array.isArray(propertyMasterData) ? propertyMasterData : [],
     userRole,
+    crossApp,
     fetchCities: fetchCitiesStable,
   };
 }
