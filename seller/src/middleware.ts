@@ -36,8 +36,9 @@ export default function middleware(req: NextRequest) {
       const payload = decodeJwtPayload(accessToken);
       const role = payload?.role as string | undefined;
       const isPostPropertyFlow = searchParams.get("postProperty") === "true";
-      // END_USER can access /user-flow ONLY for post-property registration (upgrade to Owner/CP)
-      if ((role === "END_USER" || role === "USER") && !isPostPropertyFlow) {
+      const isSignupFlow = searchParams.get("flow") === "signup" || searchParams.get("isOtp") === "true";
+      // END_USER can access /user-flow ONLY for post-property registration or signup OTP
+      if ((role === "END_USER" || role === "USER") && !isPostPropertyFlow && !isSignupFlow) {
         return NextResponse.redirect(buyerUrl);
       }
       // Owner/CP already logged in → go to dashboard
