@@ -11,6 +11,7 @@ export default function ListView({menuList = [], onItemClick}: ListViewProps){
                     return(
                         <>
                         <p
+                            key={index}
                             onClick={() => onItemClick?.(item.label)}
                             className="text-sm text-text-black hover:bg-list-background cursor-pointer px-2 py-1.5 my-1 rounded-lg"
                         >
