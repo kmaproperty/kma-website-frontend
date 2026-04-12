@@ -462,31 +462,31 @@ export default function ListingDetailsPage() {
   return (
     <MainLayout>
 
-      <div className="pt-10 pb-6">
-        <div className="text-sm text-white absolute top-35 left-62">
-          Home / {propertyTitle}
-        </div>
-        <h2 className="text-4xl mb-8 rounded-lg font-semibold text-white">
+      <div className="w-full min-w-0 px-0 pb-6 pt-6 sm:px-0 sm:pt-8 md:pt-10">
+        <nav className="text-xs text-white/90 sm:text-sm" aria-label="Breadcrumb">
+          <span className="line-clamp-2 break-words">Home / {propertyTitle}</span>
+        </nav>
+        <h2 className="mb-6 mt-3 text-2xl font-semibold text-white sm:mb-8 sm:text-3xl md:text-4xl">
           Property Details
         </h2>
-        <div className="mx-auto w-full">
-          <div className="rounded-2xl border border-border bg-white p-4 shadow-sm lg:p-8">
-            <div className="flex flex-col gap-4 pb-2 sm:flex-row sm:items-center sm:justify-between">
-              <div>
+        <div className="mx-auto w-full min-w-0">
+          <div className="rounded-2xl border border-border bg-white p-4 shadow-sm sm:p-5 lg:p-8">
+            <div className="flex min-w-0 flex-col gap-4 pb-2 sm:flex-row sm:items-center sm:justify-between">
+              <div className="min-w-0 flex-1">
                 {/* <p className="text-xs font-medium text-text-light-gray">
                 Home / Projects / {params?.projectId ?? "project"} / {listingId || "property"}
               </p> */}
-                <h1 className="mt-1 text-2xl font-semibold text-text-black">
+                <h1 className="mt-1 break-words text-xl font-semibold text-text-black sm:text-2xl">
                   {propertyTitle}
                 </h1>
-                <p className="mt-2.5 flex items-center gap-1 text-sm text-text-gray">
-                  <MapPin className="h-4 w-4" />
-                  {propertyAddress}
+                <p className="mt-2.5 flex min-w-0 items-start gap-1 text-sm text-text-gray">
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
+                  <span className="min-w-0 break-words">{propertyAddress}</span>
                 </p>
               </div>
 
-              <div className="text-left sm:text-right">
-                <p className="text-3xl font-bold leading-none text-blue">{currentPriceLabel}</p>
+              <div className="shrink-0 text-left sm:text-right">
+                <p className="text-2xl font-bold leading-none text-blue sm:text-3xl">{currentPriceLabel}</p>
                 <p className="mt-3 text-xs font-medium text-text-gray">{depositLabel}</p>
               </div>
             </div>
@@ -500,8 +500,8 @@ export default function ListingDetailsPage() {
               </p>
             ) : null}
 
-            <section className="mt-4 flex gap-3">
-              <div className="relative h-[250px] w-[60%] overflow-hidden rounded-sm sm:h-[480px]">
+            <section className="mt-4 flex min-w-0 flex-col gap-3 md:flex-row md:gap-3">
+              <div className="relative h-56 w-full min-w-0 overflow-hidden rounded-sm sm:h-72 md:h-[420px] md:w-[58%] lg:h-[480px] lg:w-[60%]">
                 <Image
                   src={displayGallery[0] ?? placeholderImage}
                   alt="Property cover"
@@ -518,11 +518,11 @@ export default function ListingDetailsPage() {
                 </button>
               </div>
 
-              <div className="w-[40%] grid grid-cols-2 gap-3">
+              <div className="grid w-full min-h-0 min-w-0 grid-cols-2 grid-rows-2 gap-2 sm:gap-3 md:h-[420px] md:w-[42%] md:grid-rows-[minmax(0,1fr)_minmax(0,1fr)] md:self-stretch lg:h-[480px] lg:w-[40%]">
                 {displayGallery.slice(1).map((src, idx) => (
                   <div
                     key={src}
-                    className="relative h-[118px] overflow-hidden rounded-sm sm:h-full"
+                    className="relative aspect-[4/3] min-h-[96px] w-full min-w-0 overflow-hidden rounded-sm md:aspect-auto md:h-full md:min-h-0"
                   >
                     <Image
                       src={src}
@@ -547,17 +547,20 @@ export default function ListingDetailsPage() {
               {quickFactsData.map((fact) => (
                 <div
                   key={fact.label}
-                  className="inline-flex items-center gap-2 rounded-md border border-border bg-background-gray px-2.5 py-2 text-[13px] text-text-black pr-4"
+                  className="inline-flex max-w-full min-w-0 items-center gap-2 rounded-md border border-border bg-background-gray px-2.5 py-2 pr-4 text-[13px] text-text-black"
                 >
-                  <span className="flex w-[30px] h-[30px] justify-center items-center rounded-md bg-white">{fact.icon}</span>
-                  <span>{fact.label}</span>
+                  <span className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-md bg-white">{fact.icon}</span>
+                  <span className="min-w-0 break-words">{fact.label}</span>
                 </div>
               ))}
             </div>
 
-            <div className="mt-4 border-b border-border bg-background-gray rounded-sm p-5">
-              <nav className=" overflow-x-auto rounded-md bg-white text-sm">
-                <div className="flex w-max min-w-full items-center">
+            <div className="mt-4 rounded-sm border-b border-border bg-background-gray p-3 sm:p-5">
+              <nav
+                className="-mx-1 overflow-x-auto rounded-md bg-white px-1 text-sm [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                aria-label="Property sections"
+              >
+                <div className="flex w-max min-w-full items-stretch">
                   {[
                     "Overview",
                     "Furnishing",
@@ -569,8 +572,8 @@ export default function ListingDetailsPage() {
                     <button
                       key={item}
                       type="button"
-                      className={`whitespace-nowrap border-b-2 px-6 py-4 transition ${idx === 0
-                        ? "border-blue bg-white/70 text-text-black font-semibold"
+                      className={`whitespace-nowrap border-b-2 px-3 py-3 text-xs transition sm:px-5 sm:py-4 sm:text-sm ${idx === 0
+                        ? "border-blue bg-white/70 font-semibold text-text-black"
                         : "border-transparent text-text-gray hover:text-text-black"
                         }`}
                     >
@@ -580,8 +583,8 @@ export default function ListingDetailsPage() {
                 </div>
               </nav>
 
-              <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-[1fr_310px]">
-                <main className="space-y-5">
+              <div className="mt-5 grid min-w-0 grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(260px,310px)]">
+                <main className="min-w-0 space-y-5">
                   {propertyDescription ? (
                     <section className="rounded-xl">
                       <h2 className="text-xl font-semibold text-text-black">Key highlights</h2>
@@ -631,9 +634,9 @@ export default function ListingDetailsPage() {
                     </section>
                   ) : null}
 
-                  <section className="rounded-xl p-4">
-                    <h2 className="text-xl font-semibold text-text-black">Locality</h2>
-                    <div className="mt-3 relative h-[300px] overflow-hidden rounded-tr-lg border border-[#D4D5D8] rounded-tl-lg bg-[#ECEEF3]">
+                  <section className="rounded-xl p-2 sm:p-4">
+                    <h2 className="text-lg font-semibold text-text-black sm:text-xl">Locality</h2>
+                    <div className="relative mt-3 h-[200px] overflow-hidden rounded-tl-lg rounded-tr-lg border border-[#D4D5D8] bg-[#ECEEF3] sm:h-[260px] md:h-[300px]">
                       <Image
                         src="/assets/city/city1.svg"
                         alt="Locality map"
@@ -642,15 +645,15 @@ export default function ListingDetailsPage() {
                       />
                       <button
                         type="button"
-                        className="absolute left-1/2 top-1/2 inline-flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-lg bg-[#0E1730] px-5 py-2.5 text-base font-medium text-white shadow-sm"
+                        className="absolute left-1/2 top-1/2 inline-flex max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-lg bg-[#0E1730] px-3 py-2 text-sm font-medium text-white shadow-sm sm:px-5 sm:py-2.5 sm:text-base"
                       >
-                        <MapPin className="h-4 w-4" />
+                        <MapPin className="h-4 w-4 shrink-0" />
                         Check on Map
                       </button>
                     </div>
 
-                    <div className=" divide-y divide-[#D4D5D8] rounded-br-lg rounded-bl-lg border border-[#D4D5D8] bg-white px-5">
-                      <div className="py-3 flex gap-1.5 overflow-x-auto[scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                    <div className="divide-y divide-[#D4D5D8] rounded-br-lg rounded-bl-lg border border-[#D4D5D8] bg-white px-3 sm:px-5 pb-3 sm:pb-5">
+                      <div className="flex gap-1.5 overflow-x-auto py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                         {localityCategories.map((category) => {
                           const Icon = category.icon;
                           const isActive = activeLocalityCategory === category.key;
@@ -671,13 +674,14 @@ export default function ListingDetailsPage() {
                           );
                         })}
                       </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2">
                       {nearbyLoading ? (
                         <p className="py-5 text-sm text-text-gray">Loading nearby places...</p>
                       ) : activeLocalityPlaces.length > 0 ? (
                         activeLocalityPlaces.map((place) => (
                           <div
                             key={place.name}
-                            className="inline-flex items-start gap-3 py-4 text-sm text-text-black"
+                            className="inline-flex items-start gap-3 p-4 text-sm text-text-black border-b border-[#D9D9D9]"
                           >
                             <School className="mt-0.5 h-6 w-6 text-[#05085E]" />
                             <div>
@@ -689,6 +693,7 @@ export default function ListingDetailsPage() {
                       ) : (
                         <p className="py-5 text-sm text-text-gray">No nearby places found.</p>
                       )}
+                    </div>
                     </div>
                   </section>
 
@@ -736,17 +741,17 @@ export default function ListingDetailsPage() {
                             )}
                           </div>
                         </div>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap">
                           <button
                             type="button"
-                            className="inline-flex items-center gap-2 rounded-xl border border-blue bg-white px-4 py-2.5 text-sm font-semibold text-blue"
+                            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-blue bg-white px-4 py-2.5 text-sm font-semibold text-blue sm:w-auto"
                           >
                             <PhoneCall className="h-4 w-4" />
                             View Number
                           </button>
                           <button
                             type="button"
-                            className="inline-flex items-center gap-2 rounded-xl bg-[#05085E] px-4 py-2.5 text-sm font-semibold text-white"
+                            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#05085E] px-4 py-2.5 text-sm font-semibold text-white sm:w-auto"
                           >
                             Learn More
                             <ArrowRight className="h-4 w-4" />
@@ -755,16 +760,16 @@ export default function ListingDetailsPage() {
                       </div>
 
                       <div className="mt-4 border-t border-[#D4D5D8] pt-5">
-                        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                           {[
                             [apiChannelPartner?.buyersServed != null && apiChannelPartner.buyersServed > 0 ? `${apiChannelPartner.buyersServed}+` : "—", "Buyers Served"],
                             [apiChannelPartner?.yearsOfExperience != null ? String(apiChannelPartner.yearsOfExperience) : "—", "Years of Experience"],
                             [apiChannelPartner?.propertyHoldings != null ? String(apiChannelPartner.propertyHoldings) : "—", "Property Holdings"],
                             [apiChannelPartner?.areasOfOperation != null && apiChannelPartner.areasOfOperation > 0 ? `${apiChannelPartner.areasOfOperation}+` : "—", "Areas of Operation"],
                           ].map(([value, label]) => (
-                            <div key={label} className="flex items-center  gap-3">
-                              <p className="text-3xl leading-none font-semibold text-[#05085E]">{value}</p>
-                              <p className="max-w-[110px] text-sm leading-5 text-text-black">{label}</p>
+                            <div key={label} className="flex min-w-0 items-center gap-3">
+                              <p className="shrink-0 text-2xl font-semibold leading-none text-[#05085E] sm:text-3xl">{value}</p>
+                              <p className="min-w-0 text-sm leading-5 text-text-black">{label}</p>
                             </div>
                           ))}
                         </div>
@@ -900,17 +905,17 @@ export default function ListingDetailsPage() {
 
                       <div className="mt-6 border-t border-[#CFCFD2] pt-6">
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                          <h3 className="text-xl font-semibold text-text-black">Reviews</h3>
-                          <div className="flex items-center gap-3">
+                          <h3 className="text-lg font-semibold text-text-black sm:text-xl">Reviews</h3>
+                          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-3">
                             <button
                               type="button"
-                              className="rounded-xl border border-blue bg-white px-5 py-2.5 text-sm font-semibold text-blue"
+                              className="w-full rounded-xl border border-blue bg-white px-5 py-2.5 text-sm font-semibold text-blue sm:w-auto"
                             >
                               Add a Review
                             </button>
                             <Link
                               href={`/projects/${params?.projectId ?? ""}/${listingId || ""}/reviews`}
-                              className="inline-flex items-center gap-2 rounded-xl bg-[#05085E] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0B127A]"
+                              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#05085E] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0B127A] sm:w-auto"
                             >
                               View All
                               <ArrowRight className="h-4 w-4" />
@@ -973,26 +978,26 @@ export default function ListingDetailsPage() {
                           ))}
                         </div>
 
-                        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                          <div className="flex items-center gap-4">
-                            <p className="text-[22px] font-semibold leading-none text-[#05085E]">
+                        <div className="mt-6 flex min-w-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+                          <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
+                            <p className="shrink-0 text-lg font-semibold leading-none text-[#05085E] sm:text-[22px]">
                               {String(activeReviewPage + 1).padStart(2, "0")}
                               <span className="text-text-gray"> / </span>
                               <span className="text-text-gray">
                                 {String(totalReviewPages).padStart(2, "0")}
                               </span>
                             </p>
-                            <div className="h-[3px] w-[220px] overflow-hidden rounded-full bg-[#D4D5D8] sm:w-[320px]">
+                            <div className="h-[3px] min-w-0 flex-1 max-w-[320px] overflow-hidden rounded-full bg-[#D4D5D8]">
                               <div
                                 className="h-full rounded-full bg-[#05085E] transition-all"
                                 style={{
-                                  width: `${((activeReviewPage + 1) / totalReviewPages) * 100}%`,
+                                  width: `${((activeReviewPage + 1) / Math.max(1, totalReviewPages)) * 100}%`,
                                 }}
                               />
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-3">
+                          <div className="flex shrink-0 items-center gap-3 self-start sm:self-center">
                             <button
                               type="button"
                               aria-label="Previous reviews"
@@ -1015,14 +1020,14 @@ export default function ListingDetailsPage() {
                     </div>
                   </section>
 
-                  <section className="rounded-xl p-4">
-                    <h2 className="text-xl font-semibold text-text-black">
+                  <section className="rounded-xl p-2 sm:p-4">
+                    <h2 className="text-lg font-semibold text-text-black sm:text-xl">
                       Similar properties in your locality
                     </h2>
-                    <div className="relative mt-3">
+                    <div className="relative mt-3 min-w-0 px-1 sm:px-0">
                       <div
                         ref={similarCarouselRef}
-                        className="flex gap-3 overflow-x-auto pb-1 pr-2 scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                        className="flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-1 pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                       >
                         {similarProperties
                           // .filter((item) => item.id !== listingId)
@@ -1040,7 +1045,7 @@ export default function ListingDetailsPage() {
                               <article
                                 key={item.id}
                                 data-similar-card
-                                className="w-[300px] shrink-0 overflow-hidden rounded-2xl border border-[#D4D5D8] bg-white shadow-[0px_2px_8px_rgba(16,24,40,0.06)]"
+                                className="w-[min(18rem,calc(100vw-2.5rem))] shrink-0 snap-start overflow-hidden rounded-2xl border border-[#D4D5D8] bg-white shadow-[0px_2px_8px_rgba(16,24,40,0.06)] sm:w-[300px]"
                               >
                                 <Link
                                   href={`/projects/${params?.projectId ?? ""}/${item.id}`}
@@ -1052,7 +1057,7 @@ export default function ListingDetailsPage() {
                                       alt={item.title}
                                       fill
                                       className="object-cover"
-                                      sizes="300px"
+                                      sizes="(max-width:640px) 85vw, 300px"
                                     />
                                     <span className="absolute right-3 top-3 rounded-md bg-[#6950F3] px-3 py-1.5 text-xs font-semibold text-white">
                                       {item.propertyType || "Apartment"}
@@ -1174,7 +1179,7 @@ export default function ListingDetailsPage() {
                             aria-label="Previous similar property"
                             onClick={() => scrollSimilarProperties("prev")}
                             disabled={!similarScrollState.canPrev}
-                            className="absolute left-[-15px] top-1/2 z-10 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-[#D4D5D8] bg-white text-[#05085E] shadow transition hover:bg-[#F8F9FF] disabled:cursor-not-allowed disabled:opacity-40"
+                            className="absolute left-0 top-1/2 z-10 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-[#D4D5D8] bg-white text-[#05085E] shadow transition hover:bg-[#F8F9FF] disabled:cursor-not-allowed disabled:opacity-40 sm:-left-3 md:-left-4"
                           >
                             <ChevronLeft className="h-4 w-4" />
                           </button>
@@ -1183,7 +1188,7 @@ export default function ListingDetailsPage() {
                             aria-label="Next similar property"
                             onClick={() => scrollSimilarProperties("next")}
                             disabled={!similarScrollState.canNext}
-                            className="absolute right-[-15px] top-1/2 z-8 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-[#D4D5D8] bg-white text-[#05085E] shadow transition hover:bg-[#F8F9FF] disabled:cursor-not-allowed disabled:opacity-40"
+                            className="absolute right-0 top-1/2 z-10 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-[#D4D5D8] bg-white text-[#05085E] shadow transition hover:bg-[#F8F9FF] disabled:cursor-not-allowed disabled:opacity-40 sm:-right-3 md:-right-4"
                           >
                             <ChevronRight className="h-4 w-4" />
                           </button>
@@ -1193,7 +1198,7 @@ export default function ListingDetailsPage() {
                   </section>
                 </main>
 
-                <aside className="h-fit rounded-xl border bg-white border-border p-4 xl:sticky xl:top-4">
+                <aside className="h-fit min-w-0 rounded-xl border border-border bg-white p-4 xl:sticky xl:top-4">
                   <h3 className="text-xl font-semibold text-text-black">
                     Talk to our real estate specialists
                   </h3>

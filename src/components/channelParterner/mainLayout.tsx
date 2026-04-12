@@ -18,8 +18,8 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         </div>
         <div className="absolute w-full h-[450px] bg-blue rounded-b-[25px] sm:rounded-b-[60px] lg:rounded-b-[80px] xl:rounded-b-[100px]" />
 
-        <div className="flex justify-center pt-[6rem] md:pt-[8.5rem] pb-[2rem] relative z-1 w-full">
-          <div className="w-[90%] xl:w-[75%] min-h-[66dvh] flex">
+        <div className="relative z-[1] flex w-full justify-center px-4 pb-8 pt-[6rem] sm:px-6 md:pt-[8.5rem] lg:px-8">
+          <div className="flex min-h-[66dvh] w-full min-w-0 max-w-[1200px] xl:w-[75%] xl:max-w-[1320px]">
             {children}
           </div>
         </div>

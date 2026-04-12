@@ -67,11 +67,11 @@ type ExploreSectionProps = {
   explorePropertyList?: ExplorePropertyItem[];
 };
 
-/** Max-width breakpoints (same as former `responsive` config). */
+/** Aligns with theme: sm/md → 2md/lg → xl → 1xl+ */
 function getExploreSlidesToShow(viewportWidth: number): number {
   if (viewportWidth <= 640) return 1;
   if (viewportWidth <= 1024) return 2;
-  if (viewportWidth <= 1280) return 3;
+  if (viewportWidth < 1440) return 3;
   return 4;
 }
 

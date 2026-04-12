@@ -97,7 +97,7 @@ export default function ProjectsToolbar({ total }: { total: number }) {
           ))}
         </div>
 
-        <div className="flex items-center justify-end gap-3">
+        <div className="flex xl:flex-row flex-col xl:items-center justify-end gap-3">
           <span className="text-sm font-semibold text-text-black">Sort By :</span>
           <div className="relative">
             <select

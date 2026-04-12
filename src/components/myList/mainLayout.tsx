@@ -32,10 +32,10 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         <div className="absolute w-full h-[450px] bg-blue rounded-b-[25px] sm:rounded-b-[60px] lg:rounded-b-[80px] xl:rounded-b-[100px]">
           
         </div>
-        <div className="flex justify-center pt-[10rem] pb-[2rem]  relative z-1 w-full">
-          <div className="w-full max-w-[1440px] min-h-[66dvh] flex">
+        <div className="relative z-[1] flex w-full justify-center px-4 pb-8 pt-[10rem] sm:px-6 lg:px-8">
+          <div className="flex min-h-[66dvh] w-full min-w-0 max-w-[1440px]">
             {children}
-          </div>    
+          </div>
         </div>
       </div>
     </div>

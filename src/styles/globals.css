@@ -22,10 +22,14 @@
   --color-list-background: #F2F2F2;
   --color-yellow: #F7BB06;
 
-  /* Custom Breakpoints */
-
+  /* Viewport: sm 640, md 768, 2md 864, lg 1024, xl 1280, 1xl 1440, 2xl 1536 */
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
   --breakpoint-2md: 54rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
   --breakpoint-1xl: 90rem;
+  --breakpoint-2xl: 96rem;
 }
 
 

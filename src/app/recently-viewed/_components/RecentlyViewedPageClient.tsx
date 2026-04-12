@@ -499,31 +499,30 @@ export default function RecentlyViewedPageClient() {
   }, [activeSection, activeIntent, sortBy, searchSortBy]);
 
   return (
-    <div className="w-full">
+    <div className="w-full min-w-0">
       <section className="relative">
-        <div className="relative h-[310px] overflow-hidden rounded-[0_0_28px_28px] sm:rounded-[0_0_44px_44px]">
-          {/* <Image src="/assets/properties_pic_1.png" alt="recently viewed hero" fill className="object-cover" /> */}
-          {/* <div className="absolute inset-0 bg-[#020C2A]/65" /> */}
-
+        <div className="relative min-h-[220px] overflow-hidden rounded-[0_0_28px_28px] bg-blue pb-20 sm:min-h-[260px] sm:rounded-[0_0_44px_44px] sm:pb-24 md:min-h-[280px]">
           <div className="relative z-10 px-4 pt-4 sm:px-6 lg:px-8">
             <p className="text-xs font-medium text-white/90">
               Home <span className="px-1">/</span> Recently Viewed
             </p>
 
-            <div className="mt-14 text-center">
-              <h1 className="text-4xl font-semibold text-white sm:text-5xl">Track Your Journey</h1>
-              <p className="mx-auto mt-3 max-w-[540px] text-sm text-white/80 sm:text-base">
+            <div className="mt-8 text-center sm:mt-12 md:mt-14">
+              <h1 className="text-2xl font-semibold text-white sm:text-4xl md:text-5xl">
+                Track Your Journey
+              </h1>
+              <p className="mx-auto mt-3 max-w-[540px] px-1 text-sm text-white/80 sm:text-base">
                 Review your recently searched, viewed, saved, and contacted properties all in one place.
               </p>
             </div>
           </div>
         </div>
 
-        <div className="absolute left-0 right-0 top-[245px] z-20 w-full rounded-xl border border-[#EAECF0] bg-white p-4 sm:p-5">
+        <div className="relative z-20 -mt-14 w-full rounded-xl border border-[#EAECF0] bg-white p-4 shadow-sm sm:-mt-16 sm:p-5 md:-mt-[4.25rem]">
           <h3 className="text-[22px] font-semibold text-[#1E2236]">Filter</h3>
 
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-            <div className="flex flex-wrap items-center gap-2">
+          <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-3">
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
               {activityTabs.map((tab) => {
                 const isActive = tab.key === activeSection;
                 return (
@@ -559,7 +558,7 @@ export default function RecentlyViewedPageClient() {
               })}
             </div>
 
-            <div className="flex flex-wrap items-center gap-5 pr-1">
+            <div className="flex flex-wrap items-center gap-4 pr-1 sm:gap-5">
               {(["buy", "rent", "commercial"] as const).map((intent) => {
                 const isSelected = activeIntent === intent;
                 return (
@@ -584,10 +583,10 @@ export default function RecentlyViewedPageClient() {
         </div>
       </section>
 
-      <section className="mt-[90px] rounded-xl">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h2 className="text-xl font-semibold text-[#1E2236] sm:text-2xl">
+      <section className="mt-6 rounded-xl sm:mt-8 md:mt-10">
+        <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between sm:gap-3">
+          <div className="min-w-0">
+            <h2 className="text-lg font-semibold text-[#1E2236] sm:text-xl md:text-2xl">
               {isRecentlyViewedTab
                 ? "Your Recent Picks (Recently Viewed)"
                 : isRecentSearchTab
@@ -609,7 +608,7 @@ export default function RecentlyViewedPageClient() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2 self-end">
+          <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:self-end">
             {isRecentSearchTab ? (
               <>
                 <label htmlFor="search-sort" className="text-sm font-medium text-[#343A4F]">
@@ -712,7 +711,7 @@ export default function RecentlyViewedPageClient() {
             !(isRecentlyViewedTab && (isRecentlyViewedLoading || isRecentlyViewedError)) &&
             !(isContactedTab && (isContactedLoading || isContactedError)) &&
             !(isSavedTab && (isFavoritesLoading || isFavoritesError)) && (
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 1xl:grid-cols-4">
             {visibleProjects.map((project) => {
               const detailsHref = `/projects/${project.id}/${project.id}`;
               return (

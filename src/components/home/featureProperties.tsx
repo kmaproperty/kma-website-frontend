@@ -47,12 +47,12 @@ function Star({
   );
 }
 
-/** Same breakpoints we used in `responsive` (max-width style). */
+/** sm/md → lg → xl → 1xl+ (matches `globals.css` @theme tiers). */
 function getFeaturedSlidesToShow(viewportWidth: number, total: number): number {
   if (total <= 0) return 1;
   if (viewportWidth <= 640) return 1;
   if (viewportWidth <= 1024) return Math.min(2, total);
-  if (viewportWidth <= 1280) return Math.min(3, total);
+  if (viewportWidth < 1440) return Math.min(3, total);
   return Math.min(4, total);
 }
 

@@ -39,7 +39,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${ibmPlexSans.variable} antialiased`}
+        className={`${ibmPlexSans.variable} antialiased min-w-0 overflow-x-hidden`}
       >
         <script
           dangerouslySetInnerHTML={{

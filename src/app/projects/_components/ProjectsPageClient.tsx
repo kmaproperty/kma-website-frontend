@@ -1,7 +1,8 @@
 "use client";
 
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import { Search } from "lucide-react";
+import { createPortal } from "react-dom";
+import { Search, SlidersHorizontal, X } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import type { Project } from "../_types";
 import FiltersSidebar from "./FiltersSidebar";
@@ -192,6 +193,30 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
   } | null>(null);
   const [isLocating, setIsLocating] = useState(false);
   const [listingTypeId, setListingTypeId] = useState<string | null>(null);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [filtersPortalReady, setFiltersPortalReady] = useState(false);
+
+  useEffect(() => {
+    setFiltersPortalReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mobileFiltersOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [mobileFiltersOpen]);
+
+  useEffect(() => {
+    if (!mobileFiltersOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileFiltersOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [mobileFiltersOpen]);
 
   // Apply filters from URL query params (from homepage search / header dropdown)
   const searchParams = useSearchParams();
@@ -447,7 +472,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full min-w-0">
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="text-xs font-medium text-text-light-gray">
           Home <span className="px-1">/</span>
@@ -461,8 +486,8 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
             All Properties List
           </h1>
 
-          <div className="mt-4 flex flex-row space-between gap-3 rounded-[28px]  bg-white p-4  sm:p-5 lg:absolute lg:right-0 lg:top-15 lg:mt-0 lg:w-[73%] lg:max-w-[73%] lg:rounded-[34px_34px_0_0] lg:border-b-0">
-            <div className="relative w-[74%]">
+          <div className="mt-4 flex w-full flex-col gap-3 rounded-[28px] bg-white p-4 sm:flex-row sm:items-stretch sm:gap-3 sm:p-5 lg:absolute lg:right-0 lg:top-15 lg:mt-0 lg:w-[73%] lg:max-w-[73%] lg:flex-row lg:rounded-[34px_34px_0_0] lg:border-b-0">
+            <div className="relative min-w-0 flex-1">
               <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-text-gray" />
 
               <input
@@ -477,7 +502,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
               type="button"
               onClick={handleNearMeClick}
               disabled={isLocating}
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-border bg-background-gray px-6 text-sm font-medium text-text-gray transition hover:brightness-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/20"
+              className="inline-flex h-12 w-full shrink-0 items-center justify-center gap-2 rounded-full border border-border bg-background-gray px-4 text-sm font-medium text-text-gray transition hover:brightness-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/20 sm:w-auto sm:px-6"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g clipPath="url(#clip0_1_12821)">
@@ -496,11 +521,21 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-6 rounded-xl bg-white p-4 lg:mt-20 lg:grid-cols-[320px_1fr]">
-          <aside className="rounded-xl bg-[#f5f5f5] py-4 px-5 lg:sticky lg:top-6 lg:mt-0 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:overscroll-contain">
+          <aside className="hidden rounded-xl bg-[#f5f5f5] px-5 py-4 lg:block lg:sticky lg:top-6 lg:mt-0 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:overscroll-contain">
             <FiltersSidebar />
           </aside>
 
-          <main className="min-w-0 mt-2">
+          <main className="mt-2 min-w-0">
+            <div className="mb-4 flex items-center justify-between gap-3 lg:hidden">
+              <button
+                type="button"
+                onClick={() => setMobileFiltersOpen(true)}
+                className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-full border border-border bg-[#f5f5f5] px-4 text-sm font-semibold text-text-black shadow-sm transition hover:bg-[#ebebeb]"
+              >
+                <SlidersHorizontal className="h-4 w-4 shrink-0" aria-hidden />
+                Filters
+              </button>
+            </div>
             <div className="rounded-2xl p-4  sm:p-5">
               <div>
                 <ProjectsToolbar total={initialProjects.length} />
@@ -550,6 +585,47 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
           </main>
         </div>
       </section>
+
+      {filtersPortalReady &&
+        mobileFiltersOpen &&
+        createPortal(
+          <div className="fixed inset-0 z-[200] lg:hidden" role="dialog" aria-modal="true" aria-labelledby="mobile-filters-title">
+            <button
+              type="button"
+              className="absolute inset-0 bg-black/50"
+              aria-label="Close filters"
+              onClick={() => setMobileFiltersOpen(false)}
+            />
+            <div className="absolute inset-x-0 bottom-0 flex max-h-[min(90dvh,920px)] flex-col rounded-t-2xl bg-[#f5f5f5] shadow-[0_-8px_30px_rgba(0,0,0,0.12)]">
+              <div className="flex shrink-0 items-center justify-between border-b border-border px-4 py-3 pt-4">
+                <h2 id="mobile-filters-title" className="text-lg font-semibold text-text-black">
+                  Filters
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => setMobileFiltersOpen(false)}
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full text-text-black transition hover:bg-black/5"
+                  aria-label="Close"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-4 [padding-bottom:max(1rem,env(safe-area-inset-bottom))]">
+                <FiltersSidebar />
+              </div>
+              <div className="shrink-0 border-t border-border bg-white p-4 [padding-bottom:max(1rem,env(safe-area-inset-bottom))]">
+                <button
+                  type="button"
+                  onClick={() => setMobileFiltersOpen(false)}
+                  className="h-12 w-full rounded-full bg-blue text-sm font-semibold text-white transition hover:opacity-95"
+                >
+                  Show results
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 }

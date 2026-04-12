@@ -282,7 +282,7 @@ export default function EditProfileScreen() {
   return (
     <section className="w-full rounded-2xl bg-[#F5F5F5] p-3 sm:p-5 lg:p-6 shadow-[0_8px_30px_rgba(17,24,39,0.08)]">
       <div className="flex flex-col gap-5 lg:flex-row">
-        <aside className="w-full rounded-2xl bg-[#EFEFEF] p-4 lg:w-[240px]">
+        <aside className="w-full min-w-0 shrink-0 rounded-2xl bg-[#EFEFEF] p-4 lg:w-[240px]">
           <div className="flex flex-col items-center border-b border-border pb-5">
             {tokenPending || (isLoggedIn && profileLoading) ? (
               <div className="flex h-[78px] w-[78px] animate-pulse items-center justify-center rounded-full bg-white shadow-sm" />
@@ -376,7 +376,7 @@ export default function EditProfileScreen() {
           )}
         </aside>
 
-        <div className="flex-1">{renderContent()}</div>
+        <div className="min-w-0 flex-1">{renderContent()}</div>
       </div>
     </section>
   );
