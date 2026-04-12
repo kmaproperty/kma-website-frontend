@@ -35,11 +35,17 @@ export default function middleware(req: NextRequest) {
     if (accessToken && pathname === "/user-flow") {
       const payload = decodeJwtPayload(accessToken);
       const role = payload?.role as string | undefined;
-      // END_USER should not be on seller app — redirect to buyer site
-      if (role === "END_USER" || role === "USER") {
+      const isPostPropertyFlow = searchParams.get("postProperty") === "true";
+      // END_USER can access /user-flow ONLY for post-property registration (upgrade to Owner/CP)
+      if ((role === "END_USER" || role === "USER") && !isPostPropertyFlow) {
         return NextResponse.redirect(buyerUrl);
       }
-      return NextResponse.redirect(new URL("/user-dashboard", req.url));
+      // Owner/CP already logged in → go to dashboard
+      if (role !== "END_USER" && role !== "USER") {
+        return NextResponse.redirect(new URL("/user-dashboard", req.url));
+      }
+      // END_USER with postProperty=true → show registration form
+      return NextResponse.next();
     }
     return NextResponse.next();
   }
