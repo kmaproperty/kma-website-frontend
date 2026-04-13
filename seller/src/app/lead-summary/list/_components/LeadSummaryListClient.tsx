@@ -229,7 +229,6 @@ export default function LeadSummaryListClient() {
         body: JSON.stringify(payload),
       });
       const result = await response.json();
-      console.log("CRM sync success", result);
     } catch (error) {
       console.error("Failed to sync lead to CRM", error);
     } finally {
