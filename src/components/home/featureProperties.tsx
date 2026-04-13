@@ -135,7 +135,6 @@ export default function FeaturedProperties({ topProperties }) {
         >
           {filteredProperties.map((item, index) => {
             const img = item?.imageUrl || (item?.images?.length > 0 ? item.images[0]?.url : null);
-            const size = item?.units?.length > 0 ? item.units[0]?.size : null;
             const ratingNumber = Math.max(
               0,
               Math.min(5, Number.parseFloat(String(item?.rating ?? "5")) || 0)
@@ -150,12 +149,12 @@ export default function FeaturedProperties({ topProperties }) {
             return (
               <motion.div
                 key={item?.id ?? index}
-                className="px-2 sm:px-1.5 w-full min-w-0 max-w-full h-[500px]"
+                className="px-2 sm:px-1.5 w-full min-w-0 max-w-full h-auto sm:h-[500px]"
                 variants={index == 0 || index == 1 ? topVariant : bottomVariant}
                 animate={isInView ? "visible" : "hidden"}
               >
-                <div onClick={() => item?.cityId && item?.id ? router.push(`/projects/${item.cityId}/${item.id}`) : null} className="h-full w-full rounded-[10px] border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 overflow-hidden cursor-pointer">
-                  <div className="h-full flex flex-col">
+                <div onClick={() => item?.cityId && item?.id ? router.push(`/projects/${item.cityId}/${item.id}`) : null} className="h-auto min-h-0 sm:h-full w-full rounded-[10px] border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 overflow-hidden cursor-pointer">
+                  <div className="flex h-auto min-h-0 flex-col sm:h-full">
                     {/* IMAGE */}
                     <div className="relative">
                       {img ? (
@@ -196,7 +195,7 @@ export default function FeaturedProperties({ topProperties }) {
                     </div>
 
                     {/* CONTENT */}
-                    <div className="flex flex-1 min-h-0 flex-col px-4 pb-4 pt-8 gap-2 overflow-hidden">
+                    <div className="flex flex-col gap-2 overflow-hidden px-3 pb-3 pt-6 sm:flex-1 sm:min-h-0 sm:px-4 sm:pb-4 sm:pt-8">
                       {/* Rating + Like */}
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -236,7 +235,7 @@ export default function FeaturedProperties({ topProperties }) {
                       </div>
 
                       {/* Title + Address */}
-                      <div className="min-h-[56px]">
+                      <div className="min-h-0 sm:min-h-[56px]">
                         <p className="text-lg font-semibold leading-snug text-text-black line-clamp-2">
                           {item?.propertyName}
                         </p>
@@ -261,7 +260,7 @@ export default function FeaturedProperties({ topProperties }) {
                       </div>
 
                       {/* Meta */}
-                      <div className="mt-1 border-t border-slate-200 pt-3 text-xs">
+                      <div className="mt-1 border-t border-slate-200 pt-2 text-xs sm:pt-3">
                         <div className="flex items-center gap-2">
                           <span className="text-text-gray">Listed on :</span>
                           <span className="text-text-black">25 May 2025</span>
@@ -278,57 +277,42 @@ export default function FeaturedProperties({ topProperties }) {
                         ) : null}
                       </div>
 
-                      {/* Amenities */}
-                      <div className="mt-2 border-t border-slate-200 pt-3">
-                        <div className="flex flex-wrap gap-3">
-                          {![
-                            "Office",
-                            "Plot",
-                            "Retail Shop",
-                            "Warehouse",
-                            "Showroom",
-                            "Agricultural Land",
-                          ].includes(item?.propertyType) ? (
-                            <>
-                              <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-2.5 py-1.5 text-xs text-text-black border border-slate-200">
-                                <Image
-                                  src={"/assets/property/bad.svg"}
-                                  width={16}
-                                  height={16}
-                                  alt="bed"
-                                />
-                                <span className="whitespace-nowrap">
-                                  {item?.bed} Bed
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-2.5 py-1.5 text-xs text-text-black border border-slate-200">
-                                <Image
-                                  src={"/assets/property/bathroom.svg"}
-                                  width={16}
-                                  height={16}
-                                  alt="bath"
-                                />
-                                <span className="whitespace-nowrap">
-                                  {item?.bath} Bath
-                                </span>
-                              </div>
-                            </>
-                          ) : null}
-
-                          {/* {size ? (
-                            <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-2.5 py-1.5 text-xs text-text-black border border-slate-200 max-w-full">
+                      {/* Amenities (skip empty block for commercial / land types) */}
+                      {![
+                        "Office",
+                        "Plot",
+                        "Retail Shop",
+                        "Warehouse",
+                        "Showroom",
+                        "Agricultural Land",
+                      ].includes(item?.propertyType) ? (
+                        <div className="mt-2 border-t border-slate-200 pt-2 sm:pt-3">
+                          <div className="flex flex-wrap gap-3">
+                            <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-2.5 py-1.5 text-xs text-text-black border border-slate-200">
                               <Image
-                                src={"/assets/property/major-white.svg"}
+                                src={"/assets/property/bad.svg"}
                                 width={16}
                                 height={16}
-                                alt="size"
-                                className="invert"
+                                alt="bed"
                               />
-                              <span className="truncate">{size}</span>
+                              <span className="whitespace-nowrap">
+                                {item?.bed} Bed
+                              </span>
                             </div>
-                          ) : null} */}
+                            <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-2.5 py-1.5 text-xs text-text-black border border-slate-200">
+                              <Image
+                                src={"/assets/property/bathroom.svg"}
+                                width={16}
+                                height={16}
+                                alt="bath"
+                              />
+                              <span className="whitespace-nowrap">
+                                {item?.bath} Bath
+                              </span>
+                            </div>
+                          </div>
                         </div>
-                      </div>
+                      ) : null}
                     </div>
                   </div>
                 </div>
@@ -340,7 +324,7 @@ export default function FeaturedProperties({ topProperties }) {
 
       {/* ---------- CONTROLS ---------- */}
       <motion.div
-        className="mt-10 flex flex-wrap justify-center sm:justify-end gap-4 sm:gap-6"
+        className="mt-6 flex w-full flex-wrap justify-end gap-3 sm:mt-10 sm:gap-6"
         variants={bottomVariant}
         animate={isInView ? "visible" : "hidden"}
       >

@@ -1,12 +1,13 @@
 "use client";
 import Image from "next/image";
 import SectionHeader from "../common/home/secionHeader";
-import { delay, motion, useInView } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   getUserReviewApiHandler,
   GetUserReviewApiHandlerResponse,
+  type Rating,
 } from "@/services/homeService";
 import Link from "next/link";
 
@@ -89,6 +90,64 @@ const topVariant = {
   },
 };
 
+function SuccessStoryCard({
+  item,
+  profileBaseUrl,
+  isInView,
+}: {
+  item: Rating;
+  profileBaseUrl: string | undefined;
+  isInView: boolean;
+}) {
+  return (
+    <motion.div
+      className="flex h-full min-w-0 flex-col items-start gap-2 rounded-[8px] bg-white p-3 shadow-sm ring-1 ring-slate-200/70 2md:p-4"
+      variants={topVariant}
+      animate={isInView ? "visible" : "hidden"}
+    >
+      <Image
+        src={"/assets/stories/quote.svg"}
+        width={20}
+        height={20}
+        alt="quote"
+        className="shrink-0"
+      />
+      <RatingStars rating={Number(item.rating)} total={5} />
+      <p className="min-h-0 text-sm leading-snug text-text-gray line-clamp-3 2md:line-clamp-2">
+        {item.review}
+      </p>
+      <div className="mt-auto flex w-full min-w-0 items-center gap-2">
+        {item.endUser?.profileImage ? (
+          <Image
+            src={(profileBaseUrl ?? "") + item.endUser.profileImage}
+            width={28}
+            height={28}
+            alt="profile"
+            className="shrink-0 rounded-full object-cover"
+          />
+        ) : (
+          <div
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-300 text-xs font-semibold uppercase text-gray-700 2md:h-[35px] 2md:w-[35px] 2md:text-sm"
+          >
+            {item.name?.charAt(0)}
+          </div>
+        )}
+        <p className="min-w-0 flex-1 truncate font-medium text-sm text-text-black">
+          {item.name}
+        </p>
+        <Image
+          src={"/assets/stories/dot.svg"}
+          width={5}
+          height={5}
+          alt=""
+          className="shrink-0"
+        />
+        <p className="shrink-0 text-sm text-text-gray">India</p>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function SuccessStoriesSection() {
   const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
   const ref = useRef(null);
@@ -159,123 +218,40 @@ export default function SuccessStoriesSection() {
               </div>
             </div>
           </motion.div>
-          <div className="flex gap-4 col-span-2">
-            <div className="flex flex-1 flex-col gap-4">
-              {reviewData?.reviews?.slice(0, 2).map((item) => {
-                return (
-                  <motion.div
-                    className="bg-white rounded-[8px] p-4 flex flex-col items-start gap-2"
-                    variants={topVariant}
-                    animate={isInView ? "visible" : "hidden"}
-                  >
-                    <Image
-                      src={"/assets/stories/quote.svg"}
-                      width={20}
-                      height={20}
-                      alt="quote"
-                    />
-                    <RatingStars rating={Number(item.rating)} total={5} />
-                    <p className="text-sm text-text-gray line-clamp-2">
-                      {item.review}
-                    </p>
-                    <div className="flex justify-start items-center gap-2">
-                      {item.endUser?.profileImage ? (
-                        <Image
-                          src={profileBaseUrl + item.endUser?.profileImage}
-                          width={28}
-                          height={28}
-                          alt="profile"
-                          className="rounded-full object-cover"
-                        />
-                      ) : (
-                        <div
-                          className="
-                          h-[35px] w-[35px]
-                          rounded-full
-                          bg-gray-300
-                          flex items-center justify-center
-                          text-sm font-semibold text-gray-700
-                          uppercase
-                          "
-                        >
-                          {item.name?.charAt(0)}
-                        </div>
-                      )}
-                      <p className="text-text-black font-medium text-sm">
-                        {item.name}
-                      </p>
-                      <Image
-                        src={"/assets/stories/dot.svg"}
-                        width={5}
-                        height={5}
-                        alt="dot"
-                      />
-                      <p className="text-text-gray text-sm">India</p>
-                    </div>
-                  </motion.div>
-                );
-              })}
+          <div className="col-span-1 min-w-0 pb-12 2md:col-span-2 2md:pb-0">
+            {/* Mobile: single 2×2 grid — avoids right-column mt-4 stagger */}
+            <div className="grid grid-cols-2 gap-3 2md:hidden">
+              {(reviewData?.reviews ?? []).slice(0, 4).map((item) => (
+                <SuccessStoryCard
+                  key={item.id}
+                  item={item}
+                  profileBaseUrl={profileBaseUrl}
+                  isInView={isInView}
+                />
+              ))}
             </div>
-            <div className="flex flex-1 flex-col gap-4 mt-4">
-              {reviewData?.reviews?.slice(2, 4).map((item) => {
-                return (
-                  <motion.div
-                    className="bg-white rounded-[8px] p-4 flex flex-col items-start gap-2"
-                    variants={topVariant}
-                    animate={isInView ? "visible" : "hidden"}
-                  >
-                    <Image
-                      src={"/assets/stories/quote.svg"}
-                      width={20}
-                      height={20}
-                      alt="quote"
-                    />
-                    {/* <div className="flex">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} />
-                  ))}
-                </div> */}
-                    <RatingStars rating={Number(item.rating)} total={5} />
-                    <p className="text-sm text-text-gray line-clamp-2">
-                      {item.review}
-                    </p>
-                    <div className="flex justify-start items-center gap-2">
-                      {item.endUser?.profileImage ? (
-                        <Image
-                          src={profileBaseUrl + item.endUser?.profileImage}
-                          width={28}
-                          height={28}
-                          alt="profile"
-                          className="rounded-full object-cover"
-                        />
-                      ) : (
-                        <div
-                          className="
-                          h-[35px] w-[35px]
-                          rounded-full
-                          bg-gray-300
-                          flex items-center justify-center
-                          text-sm font-semibold text-gray-700
-                          uppercase
-                          "
-                        >
-                          {item.name?.charAt(0)}
-                        </div>
-                      )}
-                      <p className="text-text-black font-medium text-sm">
-                        {item.name}
-                      </p>
-                      <Image
-                        src={"/assets/stories/dot.svg"}
-                        width={5}
-                        height={5}
-                        alt="dot"
-                      />
-                      <p className="text-text-gray text-sm">India</p>
-                    </div>
-                  </motion.div>
-                );
-              })}
+            {/* Desktop: two columns, slight vertical offset on right */}
+            <div className="hidden items-start gap-4 2md:flex">
+              <div className="flex min-w-0 flex-1 flex-col gap-4">
+                {(reviewData?.reviews ?? []).slice(0, 2).map((item) => (
+                  <SuccessStoryCard
+                    key={item.id}
+                    item={item}
+                    profileBaseUrl={profileBaseUrl}
+                    isInView={isInView}
+                  />
+                ))}
+              </div>
+              <div className="mt-4 flex min-w-0 flex-1 flex-col gap-4">
+                {(reviewData?.reviews ?? []).slice(2, 4).map((item) => (
+                  <SuccessStoryCard
+                    key={item.id}
+                    item={item}
+                    profileBaseUrl={profileBaseUrl}
+                    isInView={isInView}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </div>
