@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import {
   ArrowLeft,
   ArrowRight,
@@ -41,6 +41,9 @@ import { FAVORITE_PROPERTIES_QUERY_KEY } from "@/api/hooks/useFavoriteProperties
 import MainLayout from "@/components/layouts/BuyerMainLayout";
 import { useProjectsStore } from "@/app/projects/_store/useProjectsStore";
 import { useRouter } from "nextjs-toploader/app";
+import { useSelector } from "react-redux";
+import { getPropertyMasterData } from "@/store/homeHeaderSlice";
+import { buildProjectsRouteLabels } from "@/app/projects/_utils/routeLabels";
 
 const placeholderImage = "";
 
@@ -141,6 +144,16 @@ const formatListedOn = (dateStr: string) => {
 export default function ListingDetailsPage() {
   const router = useRouter();
   const params = useParams<{ projectId: string; listingId: string }>();
+  const searchParams = useSearchParams();
+  const propertyMasterData = useSelector(getPropertyMasterData) as Array<{
+    id?: string;
+    code?: string;
+    categories?: Array<{
+      id?: string;
+      code?: string;
+      propertyTypes?: Array<{ id?: string; name?: string }>;
+    }>;
+  }>;
   const listingId = params?.listingId ?? "";
   const { data: detailsResponse, isPending, isError, error } = usePropertyDetails({
     id: listingId,
@@ -239,6 +252,30 @@ export default function ListingDetailsPage() {
     "";
   const propertyDescription =
     asString(propertyDetails?.description) ?? "";
+
+  const routeLabels = useMemo(() => {
+    const propertyTypeIds = (
+      searchParams.get("propertyTypeIds")?.split(",").filter(Boolean) ?? []
+    ) as string[];
+    const singlePropertyTypeId = searchParams.get("propertyTypeId");
+    if (singlePropertyTypeId && !propertyTypeIds.includes(singlePropertyTypeId)) {
+      propertyTypeIds.push(singlePropertyTypeId);
+    }
+
+    const categoryId = searchParams.get("categoryIds")?.split(",").filter(Boolean)[0] ?? null;
+    const cityName =
+      asString(propertyDetails?.cityName) ??
+      asString(detailsResponse?.location?.city) ??
+      undefined;
+
+    return buildProjectsRouteLabels({
+      cityName,
+      listingTypeId: searchParams.get("listingTypeId"),
+      categoryId,
+      propertyTypeIds,
+      propertyMasterData,
+    });
+  }, [searchParams, propertyDetails?.cityName, detailsResponse?.location?.city, propertyMasterData]);
 
   const monthlyRent = asNumber(propertyDetails?.monthlyRent);
   const salePrice = asNumber(propertyDetails?.price);
@@ -466,7 +503,7 @@ export default function ListingDetailsPage() {
 
       <div className="pt-10 pb-6">
         <div className="text-sm text-white absolute top-35 left-62">
-          Home / {propertyTitle}
+          Home / {routeLabels.breadcrumbLabel} / {propertyTitle}
         </div>
         <h2 className="text-4xl mb-8 rounded-lg font-semibold text-white">
           Property Details

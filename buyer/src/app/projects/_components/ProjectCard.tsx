@@ -282,6 +282,10 @@ export default function ProjectCard({
   const detailsHref = activeProjectId
     ? `/projects/${activeProjectId}/${project.id}`
     : `/projects/all/${project.id}`;
+  const currentListingQuery = searchParams.toString();
+  const detailsHrefWithQuery = currentListingQuery
+    ? `${detailsHref}?${currentListingQuery}`
+    : detailsHref;
 
   const shouldSkipCardNavigation = (target: EventTarget | null) => {
     if (!(target instanceof HTMLElement)) {
@@ -300,7 +304,7 @@ export default function ProjectCard({
       return;
     }
 
-    router.push(detailsHref);
+    router.push(detailsHrefWithQuery);
   };
 
   const handleCardKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -312,7 +316,7 @@ export default function ProjectCard({
     }
 
     event.preventDefault();
-    router.push(detailsHref);
+    router.push(detailsHrefWithQuery);
   };
 
   return (
@@ -430,7 +434,7 @@ export default function ProjectCard({
 
           <div className="mt-3" onClick={handleCardClick}>
             <Link
-              href={detailsHref}
+              href={detailsHrefWithQuery}
               className="inline-flex h-8 items-center justify-center rounded-full bg-[#E4E4E8] px-4 text-sm font-medium text-[#262B58] transition hover:bg-[#d9d9df] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/30"
             >
               Read More
