@@ -45,9 +45,35 @@ export default function Filter() {
   const [citySelectionError, setCitySelectionError] = useState(false)
   const [suggestOpen, setSuggestOpen] = useState(false)
 
+  const suggestFilters = useMemo(() => {
+    const masterData = Array.isArray(propertyMasterData) ? propertyMasterData : [];
+    const filters: { listingTypeId?: string; categoryId?: string; propertyTypeIds?: string } = {};
+    if (filterType === 'sale' || filterType === 'rent') {
+      const lt = masterData.find((item: any) => item.code === filterType);
+      if (lt?.id) filters.listingTypeId = lt.id;
+    } else if (filterType === 'commercial') {
+      for (const lt of masterData) {
+        const cat = (lt as any).categories?.find((c: any) => c.code === 'commercial');
+        if (cat) { filters.categoryId = cat.id; break; }
+      }
+    } else if (filterType === 'plot_land') {
+      const plotIds: string[] = [];
+      for (const lt of masterData) {
+        for (const cat of ((lt as any).categories ?? [])) {
+          for (const pt of (cat.propertyTypes ?? [])) {
+            const name = pt.name?.toLowerCase() ?? '';
+            if (name.includes('plot') || name.includes('land') || name.includes('agricultural')) plotIds.push(pt.id);
+          }
+        }
+      }
+      if (plotIds.length > 0) filters.propertyTypeIds = plotIds.join(',');
+    }
+    return filters;
+  }, [filterType, propertyMasterData])
+
   const { data: suggestData } = useQuery({
-    queryKey: ['search-suggest', deferredSearch],
-    queryFn: () => searchSuggestApiHandler(deferredSearch.trim(), 6),
+    queryKey: ['search-suggest', deferredSearch, suggestFilters.listingTypeId, suggestFilters.categoryId, suggestFilters.propertyTypeIds],
+    queryFn: () => searchSuggestApiHandler(deferredSearch.trim(), 6, suggestFilters),
     enabled: deferredSearch.trim().length >= 1,
     staleTime: 30_000,
   })

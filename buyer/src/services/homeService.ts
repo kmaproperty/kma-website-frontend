@@ -32,10 +32,20 @@ export interface SearchSuggestResponse {
   societies: SearchSuggestSociety[];
 }
 
-export const searchSuggestApiHandler = async (q: string, limit = 8): Promise<SearchSuggestResponse> => {
+export interface SearchSuggestFilters {
+  listingTypeId?: string;
+  categoryId?: string;
+  propertyTypeIds?: string;
+}
+
+export const searchSuggestApiHandler = async (
+  q: string,
+  limit = 8,
+  filters: SearchSuggestFilters = {},
+): Promise<SearchSuggestResponse> => {
   try {
     const response = await axiosInstance.get<SearchSuggestResponse>("end-user/search-suggest", {
-      params: { q, limit },
+      params: { q, limit, ...filters },
     });
     return response.data;
   } catch (error: any) {
