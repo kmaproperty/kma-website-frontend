@@ -22,6 +22,27 @@ export interface CitiesResponse {
   detectedCity: City | null;
 }
 
+export interface SearchSuggestCity { id: string; name: string; state: string | null }
+export interface SearchSuggestLocality { id: string; name: string; cityId: string; cityName: string | null }
+export interface SearchSuggestSociety { id: string; name: string; cityId: string | null; cityName: string | null; localityName: string | null }
+export interface SearchSuggestResponse {
+  success: boolean;
+  cities: SearchSuggestCity[];
+  localities: SearchSuggestLocality[];
+  societies: SearchSuggestSociety[];
+}
+
+export const searchSuggestApiHandler = async (q: string, limit = 8): Promise<SearchSuggestResponse> => {
+  try {
+    const response = await axiosInstance.get<SearchSuggestResponse>("end-user/search-suggest", {
+      params: { q, limit },
+    });
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data ?? error;
+  }
+};
+
 export const getCityListApiHandler = async ({search, latitude, longitude}: CitiesPayload) : Promise<CitiesResponse> => {
     try{
         const response = await axiosInstance.get<CitiesResponse>(
