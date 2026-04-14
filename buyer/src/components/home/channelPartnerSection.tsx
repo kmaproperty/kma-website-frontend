@@ -69,7 +69,6 @@ export default function ChannelPartnerSection({
   const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
-
   const [openContact, setOpenContact] = useState(false);
 
   const list = Array.isArray(channelPartnerList) ? channelPartnerList : [];
@@ -170,7 +169,10 @@ export default function ChannelPartnerSection({
                 )}
 
                 <button
-                  onClick={(e) => { e.stopPropagation(); setOpenContact(true); }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setOpenContact(true);
+                  }}
                   className="animated-button mt-4 w-full py-3 px-6 cursor-pointer"
                 >
                   <span className="flex items-center justify-center gap-2 relative z-11">

@@ -16,7 +16,10 @@ interface ArrowProps {
 const Arrow: React.FC<ArrowProps> = ({ onClick, disabled, direction }) => {
   return (
     <button
-      onClick={onClick}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick?.(e);
+      }}
       disabled={disabled}
       className={`cursor-pointer absolute top-1/2 -translate-y-1/2 z-10 
         ${direction === "left" ? "left-2" : "right-2"}
@@ -43,6 +46,9 @@ const Arrow: React.FC<ArrowProps> = ({ onClick, disabled, direction }) => {
 export default function ListCard({data, handleManage}: {data: ListingItem, handleManage: (id) => void}) {
     let imgBaseUrl = process.env.NEXT_PUBLIC_AWS_URL
   const [currentSlide, setCurrentSlide] = useState(0);
+    const openManage = () => {
+      handleManage(data.id)
+    }
     const getStatusColor = (status) => {
       return propertyStatusColor.find(item => item.status == status) ?? null
     }
@@ -69,7 +75,18 @@ export default function ListCard({data, handleManage}: {data: ListingItem, handl
   };
 
   return (
-    <div className="flex flex-col lg:h-[200px] lg:flex-row items-center bg-[#F2F2F2] rounded-[10px] px-2 gap-5 py-2">
+    <div
+      className="flex flex-col lg:h-[200px] lg:flex-row items-center bg-[#F2F2F2] rounded-[10px] px-2 gap-5 py-2 cursor-pointer"
+      role="button"
+      tabIndex={0}
+      onClick={openManage}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openManage();
+        }
+      }}
+    >
       <div className="relative w-[260px] lg:h-full rounded-[5px] overflow-hidden property-slider">
         <Slider {...settings}>
           {data?.photos?.map((img, index) => (
@@ -121,8 +138,9 @@ export default function ListCard({data, handleManage}: {data: ListingItem, handl
           <p className="text-blue text-base lg:text-sm">
             <span className="text-text-gray text-sm">created on: </span> {moment(data.createdAt).format('DD MMM YYYY')}
           </p>
-          <button onClick={() => {
-            handleManage(data.id)
+          <button onClick={(e) => {
+            e.stopPropagation();
+            openManage()
           }} className="cursor-pointer flex gap-2 items-center underline font-medium text-blue text-base">
             Manage <img src="/assets/long-arrow-blue.svg" />
           </button>

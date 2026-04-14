@@ -1,7 +1,7 @@
 "use client";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Slider from "react-slick";
 import { motion, useInView } from "framer-motion";
 import SectionHeader from "../common/home/secionHeader";
@@ -55,6 +55,7 @@ export default function FeaturedProperties({ topProperties }) {
   const isInView = useInView(ref, { once: true });
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
   const [listingFilter, setListingFilter] = useState<"Sale" | "Rent">("Sale");
+  const [visibleSlides, setVisibleSlides] = useState(4);
 
   const filteredProperties = (topProperties ?? []).filter((item: any) => {
     if (!item?.listingType) return true;
@@ -79,6 +80,34 @@ export default function FeaturedProperties({ topProperties }) {
   };
 
   const slidesCount = filteredProperties.length;
+  const shouldShowArrows = slidesCount > visibleSlides;
+
+  useEffect(() => {
+    const updateVisibleSlides = () => {
+      const width = window.innerWidth;
+      if (width < 640) {
+        setVisibleSlides(1);
+        return;
+      }
+      if (width < 1024) {
+        setVisibleSlides(2);
+        return;
+      }
+      if (width < 1280) {
+        setVisibleSlides(3);
+        return;
+      }
+      setVisibleSlides(4);
+    };
+
+    updateVisibleSlides();
+    window.addEventListener("resize", updateVisibleSlides);
+
+    return () => {
+      window.removeEventListener("resize", updateVisibleSlides);
+    };
+  }, []);
+
   const settings = {
     slidesToShow: Math.min(4, slidesCount),
     slidesToScroll: 1,
@@ -317,36 +346,42 @@ export default function FeaturedProperties({ topProperties }) {
         animate={isInView ? "visible" : "hidden"}
       >
         <div className="flex gap-3">
-          <button
-            type="button"
-            onClick={() => sliderRef.current?.slickPrev()}
-            className="bg-blue text-white cursor-pointer w-8 h-8 rounded-full flex justify-center"
-          >
-            <Image
-              src="/assets/explore/left-arrow.svg"
-              alt="left-arrow"
-              width={14}
-              height={14}
-            />
-          </button>
+          {shouldShowArrows ? (
+            <>
+              <button
+                type="button"
+                onClick={() => sliderRef.current?.slickPrev()}
+                className="bg-blue text-white cursor-pointer w-8 h-8 rounded-full flex justify-center"
+              >
+                <Image
+                  src="/assets/explore/left-arrow.svg"
+                  alt="left-arrow"
+                  width={14}
+                  height={14}
+                />
+              </button>
 
-          <button
-            type="button"
-            onClick={() => sliderRef.current?.slickNext()}
-            className="bg-blue text-white cursor-pointer w-8 h-8 rounded-full flex justify-center"
-          >
-            <Image
-              src="/assets/explore/right-arrow.svg"
-              alt="left-arrow"
-              width={14}
-              height={14}
-            />
-          </button>
-          <button onClick={() => router.push('/projects')} className="w-auto text-xs 1xl:text-sm animated-button px-6 py-1.5 border border-blue text-center cursor-pointer">
-            <span className="gap-3 relative flex justify-center">
-              <p className={`text-nowrap`}>All View</p>
-            </span>
-          </button>
+              <button
+                type="button"
+                onClick={() => sliderRef.current?.slickNext()}
+                className="bg-blue text-white cursor-pointer w-8 h-8 rounded-full flex justify-center"
+              >
+                <Image
+                  src="/assets/explore/right-arrow.svg"
+                  alt="left-arrow"
+                  width={14}
+                  height={14}
+                />
+              </button>
+            </>
+          ) : null}
+          {shouldShowArrows ? (
+            <button onClick={() => router.push('/projects')} className="w-auto text-xs 1xl:text-sm animated-button px-6 py-1.5 border border-blue text-center cursor-pointer">
+              <span className="gap-3 relative flex justify-center">
+                <p className={`text-nowrap`}>View All</p>
+              </span>
+            </button>
+          ) : null}
         </div>
       </motion.div>
     </div>

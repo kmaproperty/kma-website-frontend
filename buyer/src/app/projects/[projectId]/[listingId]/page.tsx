@@ -126,6 +126,23 @@ const localityCategories = [
   { key: "restaurants", label: "Restaurants", icon: UtensilsCrossed },
 ] as const;
 
+type ListingSectionId =
+  | "overview"
+  | "furnishing"
+  | "locality"
+  | "amenities"
+  | "channel-partner-details"
+  | "ratings-and-reviews";
+
+const listingSectionTabs: Array<{ id: ListingSectionId; label: string }> = [
+  { id: "overview", label: "Overview" },
+  { id: "furnishing", label: "Furnishing" },
+  { id: "locality", label: "Locality" },
+  { id: "amenities", label: "Amenities" },
+  { id: "channel-partner-details", label: "Channel Partner Details" },
+  { id: "ratings-and-reviews", label: "Ratings and Reviews" },
+];
+
 
 
 
@@ -356,6 +373,20 @@ export default function ListingDetailsPage() {
   const reviewsPerPage = 3;
   const totalReviewPages = Math.ceil(resolvedReviews.length / reviewsPerPage);
   const [activeReviewPage, setActiveReviewPage] = useState(0);
+  const [activeSectionTab, setActiveSectionTab] = useState<ListingSectionId>("overview");
+  const tabsNavRef = useRef<HTMLElement | null>(null);
+  const sectionRefs = useRef<Record<ListingSectionId, HTMLElement | null>>({
+    overview: null,
+    furnishing: null,
+    locality: null,
+    amenities: null,
+    "channel-partner-details": null,
+    "ratings-and-reviews": null,
+  });
+
+  const setSectionRef = (sectionId: ListingSectionId) => (element: HTMLElement | null) => {
+    sectionRefs.current[sectionId] = element;
+  };
 
   const currentReviews = useMemo(() => {
     const start = activeReviewPage * reviewsPerPage;
@@ -442,6 +473,74 @@ export default function ListingDetailsPage() {
     Record<string, Array<{ name: string; distance: string }>>
   >({});
   const [nearbyLoading, setNearbyLoading] = useState(false);
+
+  const furnishingsCounts = Array.isArray(propertyDetails?.furnishingsCounts)
+    ? (propertyDetails.furnishingsCounts as Array<{ item: string; count: number }>)
+    : [];
+  const amenitiesList = Array.isArray(propertyDetails?.amenitiesList)
+    ? (propertyDetails.amenitiesList as string[])
+    : [];
+  const hasFurnishingSection = furnishingsCounts.length > 0;
+  const hasAmenitiesSection = amenitiesList.length > 0;
+
+  const availableSectionTabs = useMemo(
+    () =>
+      listingSectionTabs.filter((tab) => {
+        if (tab.id === "furnishing") return hasFurnishingSection;
+        if (tab.id === "amenities") return hasAmenitiesSection;
+        return true;
+      }),
+    [hasAmenitiesSection, hasFurnishingSection],
+  );
+
+  useEffect(() => {
+    if (!availableSectionTabs.some((tab) => tab.id === activeSectionTab)) {
+      setActiveSectionTab(availableSectionTabs[0]?.id ?? "overview");
+    }
+  }, [activeSectionTab, availableSectionTabs]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntries = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+        const topVisibleSection = visibleEntries[0]?.target.id as ListingSectionId | undefined;
+        if (topVisibleSection) {
+          setActiveSectionTab(topVisibleSection);
+        }
+      },
+      {
+        root: null,
+        rootMargin: "-160px 0px -55% 0px",
+        threshold: [0.2, 0.4, 0.6],
+      },
+    );
+
+    const sectionsToObserve = availableSectionTabs
+      .map((tab) => sectionRefs.current[tab.id])
+      .filter((section): section is HTMLElement => Boolean(section));
+
+    sectionsToObserve.forEach((section) => observer.observe(section));
+
+    return () => observer.disconnect();
+  }, [availableSectionTabs]);
+
+  const scrollToSection = (sectionId: ListingSectionId) => {
+    const section = sectionRefs.current[sectionId];
+    if (!section) return;
+
+    const navHeight = tabsNavRef.current?.offsetHeight ?? 0;
+    const absoluteTop = section.getBoundingClientRect().top + window.scrollY;
+    const pageTopOffset = navHeight + 96;
+
+    window.scrollTo({
+      top: Math.max(0, absoluteTop - pageTopOffset),
+      behavior: "smooth",
+    });
+    setActiveSectionTab(sectionId);
+  };
 
   useEffect(() => {
     if (!lat || !lng) return;
@@ -595,25 +694,22 @@ export default function ListingDetailsPage() {
             </div>
 
             <div className="mt-4 border-b border-border bg-background-gray rounded-sm p-5">
-              <nav className=" overflow-x-auto rounded-md bg-white text-sm">
+              <nav
+                ref={tabsNavRef}
+                className="sticky top-0 z-20 overflow-x-auto rounded-md bg-white text-sm"
+              >
                 <div className="flex w-max min-w-full items-center">
-                  {[
-                    "Overview",
-                    "Furnishing",
-                    "Locality",
-                    "Amenities",
-                    "Channel Partner Details",
-                    "Ratings and Reviews",
-                  ].map((item, idx) => (
+                  {availableSectionTabs.map((tab) => (
                     <button
-                      key={item}
+                      key={tab.id}
                       type="button"
-                      className={`whitespace-nowrap border-b-2 px-6 py-4 transition ${idx === 0
+                      onClick={() => scrollToSection(tab.id)}
+                      className={`whitespace-nowrap border-b-2 px-6 py-4 transition ${activeSectionTab === tab.id
                         ? "border-blue bg-white/70 text-text-black font-semibold"
                         : "border-transparent text-text-gray hover:text-text-black"
                         }`}
                     >
-                      {item}
+                      {tab.label}
                     </button>
                   ))}
                 </div>
@@ -628,7 +724,11 @@ export default function ListingDetailsPage() {
                     </section>
                   ) : null}
 
-                  <section className="rounded-xl">
+                  <section
+                    id="overview"
+                    ref={setSectionRef("overview")}
+                    className="rounded-xl scroll-mt-32"
+                  >
                     <h2 className="text-xl font-semibold text-text-black">
                       Property Information
                     </h2>
@@ -647,11 +747,15 @@ export default function ListingDetailsPage() {
                     </div>
                   </section>
 
-                  {Array.isArray(propertyDetails?.furnishingsCounts) && propertyDetails.furnishingsCounts.length > 0 ? (
-                    <section className="rounded-xl">
+                  {hasFurnishingSection ? (
+                    <section
+                      id="furnishing"
+                      ref={setSectionRef("furnishing")}
+                      className="rounded-xl scroll-mt-32"
+                    >
                       <h2 className="text-xl font-semibold text-text-black">Furnishing Details</h2>
                       <div className="mt-4 rounded-lg bg-white px-5 py-4 grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-4">
-                        {propertyDetails.furnishingsCounts.map((f: { item: string; count: number }) => (
+                        {furnishingsCounts.map((f) => (
                           <div
                             key={`${f.count}-${f.item}`}
                             className="inline-flex items-center gap-3 leading-none text-text-black"
@@ -670,7 +774,11 @@ export default function ListingDetailsPage() {
                     </section>
                   ) : null}
 
-                  <section className="rounded-xl p-4">
+                  <section
+                    id="locality"
+                    ref={setSectionRef("locality")}
+                    className="rounded-xl p-4 scroll-mt-32"
+                  >
                     <h2 className="text-xl font-semibold text-text-black">Locality</h2>
                     <div className="mt-3 relative h-[300px] overflow-hidden rounded-tr-lg border border-[#D4D5D8] rounded-tl-lg bg-[#ECEEF3]">
                       {lat && lng ? (
@@ -746,11 +854,15 @@ export default function ListingDetailsPage() {
                     </div>
                   </section>
 
-                  {Array.isArray(propertyDetails?.amenitiesList) && propertyDetails.amenitiesList.length > 0 ? (
-                    <section className="rounded-xl">
+                  {hasAmenitiesSection ? (
+                    <section
+                      id="amenities"
+                      ref={setSectionRef("amenities")}
+                      className="rounded-xl scroll-mt-32"
+                    >
                       <h2 className="text-xl font-semibold text-text-black">Amenities</h2>
                       <div className="mt-4 rounded-lg bg-white p-4 grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
-                        {propertyDetails.amenitiesList.map((name: string) => (
+                        {amenitiesList.map((name) => (
                           <div
                             key={name}
                             className="inline-flex items-center gap-3"
@@ -765,7 +877,11 @@ export default function ListingDetailsPage() {
                     </section>
                   ) : null}
 
-                  <section className="rounded-xl">
+                  <section
+                    id="channel-partner-details"
+                    ref={setSectionRef("channel-partner-details")}
+                    className="rounded-xl scroll-mt-32"
+                  >
                     <h2 className="text-xl font-semibold text-text-black">
                       Channel Partner Details
                     </h2>
@@ -847,7 +963,11 @@ export default function ListingDetailsPage() {
                     </div>
                   </section>
 
-                  <section className="">
+                  <section
+                    id="ratings-and-reviews"
+                    ref={setSectionRef("ratings-and-reviews")}
+                    className="scroll-mt-32"
+                  >
                     <h2 className="text-lg font-semibold text-text-black">Ratings and Reviews</h2>
                     <div className="mt-4 rounded-xl bg-white p-4 sm:p-6">
                       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[220px_1fr]">
@@ -1139,7 +1259,7 @@ export default function ListingDetailsPage() {
                                         )}
                                       </span>
                                     </div>
-                                    <button
+                                    {/* <button
                                       type="button"
                                       aria-label={isFav ? "Remove from favorites" : "Save"}
                                       onClick={(e) => {
@@ -1157,7 +1277,7 @@ export default function ListingDetailsPage() {
                                       <Heart
                                         className={`h-5 w-5 ${isFav ? "fill-red-500 text-red-500" : ""}`}
                                       />
-                                    </button>
+                                    </button> */}
                                   </div>
 
                                   <Link

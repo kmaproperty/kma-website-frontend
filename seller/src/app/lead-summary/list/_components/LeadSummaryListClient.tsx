@@ -150,7 +150,7 @@ export default function LeadSummaryListClient() {
 
   const handleCrmDashboard = async (lead: LeadItem) => {
     const crmEndpoint =
-      "https://www.zohoapis.in/crm/v7/functions/properties_from_website_to_crm/actions/execute?auth_type=apikey&zapikey=1003.bd10ff840aa25477a4646948c5bb8f92.537526bc9225f903d9ac7966fb1ea927";
+      "https://www.zohoapis.in/crm/v2.1/functions/properties_from_website_to_crm/actions/execute?auth_type=apikey&zapikey=1003.bd10ff840aa25477a4646948c5bb8f92.537526bc9225f903d9ac7966fb1ea927";
     const firstProperty = lead.propertyContacts?.[0]?.property;
     const propertyContact = lead.propertyContacts?.[0];
     const propertyAny = (firstProperty ?? {}) as Record<string, unknown>;
