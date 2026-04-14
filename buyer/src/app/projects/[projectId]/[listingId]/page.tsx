@@ -673,19 +673,34 @@ export default function ListingDetailsPage() {
                   <section className="rounded-xl p-4">
                     <h2 className="text-xl font-semibold text-text-black">Locality</h2>
                     <div className="mt-3 relative h-[300px] overflow-hidden rounded-tr-lg border border-[#D4D5D8] rounded-tl-lg bg-[#ECEEF3]">
-                      <Image
-                        src="/assets/city/city1.svg"
-                        alt="Locality map"
-                        fill
-                        className="object-cover"
-                      />
-                      <button
-                        type="button"
-                        className="absolute left-1/2 top-1/2 inline-flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-lg bg-[#0E1730] px-5 py-2.5 text-base font-medium text-white shadow-sm"
-                      >
-                        <MapPin className="h-4 w-4" />
-                        Check on Map
-                      </button>
+                      {lat && lng ? (
+                        <iframe
+                          src={`https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`}
+                          width="100%"
+                          height="100%"
+                          style={{ border: 0 }}
+                          loading="lazy"
+                          referrerPolicy="no-referrer-when-downgrade"
+                          allowFullScreen
+                          title="Property location"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center text-text-gray">
+                          <MapPin className="mr-2 h-5 w-5" />
+                          Location not available
+                        </div>
+                      )}
+                      {lat && lng && (
+                        <a
+                          href={`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="absolute bottom-3 right-3 inline-flex items-center gap-2 rounded-lg bg-[#0E1730] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#1a2445]"
+                        >
+                          <MapPin className="h-4 w-4" />
+                          Open in Google Maps
+                        </a>
+                      )}
                     </div>
 
                     <div className=" divide-y divide-[#D4D5D8] rounded-br-lg rounded-bl-lg border border-[#D4D5D8] bg-white px-5">
