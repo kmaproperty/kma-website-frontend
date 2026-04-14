@@ -1,7 +1,6 @@
 "use client";
 import Image from "next/image";
 import DynamicAsyncAutocomplete from "../common/dynamicAsyncSelectMui";
-import SearchSuggest from "../common/SearchSuggest";
 import { ClickAwayListener, InputBase, Popper } from "@mui/material";
 import PropertyTypeMenu from "../filtermenu/propertyTypeMenu";
 import { useDeferredValue, useMemo, useState } from "react";
@@ -300,19 +299,25 @@ export default function Filter() {
           </div>
           <div className="flex justify-between items-center px-4 flex-3 border-r border-t border-b border-border rounded-r-full">
             <div className="flex w-full">
-              <SearchSuggest
+              <Image
+                src="/assets/search-gray.svg"
+                width={16}
+                height={16}
+                alt="search"
+              />
+              <InputBase
+                placeholder="Search by Locality"
+                fullWidth
                 value={search}
-                onChange={(v) => {
-                  setSearch(v);
-                  if (detectedLocationSearch) setDetectedLocationSearch('');
+                onChange={(event) => {
+                  setSearch(event.target.value)
+                  if (detectedLocationSearch) setDetectedLocationSearch('')
                 }}
-                onSelect={(item) => {
-                  if (item.type === 'city') {
-                    const match = cityData?.allCities?.find((c: any) => c.id === item.id);
-                    if (match) dispatch(setSelectedCity(match));
-                  }
+                className="w-full h-full px-3 text-xs rounded-full"
+                inputProps={{
+                  className:
+                    "font-ibm-plex-sans! text-sm text-text-gray placeholder:!text-text-gray placeholder:!text-sm placeholder:!opacity-100",
                 }}
-                placeholder="Search by City, Locality or Society"
               />
             </div>
             <button
@@ -410,19 +415,25 @@ export default function Filter() {
           </div>
           <div className="flex justify-between items-center px-4 flex-3 border border-border rounded-full">
             <div className="flex w-full">
-              <SearchSuggest
+              <Image
+                src="/assets/search-gray.svg"
+                width={16}
+                height={16}
+                alt="search"
+              />
+              <InputBase
+                placeholder="Search by Locality"
+                fullWidth
                 value={search}
-                onChange={(v) => {
-                  setSearch(v);
-                  if (detectedLocationSearch) setDetectedLocationSearch('');
+                onChange={(event) => {
+                  setSearch(event.target.value)
+                  if (detectedLocationSearch) setDetectedLocationSearch('')
                 }}
-                onSelect={(item) => {
-                  if (item.type === 'city') {
-                    const match = cityData?.allCities?.find((c: any) => c.id === item.id);
-                    if (match) dispatch(setSelectedCity(match));
-                  }
+                className="w-full h-full px-3 text-xs rounded-full"
+                inputProps={{
+                  className:
+                    "font-ibm-plex-sans! text-sm text-text-gray placeholder:!text-text-gray placeholder:!text-sm placeholder:!opacity-100",
                 }}
-                placeholder="Search by City, Locality or Society"
               />
             </div>
             <button
