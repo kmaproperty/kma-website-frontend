@@ -36,7 +36,9 @@ function isCrossAppUser(): boolean {
 
 function getStoredUserRole(): string | null {
   if (typeof window === "undefined") return null;
-  // Always prefer kma_user cookie (shared across subdomains, authoritative source from JWT)
+  // Read kma_user cookie (authoritative role from JWT, shared across subdomains)
+  let cookieRole: string | null = null;
+  let cookieData: Record<string, unknown> | null = null;
   try {
     const cookie = document.cookie.split("; ").find((c) => c.startsWith("kma_user="));
     if (cookie) {
@@ -44,14 +46,31 @@ function getStoredUserRole(): string | null {
       if (decoded) {
         const parsed: unknown = JSON.parse(decoded);
         if (isRecord(parsed) && typeof parsed.role === "string") {
-          // Sync to localStorage for components that still read from there
-          localStorage.setItem("user", decoded);
-          return parsed.role;
+          cookieRole = parsed.role;
+          cookieData = parsed;
         }
       }
     }
   } catch { /* ignore */ }
-  // Fallback: localStorage (for legacy flows that set user there)
+
+  // Merge cookie data into localStorage WITHOUT overwriting existing name/profile fields
+  if (cookieRole && cookieData) {
+    try {
+      const existingRaw = localStorage.getItem("user");
+      let existing: Record<string, unknown> = {};
+      if (existingRaw) {
+        try { existing = JSON.parse(existingRaw); } catch { /* ignore */ }
+      }
+      // If role differs, replace fully (different account). Else merge — keep existing name.
+      const merged = (isRecord(existing) && existing.role === cookieRole)
+        ? { ...existing, ...Object.fromEntries(Object.entries(cookieData).filter(([, v]) => v !== "" && v != null)) }
+        : { ...cookieData };
+      localStorage.setItem("user", JSON.stringify(merged));
+    } catch { /* ignore */ }
+    return cookieRole;
+  }
+
+  // Fallback: localStorage only
   const raw = localStorage.getItem("user");
   if (raw) {
     try {
