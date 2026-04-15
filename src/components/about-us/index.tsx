@@ -71,13 +71,13 @@ export default function AboutUsComponent({
   ]
 
   return (
-    <div>
+    <div className="overflow-x-hidden">
       <HeaderDataSync propertyMasterData={propertyMasterData} propertyCitiesData={propertyCitiesData} />
-      <div className="relative non_home_page_slider">
-        <BannerSlider bannerHeight={'min-h-[600px] 2md:h-[60vh]'} backgroundImages={sliderImage} overlayClass='about-us-gradient-overlay' />
+      <div className="relative overflow-hidden rounded-bl-[36px] rounded-br-[36px] sm:rounded-bl-[56px] sm:rounded-br-[56px] non_home_page_slider">
+        <BannerSlider bannerHeight={'h-[385px] sm:min-h-[600px] 2md:h-[60vh]'} backgroundImages={sliderImage} overlayClass='about-us-gradient-overlay' />
         <div className="absolute flex flex-col items-center top-0 w-[100%] ">
           <HomeHeader />
-          <div className="mt-[150px]">
+          <div className="mt-[80px] sm:mt-[150px]">
             <PageTitle
               title="About Us"
               description="Discover who we are, what we stand for, and how we make your real estate journey smooth and successful."
@@ -96,7 +96,7 @@ export default function AboutUsComponent({
               type={"left"}
               description="KMA Property Group, established on January 1, 2025, is a beacon of excellence in Gurugram’s high-end property market. We specialize in the sale, purchase, and rental of luxury properties, offering personalized experiences to clients who demand sophistication, trust, and lasting value."
             />
-            <div className="grid sm:grid-cols-2 grid-cols-1 gap-x-8 gap-y-4 mt-6 w-fit">
+            <div className="mt-6 grid w-full grid-cols-1 gap-x-8 gap-y-4 sm:w-fit sm:grid-cols-2">
               <div className="flex items-center gap-2">
                 <CircleCheckBig className="w-5 h-5 text-[#010048]" />
                 <p className={`text-[#5C727D] text-md leading-7 font-normal`}>
@@ -122,14 +122,14 @@ export default function AboutUsComponent({
                 </p>
               </div>
             </div>
-            <div className="w-full 2xl:px-8 px-5 py-3 rounded-lg border border-dashed border-gray-400 grid 2xl:grid-cols-4 xl:grid-cols-2 md:grid-cols-4 sm:grid-cols-2 grid-cols-1 2xl:gap-10 gap-5 justify-between md:mt-10 mt-6  ">
+            <div className="w-full rounded-lg border border-gray-300 md:border-dashed px-5 py-4 grid grid-cols-2 gap-x-5 gap-y-4 md:mt-10 mt-6 2xl:px-8 2xl:gap-10 2xl:grid-cols-4 xl:grid-cols-2 md:grid-cols-4 sm:grid-cols-2">
               {
                 companyStats.map((stat) => (
-                  <div key={stat.title}>
-                    <h3 className="2xl:text-[36px] xl:text-[28px] text-[22px] font-semibold text-[#010048]">
+                  <div key={stat.title} className="text-left">
+                    <h3 className="text-[22px] font-semibold text-[#010048] 2xl:text-[36px] xl:text-[28px]">
                       {stat.value}
                     </h3>
-                    <p className={`text-[#5C727D] text-md leading-7 font-normal`}>
+                    <p className={`text-[#5C727D] text-[14px] leading-6 font-normal`}>
                       {stat.title}
                     </p>
                   </div>
@@ -138,30 +138,30 @@ export default function AboutUsComponent({
             </div>
             <div className="mt-8">
               <h2 className={`text-[28px] leading-11 font-semibold text-[#010048]`}>Founder’s Profile</h2>
-              <div className="flex flex-wrap items-center gap-3 mt-5">
-                <div className="sm:w-fit w-full px-5 py-2 border border-gray-200 flex items-center gap-4 rounded-lg">
+              <div className="mt-5 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-center">
+                <div className="w-full px-3 py-2 border border-gray-200 flex items-center gap-2 rounded-lg sm:w-fit sm:px-5 sm:gap-4">
                   <Image
                     src="/assets/aboutUs/avatar.png"
                     alt="About Us"
-                    className="w-[60px] object-cover rounded-full"
+                    className="h-[52px] w-[52px] object-cover rounded-full sm:h-[60px] sm:w-[60px]"
                     width={60}
                     height={60}
                   />
-                  <div className="space-y-1.5">
-                    <h3 className="text-[16px] font-medium text-[#010048]">Dwayne Douglas</h3>
+                  <div className="min-w-0 space-y-1.5">
+                    <h3 className="truncate text-[16px] font-medium text-[#010048]">Dwayne Douglas</h3>
                     <p className="text-[13px] font-medium text-[#fff] w-full text-center px-3 py-0.5 rounded-sm" style={{ background: "linear-gradient(90deg, #C75C10 0%, #CE9554 100%)" }}>Founder</p>
                   </div>
                 </div>
-                <div className="sm:w-fit w-full px-5 py-2 border border-gray-200 flex items-center gap-4 rounded-lg">
+                <div className="w-full px-3 py-2 border border-gray-200 flex items-center gap-2 rounded-lg sm:w-fit sm:px-5 sm:gap-4">
                   <Image
                     src="/assets/aboutUs/avatar.png"
                     alt="About Us"
-                    className="w-[60px] object-cover rounded-full"
+                    className="h-[52px] w-[52px] object-cover rounded-full sm:h-[60px] sm:w-[60px]"
                     width={60}
                     height={60}
                   />
-                  <div className="space-y-1.5">
-                    <h3 className="text-[16px] font-medium text-[#010048]">Dwayne Douglas</h3>
+                  <div className="min-w-0 space-y-1.5">
+                    <h3 className="truncate text-[16px] font-medium text-[#010048]">Dwayne Douglas</h3>
                     <p className="text-[13px] w-full text-center font-medium text-[#fff] px-3 py-0.5 rounded-sm" style={{ background: "linear-gradient(90deg, #C75C10 0%, #CE9554 100%)" }}>CO-Founder</p>
                   </div>
                 </div>
@@ -178,7 +178,7 @@ export default function AboutUsComponent({
         </div>
       </div>
       <div className="w-full relative 2xl:pt-[100px] xl:pt-20 bg-[#F2F2F2]">
-        <div className="flex xl:flex-row flex-col-reverse items-center justify-between max-w-[1444px] mx-auto">
+        <div className="flex xl:flex-row flex-col items-center justify-between max-w-[1444px] mx-auto">
           <div className="xl:w-[50%] w-full">
             <Image
                src="/assets/aboutUs/hand-presenting-model.png"
@@ -212,12 +212,12 @@ export default function AboutUsComponent({
           </div>
         </div>
       </div>
-      <div className="w-full px-4 2xl:py-[100px] xl:py-20 lg:py-16 md:py-12 py-10">
+      <div className=" w-full px-4 py-10 md:block md:py-12 lg:py-16 xl:py-20 2xl:py-[100px]">
         <div className="max-w-[1444px] mx-auto">
-          <h2 className={`text-[28px] leading-11 font-semibold text-[#010048] text-center`}>A Service You Can Trust and Feel Confident In</h2>
-          <div className="grid xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-5 md:mt-10 mt-6 items-center">
-            <div className="bg-[#F2F2F2] px-8 py-5 rounded-lg flex flex-col gap-1 h-full justify-center">
-              <div className="bg-white w-[60px] h-[60px] flex items-center justify-center rounded-lg mb-2">
+          <h2 className={`text-[28px] leading-11 font-semibold text-[#010048] text-left sm:text-center`}>A Service You Can Trust and Feel Confident In</h2>
+          <div className="grid xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-[18px] sm:gap-5 md:mt-10 mt-[22px] items-center">
+            <div className="bg-[#F2F2F2] px-[30px] py-[18px] sm:px-8 sm:py-5 rounded-lg flex flex-col gap-1 h-full justify-center">
+              <div className="bg-white w-[57px] h-[57px] sm:w-[60px] sm:h-[60px] flex items-center justify-center rounded-lg mb-2">
                 <BadgePercent className="w-8 h-8 text-[#010048]" />
               </div>
               <h3 className="text-[#010048] text-[22px] leading-6 font-medium mb-0">
@@ -227,8 +227,8 @@ export default function AboutUsComponent({
                 No hidden charges, ever
               </p>
             </div>
-            <div className="bg-[#F2F2F2] px-8 py-5 rounded-lg flex flex-col gap-1 h-full justify-center">
-              <div className="bg-white w-[60px] h-[60px] flex items-center justify-center rounded-lg mb-2">
+            <div className="bg-[#F2F2F2] px-[30px] py-[18px] sm:px-8 sm:py-5 rounded-lg flex flex-col gap-1 h-full justify-center">
+              <div className="bg-white w-[57px] h-[57px] sm:w-[60px] sm:h-[60px] flex items-center justify-center rounded-lg mb-2">
                 <ListCheck className="w-8 h-8 text-[#010048]" />
               </div>
               <h3 className="text-[#010048] text-[22px] leading-6 font-medium mb-0">
@@ -238,8 +238,8 @@ export default function AboutUsComponent({
                 100% authenticated premium properties
               </p>
             </div>
-            <div className="bg-[#F2F2F2] px-8 py-5 rounded-lg flex flex-col gap-1 h-full justify-center">
-              <div className="bg-white w-[60px] h-[60px] flex items-center justify-center rounded-lg mb-2">
+            <div className="bg-[#F2F2F2] px-[30px] py-[18px] sm:px-8 sm:py-5 rounded-lg flex flex-col gap-1 h-full justify-center">
+              <div className="bg-white w-[57px] h-[57px] sm:w-[60px] sm:h-[60px] flex items-center justify-center rounded-lg mb-2">
                 <Lightbulb className="w-8 h-8 text-[#010048]" />
               </div>
               <h3 className="text-[#010048] text-[22px] leading-6 font-medium mb-0">
@@ -249,8 +249,8 @@ export default function AboutUsComponent({
                 From first-timers to investors
               </p>
             </div>
-            <div className="bg-[#F2F2F2] px-8 py-5 rounded-lg flex flex-col gap-1 h-full justify-center">
-              <div className="bg-white w-[60px] h-[60px] flex items-center justify-center rounded-lg mb-2">
+            <div className="bg-[#F2F2F2] px-[30px] py-[18px] sm:px-8 sm:py-5 rounded-lg flex flex-col gap-1 h-full justify-center">
+              <div className="bg-white w-[57px] h-[57px] sm:w-[60px] sm:h-[60px] flex items-center justify-center rounded-lg mb-2">
                 <ListChecks className="w-8 h-8 text-[#010048]" />
               </div>
               <h3 className="text-[#010048] text-[22px] leading-6 font-medium mb-0">
@@ -263,32 +263,34 @@ export default function AboutUsComponent({
           </div>
         </div>
       </div>
-      <div className="w-full relative">
-        <div className="flex xl:flex-row flex-col items-center justify-between max-w-[1444px] mx-auto">
-          <div className="xl:w-[50%] w-full">
+      <div className="relative w-full pb-10 md:pb-12 lg:pb-16 xl:pb-20 2xl:pb-[100px]">
+        <div className="grid w-full grid-cols-1 xl:grid-cols-2">
+          <div className="relative min-h-[280px] xl:min-h-[579px]">
             <Image
               src="/assets/aboutUs/about-video-thumbnail.png"
               alt="About Us"
-              className="xl:w-[50%] w-full xl:absolute top-0 left-0 h-full object-cover"
-              width={946}
-              height={600}
+              className="object-cover"
+              fill
+              sizes="(max-width: 1279px) 100vw, 50vw"
             />
           </div>
-          <div className="xl:w-[50%] w-full space-y-3 xl:pl-[50px] py-10 px-4 xl:min-h-[579px] flex flex-col justify-center bg-[#010048]">
-            <SectionHeading
-              title="Why Choose Us?"
-              lineTop
-              subtitle="The Innovative Creations of KMA"
-              type={"left"}
-              color="white"
-              description="MA Property Group is continuously pushing the boundaries of luxury real estate in Gurugram. With a visionary team and a tech-enabled platform, we deliver bespoke property experiences that blend architectural brilliance, modern amenities, and timeless elegance."
-            />
-            <p className={`text-[#d5d5d5] text-md leading-7`}>We also offer customized real estate solutions for buyers, investors, and developers seeking high-end villas, commercial hubs, or rental properties tailored to their lifestyle.
-            </p>
+          <div className="w-full bg-[#010048] px-4 py-10 xl:min-h-[579px] xl:pl-[50px] flex flex-col justify-center">
+            <div className="w-full max-w-[665px] space-y-3">
+              <SectionHeading
+                title="Why Choose Us?"
+                lineTop
+                subtitle="The Innovative Creations of KMA"
+                type={"left"}
+                color="white"
+                description="MA Property Group is continuously pushing the boundaries of luxury real estate in Gurugram. With a visionary team and a tech-enabled platform, we deliver bespoke property experiences that blend architectural brilliance, modern amenities, and timeless elegance."
+              />
+              <p className={`text-[#d5d5d5] text-md leading-7`}>We also offer customized real estate solutions for buyers, investors, and developers seeking high-end villas, commercial hubs, or rental properties tailored to their lifestyle.
+              </p>
+            </div>
           </div>
         </div>
       </div>
-      <div className="w-full px-4 2xl:py-[100px] xl:py-20 lg:py-16 md:py-12 py-10">
+      {/* <div className="w-full px-4 2xl:py-[100px] xl:py-20 lg:py-16 md:py-12 py-10">
         <div className="max-w-[1444px] mx-auto">
           <SectionHeading
             title="Team Members"
@@ -455,7 +457,7 @@ export default function AboutUsComponent({
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
       {/* <div className="flex justify-center overflow-hidden">
         <div className="my-16 w-[90%] 2md:w-[75%]">
           <BlogSection />

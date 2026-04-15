@@ -14,12 +14,13 @@ import {
   CarFront,
   ChevronRight,
   CheckCircle2,
+  ChevronDown,
+  ChevronUp,
   Dumbbell,
   Heart,
   Hospital,
   House,
   MapPin,
-  MessageCircle,
   PhoneCall,
   School,
   ShieldCheck,
@@ -192,6 +193,24 @@ export default function ListingDetailsPage() {
     enabled: Boolean(similarParams.cityId),
   });
 
+  // Temporary demo helper: ensure slider shows enough cards to validate behavior.
+  const displaySimilarProperties = useMemo(() => {
+    if (similarProperties.length === 0) return [];
+    if (similarProperties.length >= 4) return similarProperties;
+
+    const expanded = [...similarProperties];
+    let idx = 0;
+    while (expanded.length < 4) {
+      const base = similarProperties[idx % similarProperties.length];
+      expanded.push({
+        ...base,
+        id: `${base.id}__demo_${expanded.length}`,
+      });
+      idx += 1;
+    }
+    return expanded;
+  }, [similarProperties]);
+
   const queryClient = useQueryClient();
   const favorites = useProjectsStore((s) => s.favorites);
   const setFavorite = useProjectsStore((s) => s.setFavorite);
@@ -333,6 +352,9 @@ export default function ListingDetailsPage() {
     setActiveReviewPage((prev) => (prev === totalReviewPages - 1 ? 0 : prev + 1));
   };
 
+  const mobileGalleryRef = useRef<HTMLDivElement | null>(null);
+  const [activeMobileImageIndex, setActiveMobileImageIndex] = useState(1);
+
   const similarCarouselRef = useRef<HTMLDivElement | null>(null);
 
   const [similarScrollState, setSimilarScrollState] = useState(() => ({
@@ -372,7 +394,7 @@ export default function ListingDetailsPage() {
       window.removeEventListener("resize", onResize);
       container.removeEventListener("scroll", onScroll);
     };
-  }, [similarProperties.length]);
+  }, [displaySimilarProperties.length]);
 
   const scrollSimilarProperties = (direction: "prev" | "next") => {
     const container = similarCarouselRef.current;
@@ -385,9 +407,45 @@ export default function ListingDetailsPage() {
     container.scrollBy({ left: amount, behavior: "smooth" });
   };
 
+  useEffect(() => {
+    const container = mobileGalleryRef.current;
+    if (!container || resolvedGalleryImages.length === 0) {
+      setActiveMobileImageIndex(1);
+      return;
+    }
+
+    const updateActiveIndex = () => {
+      const card = container.firstElementChild as HTMLElement | null;
+      if (!card) {
+        setActiveMobileImageIndex(1);
+        return;
+      }
+
+      const style = window.getComputedStyle(container);
+      const gap = Number.parseFloat(style.columnGap || style.gap || "0") || 0;
+      const step = card.offsetWidth + gap;
+      const nextIndex = Math.round(container.scrollLeft / Math.max(step, 1)) + 1;
+      setActiveMobileImageIndex(Math.min(Math.max(nextIndex, 1), resolvedGalleryImages.length));
+    };
+
+    updateActiveIndex();
+    container.addEventListener("scroll", updateActiveIndex, { passive: true });
+    window.addEventListener("resize", updateActiveIndex);
+
+    return () => {
+      container.removeEventListener("scroll", updateActiveIndex);
+      window.removeEventListener("resize", updateActiveIndex);
+    };
+  }, [resolvedGalleryImages.length]);
+
   const [activeLocalityCategory, setActiveLocalityCategory] = useState<
     (typeof localityCategories)[number]["key"]
   >(localityCategories[0].key);
+  const [isPropertyInfoOpen, setIsPropertyInfoOpen] = useState(true);
+  const [isLocalityOpen, setIsLocalityOpen] = useState(true);
+  const [isChannelPartnerOpen, setIsChannelPartnerOpen] = useState(true);
+  const [isFurnishingOpen, setIsFurnishingOpen] = useState(true);
+  const [isAmenitiesOpen, setIsAmenitiesOpen] = useState(true);
 
   const categoryToApiType: Record<string, string> = {
     schools: "school",
@@ -425,6 +483,18 @@ export default function ListingDetailsPage() {
   }, [activeLocalityCategory, lat, lng]);
 
   const activeLocalityPlaces = nearbyPlacesCache[activeLocalityCategory] ?? [];
+  const specialistName = asString(apiChannelPartner?.name) ?? "KMA Property";
+  const specialistFirm = asString(apiChannelPartner?.firmName) ?? "KMA Expert Pro";
+  const specialistImage = toFullAssetUrl(apiChannelPartner?.profileImage) || "/assets/profile.png";
+  const specialistPhone = asString(apiChannelPartner?.phone);
+  const specialistCleanPhone = specialistPhone?.replace(/\D/g, "") ?? "";
+  const specialistNormalizedPhone =
+    specialistCleanPhone && specialistCleanPhone.length > 0
+      ? specialistCleanPhone.startsWith("91") && specialistCleanPhone.length > 10
+        ? specialistCleanPhone
+        : `91${specialistCleanPhone}`
+      : "";
+  const specialistTelHref = specialistNormalizedPhone ? `tel:+${specialistNormalizedPhone}` : undefined;
 
   // Show login prompt when guest user has exceeded 3 free views
   if (viewLimitExceeded) {
@@ -462,7 +532,7 @@ export default function ListingDetailsPage() {
   return (
     <MainLayout>
 
-      <div className="w-full min-w-0 px-0 pb-6 pt-6 sm:px-0 sm:pt-8 md:pt-10">
+      <div className="w-full min-w-0 px-0 pb-28 pt-6 sm:px-0 sm:pt-8 md:pb-6 md:pt-10">
         <nav className="text-xs text-white/90 sm:text-sm" aria-label="Breadcrumb">
           <span className="line-clamp-2 break-words">Home / {propertyTitle}</span>
         </nav>
@@ -470,7 +540,7 @@ export default function ListingDetailsPage() {
           Property Details
         </h2>
         <div className="mx-auto w-full min-w-0">
-          <div className="rounded-2xl border border-border bg-white p-4 shadow-sm sm:p-5 lg:p-8">
+          <div className="rounded-2xl border border-border bg-white p-0 shadow-sm sm:p-5 lg:p-8">
             <div className="flex min-w-0 flex-col gap-4 pb-2 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0 flex-1">
                 {/* <p className="text-xs font-medium text-text-light-gray">
@@ -501,7 +571,50 @@ export default function ListingDetailsPage() {
             ) : null}
 
             <section className="mt-4 flex min-w-0 flex-col gap-3 md:flex-row md:gap-3">
-              <div className="relative h-56 w-full min-w-0 overflow-hidden rounded-sm sm:h-72 md:h-[420px] md:w-[58%] lg:h-[480px] lg:w-[60%]">
+              <div
+                ref={mobileGalleryRef}
+                className="flex w-full gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:hidden"
+              >
+                {resolvedGalleryImages.map((src, idx) => (
+                  <div
+                    key={`mobile-gallery-${src}-${idx}`}
+                    className="relative h-56 w-[88%] min-w-[88%] overflow-hidden rounded-sm"
+                  >
+                    <Image
+                      src={src}
+                      alt={`Property image ${idx + 1}`}
+                      fill
+                      className="object-cover"
+                    />
+                    {idx === 0 ? (
+                      <button
+                        type="button"
+                        className="absolute right-3 top-3 inline-flex items-center gap-2 rounded-lg bg-white/95 px-3 py-2 text-xs font-medium text-text-black"
+                      >
+                        <Share2 className="h-3.5 w-3.5" />
+                        Share
+                      </button>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+              {resolvedGalleryImages.length > 0 ? (
+                <div className="flex items-center gap-3 md:hidden">
+                  <div className="h-[5px] flex-1 overflow-hidden rounded-full bg-[#E4E5E8]">
+                    <div
+                      className="h-full rounded-full bg-[#05085E] transition-all duration-200"
+                      style={{
+                        width: `${(Math.min(activeMobileImageIndex, resolvedGalleryImages.length) / resolvedGalleryImages.length) * 100}%`,
+                      }}
+                    />
+                  </div>
+                  <span className="inline-flex shrink-0 items-center justify-center rounded-full border border-[#D4D5D8] bg-[#F8F8F9] px-3 py-1 text-sm font-medium leading-none text-text-black">
+                    {Math.min(activeMobileImageIndex, resolvedGalleryImages.length)}/{resolvedGalleryImages.length}
+                  </span>
+                </div>
+              ) : null}
+
+              <div className="relative hidden h-56 w-full min-w-0 overflow-hidden rounded-sm sm:h-72 md:block md:h-[420px] md:w-[58%] lg:h-[480px] lg:w-[60%]">
                 <Image
                   src={displayGallery[0] ?? placeholderImage}
                   alt="Property cover"
@@ -518,7 +631,7 @@ export default function ListingDetailsPage() {
                 </button>
               </div>
 
-              <div className="grid w-full min-h-0 min-w-0 grid-cols-2 grid-rows-2 gap-2 sm:gap-3 md:h-[420px] md:w-[42%] md:grid-rows-[minmax(0,1fr)_minmax(0,1fr)] md:self-stretch lg:h-[480px] lg:w-[40%]">
+              <div className="hidden w-full min-h-0 min-w-0 grid-cols-2 grid-rows-2 gap-2 sm:gap-3 md:grid md:h-[420px] md:w-[42%] md:grid-rows-[minmax(0,1fr)_minmax(0,1fr)] md:self-stretch lg:h-[480px] lg:w-[40%]">
                 {displayGallery.slice(1).map((src, idx) => (
                   <div
                     key={src}
@@ -543,11 +656,11 @@ export default function ListingDetailsPage() {
               </div>
             </section>
 
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="mt-4 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:flex-wrap md:overflow-visible md:pb-0">
               {quickFactsData.map((fact) => (
                 <div
                   key={fact.label}
-                  className="inline-flex max-w-full min-w-0 items-center gap-2 rounded-md border border-border bg-background-gray px-2.5 py-2 pr-4 text-[13px] text-text-black"
+                  className="inline-flex max-w-full min-w-0 shrink-0 items-center gap-2 rounded-md border border-border bg-background-gray px-2.5 py-2 pr-4 text-[13px] text-text-black md:shrink"
                 >
                   <span className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-md bg-white">{fact.icon}</span>
                   <span className="min-w-0 break-words">{fact.label}</span>
@@ -584,7 +697,7 @@ export default function ListingDetailsPage() {
               </nav>
 
               <div className="mt-5 grid min-w-0 grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(260px,310px)]">
-                <main className="min-w-0 space-y-5">
+                <main className="min-w-0 space-y-5 [&>section+section]:mt-5 [&>section+section]:border-t [&>section+section]:border-[#D4D5D8] [&>section+section]:pt-5 md:[&>section+section]:mt-0 md:[&>section+section]:border-0 md:[&>section+section]:pt-0">
                   {propertyDescription ? (
                     <section className="rounded-xl">
                       <h2 className="text-xl font-semibold text-text-black">Key highlights</h2>
@@ -593,13 +706,47 @@ export default function ListingDetailsPage() {
                   ) : null}
 
                   <section className="rounded-xl">
-                    <h2 className="text-xl font-semibold text-text-black">
+                    <button
+                      type="button"
+                      onClick={() => setIsPropertyInfoOpen((prev) => !prev)}
+                      className="flex w-full items-center justify-between text-left md:hidden"
+                      aria-expanded={isPropertyInfoOpen}
+                      aria-controls="property-information-content"
+                    >
+                      <h2 className="text-xl font-semibold text-text-black">
+                        Property Information
+                      </h2>
+                      {isPropertyInfoOpen ? (
+                        <ChevronUp className="h-5 w-5 text-text-black" />
+                      ) : (
+                        <ChevronDown className="h-5 w-5 text-text-black" />
+                      )}
+                    </button>
+                    <h2 className="hidden text-xl font-semibold text-text-black md:block">
                       Property Information
                     </h2>
-                    <div className="mt-3 rounded-lg border border-border bg-white p-3 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                    <div
+                      id="property-information-content"
+                      className={`mt-3 -mx-3 overflow-x-auto px-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:hidden ${isPropertyInfoOpen ? "block" : "hidden"}`}
+                    >
+                      <div className="inline-grid min-w-max grid-cols-4 gap-2">
+                        {propertyInfoData.map(([label, value]) => (
+                          <div
+                            key={label}
+                            className="w-[160px] rounded-lg border border-border px-3 py-2"
+                          >
+                            <p className="text-[12px] text-text-gray">
+                              {label}
+                            </p>
+                            <p className="mt-0.5 text-sm font-medium text-text-black">{value}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="mt-3 hidden rounded-lg border border-border bg-white p-3 md:grid md:grid-cols-2 md:gap-2 lg:grid-cols-4">
                       {propertyInfoData.map(([label, value]) => (
                         <div
-                          key={label}
+                          key={`${label}-desktop`}
                           className="rounded-lg border border-border px-3 py-2"
                         >
                           <p className="text-[12px] text-text-gray">
@@ -613,187 +760,373 @@ export default function ListingDetailsPage() {
 
                   {Array.isArray(propertyDetails?.furnishingsCounts) && propertyDetails.furnishingsCounts.length > 0 ? (
                     <section className="rounded-xl">
-                      <h2 className="text-xl font-semibold text-text-black">Furnishing Details</h2>
-                      <div className="mt-4 rounded-lg bg-white px-5 py-4 grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-4">
-                        {propertyDetails.furnishingsCounts.map((f: { item: string; count: number }) => (
-                          <div
-                            key={`${f.count}-${f.item}`}
-                            className="inline-flex items-center gap-3 leading-none text-text-black"
-                          >
-                            <Image
-                              src={getFurnishingIcon(f.item)}
-                              alt={f.item}
-                              width={24}
-                              height={24}
-                              className="h-6 w-6 object-contain"
-                            />
-                            <span className="text-sm font-medium text-text-black">{f.count} {f.item}</span>
+                      <button
+                        type="button"
+                        onClick={() => setIsFurnishingOpen((prev) => !prev)}
+                        className="flex w-full items-center justify-between text-left md:hidden"
+                        aria-expanded={isFurnishingOpen}
+                        aria-controls="furnishing-content"
+                      >
+                        <h2 className="text-xl font-semibold text-text-black">Furnishing Details</h2>
+                        {isFurnishingOpen ? (
+                          <ChevronUp className="h-5 w-5 text-text-black" />
+                        ) : (
+                          <ChevronDown className="h-5 w-5 text-text-black" />
+                        )}
+                      </button>
+                      <h2 className="hidden text-xl font-semibold text-text-black md:block">Furnishing Details</h2>
+
+                      <div id="furnishing-content" className={isFurnishingOpen ? "mt-4 md:mt-4" : "hidden md:mt-4 md:block"}>
+                        <div className="overflow-hidden rounded-lg border border-[#D4D5D8] bg-white md:hidden">
+                          <div className="grid grid-cols-2">
+                            {propertyDetails.furnishingsCounts.map((f: { item: string; count: number }, idx: number) => (
+                              <div
+                                key={`furnishing-mobile-${f.item}-${idx}`}
+                                className="inline-flex items-center gap-3 border-r border-b border-[#D4D5D8] px-4 py-3 leading-none text-text-black even:border-r-0"
+                              >
+                                <Image
+                                  src={getFurnishingIcon(f.item)}
+                                  alt={f.item}
+                                  width={24}
+                                  height={24}
+                                  className="h-6 w-6 shrink-0 object-contain"
+                                />
+                                <span className="text-sm font-medium text-text-black">{f.count} {f.item}</span>
+                              </div>
+                            ))}
                           </div>
-                        ))}
+                        </div>
+
+                        <div className="hidden rounded-lg bg-white px-5 py-4 md:grid md:grid-cols-1 md:gap-x-6 md:gap-y-5 lg:grid-cols-4">
+                          {propertyDetails.furnishingsCounts.map((f: { item: string; count: number }) => (
+                            <div
+                              key={`${f.count}-${f.item}`}
+                              className="inline-flex items-center gap-3 leading-none text-text-black"
+                            >
+                              <Image
+                                src={getFurnishingIcon(f.item)}
+                                alt={f.item}
+                                width={24}
+                                height={24}
+                                className="h-6 w-6 object-contain"
+                              />
+                              <span className="text-sm font-medium text-text-black">{f.count} {f.item}</span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </section>
                   ) : null}
 
-                  <section className="rounded-xl p-2 sm:p-4">
-                    <h2 className="text-lg font-semibold text-text-black sm:text-xl">Locality</h2>
-                    <div className="relative mt-3 h-[200px] overflow-hidden rounded-tl-lg rounded-tr-lg border border-[#D4D5D8] bg-[#ECEEF3] sm:h-[260px] md:h-[300px]">
-                      <Image
-                        src="/assets/city/city1.svg"
-                        alt="Locality map"
-                        fill
-                        className="object-cover"
-                      />
-                      <button
-                        type="button"
-                        className="absolute left-1/2 top-1/2 inline-flex max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-lg bg-[#0E1730] px-3 py-2 text-sm font-medium text-white shadow-sm sm:px-5 sm:py-2.5 sm:text-base"
-                      >
-                        <MapPin className="h-4 w-4 shrink-0" />
-                        Check on Map
-                      </button>
-                    </div>
-
-                    <div className="divide-y divide-[#D4D5D8] rounded-br-lg rounded-bl-lg border border-[#D4D5D8] bg-white px-3 sm:px-5 pb-3 sm:pb-5">
-                      <div className="flex gap-1.5 overflow-x-auto py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                        {localityCategories.map((category) => {
-                          const Icon = category.icon;
-                          const isActive = activeLocalityCategory === category.key;
-
-                          return (
-                            <button
-                              key={category.key}
-                              type="button"
-                              onClick={() => setActiveLocalityCategory(category.key)}
-                              className={`inline-flex shrink-0 items-center gap-2 rounded-md border px-4 py-2.5 text-sm font-medium transition ${isActive
-                                ? "border-[#05085E] bg-[#05085E] text-white"
-                                : "border-[#D4D5D8] bg-[#fff] text-text-black hover:bg-white"
-                                }`}
-                            >
-                              <Icon className="h-5 w-5" />
-                              {category.label}
-                            </button>
-                          );
-                        })}
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2">
-                      {nearbyLoading ? (
-                        <p className="py-5 text-sm text-text-gray">Loading nearby places...</p>
-                      ) : activeLocalityPlaces.length > 0 ? (
-                        activeLocalityPlaces.map((place) => (
-                          <div
-                            key={place.name}
-                            className="inline-flex items-start gap-3 p-4 text-sm text-text-black border-b border-[#D9D9D9]"
-                          >
-                            <School className="mt-0.5 h-6 w-6 text-[#05085E]" />
-                            <div>
-                              <p className="font-medium text-text-black">{place.name}</p>
-                              <span className="mt-1 block text-[#888888]">{place.distance}</span>
-                            </div>
-                          </div>
-                        ))
+                  <section className="-mx-2 rounded-xl px-2 md:mx-0 md:px-0">
+                    <button
+                      type="button"
+                      onClick={() => setIsLocalityOpen((prev) => !prev)}
+                      className="flex w-full items-center justify-between text-left md:hidden"
+                      aria-expanded={isLocalityOpen}
+                      aria-controls="locality-content"
+                    >
+                      <h2 className="text-lg font-semibold text-text-black sm:text-xl">Locality</h2>
+                      {isLocalityOpen ? (
+                        <ChevronUp className="h-5 w-5 text-text-black" />
                       ) : (
-                        <p className="py-5 text-sm text-text-gray">No nearby places found.</p>
+                        <ChevronDown className="h-5 w-5 text-text-black" />
                       )}
-                    </div>
-                    </div>
+                    </button>
+                    <h2 className="hidden text-lg font-semibold text-text-black sm:text-xl md:block">Locality</h2>
+                    <div id="locality-content" className={isLocalityOpen ? "block" : "hidden md:block"}>
+                        <div className="relative mt-3 h-[200px] overflow-hidden rounded-tl-lg rounded-tr-lg border border-[#D4D5D8] bg-[#ECEEF3] sm:h-[260px] md:h-[300px]">
+                          <Image
+                            src="/assets/city/city1.svg"
+                            alt="Locality map"
+                            fill
+                            className="object-cover"
+                          />
+                          <button
+                            type="button"
+                            className="absolute left-1/2 top-1/2 inline-flex max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-lg bg-[#0E1730] px-3 py-2 text-sm font-medium text-white shadow-sm sm:px-5 sm:py-2.5 sm:text-base"
+                          >
+                            <MapPin className="h-4 w-4 shrink-0" />
+                            Check on Map
+                          </button>
+                        </div>
+
+                        <div className="divide-y divide-[#D4D5D8] rounded-br-lg rounded-bl-lg border border-[#D4D5D8] bg-white px-3 sm:px-5 pb-3 sm:pb-5">
+                          <div className="flex gap-1.5 overflow-x-auto py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                            {localityCategories.map((category) => {
+                              const Icon = category.icon;
+                              const isActive = activeLocalityCategory === category.key;
+
+                              return (
+                                <button
+                                  key={category.key}
+                                  type="button"
+                                  onClick={() => setActiveLocalityCategory(category.key)}
+                                  className={`inline-flex shrink-0 items-center gap-2 rounded-md border px-4 py-2.5 text-sm font-medium transition ${isActive
+                                    ? "border-[#05085E] bg-[#05085E] text-white"
+                                    : "border-[#D4D5D8] bg-[#fff] text-text-black hover:bg-white"
+                                    }`}
+                                >
+                                  <Icon className="h-5 w-5" />
+                                  {category.label}
+                                </button>
+                              );
+                            })}
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2">
+                            {nearbyLoading ? (
+                              <p className="py-5 text-sm text-text-gray">Loading nearby places...</p>
+                            ) : activeLocalityPlaces.length > 0 ? (
+                              activeLocalityPlaces.map((place) => (
+                                <div
+                                  key={place.name}
+                                  className="inline-flex items-start gap-3 p-4 text-sm text-text-black border-b border-[#D9D9D9]"
+                                >
+                                  <School className="mt-0.5 h-6 w-6 text-[#05085E]" />
+                                  <div>
+                                    <p className="font-medium text-text-black">{place.name}</p>
+                                    <span className="mt-1 block text-[#888888]">{place.distance}</span>
+                                  </div>
+                                </div>
+                              ))
+                            ) : (
+                              <p className="py-5 text-sm text-text-gray">No nearby places found.</p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
                   </section>
 
                   {Array.isArray(propertyDetails?.amenitiesList) && propertyDetails.amenitiesList.length > 0 ? (
                     <section className="rounded-xl">
-                      <h2 className="text-xl font-semibold text-text-black">Amenities</h2>
-                      <div className="mt-4 rounded-lg bg-white p-4 grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
-                        {propertyDetails.amenitiesList.map((name: string) => (
-                          <div
-                            key={name}
-                            className="inline-flex items-center gap-3"
-                          >
-                            <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-[#E7E7E9] text-text-black">
-                              <CheckCircle2 className="h-5 w-5" />
-                            </span>
-                            <span className="text-sm font-medium text-text-black">{name}</span>
-                          </div>
-                        ))}
+                      <button
+                        type="button"
+                        onClick={() => setIsAmenitiesOpen((prev) => !prev)}
+                        className="flex w-full items-center justify-between text-left md:hidden"
+                        aria-expanded={isAmenitiesOpen}
+                        aria-controls="amenities-content"
+                      >
+                        <h2 className="text-xl font-semibold text-text-black">Amenities</h2>
+                        {isAmenitiesOpen ? (
+                          <ChevronUp className="h-5 w-5 text-text-black" />
+                        ) : (
+                          <ChevronDown className="h-5 w-5 text-text-black" />
+                        )}
+                      </button>
+                      <h2 className="hidden text-xl font-semibold text-text-black md:block">Amenities</h2>
+
+                      <div id="amenities-content" className={isAmenitiesOpen ? "mt-4 md:mt-4" : "hidden md:mt-4 md:block"}>
+                        <div className="grid grid-cols-2 gap-3 md:hidden">
+                          {propertyDetails.amenitiesList.map((name: string) => (
+                            <div
+                              key={`amenity-mobile-${name}`}
+                              className="inline-flex items-center gap-2 rounded-lg border border-[#E2E5EC] bg-white px-3 py-2.5"
+                            >
+                              <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[#EDEEF2] text-text-black">
+                                <CheckCircle2 className="h-4.5 w-4.5" />
+                              </span>
+                              <span className="text-sm font-medium text-text-black">{name}</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="hidden rounded-lg bg-white p-4 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-6 lg:grid-cols-4">
+                          {propertyDetails.amenitiesList.map((name: string) => (
+                            <div
+                              key={`amenity-desktop-${name}`}
+                              className="inline-flex items-center gap-3"
+                            >
+                              <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-[#E7E7E9] text-text-black">
+                                <CheckCircle2 className="h-5 w-5" />
+                              </span>
+                              <span className="text-sm font-medium text-text-black">{name}</span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </section>
                   ) : null}
 
                   <section className="rounded-xl">
-                    <h2 className="text-xl font-semibold text-text-black">
+                    <button
+                      type="button"
+                      onClick={() => setIsChannelPartnerOpen((prev) => !prev)}
+                      className="flex w-full items-center justify-between text-left md:hidden"
+                      aria-expanded={isChannelPartnerOpen}
+                      aria-controls="channel-partner-content"
+                    >
+                      <h2 className="text-xl font-semibold text-text-black">Channel Partner Details</h2>
+                      {isChannelPartnerOpen ? (
+                        <ChevronUp className="h-5 w-5 text-text-black" />
+                      ) : (
+                        <ChevronDown className="h-5 w-5 text-text-black" />
+                      )}
+                    </button>
+                    <h2 className="hidden text-xl font-semibold text-text-black md:block">
                       Channel Partner Details
                     </h2>
-                    <div className="mt-4 rounded-xl bg-white p-4 sm:p-6">
-                      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="flex items-center gap-3">
-                          <Image
-                            src={apiChannelPartner?.profileImage || apiOwnerDetails?.profileImage || "/assets/profile.png"}
-                            alt="Agent avatar"
-                            width={52}
-                            height={52}
-                            className="h-[52px] w-[52px] rounded-full object-cover"
-                          />
-                          <div>
-                            <p className="text-base font-semibold text-text-black">
-                              {apiChannelPartner?.name || apiOwnerDetails?.name || "Property Owner"}
-                            </p>
-                            {apiChannelPartner && (
-                              <span className="mt-1 inline-block rounded bg-[#E69D48] px-2 py-1 text-[11px] font-medium text-white">
-                                Channel Partner
-                              </span>
-                            )}
+
+                    <div id="channel-partner-content" className={isChannelPartnerOpen ? "mt-4 md:mt-4" : "hidden md:mt-4 md:block"}>
+                      <div className="rounded-xl bg-white p-4 md:hidden">
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-3 min-w-0">
+                            <Image
+                              src={apiChannelPartner?.profileImage || apiOwnerDetails?.profileImage || "/assets/profile.png"}
+                              alt="Agent avatar"
+                              width={52}
+                              height={52}
+                              className="h-[52px] w-[52px] shrink-0 rounded-full object-cover"
+                            />
+                            <div className="min-w-0">
+                              <p className="truncate text-[22px] font-semibold leading-none text-text-black">
+                                {apiChannelPartner?.name || apiOwnerDetails?.name || "Property Owner"}
+                              </p>
+                              {apiChannelPartner && (
+                                <span className="mt-1 inline-block rounded bg-[#E69D48] px-2 py-1 text-[11px] font-medium text-white">
+                                  Channel Partner
+                                </span>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap">
                           <button
                             type="button"
-                            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-blue bg-white px-4 py-2.5 text-sm font-semibold text-blue sm:w-auto"
+                            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-blue px-4 py-2.5 text-sm font-semibold text-blue"
                           >
                             <PhoneCall className="h-4 w-4" />
                             View Number
                           </button>
-                          <button
-                            type="button"
-                            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#05085E] px-4 py-2.5 text-sm font-semibold text-white sm:w-auto"
-                          >
-                            Learn More
-                            <ArrowRight className="h-4 w-4" />
-                          </button>
                         </div>
-                      </div>
 
-                      <div className="mt-4 border-t border-[#D4D5D8] pt-5">
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                        <div className="mt-4 rounded-xl border border-[#D4D5D8] bg-background-gray">
+                          <div className="grid grid-cols-2 divide-x divide-[#D4D5D8] border-b border-[#D4D5D8]">
+                            {[
+                              [apiChannelPartner?.buyersServed != null && apiChannelPartner.buyersServed > 0 ? `${apiChannelPartner.buyersServed}+` : "—", "Buyers Served"],
+                              [apiChannelPartner?.yearsOfExperience != null ? String(apiChannelPartner.yearsOfExperience) : "—", "Years of Experience"],
+                            ].map(([value, label]) => (
+                              <div key={label} className="px-4 py-3">
+                                <p className="text-2xl font-semibold leading-none text-[#05085E]">{value}</p>
+                                <p className="mt-1 text-sm text-text-black">{label}</p>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="grid grid-cols-2 divide-x divide-[#D4D5D8]">
+                            {[
+                              [apiChannelPartner?.propertyHoldings != null ? String(apiChannelPartner.propertyHoldings) : "—", "Property Holdings"],
+                              [apiChannelPartner?.areasOfOperation != null && apiChannelPartner.areasOfOperation > 0 ? `${apiChannelPartner.areasOfOperation}+` : "—", "Areas of Operation"],
+                            ].map(([value, label]) => (
+                              <div key={label} className="px-4 py-3">
+                                <p className="text-2xl font-semibold leading-none text-[#05085E]">{value}</p>
+                                <p className="mt-1 text-sm text-text-black">{label}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="mt-3 grid grid-cols-1 gap-3">
                           {[
-                            [apiChannelPartner?.buyersServed != null && apiChannelPartner.buyersServed > 0 ? `${apiChannelPartner.buyersServed}+` : "—", "Buyers Served"],
-                            [apiChannelPartner?.yearsOfExperience != null ? String(apiChannelPartner.yearsOfExperience) : "—", "Years of Experience"],
-                            [apiChannelPartner?.propertyHoldings != null ? String(apiChannelPartner.propertyHoldings) : "—", "Property Holdings"],
-                            [apiChannelPartner?.areasOfOperation != null && apiChannelPartner.areasOfOperation > 0 ? `${apiChannelPartner.areasOfOperation}+` : "—", "Areas of Operation"],
-                          ].map(([value, label]) => (
-                            <div key={label} className="flex min-w-0 items-center gap-3">
-                              <p className="shrink-0 text-2xl font-semibold leading-none text-[#05085E] sm:text-3xl">{value}</p>
-                              <p className="min-w-0 text-sm leading-5 text-text-black">{label}</p>
-                            </div>
+                            ["Property for Rent", apiChannelPartner?.propertyListings?.rent != null ? String(apiChannelPartner.propertyListings.rent) : "—"],
+                            ["Property for Sale", apiChannelPartner?.propertyListings?.sale != null ? String(apiChannelPartner.propertyListings.sale) : "—"],
+                          ].map(([label, count]) => (
+                            <button
+                              key={`${label}-mobile`}
+                              type="button"
+                              className="inline-flex w-full items-center justify-between rounded-lg border border-[#D1D5DB] bg-background-gray px-3 py-2.5 text-left"
+                            >
+                              <span className="text-sm font-medium text-text-black">{label}</span>
+                              <span className="inline-flex items-center gap-2">
+                                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#D1D5DB] text-sm text-text-gray">
+                                  {count}
+                                </span>
+                                <ChevronRight className="h-4 w-4 text-text-light-black" />
+                              </span>
+                            </button>
                           ))}
                         </div>
+
+                        <button
+                          type="button"
+                          className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#05085E] px-4 py-3 text-sm font-semibold text-white"
+                        >
+                          Learn More
+                          <ArrowRight className="h-4 w-4" />
+                        </button>
                       </div>
 
-                      <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        {[
-                          ["Property for Rent", apiChannelPartner?.propertyListings?.rent != null ? String(apiChannelPartner.propertyListings.rent) : "—"],
-                          ["Property for Sale", apiChannelPartner?.propertyListings?.sale != null ? String(apiChannelPartner.propertyListings.sale) : "—"],
-                        ].map(([label, count]) => (
-                          <button
-                            key={label}
-                            type="button"
-                            className="inline-flex w-full items-center justify-between rounded-lg border border-[#D1D5DB] px-3 py-2.5 text-left hover:bg-white/60 bg-background-gray"
-                          >
-                            <span className="text-sm font-medium text-text-black">{label}</span>
-                            <span className="inline-flex items-center gap-2">
-                              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#D1D5DB] text-sm text-text-gray">
-                                {count}
+                      <div className="hidden rounded-xl bg-white p-4 sm:p-6 md:block">
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="flex items-center gap-3">
+                            <Image
+                              src={apiChannelPartner?.profileImage || apiOwnerDetails?.profileImage || "/assets/profile.png"}
+                              alt="Agent avatar"
+                              width={52}
+                              height={52}
+                              className="h-[52px] w-[52px] rounded-full object-cover"
+                            />
+                            <div>
+                              <p className="text-base font-semibold text-text-black">
+                                {apiChannelPartner?.name || apiOwnerDetails?.name || "Property Owner"}
+                              </p>
+                              {apiChannelPartner && (
+                                <span className="mt-1 inline-block rounded bg-[#E69D48] px-2 py-1 text-[11px] font-medium text-white">
+                                  Channel Partner
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap">
+                            <button
+                              type="button"
+                              className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-blue bg-white px-4 py-2.5 text-sm font-semibold text-blue sm:w-auto"
+                            >
+                              <PhoneCall className="h-4 w-4" />
+                              View Number
+                            </button>
+                            <button
+                              type="button"
+                              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#05085E] px-4 py-2.5 text-sm font-semibold text-white sm:w-auto"
+                            >
+                              Learn More
+                              <ArrowRight className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 border-t border-[#D4D5D8] pt-5">
+                          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                            {[
+                              [apiChannelPartner?.buyersServed != null && apiChannelPartner.buyersServed > 0 ? `${apiChannelPartner.buyersServed}+` : "—", "Buyers Served"],
+                              [apiChannelPartner?.yearsOfExperience != null ? String(apiChannelPartner.yearsOfExperience) : "—", "Years of Experience"],
+                              [apiChannelPartner?.propertyHoldings != null ? String(apiChannelPartner.propertyHoldings) : "—", "Property Holdings"],
+                              [apiChannelPartner?.areasOfOperation != null && apiChannelPartner.areasOfOperation > 0 ? `${apiChannelPartner.areasOfOperation}+` : "—", "Areas of Operation"],
+                            ].map(([value, label]) => (
+                              <div key={`${label}-desktop`} className="flex min-w-0 items-center gap-3">
+                                <p className="shrink-0 text-2xl font-semibold leading-none text-[#05085E] sm:text-3xl">{value}</p>
+                                <p className="min-w-0 text-sm leading-5 text-text-black">{label}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                          {[
+                            ["Property for Rent", apiChannelPartner?.propertyListings?.rent != null ? String(apiChannelPartner.propertyListings.rent) : "—"],
+                            ["Property for Sale", apiChannelPartner?.propertyListings?.sale != null ? String(apiChannelPartner.propertyListings.sale) : "—"],
+                          ].map(([label, count]) => (
+                            <button
+                              key={`${label}-desktop`}
+                              type="button"
+                              className="inline-flex w-full items-center justify-between rounded-lg border border-[#D1D5DB] px-3 py-2.5 text-left hover:bg-white/60 bg-background-gray"
+                            >
+                              <span className="text-sm font-medium text-text-black">{label}</span>
+                              <span className="inline-flex items-center gap-2">
+                                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#D1D5DB] text-sm text-text-gray">
+                                  {count}
+                                </span>
+                                <ChevronRight className="h-4 w-4 text-text-light-black" />
                               </span>
-                              <ChevronRight className="h-4 w-4 text-text-light-black" />
-                            </span>
-                          </button>
-                        ))}
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </section>
@@ -802,9 +1135,9 @@ export default function ListingDetailsPage() {
                     <h2 className="text-lg font-semibold text-text-black">Ratings and Reviews</h2>
                     <div className="mt-4 rounded-xl bg-white p-4 sm:p-6">
                       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[220px_1fr]">
-                        <div className="lg:border-r lg:border-[#CFCFD2] lg:pr-5  ">
-
-                          <div className="flex flex-col items-center">
+                        <div className="lg:border-r lg:border-[#CFCFD2] lg:pr-5">
+                          <div className="grid grid-cols-[128px_1fr] items-start gap-4 lg:block">
+                          <div className="flex flex-col items-start lg:items-center">
                             <p className="text-3xl font-semibold leading-none text-text-black">
                               {apiRatings?.averageOverallRating?.toFixed(1) ?? "4.2"}
                               <span className="ml-1 text-sm font-medium text-text-light-gray">/5</span>
@@ -820,7 +1153,7 @@ export default function ListingDetailsPage() {
                             <p className="mt-1 text-xs text-text-gray">({apiRatings?.totalReviews ?? 0} Total Reviews)</p>
                           </div>
 
-                          <div className="mt-5 space-y-1">
+                          <div className="mt-0 space-y-1 lg:mt-5">
                             {[5, 4, 3, 2, 1].map((star) => {
                               const count = apiRatings?.starDistribution?.[String(star)] ?? 0;
                               const total = apiRatings?.totalReviews ?? 1;
@@ -841,11 +1174,12 @@ export default function ListingDetailsPage() {
                               );
                             })}
                           </div>
+                          </div>
                         </div>
 
                         <div>
                           <h3 className="text-md font-semibold text-text-black">Ratings by features</h3>
-                          <div className="mt-3 flex flex-wrap gap-x-8 gap-y-1 border-b border-[#CFCFD2] pb-4">
+                          <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-3 border-b border-[#CFCFD2] pb-4">
                             {[
                               { icon: <CarFront className="h-5 w-5" />, label: "Connectivity", score: apiRatings?.featureRatings?.connectivity },
                               { icon: <MapPin className="h-5 w-5" />, label: "Neighbourhood", score: apiRatings?.featureRatings?.neighbourhood },
@@ -903,7 +1237,7 @@ export default function ListingDetailsPage() {
                         </div>
                       </div>
 
-                      <div className="mt-6 border-t border-[#CFCFD2] pt-6">
+                      <div className="mt-6 hidden border-t border-[#CFCFD2] pt-6 md:block">
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                           <h3 className="text-lg font-semibold text-text-black sm:text-xl">Reviews</h3>
                           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-3">
@@ -1029,7 +1363,7 @@ export default function ListingDetailsPage() {
                         ref={similarCarouselRef}
                         className="flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-1 pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                       >
-                        {similarProperties
+                        {displaySimilarProperties
                           // .filter((item) => item.id !== listingId)
                           .map((item) => {
                             const isFav = favorites[item.id] ?? Boolean(item.isFavorite);
@@ -1127,7 +1461,7 @@ export default function ListingDetailsPage() {
                                     </p>
                                   </Link>
 
-                                  <div className="mt-4 border-t border-[#D4D5D8] pt-3">
+                                  <div className="mt-4 hidden border-t border-[#D4D5D8] pt-3 md:block">
                                     <p className="text-xs text-text-gray">
                                       Listed on :{" "}
                                       <span className="font-medium text-text-black">
@@ -1142,7 +1476,7 @@ export default function ListingDetailsPage() {
                                     </p>
                                   </div>
 
-                                  <div className="mt-4 border-t border-[#D4D5D8] pt-4">
+                                  <div className="mt-4 hidden border-t border-[#D4D5D8] pt-4 md:block">
                                     <div className="grid grid-cols-3 gap-2 text-xs text-text-black">
                                       <div className="inline-flex items-center gap-2">
                                         <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#D4D5D8] bg-[#F4F4F5] text-text-gray">
@@ -1198,72 +1532,83 @@ export default function ListingDetailsPage() {
                   </section>
                 </main>
 
-                <aside className="h-fit min-w-0 rounded-xl border border-border bg-white p-4 xl:sticky xl:top-4">
+                <aside className="hidden h-fit min-w-0 rounded-xl border border-border bg-white p-4 xl:sticky xl:top-4 xl:block">
                   <h3 className="text-xl font-semibold text-text-black">
                     Talk to our real estate specialists
                   </h3>
                   <p className="mt-1 text-sm text-text-gray">
                     Buy - Sell - Invest with expert advice.
                   </p>
-                  {(() => {
-                    const cp = apiChannelPartner;
-                    const specialistName = asString(cp?.name) ?? "KMA Property";
-                    const specialistFirm = asString(cp?.firmName) ?? "";
-                    const specialistImage = toFullAssetUrl(cp?.profileImage) || "/assets/profile.png";
-                    const phone = asString(cp?.phone);
-                    const cleanPhone = phone?.replace(/\D/g, "") ?? "";
-                    const normalizedPhone = cleanPhone.startsWith("91") && cleanPhone.length > 10 ? cleanPhone : `91${cleanPhone}`;
-                    const whatsappHref = phone
-                      ? `https://wa.me/${normalizedPhone}`
-                      : "https://wa.me/919056580022";
-                    const telHref = phone ? `tel:+${normalizedPhone}` : undefined;
-                    return (
-                      <>
-                        <div className="mt-4 flex items-center gap-3 rounded-lg py-3">
-                          <Image
-                            src={specialistImage}
-                            alt={specialistName}
-                            width={44}
-                            height={44}
-                            className="h-11 w-11 rounded-full object-cover"
-                          />
-                          <div>
-                            <p className="font-semibold text-text-black">{specialistName}</p>
-                            <p className="text-xs text-black">{specialistFirm}</p>
-                          </div>
-                        </div>
-                        {telHref ? (
-                          <a
-                            href={telHref}
-                            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-blue px-4 py-3 text-sm font-semibold text-white"
-                          >
-                            <PhoneCall className="h-4 w-4" />
-                            Contact Now
-                          </a>
-                        ) : (
-                          <button
-                            type="button"
-                            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-blue px-4 py-3 text-sm font-semibold text-white"
-                          >
-                            <PhoneCall className="h-4 w-4" />
-                            Contact Now
-                          </button>
-                        )}
-                        <a
-                          href={whatsappHref}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#1B8836] px-4 py-3 text-sm font-semibold text-[#1B8836]"
-                        >
-                          <MessageCircle className="h-4 w-4" />
-                          WhatsApp Expert
-                        </a>
-                      </>
-                    );
-                  })()}
+                  <div className="mt-4 flex items-center gap-3 rounded-lg py-3">
+                    <Image
+                      src={specialistImage}
+                      alt={specialistName}
+                      width={44}
+                      height={44}
+                      className="h-11 w-11 rounded-full object-cover"
+                    />
+                    <div>
+                      <p className="font-semibold text-text-black">{specialistName}</p>
+                      <p className="text-xs text-black">{specialistFirm}</p>
+                    </div>
+                  </div>
+                  {specialistTelHref ? (
+                    <a
+                      href={specialistTelHref}
+                      className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-blue px-4 py-3 text-sm font-semibold text-white"
+                    >
+                      <PhoneCall className="h-4 w-4" />
+                      Contact Now
+                    </a>
+                  ) : (
+                    <button
+                      type="button"
+                      className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-blue px-4 py-3 text-sm font-semibold text-white"
+                    >
+                      <PhoneCall className="h-4 w-4" />
+                      Contact Now
+                    </button>
+                  )}
                 </aside>
               </div>
             </div>
+          </div>
+        </div>
+
+        <div className="fixed inset-x-3 bottom-3 z-20 rounded-full border border-[#D4D5D8] bg-[#F6F6F7] p-3.5 shadow-[0_2px_8px_rgba(16,24,40,0.10),0_6px_20px_rgba(16,24,40,0.12)] xl:hidden">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-3">
+              <Image
+                src={specialistImage}
+                alt={specialistName}
+                width={56}
+                height={56}
+                className="h-14 w-14 shrink-0 rounded-full object-cover"
+              />
+              <div className="min-w-0">
+                <p className="truncate text-[20px] font-semibold leading-none text-text-black">{specialistName}</p>
+                <span className="mt-1 inline-block rounded bg-[#D69549] px-2 py-0.5 text-xs font-medium text-white">
+                  KMA Expert Pro
+                </span>
+              </div>
+            </div>
+            {specialistTelHref ? (
+              <a
+                href={specialistTelHref}
+                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-[#05085E] px-5 py-3 text-sm font-semibold text-white shadow-[0_1px_3px_rgba(16,24,40,0.20)]"
+              >
+                <PhoneCall className="h-4 w-4" />
+                Contact Now
+              </a>
+            ) : (
+              <button
+                type="button"
+                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-[#05085E] px-5 py-3 text-sm font-semibold text-white shadow-[0_1px_3px_rgba(16,24,40,0.20)]"
+              >
+                <PhoneCall className="h-4 w-4" />
+                Contact Now
+              </button>
+            )}
           </div>
         </div>
       </div>
