@@ -13,7 +13,6 @@ import {
   Building2,
   CarFront,
   ChevronRight,
-  CheckCircle2,
   Dumbbell,
   Heart,
   Hospital,
@@ -117,6 +116,52 @@ const getFurnishingIcon = (itemName: string): string => {
   return furnishingIconMap[lower] ?? "/assets/sofa.png";
 };
 
+type AmenityListItem = {
+  id: string;
+  name: string;
+  iconUrl: string | null;
+};
+
+const normalizeAmenityItems = (value: unknown): AmenityListItem[] => {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .map((item, idx) => {
+      if (typeof item === "string") {
+        const name = item.trim();
+        if (!name) return null;
+        return {
+          id: `${name}-${idx}`,
+          name,
+          iconUrl: null,
+        };
+      }
+
+      if (typeof item === "object" && item !== null) {
+        const rec = item as Record<string, unknown>;
+        const name =
+          asString(rec.name) ??
+          asString(rec.label) ??
+          asString(rec.amenityName) ??
+          asString(rec.value);
+        if (!name) return null;
+        const rawIcon =
+          asString(rec.icon) ??
+          asString(rec.iconUrl) ??
+          asString(rec.image) ??
+          asString(rec.fileKey);
+        return {
+          id: asString(rec.id) ?? `${name}-${idx}`,
+          name,
+          iconUrl: rawIcon ? toFullAssetUrl(rawIcon) : null,
+        };
+      }
+
+      return null;
+    })
+    .filter((item): item is AmenityListItem => Boolean(item));
+};
+
 const localityCategories = [
   { key: "schools", label: "Schools", icon: School },
   { key: "busStops", label: "Bus Stops", icon: BusFront },
@@ -188,6 +233,9 @@ export default function ListingDetailsPage() {
   const apiOwnerDetails = detailsResponse?.ownerDetails;
   const apiRatings = detailsResponse?.ratingsAndReviews;
   const apiSampleReviews = detailsResponse?.sampleReviews;
+  const channelPartnerDetailsHref = apiChannelPartner?.id
+    ? `/channel-partner/${apiChannelPartner.id}`
+    : "/channel-partner";
 
   const similarParams = useMemo(() => {
     const city =
@@ -477,9 +525,7 @@ export default function ListingDetailsPage() {
   const furnishingsCounts = Array.isArray(propertyDetails?.furnishingsCounts)
     ? (propertyDetails.furnishingsCounts as Array<{ item: string; count: number }>)
     : [];
-  const amenitiesList = Array.isArray(propertyDetails?.amenitiesList)
-    ? (propertyDetails.amenitiesList as string[])
-    : [];
+  const amenitiesList = normalizeAmenityItems(propertyDetails?.amenitiesList);
   const hasFurnishingSection = furnishingsCounts.length > 0;
   const hasAmenitiesSection = amenitiesList.length > 0;
 
@@ -617,7 +663,7 @@ export default function ListingDetailsPage() {
                 <h1 className="mt-1 text-2xl font-semibold text-text-black">
                   {propertyTitle}
                 </h1>
-                <p className="mt-2.5 flex items-center gap-1 text-sm text-text-gray">
+                <p className="mt-2.5 flex items-center gap-1 text-sm text-text-black">
                   <MapPin className="h-4 w-4" />
                   {propertyAddress}
                 </p>
@@ -861,16 +907,24 @@ export default function ListingDetailsPage() {
                       className="rounded-xl scroll-mt-32"
                     >
                       <h2 className="text-xl font-semibold text-text-black">Amenities</h2>
-                      <div className="mt-4 rounded-lg bg-white p-4 grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
-                        {amenitiesList.map((name) => (
+                      <div className="mt-4 rounded-lg bg-white p-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                        {amenitiesList.map((amenity) => (
                           <div
-                            key={name}
-                            className="inline-flex items-center gap-3"
+                            key={amenity.id}
+                            className="inline-flex items-center gap-3 rounded-md border border-[#E2E2E4] bg-[#F4F4F5] px-3 py-2"
                           >
-                            <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-[#E7E7E9] text-text-black">
-                              <CheckCircle2 className="h-5 w-5" />
+                            <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[#E7E7E9] text-text-black">
+                              {amenity.iconUrl ? (
+                                <img
+                                  src={amenity.iconUrl}
+                                  alt=""
+                                  className="h-5 w-5 object-contain"
+                                />
+                              ) : (
+                                <Building2 className="h-4 w-4 text-text-gray" />
+                              )}
                             </span>
-                            <span className="text-sm font-medium text-text-black">{name}</span>
+                            <span className="text-sm font-medium text-text-black">{amenity.name}</span>
                           </div>
                         ))}
                       </div>
@@ -914,13 +968,13 @@ export default function ListingDetailsPage() {
                             <PhoneCall className="h-4 w-4" />
                             View Number
                           </button>
-                          <button
-                            type="button"
+                          <Link
+                            href={channelPartnerDetailsHref}
                             className="inline-flex items-center gap-2 rounded-xl bg-[#05085E] px-4 py-2.5 text-sm font-semibold text-white"
                           >
                             Learn More
                             <ArrowRight className="h-4 w-4" />
-                          </button>
+                          </Link>
                         </div>
                       </div>
 
@@ -945,9 +999,9 @@ export default function ListingDetailsPage() {
                           ["Property for Rent", apiChannelPartner?.propertyListings?.rent != null ? String(apiChannelPartner.propertyListings.rent) : "—"],
                           ["Property for Sale", apiChannelPartner?.propertyListings?.sale != null ? String(apiChannelPartner.propertyListings.sale) : "—"],
                         ].map(([label, count]) => (
-                          <button
+                          <Link
                             key={label}
-                            type="button"
+                            href={channelPartnerDetailsHref}
                             className="inline-flex w-full items-center justify-between rounded-lg border border-[#D1D5DB] px-3 py-2.5 text-left hover:bg-white/60 bg-background-gray"
                           >
                             <span className="text-sm font-medium text-text-black">{label}</span>
@@ -957,7 +1011,7 @@ export default function ListingDetailsPage() {
                               </span>
                               <ChevronRight className="h-4 w-4 text-text-light-black" />
                             </span>
-                          </button>
+                          </Link>
                         ))}
                       </div>
                     </div>
@@ -1076,12 +1130,12 @@ export default function ListingDetailsPage() {
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                           <h3 className="text-xl font-semibold text-text-black">Reviews</h3>
                           <div className="flex items-center gap-3">
-                            <button
-                              type="button"
+                            <Link
+                              href={`/projects/${params?.projectId ?? ""}/${listingId || ""}/reviews/create`}
                               className="rounded-xl border border-blue bg-white px-5 py-2.5 text-sm font-semibold text-blue"
                             >
                               Add a Review
-                            </button>
+                            </Link>
                             <Link
                               href={`/projects/${params?.projectId ?? ""}/${listingId || ""}/reviews`}
                               className="inline-flex items-center gap-2 rounded-xl bg-[#05085E] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0B127A]"
@@ -1204,6 +1258,7 @@ export default function ListingDetailsPage() {
                             const isFav = favorites[item.id] ?? Boolean(item.isFavorite);
                             const imageSrc = toFullAssetUrl(item.imageUrl) || "/assets/property/img-4.png";
                             const ownerImage = toFullAssetUrl(item.owner?.profileImage) || "/assets/profile.png";
+                            const ownerName = asString(item.owner?.name) ?? "Property Owner";
                             const rating = Number.isFinite(item.averageRating) ? item.averageRating : 5;
                             const priceLabel =
                               item.priceType === "rent"
@@ -1290,6 +1345,9 @@ export default function ListingDetailsPage() {
                                     <p className="mt-1 flex items-center gap-1 text-sm text-text-gray">
                                       <MapPin className="h-4 w-4 shrink-0" />
                                       {item.address}
+                                    </p>
+                                    <p className="mt-1 text-xs font-medium text-text-black text-bold">
+                                      Owner: <span className="text-text-black">{ownerName}</span>
                                     </p>
                                     <p className="mt-2 text-xl font-semibold leading-none text-[#05085E]">
                                       {priceLabel}
