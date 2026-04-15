@@ -12,7 +12,7 @@ import ProjectStatusMenu from "../filtermenu/projectStatusMenu";
 import PostedByMenu from "../filtermenu/postedByMenu";
 import TransactionByMenu from "../filtermenu/transactionByMenu";
 import { useQuery } from "@tanstack/react-query";
-import { getPropertiesCountApiHandler, GetPropertiesCountPayload, GetPropertiesCountResponse } from "@/services/homeService";
+import { getPropertiesCountApiHandler, GetPropertiesCountPayload, GetPropertiesCountResponse, searchSuggestApiHandler } from "@/services/homeService";
 import { useDispatch, useSelector } from "react-redux";
 import { getSelectedCity, getCityData, getPropertyMasterData, setSelectedCity } from "@/store/homeHeaderSlice";
 import { Id, toast } from "react-toastify";
@@ -43,6 +43,49 @@ export default function Filter() {
   const [selectedPostedBy, setSelectedPostedBy] = useState([])
   const [transactionBy, setTransactionBy] = useState({name: 'Buy', value: 'sale'})
   const [citySelectionError, setCitySelectionError] = useState(false)
+  const [suggestOpen, setSuggestOpen] = useState(false)
+
+  const suggestFilters = useMemo(() => {
+    const masterData = Array.isArray(propertyMasterData) ? propertyMasterData : [];
+    const filters: { listingTypeId?: string; categoryId?: string; propertyTypeIds?: string } = {};
+    if (filterType === 'sale' || filterType === 'rent') {
+      const lt = masterData.find((item: any) => item.code === filterType);
+      if (lt?.id) filters.listingTypeId = lt.id;
+    } else if (filterType === 'commercial') {
+      for (const lt of masterData) {
+        const cat = (lt as any).categories?.find((c: any) => c.code === 'commercial');
+        if (cat) { filters.categoryId = cat.id; break; }
+      }
+    } else if (filterType === 'plot_land') {
+      const plotIds: string[] = [];
+      for (const lt of masterData) {
+        for (const cat of ((lt as any).categories ?? [])) {
+          for (const pt of (cat.propertyTypes ?? [])) {
+            const name = pt.name?.toLowerCase() ?? '';
+            if (name.includes('plot') || name.includes('land') || name.includes('agricultural')) plotIds.push(pt.id);
+          }
+        }
+      }
+      if (plotIds.length > 0) filters.propertyTypeIds = plotIds.join(',');
+    }
+    return filters;
+  }, [filterType, propertyMasterData])
+
+  const { data: suggestData } = useQuery({
+    queryKey: ['search-suggest', deferredSearch, suggestFilters.listingTypeId, suggestFilters.categoryId, suggestFilters.propertyTypeIds],
+    queryFn: () => searchSuggestApiHandler(deferredSearch.trim(), 6, suggestFilters),
+    enabled: deferredSearch.trim().length >= 1,
+    staleTime: 30_000,
+  })
+
+  const handleSuggestPick = (label: string, type: string, cityId?: string) => {
+    setSearch(label)
+    setSuggestOpen(false)
+    if (type === 'city' && cityId && cityData?.allCities) {
+      const match = cityData.allCities.find((c: any) => c.id === cityId)
+      if (match) dispatch(setSelectedCity(match as any))
+    }
+  }
 
   const handlePopperOpen = (event: React.MouseEvent<HTMLElement>, type) => {
     setAnchorEl(event.currentTarget);
@@ -298,28 +341,79 @@ export default function Filter() {
             />
           </div>
           <div className="flex justify-between items-center px-4 flex-3 border-r border-t border-b border-border rounded-r-full">
-            <div className="flex w-full">
-              <Image
-                src="/assets/search-gray.svg"
-                width={16}
-                height={16}
-                alt="search"
-              />
-              <InputBase
-                placeholder="Search by Locality"
-                fullWidth
-                value={search}
-                onChange={(event) => {
-                  setSearch(event.target.value)
-                  if (detectedLocationSearch) setDetectedLocationSearch('')
-                }}
-                className="w-full h-full px-3 text-xs rounded-full"
-                inputProps={{
-                  className:
-                    "font-ibm-plex-sans! text-sm text-text-gray placeholder:!text-text-gray placeholder:!text-sm placeholder:!opacity-100",
-                }}
-              />
-            </div>
+            <ClickAwayListener onClickAway={() => setSuggestOpen(false)}>
+              <div className="flex w-full relative">
+                <Image
+                  src="/assets/search-gray.svg"
+                  width={16}
+                  height={16}
+                  alt="search"
+                />
+                <InputBase
+                  placeholder="Search by Locality"
+                  fullWidth
+                  value={search}
+                  onFocus={() => setSuggestOpen(true)}
+                  onChange={(event) => {
+                    setSearch(event.target.value)
+                    setSuggestOpen(true)
+                    if (detectedLocationSearch) setDetectedLocationSearch('')
+                  }}
+                  className="w-full h-full px-3 text-xs rounded-full"
+                  inputProps={{
+                    className:
+                      "font-ibm-plex-sans! text-sm text-text-gray placeholder:!text-text-gray placeholder:!text-sm placeholder:!opacity-100",
+                  }}
+                />
+                {suggestOpen && search.trim().length >= 1 && suggestData && (
+                  (suggestData.cities?.length || suggestData.localities?.length || suggestData.societies?.length) ? (
+                    <div className="absolute top-full left-0 right-0 z-50 mt-2 max-h-[320px] overflow-auto rounded-lg border border-border bg-white shadow-lg">
+                      {suggestData.cities?.length > 0 && (
+                        <div className="py-1">
+                          <div className="px-3 pt-1.5 pb-0.5 text-[10px] font-semibold uppercase tracking-wide text-text-light-gray">Cities</div>
+                          {suggestData.cities.map((c) => (
+                            <button key={c.id} type="button" onMouseDown={(e) => e.preventDefault()}
+                              onClick={() => handleSuggestPick(c.name, 'city', c.id)}
+                              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-[#F7F8FC]">
+                              <span className="text-text-black">{c.name}</span>
+                              {c.state && <span className="ml-auto text-xs text-text-gray">{c.state}</span>}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      {suggestData.localities?.length > 0 && (
+                        <div className="py-1 border-t border-border">
+                          <div className="px-3 pt-1.5 pb-0.5 text-[10px] font-semibold uppercase tracking-wide text-text-light-gray">Localities</div>
+                          {suggestData.localities.map((l) => (
+                            <button key={l.id} type="button" onMouseDown={(e) => e.preventDefault()}
+                              onClick={() => handleSuggestPick(l.name, 'locality', l.cityId)}
+                              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-[#F7F8FC]">
+                              <span className="text-text-black">{l.name}</span>
+                              {l.cityName && <span className="ml-auto text-xs text-text-gray">{l.cityName}</span>}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      {suggestData.societies?.length > 0 && (
+                        <div className="py-1 border-t border-border">
+                          <div className="px-3 pt-1.5 pb-0.5 text-[10px] font-semibold uppercase tracking-wide text-text-light-gray">Societies</div>
+                          {suggestData.societies.map((s) => (
+                            <button key={s.id} type="button" onMouseDown={(e) => e.preventDefault()}
+                              onClick={() => handleSuggestPick(s.name, 'society', s.cityId ?? undefined)}
+                              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-[#F7F8FC]">
+                              <span className="text-text-black">{s.name}</span>
+                              {(s.localityName || s.cityName) && (
+                                <span className="ml-auto text-xs text-text-gray">{[s.localityName, s.cityName].filter(Boolean).join(', ')}</span>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : null
+                )}
+              </div>
+            </ClickAwayListener>
             <button
               type="button"
               className={`${isDetectingLocation ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`}
@@ -414,28 +508,79 @@ export default function Filter() {
             />
           </div>
           <div className="flex justify-between items-center px-4 flex-3 border border-border rounded-full">
-            <div className="flex w-full">
-              <Image
-                src="/assets/search-gray.svg"
-                width={16}
-                height={16}
-                alt="search"
-              />
-              <InputBase
-                placeholder="Search by Locality"
-                fullWidth
-                value={search}
-                onChange={(event) => {
-                  setSearch(event.target.value)
-                  if (detectedLocationSearch) setDetectedLocationSearch('')
-                }}
-                className="w-full h-full px-3 text-xs rounded-full"
-                inputProps={{
-                  className:
-                    "font-ibm-plex-sans! text-sm text-text-gray placeholder:!text-text-gray placeholder:!text-sm placeholder:!opacity-100",
-                }}
-              />
-            </div>
+            <ClickAwayListener onClickAway={() => setSuggestOpen(false)}>
+              <div className="flex w-full relative">
+                <Image
+                  src="/assets/search-gray.svg"
+                  width={16}
+                  height={16}
+                  alt="search"
+                />
+                <InputBase
+                  placeholder="Search by Locality"
+                  fullWidth
+                  value={search}
+                  onFocus={() => setSuggestOpen(true)}
+                  onChange={(event) => {
+                    setSearch(event.target.value)
+                    setSuggestOpen(true)
+                    if (detectedLocationSearch) setDetectedLocationSearch('')
+                  }}
+                  className="w-full h-full px-3 text-xs rounded-full"
+                  inputProps={{
+                    className:
+                      "font-ibm-plex-sans! text-sm text-text-gray placeholder:!text-text-gray placeholder:!text-sm placeholder:!opacity-100",
+                  }}
+                />
+                {suggestOpen && search.trim().length >= 1 && suggestData && (
+                  (suggestData.cities?.length || suggestData.localities?.length || suggestData.societies?.length) ? (
+                    <div className="absolute top-full left-0 right-0 z-50 mt-2 max-h-[320px] overflow-auto rounded-lg border border-border bg-white shadow-lg">
+                      {suggestData.cities?.length > 0 && (
+                        <div className="py-1">
+                          <div className="px-3 pt-1.5 pb-0.5 text-[10px] font-semibold uppercase tracking-wide text-text-light-gray">Cities</div>
+                          {suggestData.cities.map((c) => (
+                            <button key={c.id} type="button" onMouseDown={(e) => e.preventDefault()}
+                              onClick={() => handleSuggestPick(c.name, 'city', c.id)}
+                              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-[#F7F8FC]">
+                              <span className="text-text-black">{c.name}</span>
+                              {c.state && <span className="ml-auto text-xs text-text-gray">{c.state}</span>}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      {suggestData.localities?.length > 0 && (
+                        <div className="py-1 border-t border-border">
+                          <div className="px-3 pt-1.5 pb-0.5 text-[10px] font-semibold uppercase tracking-wide text-text-light-gray">Localities</div>
+                          {suggestData.localities.map((l) => (
+                            <button key={l.id} type="button" onMouseDown={(e) => e.preventDefault()}
+                              onClick={() => handleSuggestPick(l.name, 'locality', l.cityId)}
+                              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-[#F7F8FC]">
+                              <span className="text-text-black">{l.name}</span>
+                              {l.cityName && <span className="ml-auto text-xs text-text-gray">{l.cityName}</span>}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      {suggestData.societies?.length > 0 && (
+                        <div className="py-1 border-t border-border">
+                          <div className="px-3 pt-1.5 pb-0.5 text-[10px] font-semibold uppercase tracking-wide text-text-light-gray">Societies</div>
+                          {suggestData.societies.map((s) => (
+                            <button key={s.id} type="button" onMouseDown={(e) => e.preventDefault()}
+                              onClick={() => handleSuggestPick(s.name, 'society', s.cityId ?? undefined)}
+                              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-[#F7F8FC]">
+                              <span className="text-text-black">{s.name}</span>
+                              {(s.localityName || s.cityName) && (
+                                <span className="ml-auto text-xs text-text-gray">{[s.localityName, s.cityName].filter(Boolean).join(', ')}</span>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : null
+                )}
+              </div>
+            </ClickAwayListener>
             <button
               type="button"
               className={`${isDetectingLocation ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`}
