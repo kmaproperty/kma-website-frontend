@@ -226,8 +226,8 @@ export default function HomeHeader() {
 
   return (
     <>
-      <div className="sticky top-0 z-50 w-full flex justify-center">
-        <div className="w-[90%] mx-auto max-w-[1440px]">
+      <div className="sticky top-0 z-50 w-full flex justify-center px-4">
+        <div className="w-full mx-auto max-w-[1440px]">
 
           <div
             ref={headerBarRef}
