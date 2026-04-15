@@ -163,6 +163,8 @@ export interface ChannelPartner {
 
     // Some endpoints return rating (used on list/details UI).
     rating?: number | string | null;
+    average_rating?: number | string | null;
+    total_reviews?: number | null;
 
     // --- Details payload fields (example from user) ---
     channel_partner_code?: string | null;

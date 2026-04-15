@@ -113,8 +113,10 @@ function ChannelPartnerCard({
   const handleOpenDetails = () => onOpenDetails?.(partner);
 
   const profileSrc = joinUrl(PROFILE_BASE, partner.profile_image);
-  const rating = Number(partner.rating ?? 4.2);
-  const ratingText = Number.isFinite(rating) ? rating.toFixed(1) : "4.2";
+  const rating = Number(partner.average_rating ?? partner.rating ?? 0);
+  const ratingText = Number.isFinite(rating) ? rating.toFixed(1) : "0.0";
+  const totalReviews = Number(partner.total_reviews ?? 0);
+  const reviewsText = `${totalReviews} Rating${totalReviews === 1 ? "" : "s"}`;
   const cityList = partner.cities
     ?.split(",")
     .map((c) => c.trim())
@@ -155,11 +157,11 @@ function ChannelPartnerCard({
         <h3 className="text-text-black text-lg font-semibold leading-tight truncate">
           {partner.name}
         </h3>
-        {/* <div className="flex items-center gap-1.5 mt-1.5 text-sm text-text-gray">
+        <div className="flex items-center gap-1.5 mt-1.5 text-sm text-text-gray">
           <Star fill={Math.min(100, (rating / 5) * 100)} className="h-4 w-4 text-[#F7BB06]" />
           <span className="font-medium text-text-black">{ratingText}</span>
-          <span>4 Ratings</span>
-        </div> */}
+          <span>{reviewsText}</span>
+        </div>
         {cityList.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-3">
             {cityList.slice(0, 2).map((city, i) => (

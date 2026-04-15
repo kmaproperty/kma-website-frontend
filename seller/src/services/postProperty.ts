@@ -642,6 +642,7 @@ export interface GetPropertyDetailsResponse {
     fileKey: string;
     view: string | null;
     isCoverImage: boolean;
+    url?: string;
   }[];
 
   videos: {
