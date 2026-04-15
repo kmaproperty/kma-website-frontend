@@ -193,24 +193,6 @@ export default function ListingDetailsPage() {
     enabled: Boolean(similarParams.cityId),
   });
 
-  // Temporary demo helper: ensure slider shows enough cards to validate behavior.
-  const displaySimilarProperties = useMemo(() => {
-    if (similarProperties.length === 0) return [];
-    if (similarProperties.length >= 4) return similarProperties;
-
-    const expanded = [...similarProperties];
-    let idx = 0;
-    while (expanded.length < 4) {
-      const base = similarProperties[idx % similarProperties.length];
-      expanded.push({
-        ...base,
-        id: `${base.id}__demo_${expanded.length}`,
-      });
-      idx += 1;
-    }
-    return expanded;
-  }, [similarProperties]);
-
   const queryClient = useQueryClient();
   const favorites = useProjectsStore((s) => s.favorites);
   const setFavorite = useProjectsStore((s) => s.setFavorite);
@@ -394,7 +376,7 @@ export default function ListingDetailsPage() {
       window.removeEventListener("resize", onResize);
       container.removeEventListener("scroll", onScroll);
     };
-  }, [displaySimilarProperties.length]);
+  }, [similarProperties.length]);
 
   const scrollSimilarProperties = (direction: "prev" | "next") => {
     const container = similarCarouselRef.current;
@@ -1363,7 +1345,7 @@ export default function ListingDetailsPage() {
                         ref={similarCarouselRef}
                         className="flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-1 pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                       >
-                        {displaySimilarProperties
+                        {similarProperties
                           // .filter((item) => item.id !== listingId)
                           .map((item) => {
                             const isFav = favorites[item.id] ?? Boolean(item.isFavorite);
