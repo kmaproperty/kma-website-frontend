@@ -653,39 +653,72 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
       {filtersPortalReady &&
         mobileFiltersOpen &&
         createPortal(
-          <div className="fixed inset-0 z-[200] lg:hidden" role="dialog" aria-modal="true" aria-labelledby="mobile-filters-title">
-            <button
-              type="button"
-              className="absolute inset-0 bg-black/50"
-              aria-label="Close filters"
-              onClick={() => setMobileFiltersOpen(false)}
-            />
-            <div className="absolute inset-x-0 bottom-0 flex max-h-[min(90dvh,920px)] flex-col rounded-t-2xl bg-[#f5f5f5] shadow-[0_-8px_30px_rgba(0,0,0,0.12)]">
-              <div className="flex shrink-0 items-center justify-between border-b border-border px-4 py-3 pt-4">
-                <h2 id="mobile-filters-title" className="text-lg font-semibold text-text-black">
+          <div className="fixed inset-0 z-[200] bg-white lg:hidden" role="dialog" aria-modal="true" aria-labelledby="mobile-filters-title">
+            <div className="rounded-b-[20px] bg-[#010048] px-5 pb-6 pt-4 text-white">
+              <div className="flex items-center justify-between">
+                <button
+                  type="button"
+                  className="text-white font-medium text-[15px] flex items-center gap-3 cursor-pointer"
+                  onClick={() => setMobileFiltersOpen(false)}
+                  aria-label="Back"
+                >
+                  <span aria-hidden>
+                    <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M0.175386 6.42826L5.57173 11.8228C5.80852 12.059 6.19215 12.059 6.42954 11.8228C6.66633 11.5866 6.66633 11.203 6.42954 10.9668L1.46123 6.00027L6.42894 1.03376C6.66573 0.797565 6.66573 0.413931 6.42894 0.177143C6.19215 -0.0590475 5.80792 -0.0590475 5.57113 0.177143L0.174788 5.57164C-0.0583623 5.80539 -0.0583623 6.19506 0.175386 6.42826Z" fill="currentColor" />
+                    </svg>
+                  </span>
+                  <span>Filters</span>
+                </button>
+                <h2 id="mobile-filters-title" className="sr-only">
                   Filters
                 </h2>
                 <button
                   type="button"
                   onClick={() => setMobileFiltersOpen(false)}
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full text-text-black transition hover:bg-black/5"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full text-white transition hover:bg-white/10"
                   aria-label="Close"
                 >
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 [padding-bottom:max(1rem,env(safe-area-inset-bottom))]">
-                <FiltersSidebar hideHeader compact />
-              </div>
-              <div className="shrink-0 border-t border-border bg-white p-4 [padding-bottom:max(1rem,env(safe-area-inset-bottom))]">
+
+              <div className="mt-3">
+                <div className="flex items-center rounded-b-[10px] bg-white px-3 py-2">
+                  <Search className="h-[18px] w-[18px] text-[#606060] opacity-70" aria-hidden />
+                  <input
+                    value={filters.searchText}
+                    onChange={(e) => setFilters({ searchText: e.target.value })}
+                    placeholder="Search by Project, Locality, or ..."
+                    className="w-full px-3 text-sm text-[#606060] outline-none"
+                  />
+                </div>
                 <button
                   type="button"
-                  onClick={() => setMobileFiltersOpen(false)}
-                  className="h-12 w-full rounded-full bg-blue text-sm font-semibold text-white transition hover:opacity-95"
+                  className="mt-3.5 flex items-center gap-2 text-sm text-white"
+                  onClick={handleNearMeClick}
+                  disabled={isLocating}
                 >
-                  Show results
+                  <svg className="h-[18px] w-[18px]" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 16C14.2091 16 16 14.2091 16 12C16 9.79085 14.2091 8 12 8C9.79085 8 8 9.79085 8 12C8 14.2091 9.79085 16 12 16Z" fill="currentColor" />
+                    <path d="M23.5 11H20.941C20.4781 6.83578 17.1647 3.52191 13 3.05897V0.500016C13 0.434345 12.9871 0.369309 12.962 0.308628C12.9369 0.247947 12.9001 0.19281 12.8536 0.146372C12.8072 0.099933 12.7521 0.0631028 12.6914 0.0379871C12.6307 0.0128715 12.5657 -3.68695e-05 12.5 1.07814e-07H11.5C11.4344 -4.30326e-05 11.3693 0.0128608 11.3086 0.0379737C11.2479 0.0630865 11.1928 0.0999158 11.1464 0.146355C11.0999 0.192794 11.0631 0.247933 11.038 0.308617C11.0129 0.369301 11 0.434341 11 0.500016V3.05897C6.83531 3.52191 3.52191 6.83573 3.05902 11H0.500016C0.434345 11 0.369309 11.0129 0.308628 11.038C0.247947 11.0631 0.19281 11.0999 0.146372 11.1464C0.099933 11.1928 0.0631028 11.2479 0.0379871 11.3086C0.0128715 11.3693 -3.68695e-05 11.4343 1.07814e-07 11.5V12.5C-4.30326e-05 12.5656 0.0128608 12.6307 0.0379737 12.6914C0.0630865 12.7521 0.0999158 12.8072 0.146355 12.8536C0.192794 12.9001 0.247933 12.9369 0.308617 12.962C0.369301 12.9871 0.434341 13 0.500016 13H3.05902C3.52191 17.1642 6.83531 20.4781 11 20.941V23.5C11 23.5657 11.0129 23.6307 11.038 23.6914C11.0631 23.7521 11.0999 23.8072 11.1464 23.8536C11.1928 23.9001 11.2479 23.9369 11.3086 23.962C11.3693 23.9871 11.4344 24 11.5 24H12.5C12.5657 24 12.6307 23.9871 12.6914 23.962C12.7521 23.9369 12.8072 23.9001 12.8537 23.8536C12.9001 23.8072 12.9369 23.7521 12.9621 23.6914C12.9872 23.6307 13.0001 23.5657 13 23.5V20.941C17.1647 20.4781 20.4781 17.1642 20.941 13H23.5C23.5657 13 23.6307 12.9871 23.6914 12.962C23.7521 12.9369 23.8073 12.9001 23.8537 12.8536C23.9001 12.8072 23.937 12.7521 23.9621 12.6914C23.9872 12.6307 24.0001 12.5656 24 12.5V11.5C24.0001 11.4343 23.9872 11.3693 23.962 11.3086C23.9369 11.2479 23.9001 11.1928 23.8536 11.1464C23.8072 11.0999 23.7521 11.0631 23.6914 11.038C23.6307 11.0129 23.5657 11 23.5 11ZM12 19C8.14064 19 5.00002 15.8598 5.00002 12C5.00002 8.14017 8.14064 5.00002 12 5.00002C15.8594 5.00002 19 8.14013 19 12C19 15.8599 15.8594 19 12 19Z" fill="currentColor" />
+                  </svg>
+                  {isLocating ? "Locating..." : "Use my current location"}
                 </button>
               </div>
+            </div>
+
+            <div className="h-[calc(100dvh-220px)] overflow-y-auto px-5 pb-5">
+              <FiltersSidebar hideHeader compact />
+            </div>
+
+            <div className="fixed bottom-0 left-0 right-0 bg-white px-5 pt-3 [padding-bottom:max(1.25rem,env(safe-area-inset-bottom))]">
+              <button
+                type="button"
+                onClick={() => setMobileFiltersOpen(false)}
+                className="h-12 w-full rounded-full bg-[#010048] text-sm font-semibold text-white transition hover:opacity-95"
+              >
+                Show results
+              </button>
             </div>
           </div>,
           document.body

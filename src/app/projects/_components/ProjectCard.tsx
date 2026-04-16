@@ -362,7 +362,7 @@ export default function ProjectCard({
 
   return (
     <div
-      className="group relative cursor-pointer overflow-hidden rounded-[14px] border border-[#DADCE2] border-b-2 border-b-black bg-[#F5F5F5] transition will-change-transform xl:rounded-lg xl:border-0 xl:shadow-sm xl:hover:-translate-y-[1px] xl:hover:shadow-md"
+      className="group relative cursor-pointer overflow-hidden rounded-[14px] border border-[#DADCE2] border-b-2 border-b-black bg-[#F5F5F5] transition will-change-transform md:border-b md:border-b-[#DADCE2] xl:rounded-lg xl:border-0 xl:shadow-sm xl:hover:-translate-y-[1px] xl:hover:shadow-md"
       role="link"
       tabIndex={0}
       
@@ -533,10 +533,10 @@ export default function ProjectCard({
             type="button"
             onClick={handleCallBackClick}
             disabled={isAuthChecking}
-            className="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-[#4CAF50] bg-white text-[#2F9E44] transition hover:bg-[#E9F7EE] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1B8836]/25 xl:h-12 xl:w-auto xl:gap-2 xl:px-6 xl:text-sm xl:font-semibold"
+            className="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-[#4CAF50] bg-white text-[#2F9E44] transition hover:bg-[#E9F7EE] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1B8836]/25 md:h-12 md:w-auto md:gap-2 md:px-6 md:text-sm md:font-semibold"
           >
             <PhoneCall className="h-5 w-5" />
-            <span className="hidden xl:inline">{isAuthChecking ? <Spinner size={16} /> : "Get a Call Back"}</span>
+            <span className="hidden md:inline">{isAuthChecking ? <Spinner size={16} /> : "Get a Call Back"}</span>
           </button>
         </div>
       </div>

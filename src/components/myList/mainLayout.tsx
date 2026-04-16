@@ -29,7 +29,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
             <MainLayoutHeaderSwitcher />
           </Suspense>
         </div>
-        <div className="absolute w-full md:h-[450px] h-20 bg-blue rounded-b-[25px] sm:rounded-b-[40px] 2md:rounded-b-[60px] lg:rounded-b-[80px] xl:rounded-b-[100px]">
+        <div className="absolute w-full h-20 bg-blue rounded-b-[25px] sm:rounded-b-[40px] 2md:rounded-b-[60px] lg:h-[450px] lg:rounded-b-[80px] xl:rounded-b-[100px]">
           
         </div>
         <div className="relative z-[1] flex w-full justify-center px-4 pb-8 2md:pt-[10rem] pt-16 sm:px-6 lg:px-8">
