@@ -518,7 +518,7 @@ export default function ListingDetailsPage() {
                 Login / Sign Up
               </button>
               <button
-                onClick={() => router.back()}
+              onClick={() => router.push(`/projects/${params?.projectId ?? ""}`)}
                 className="w-full mt-3 text-text-gray py-2 px-6 rounded-full font-medium hover:bg-gray-100 transition cursor-pointer"
               >
                 Go Back
@@ -540,7 +540,7 @@ export default function ListingDetailsPage() {
         <div className="mb-2 flex items-start gap-2 md:hidden">
           <button
             type="button"
-            onClick={() => router.back()}
+            onClick={() => router.push(`/projects/${params?.projectId ?? ""}`)}
             aria-label="Go back"
             className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[#D8DAE1] bg-white text-[#0A0E67]"
           >
