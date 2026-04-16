@@ -635,7 +635,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
                 )}
 
                 {!isPending && !isError && totalPages > 0 && (
-                  <div className="flex justify-end">
+                  <div className="flex justify-center lg:justify-end">
                     <ProjectsPagination
                       currentPage={currentPage}
                       totalPages={totalPages}

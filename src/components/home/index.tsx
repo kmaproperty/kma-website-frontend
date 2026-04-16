@@ -687,13 +687,13 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
           </div>
         </div>
       </div>
-      <div className="my-16 flex justify-center overflow-hidden">
+      <div className="my-9 lg:my-16 flex justify-center overflow-hidden">
         <div className="w-[90%] md:w-[75%]">
           <LazyNeedSection />
         </div>
       </div>
       <div className="bg-[#F2F2F2] flex justify-center overflow-hidden">
-        <div className="my-16 w-[90%] md:w-[75%]">
+        <div className="my-9 lg:my-16 w-[90%] md:w-[75%]">
           <LazyRealEstateSection />
         </div>
       </div>
@@ -701,14 +701,14 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
         <LazyAboutUsSection />
       </div>
       {(Array.isArray(explorePropertyList) && explorePropertyList.length > 0 && typeof explorePropertyList[0] !== "undefined") && (
-        <div className="my-16 flex justify-center">
+        <div className="my-9 lg:my-16 flex justify-center">
           <div className="w-[90%] md:w-[75%]">
             <LazyExploreSection explorePropertyList={explorePropertyList} />
           </div>
         </div>
       )}
       {Array.isArray(featuredData?.properties) && featuredData?.properties.length > 0 && <div className="bg-[#F2F2F2] flex justify-center">
-        <div className="my-16 w-[90%] md:w-[75%]">
+        <div className="my-9 lg:my-16 w-[90%] md:w-[75%]">
           <LazyFeaturedProperties topProperties={featuredData?.properties ?? []} />
         </div>
       </div>}
