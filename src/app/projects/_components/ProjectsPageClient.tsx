@@ -2,8 +2,9 @@
 
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Search, SlidersHorizontal, X } from "lucide-react";
+import { ChevronLeft, Search, X } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import type { Project } from "../_types";
 import FiltersSidebar from "./FiltersSidebar";
 import ProjectsToolbar from "./ProjectsToolbar";
@@ -182,6 +183,7 @@ const normalizeBuildingType = (value?: string) => {
 };
 
 export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
+  const router = useRouter();
   const tab = useProjectsStore((s) => s.tab);
   const sort = useProjectsStore((s) => s.sort);
   const filters = useProjectsStore((s) => s.filters);
@@ -471,22 +473,90 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
     setCurrentPage(1);
   };
 
+  const cityLabel = initialProjects[0]?.city || "Gurgaon";
+  const lastUpdatedLabel = useMemo(
+    () =>
+      new Date().toLocaleDateString("en-US", {
+        month: "short",
+        day: "2-digit",
+        year: "numeric",
+      }),
+    []
+  );
+
   return (
     <div className="w-full min-w-0">
-      <div className="w-full px-4 sm:px-6 lg:px-8">
+      <div className="hidden w-full px-4 lg:block lg:px-8">
         <div className="text-xs font-medium text-text-light-gray">
           Home <span className="px-1">/</span>
           <span className="text-white"> New Properties in {initialProjects[0]?.city}</span>
         </div>
       </div>
 
-      <section className="mt-7 w-full px-4 sm:px-6 lg:px-8">
+      <section className="mt-7 w-full px-0 lg:px-8">
+        <div className="p-0 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0">
+        <div className="mb-4 lg:hidden">
+          <div className="mb-3 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => router.push("/projects")}
+              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-[#D8DAE1] bg-[#F4F5F8] text-[#0A0E67]"
+              aria-label="Back to listings"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <div className="min-w-0">
+              <p className="truncate text-[13px] text-[#8E8F95]">
+                Home / <span className="font-semibold text-[#0A0E67] underline underline-offset-2">New Project in {cityLabel}</span>
+              </p>
+            </div>
+          </div>
+          <h2 className="text-[24px] font-semibold leading-[1.15] text-[#1B2230]">
+            Property for Sale in {cityLabel}
+          </h2>
+          <div className="mt-4 flex items-center gap-2">
+            <div className="relative min-w-0 flex-1">
+              <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-text-gray" />
+              <input
+                value={filters.searchText}
+                onChange={(e) => setFilters({ searchText: e.target.value })}
+                placeholder="Search by Project Name, Builder...."
+                className="h-12 w-full rounded-full border border-border bg-white px-12 pr-4 text-sm text-text-black outline-none transition focus:border-blue"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handleNearMeClick}
+              disabled={isLocating}
+              className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border bg-white text-text-gray"
+              aria-label="Near me properties"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g clipPath="url(#clip0_mobile_nearme)">
+                  <path d="M12 7.63635C9.5891 7.63635 7.6364 9.5891 7.6364 12C7.6364 14.4109 9.5891 16.3636 12 16.3636C14.411 16.3636 16.3636 14.4109 16.3636 12C16.3636 9.58915 14.4109 7.63635 12 7.63635ZM21.7528 10.9091C21.2509 6.35999 17.64 2.74909 13.0909 2.24729V0H10.9091V2.24729C6.35999 2.74909 2.74909 6.35999 2.24729 10.9091H0V13.0909H2.24729C2.74909 17.64 6.36004 21.2509 10.9091 21.7528V24H13.0909V21.7528C17.64 21.2509 21.2509 17.64 21.7528 13.0909H24V10.9091H21.7528ZM12 19.6364C7.78368 19.6364 4.36367 16.2164 4.36367 12C4.36367 7.78368 7.78368 4.36367 12 4.36367C16.2164 4.36367 19.6364 7.78362 19.6364 12C19.6364 16.2164 16.2164 19.6364 12 19.6364Z" fill="#888888" />
+                </g>
+                <defs>
+                  <clipPath id="clip0_mobile_nearme">
+                    <rect width="24" height="24" fill="white" />
+                  </clipPath>
+                </defs>
+              </svg>
+            </button>
+          </div>
+          <div className="mt-3 flex items-center justify-between text-sm text-[#8E8F95]">
+            <p>
+              Showing <span className="font-semibold text-[#0A0E67]">{totalCount} Projects</span>
+            </p>
+            <p>Last Updated {lastUpdatedLabel}</p>
+          </div>
+        </div>
+
         <div className="relative">
-          <h1 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">
+          <h1 className="mt-3 hidden text-2xl font-semibold text-white lg:block lg:text-3xl">
             All Properties List
           </h1>
 
-          <div className="mt-4 flex w-full flex-col gap-3 rounded-[28px] bg-white p-4 sm:flex-row sm:items-stretch sm:gap-3 sm:p-5 lg:absolute lg:right-0 lg:top-15 lg:mt-0 lg:w-[73%] lg:max-w-[73%] lg:flex-row lg:rounded-[34px_34px_0_0] lg:border-b-0">
+          <div className="mt-4 hidden w-full flex-col gap-3 rounded-[28px] bg-white p-4 lg:absolute lg:right-0 lg:top-15 lg:mt-0 lg:flex lg:w-[73%] lg:max-w-[73%] lg:flex-row lg:items-stretch lg:gap-3 lg:rounded-[34px_34px_0_0] lg:border-b-0 lg:p-5">
             <div className="relative min-w-0 flex-1">
               <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-text-gray" />
 
@@ -520,25 +590,18 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-1 gap-6 rounded-xl bg-white p-4 lg:mt-20 lg:grid-cols-[320px_1fr]">
+        <div className="mt-2 grid grid-cols-1 gap-6 rounded-xl p-0 lg:mt-20 lg:grid-cols-[320px_1fr] lg:rounded-xl lg:bg-white lg:p-4">
           <aside className="hidden rounded-xl bg-[#f5f5f5] px-5 py-4 lg:block lg:sticky lg:top-6 lg:mt-0 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:overscroll-contain">
             <FiltersSidebar />
           </aside>
 
-          <main className="mt-2 min-w-0">
-            <div className="mb-4 flex items-center justify-between gap-3 lg:hidden">
-              <button
-                type="button"
-                onClick={() => setMobileFiltersOpen(true)}
-                className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-full border border-border bg-[#f5f5f5] px-4 text-sm font-semibold text-text-black shadow-sm transition hover:bg-[#ebebeb]"
-              >
-                <SlidersHorizontal className="h-4 w-4 shrink-0" aria-hidden />
-                Filters
-              </button>
-            </div>
-            <div className="rounded-2xl p-4  sm:p-5">
+          <main className="mt-1 min-w-0 lg:mt-2">
+            <div className="rounded-none p-0 lg:rounded-2xl lg:p-4">
               <div>
-                <ProjectsToolbar total={initialProjects.length} />
+                <ProjectsToolbar
+                  total={initialProjects.length}
+                  onOpenFilters={() => setMobileFiltersOpen(true)}
+                />
 
               </div>
 
@@ -584,6 +647,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
             </div>
           </main>
         </div>
+        </div>
       </section>
 
       {filtersPortalReady &&
@@ -610,8 +674,8 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-4 [padding-bottom:max(1rem,env(safe-area-inset-bottom))]">
-                <FiltersSidebar />
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 [padding-bottom:max(1rem,env(safe-area-inset-bottom))]">
+                <FiltersSidebar hideHeader compact />
               </div>
               <div className="shrink-0 border-t border-border bg-white p-4 [padding-bottom:max(1rem,env(safe-area-inset-bottom))]">
                 <button
