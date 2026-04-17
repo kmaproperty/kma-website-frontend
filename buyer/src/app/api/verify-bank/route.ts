@@ -1,4 +1,6 @@
-export async function GET() {
+import { NextRequest } from "next/server";
+
+export async function POST(request: NextRequest) {
   try {
     const tokenFromEnv = process.env.SUREPASS_BEARER_TOKEN;
     const baseUrl = process.env.SUREPASS_BASE_URL;
@@ -10,18 +12,26 @@ export async function GET() {
       );
     }
 
-    const res = await fetch(`${baseUrl}/api/v1/digilocker/initialize`, {
+    const body = await request.json();
+    const { account_number, ifsc, beneficiary_name } = body;
+
+    if (!account_number || !ifsc) {
+      return Response.json(
+        { error: "account_number and ifsc are required" },
+        { status: 400 }
+      );
+    }
+
+    const res = await fetch(`${baseUrl}/api/v1/bank-verification/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${tokenFromEnv}`,
       },
       body: JSON.stringify({
-        data: {
-          signup_flow: true,
-          logo_url: process.env.NEXT_PUBLIC_APP_LOGO || "https://kmaglobalproperty.com/favicon.ico",
-          skip_main_screen: false,
-        },
+        id_number: account_number,
+        ifsc,
+        beneficiary_name: beneficiary_name || "",
       }),
       cache: "no-store",
     });
@@ -29,7 +39,7 @@ export async function GET() {
     const json = await res.json();
 
     return Response.json(json, { status: res.status });
-  } catch (error) {
+  } catch (error: any) {
     return Response.json(
       { error: error.message },
       { status: 500 }
