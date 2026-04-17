@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import MainLayout from "@/components/myList/mainLayout";
 import ProjectsPageClient from "../_components/ProjectsPageClient";
 import { fetchPropertyMasterData } from "@/app/api/home";

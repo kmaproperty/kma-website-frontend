@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import type { Metadata } from "next";
 import { fetchPropertyMasterData } from "@/app/api/home";
 import HeaderDataSync from "@/components/header/HeaderDataSync";

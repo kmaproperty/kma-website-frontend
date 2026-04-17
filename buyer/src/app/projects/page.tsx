@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import type { Metadata } from "next";
 import ProjectsPageClient from "./_components/ProjectsPageClient";
 import MainLayout from "@/components/myList/mainLayout";
