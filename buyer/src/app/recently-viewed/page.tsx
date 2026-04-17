@@ -1,4 +1,3 @@
-export const dynamic = 'force-dynamic';
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import MainLayout from "@/components/myList/mainLayout";
@@ -7,6 +6,7 @@ import AboutusDataSync from "@/components/footer/AboutusDataSync";
 import HeaderDataSync from "@/components/header/HeaderDataSync";
 import { fetchPropertyMasterData } from "../api/home";
 import RecentlyViewedPageClient from "./_components/RecentlyViewedPageClient";
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: "Recently Viewed | KMA Property",

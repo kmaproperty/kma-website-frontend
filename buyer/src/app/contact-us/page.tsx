@@ -1,4 +1,3 @@
-export const dynamic = 'force-dynamic';
 "use client"
 import HomdeHeader from '@/components/header/homeHeader'
 import { BadgePercent, CircleCheckBig, House, Lightbulb, ListCheck, ListChecks, MailOpen, MapPinned, PhoneCall, Section } from 'lucide-react';

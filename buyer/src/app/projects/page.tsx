@@ -1,4 +1,3 @@
-export const dynamic = 'force-dynamic';
 import type { Metadata } from "next";
 import ProjectsPageClient from "./_components/ProjectsPageClient";
 import MainLayout from "@/components/myList/mainLayout";
@@ -6,6 +5,7 @@ import { fetchPropertyMasterData } from "../api/home";
 import HomeFooter from "@/components/footer/homeFooter";
 import AboutusDataSync from "@/components/footer/AboutusDataSync";
 import HeaderDataSync from "@/components/header/HeaderDataSync";
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: "Projects | KMA Property",
