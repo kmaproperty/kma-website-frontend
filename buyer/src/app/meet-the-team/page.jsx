@@ -114,7 +114,7 @@ const MeetTheTeam = () => {
                 </div>
             </div>
             <div className='w-full py-[100px] px-4 sm:px-6 md:px-[50px]'>
-                <div className='max-w-[1444px] mx-auto'>
+                <div className='max-w-[1440px] mx-auto'>
                     <div className='flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-0'>
                         <div className='w-full lg:w-[44%] max-w-[580px]'>
                             <SectionHeading title="" subtitle="Who We Are" type={'left'} color='' lineTop={false}
@@ -171,7 +171,7 @@ const MeetTheTeam = () => {
                         />
                     </span>
                 </div>
-                <div className='flex flex-col md:flex-row max-w-[1444px] mx-auto items-center justify-center gap-5 mt-12'>
+                <div className='flex flex-col md:flex-row max-w-[1440px] mx-auto items-center justify-center gap-5 mt-12'>
                     {
                         foundersDetails.map((founder, index) => (
                             <div key={index} className='w-full md:w-[50%] max-w-[468px] rounded-lg overflow-hidden'>
@@ -202,7 +202,7 @@ const MeetTheTeam = () => {
                         />
                     </span>
                 </div>
-                <div className='flex flex-col md:flex-row max-w-[1444px] mx-auto items-center justify-center gap-5 mt-12'>
+                <div className='flex flex-col md:flex-row max-w-[1440px] mx-auto items-center justify-center gap-5 mt-12'>
                     {
                         teamDetails.map((founder, index) => (
                             <div key={index} className='w-full md:w-[33.33%] max-w-[468px] rounded-lg overflow-hidden'>

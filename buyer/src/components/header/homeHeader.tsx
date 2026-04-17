@@ -235,7 +235,7 @@ export default function HomeHeader() {
               "rounded-[200px] px-3 lg:px-7 py-2 lg:py-4 flex justify-between items-center border border-1 transition-colors transition-transform duration-300",
               isScrolled
                 ? "bg-blue shadow-xl border-[#FFFFFF1F] translate-y-[0px]"
-                : "bg-white/10 bg-clip-padding backdrop-filter backdrop-blur-[30px] translate-y-[20px] border-[#FFFFFF33]",
+                : "bg-white/10 bg-clip-padding backdrop-filter backdrop-blur-[30px] md:translate-y-[20px] translate-y-[10px] border-[#FFFFFF33]",
             ].join(" ")}
           >
             <div className="flex items-center shrink-0">

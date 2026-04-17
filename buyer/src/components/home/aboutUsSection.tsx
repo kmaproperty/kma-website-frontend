@@ -70,7 +70,7 @@ export default function AboutUsSection() {
 
   return (
     <>
-      <div ref={ref} className="my-16 w-[90%] 2md:w-[75%] z-10">
+      <div ref={ref} className="my-16 max-w-[1440px] mx-auto w-full z-10">
         <motion.div
           className="grid grid-cols-1 2md:grid-cols-2 gap-6 justify-between items-center"
           
@@ -85,7 +85,7 @@ export default function AboutUsSection() {
               About Us
             </p>
             <div>
-              <p className="text-xl text-white text-wrap font-semibold">
+              <p className="kma_title text-white text-wrap font-semibold">
                 {aboutus?.aboutUs?.heading}
               </p>
               <p className="mt-1 leading-4 text-xs text-white text-wrap font-regular">

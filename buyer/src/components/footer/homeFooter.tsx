@@ -120,7 +120,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
     <footer className="w-full bg-text-black overflow-hidden px-4">
       {/* Tabs */}
       <div ref={ref} className="w-full bg-[#121D2B] flex justify-center border-t border-white/5">
-        <div className="max-w-[1444px] mx-auto w-full flex items-stretch">
+        <div className="max-w-[1440px] mx-auto w-full flex items-stretch">
           <button
             type="button"
             onClick={() => handleTab("1")}
@@ -154,7 +154,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
 
       {/* Property Links */}
       <div className="flex justify-center">
-        <div className="max-w-[1444px] mx-auto w-full pt-6">
+        <div className="max-w-[1440px] mx-auto w-full pt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <motion.div
               variants={topVariant}
@@ -209,7 +209,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
 
       {/* Main Footer Content */}
       <div className="w-full flex justify-center py-8">
-        <div className="max-w-[1444px] mx-auto w-full">
+        <div className="max-w-[1440px] mx-auto w-full">
           <div className="border-t border-text-gray/60 mb-8" />
 
           <motion.div
@@ -381,7 +381,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
 
       {/* Bottom Bar */}
       <div className="w-full flex justify-center">
-        <div className="max-w-[1444px] mx-auto w-full border-t border-text-gray/60 py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-xs text-white">
+        <div className="max-w-[1440px] mx-auto w-full border-t border-text-gray/60 py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-xs text-white">
           <p className="text-center md:text-left">
             Copyright © {currentYear} KMA. All Rights Reserved.
           </p>

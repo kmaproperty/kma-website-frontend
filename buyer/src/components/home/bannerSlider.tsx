@@ -21,10 +21,10 @@ const RenderSliderBody = ({
 }) => {
   return (
     <div className={`relative w-full ${bannerHeight}`}>
-      <div className="absolute w-full h-full inset-0 gradient-mask">
+      <div className="-absolute w-full h-full inset-0 gradient-mask">
         <Image
           alt={sliderItem.alt ?? "banner"}
-          className="object-cover"
+          className="object-cover !static"
           src={sliderItem.imagePath}
           fill
           priority={priority}

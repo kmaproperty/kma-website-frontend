@@ -55,7 +55,7 @@ export default function SectionHeader({
         <div className="bg-gray-400 h-0.5 w-8 mb-2">
           <div className="w-1/2 h-0.5 bg-gray-900" />
         </div>
-        <h2 className="text-2xl text-black font-semibold">{heading}</h2>
+        <h2 className="kma_title text-black font-semibold">{heading}</h2>
         <h3 className="text-text-gray text-xs">{subHeading}</h3>
       </div>
       <div className="flex gap-3 w-full md:justify-end">

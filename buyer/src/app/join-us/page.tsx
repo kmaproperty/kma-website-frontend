@@ -56,7 +56,7 @@ const JoinUs = () => {
                 </div>
             </div>
             <div className='w-full pb-[150px] pt-16 px-[50px]'>
-                <div className='max-w-[1444px] mx-auto'>
+                <div className='max-w-[1440px] mx-auto'>
                     <div className='flex gap-10 justify-between items-center'>
                         <div className='space-y-6 w-[55%]'>
                             <SectionHeading title="" subtitle="Join Now" type={'left'} color='' lineTop={true}

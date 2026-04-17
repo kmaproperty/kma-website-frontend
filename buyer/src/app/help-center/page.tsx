@@ -92,7 +92,7 @@ const HelpCenter = () => {
                 </div>
             </div>
             <div className='w-full min-w-0 px-4 py-10 md:py-12 lg:py-16 xl:py-20 2xl:py-[100px]'>
-                <div className='mx-auto max-w-[1444px]'>
+                <div className='mx-auto max-w-[1440px]'>
                     <div className='flex flex-col gap-8 2md:flex-row 2md:gap-10'>
                         <div className='col-auto space-y-8'>
                             <SectionHeading title="" subtitle="Getting Started" type={'left'} color='' lineTop={true}
@@ -113,7 +113,7 @@ const HelpCenter = () => {
                     </div>
                 </div>
 
-                <div className='mx-auto mt-10 max-w-[1444px] min-w-0 sm:mt-12 2md:mt-16'>
+                <div className='mx-auto mt-10 max-w-[1440px] min-w-0 sm:mt-12 2md:mt-16'>
                     <div className='flex flex-col gap-8 2md:flex-row 2md:gap-10'>
                         <div className='col-auto space-y-8'>
                             <SectionHeading title="" subtitle="Property Search & User Assistance" type={'left'} color='' lineTop={true}

@@ -121,7 +121,7 @@ export default function HomeSuccessStories() {
 
   return (
     <>
-      <div ref={ref} className="my-16 w-[90%] 2md:w-[75%] z-10">
+      <div ref={ref} className="my-16 max-w-[1440px] mx-auto w-full z-10">
         <div className="grid grid-cols-1 2md:grid-cols-[1.2fr_1fr_1fr]">
           <motion.div
             className="col-span-1 flex gap-4 flex-col"

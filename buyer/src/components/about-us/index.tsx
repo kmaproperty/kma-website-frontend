@@ -73,11 +73,11 @@ export default function AboutUsComponent({
   return (
     <div className="overflow-x-hidden">
       <HeaderDataSync propertyMasterData={propertyMasterData} propertyCitiesData={propertyCitiesData} />
-      <div className="relative overflow-hidden rounded-bl-[36px] rounded-br-[36px] sm:rounded-bl-[56px] sm:rounded-br-[56px] non_home_page_slider">
-        <BannerSlider bannerHeight={'h-[385px] sm:min-h-[600px] 2md:h-[60vh]'} backgroundImages={sliderImage} overlayClass='about-us-gradient-overlay' />
-        <div className="absolute flex flex-col items-center top-0 w-[100%] ">
+      <div className="relative overflow-hidden overflow-hidden rounded-b-[20px] sm:rounded-br-[30px] non_home_page_slider">
+        <BannerSlider bannerHeight={'h-full'} backgroundImages={sliderImage} overlayClass='about-us-gradient-overlay' />
+        <div className="relative flex flex-col items-center top-0 w-[100%] ">
           <HomeHeader />
-          <div className="mt-[80px] sm:mt-[150px]">
+          <div className="2xl:py-[180px] 1xl:py-[160px] xl:py-[140px] lg:py-[120px] 2md:py-[100px] md:py-[80px] sm:py-[60px] py-[50px]">
             <PageTitle
               title="About Us"
               description="Discover who we are, what we stand for, and how we make your real estate journey smooth and successful."
@@ -88,7 +88,7 @@ export default function AboutUsComponent({
 
       </div>
       <div className="w-full px-4 2xl:py-[120px] xl:py-20 lg:py-16 md:py-12 py-10">
-        <div className="flex xl:flex-row flex-col-reverse items-center justify-between max-w-[1444px] mx-auto gap-6">
+        <div className="flex xl:flex-row flex-col-reverse items-center justify-between max-w-[1440px] mx-auto gap-6">
           <div className="xl:w-[50%] w-full">
             <SectionHeading
               title="Who We Are"
@@ -178,7 +178,7 @@ export default function AboutUsComponent({
         </div>
       </div>
       <div className="w-full relative 2xl:pt-[100px] xl:pt-20 bg-[#F2F2F2]">
-        <div className="flex xl:flex-row flex-col items-center justify-between max-w-[1444px] mx-auto">
+        <div className="flex xl:flex-row flex-col items-center justify-between max-w-[1440px] mx-auto">
           <div className="xl:w-[50%] w-full">
             <Image
                src="/assets/aboutUs/hand-presenting-model.png"
@@ -213,7 +213,7 @@ export default function AboutUsComponent({
         </div>
       </div>
       <div className=" w-full px-4 py-10 md:block md:py-12 lg:py-16 xl:py-20 2xl:py-[100px]">
-        <div className="max-w-[1444px] mx-auto">
+        <div className="max-w-[1440px] mx-auto">
           <h2 className={`text-[28px] leading-11 font-semibold text-[#010048] text-left sm:text-center`}>A Service You Can Trust and Feel Confident In</h2>
           <div className="grid xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-[18px] sm:gap-5 md:mt-10 mt-[22px] items-center">
             <div className="bg-[#F2F2F2] px-[30px] py-[18px] sm:px-8 sm:py-5 rounded-lg flex flex-col gap-1 h-full justify-center">
@@ -291,7 +291,7 @@ export default function AboutUsComponent({
         </div>
       </div>
       {/* <div className="w-full px-4 2xl:py-[100px] xl:py-20 lg:py-16 md:py-12 py-10">
-        <div className="max-w-[1444px] mx-auto">
+        <div className="max-w-[1440px] mx-auto">
           <SectionHeading
             title="Team Members"
             subtitle="immediate help got from our team"

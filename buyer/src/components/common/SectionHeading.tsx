@@ -38,7 +38,7 @@ const SectionHeading = ({ title, subtitle, description, type, color, lineTop }) 
       </div>
 
       <h2
-        className={`text-[28px] leading-9 font-semibold ${
+        className={`kma_title font-semibold ${
           isCenter ? "text-center" : "text-left"
         }`}
         style={{ color: mainColor }}
