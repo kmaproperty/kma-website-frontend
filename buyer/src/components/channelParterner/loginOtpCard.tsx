@@ -67,15 +67,12 @@ export default function LoginOtpCard() {
         return;
       }
 
-      // Role-based redirect
-      const sellerAppUrl = process.env.NEXT_PUBLIC_SELLER_URL || "http://localhost:3002";
+      // Role-based redirect for Owner/Channel Partner
       const userRole = response.user?.role;
-      if (userRole === "END_USER" || userRole === "USER") {
-        router.replace("/");
-      } else if (userRole === "CHANNEL_PARTNER" && !response.kycCompleted) {
-        window.location.href = `${sellerAppUrl}/kyc`;
+      if (userRole === "CHANNEL_PARTNER" && !response.kycCompleted) {
+        router.replace("/kyc");
       } else {
-        window.location.href = `${sellerAppUrl}/user-dashboard`;
+        router.replace("/user-dashboard");
       }
     },
     onError: (error: any) => {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { ChevronDown, Leaf, Shield } from "lucide-react";
+import { ChevronDown, SlidersHorizontal } from "lucide-react";
 import { useProjectsStore } from "../_store/useProjectsStore";
 import type { PostedByTab, SortOption } from "../_types";
 import { cx } from "../_utils/format";
@@ -52,66 +52,74 @@ const SORTS: Array<{ id: SortOption; label: string }> = [
   { id: "price_high_low", label: "Price: High to Low" },
 ];
 
-export default function ProjectsToolbar({ total }: { total: number }) {
+export default function ProjectsToolbar({
+  total,
+  onOpenFilters,
+}: {
+  total: number;
+  onOpenFilters?: () => void;
+}) {
   const tab = useProjectsStore((s) => s.tab);
   const sort = useProjectsStore((s) => s.sort);
   const setTab = useProjectsStore((s) => s.setTab);
   const setSort = useProjectsStore((s) => s.setSort);
 
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   return (
     <div className="w-full">
-      <div className="flex flex-wrap items-center gap-3 text-sm text-text-gray">
-        <span>
-          Showing{" "}
-          <span className="font-semibold text-blue">{total} Property</span>
-        </span>
-        <span>|</span>
-        {/* <span className="text-text-gray">New Projects in {initialProjects[0]?.city}</span> */}
-        {isPending ? (
-          <span className="ml-1 rounded-full bg-light-purple px-2 py-0.5 text-xs font-medium text-blue">
-            Updating…
-          </span>
-        ) : null}
-      </div>
-
-      <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
-          {TABS.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              onClick={() => startTransition(() => setTab(t.id))}
-              className={cx(
-                "inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-md border px-5 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/30",
-                tab === t.id
-                  ? "border-blue bg-blue text-white"
-                  : "border-border bg-white text-text-gray hover:bg-background-gray"
-              )}
-              aria-pressed={tab === t.id}
-            >
-              {t.icon ? <span aria-hidden>{t.icon}</span> : null}
-              <span>{t.label}</span>
-            </button>
-          ))}
+      <div className="mt-0.5 flex items-center gap-2 lg:mt-1.5 lg:flex-col lg:items-stretch lg:gap-2">
+        <div className="hidden text-sm text-text-gray lg:block">
+          Showing <span className="font-semibold text-[#010048]">{total} Property</span>
         </div>
+        <div className="flex w-full min-w-0 items-center gap-2">
+          <div className="grid min-w-0 flex-1 grid-cols-3 gap-1.5 lg:flex lg:flex-nowrap lg:items-center lg:gap-2">
+            {TABS.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => startTransition(() => setTab(t.id))}
+                className={cx(
+                  "inline-flex h-9 min-w-0 cursor-pointer items-center justify-center gap-1 rounded-md border px-1.5 text-[13px] font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/30 lg:h-10 lg:min-w-[120px] lg:gap-2 lg:px-5 lg:text-sm",
+                  tab === t.id
+                    ? "border-blue bg-blue text-white"
+                    : "border-border bg-white text-text-gray hover:bg-background-gray"
+                )}
+                aria-pressed={tab === t.id}
+              >
+                {t.icon ? <span aria-hidden>{t.icon}</span> : null}
+                <span className="truncate">{t.label}</span>
+              </button>
+            ))}
+          </div>
 
-        <div className="flex items-center justify-end gap-3">
-          <span className="text-sm font-semibold text-text-black">Sort By :</span>
-          <div className="relative">
-            <select
-              value={sort}
-              onChange={(e) => startTransition(() => setSort(e.target.value as SortOption))}
-              className="h-10 min-w-[180px] cursor-pointer appearance-none rounded-full border border-border bg-background-gray px-4 pr-10 text-sm text-text-gray outline-none focus:border-blue"
-            >
-              {SORTS.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.label}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-gray" />
+          <button
+            type="button"
+            onClick={onOpenFilters}
+            className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-md border border-[#8D90C0] bg-[#0100481A] px-3 text-sm font-medium text-[#010048] transition hover:bg-[#ECECF6] lg:hidden"
+          >
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-md">
+              <SlidersHorizontal className="h-4 w-4 text-[#010048]" aria-hidden />
+            </span>
+            Filter
+          </button>
+
+          <div className="hidden justify-end gap-3 xl:flex xl:flex-row xl:items-center">
+            <span className="text-sm font-semibold text-text-black">Sort By :</span>
+            <div className="relative">
+              <select
+                value={sort}
+                onChange={(e) => startTransition(() => setSort(e.target.value as SortOption))}
+                className="h-10 min-w-[180px] cursor-pointer appearance-none rounded-full border border-border bg-background-gray px-4 pr-10 text-sm text-text-gray outline-none focus:border-blue"
+              >
+                {SORTS.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.label}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-gray" />
+            </div>
           </div>
         </div>
       </div>

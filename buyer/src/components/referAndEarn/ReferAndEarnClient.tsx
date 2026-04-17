@@ -1,49 +1,40 @@
 "use client";
 
-import ReferralUserShell from "@/components/referral/ReferralUserShell";
-import { EXPECTED_COINS_ON_DEAL_CLOSE, RUPEE_PER_COIN } from "@/lib/referral/constants";
-import { useReferralSessionActive } from "@/lib/referral/useReferralSessionActive";
-import { openReferralLoginDialog } from "@/lib/referral/openLoginDialog";
-import {
-  appendReferral,
-  getOrCreateUniqueUserId,
-  getReferrerProfile,
-  saveReferrerProfile,
-} from "@/lib/referral/storage";
-import type { PropertyTypeOption } from "@/lib/referral/types";
+import HomeFooter from "@/components/footer/homeFooter";
+import AboutusDataSync from "@/components/footer/AboutusDataSync";
+import HomeHeader from "@/components/header/homeHeader";
+import LoginCard from "@/components/channelParterner/loginCard";
+import LoginOtpCard from "@/components/channelParterner/loginOtpCard";
+import { USER_TYPE } from "@/lib/enums";
 import { userProfileApiHandler, UserProfileResponse } from "@/services/userService";
+import { useHeaderStore } from "@/store/useHeaderStore";
 import { useQuery } from "@tanstack/react-query";
-import Link from "next/link";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "nextjs-toploader/app";
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 
-type ViewStep = "landing" | "form" | "success";
+type PurposeType = "Rent" | "Buy";
 
 type ReferralForm = {
-  referrerName: string;
-  referrerPhone: string;
-  clientName: string;
-  clientMobile: string;
-  propertyType: PropertyTypeOption;
-  location: string;
-  channelPartnerId: string;
+  name: string;
+  phoneNumber: string;
+  purpose: PurposeType;
+  description: string;
 };
 
-const initialForm = (): ReferralForm => ({
-  referrerName: "",
-  referrerPhone: "",
-  clientName: "",
-  clientMobile: "",
-  propertyType: "Buy",
-  location: "",
-  channelPartnerId: "",
-});
+const initialForm: ReferralForm = {
+  name: "",
+  phoneNumber: "",
+  purpose: "Rent",
+  description: "",
+};
 
 const termsAndConditions: string[] = [
   "Each successful referral gives you reward coins.",
-  `1 coin = ₹${RUPEE_PER_COIN}.`,
+  "1 coin = Rs 10.",
   "Referral details must be genuine and reachable.",
   "KMA team verification is required before reward settlement.",
 ];
@@ -51,7 +42,7 @@ const termsAndConditions: string[] = [
 const referralSteps = [
   {
     title: "Share Referral",
-    description: "Submit your details and the client you are referring.",
+    description: "Click Refer Now and submit your referral details.",
   },
   {
     title: "KMA Verification",
@@ -59,17 +50,19 @@ const referralSteps = [
   },
   {
     title: "Earn Coins",
-    description: "Coins are credited when the deal is marked closed.",
+    description: "Coins are credited after successful validation.",
   },
 ];
-
-const propertyTypes: PropertyTypeOption[] = ["Buy", "Sell", "Rent"];
 
 export default function ReferAndEarnClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const isLoggedIn = useReferralSessionActive();
-  const partnerIdFromUrl = searchParams.get("partnerId") ?? searchParams.get("channelPartnerId") ?? "";
+  const { userRole } = useHeaderStore(true);
+  const isLoggedIn = Boolean(userRole === USER_TYPE.CHANNEL_PARTNER || userRole === USER_TYPE.OWNER);
+  const isLoginParam = searchParams.get("isLogin") === "true";
+  const isOtpParam = searchParams.get("isOtp") === "true";
+  const flowParam = searchParams.get("flow");
+  const isLoginDialogOpen = isLoginParam || (isOtpParam && flowParam === "login");
 
   const { data: profileResponse } = useQuery({
     queryKey: ["user-profile"],
@@ -78,42 +71,69 @@ export default function ReferAndEarnClient() {
     staleTime: 60 * 1000,
   });
 
-  const [step, setStep] = useState<ViewStep>("landing");
+  const [showForm, setShowForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formValue, setFormValue] = useState<ReferralForm>(initialForm);
-  const [submittedUniqueId, setSubmittedUniqueId] = useState("");
 
-  useEffect(() => {
-    if (partnerIdFromUrl && step === "landing") {
-      setFormValue((prev) => ({ ...prev, channelPartnerId: partnerIdFromUrl }));
-    }
-  }, [partnerIdFromUrl, step]);
-
-  const prefilledBase = useMemo(() => {
+  const prefilledForm = useMemo<ReferralForm>(() => {
     return {
-      referrerName: profileResponse?.user?.name ?? "",
-      referrerPhone: profileResponse?.user?.phone ?? "",
-      clientName: "",
-      clientMobile: "",
-      propertyType: "Buy" as PropertyTypeOption,
-      location: "",
-      channelPartnerId: partnerIdFromUrl,
+      name: profileResponse?.user?.name ?? "",
+      phoneNumber: profileResponse?.user?.phone ?? "",
+      purpose: formValue.purpose,
+      description: "",
     };
-  }, [profileResponse?.user?.name, profileResponse?.user?.phone, partnerIdFromUrl]);
+  }, [profileResponse?.user?.name, profileResponse?.user?.phone, formValue.purpose]);
+
+  const openLoginDialog = () => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const currentSearchParams = new URLSearchParams(window.location.search);
+    currentSearchParams.delete("isOtp");
+    currentSearchParams.delete("flow");
+    currentSearchParams.delete("mobile");
+    currentSearchParams.delete("code");
+    currentSearchParams.delete("redirect");
+    currentSearchParams.set("isLogin", "true");
+
+    const redirectParams = new URLSearchParams(window.location.search);
+    redirectParams.delete("isLogin");
+    redirectParams.delete("isOtp");
+    redirectParams.delete("flow");
+    redirectParams.delete("mobile");
+    redirectParams.delete("code");
+    redirectParams.delete("redirect");
+    const redirectSearch = redirectParams.toString();
+    const redirect = `${window.location.pathname}${redirectSearch ? `?${redirectSearch}` : ""}`;
+
+    currentSearchParams.set("redirect", redirect);
+    router.replace(`${window.location.pathname}?${currentSearchParams.toString()}`);
+  };
+
+  const closeLoginDialog = () => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const nextParams = new URLSearchParams(window.location.search);
+    nextParams.delete("isLogin");
+    nextParams.delete("isOtp");
+    nextParams.delete("flow");
+    nextParams.delete("mobile");
+    nextParams.delete("code");
+    nextParams.delete("redirect");
+    const query = nextParams.toString();
+    router.replace(`${window.location.pathname}${query ? `?${query}` : ""}`);
+  };
 
   const handleReferNow = () => {
     if (isLoggedIn) {
-      const saved = getReferrerProfile();
-      setFormValue({
-        ...initialForm(),
-        ...prefilledBase,
-        referrerName: prefilledBase.referrerName || saved?.name || "",
-        referrerPhone: prefilledBase.referrerPhone || saved?.phone || "",
-      });
-      setStep("form");
+      setShowForm(true);
+      setFormValue(prefilledForm);
       return;
     }
-    openReferralLoginDialog(router);
+    openLoginDialog();
   };
 
   const handleInputChange = (field: keyof ReferralForm, value: string) => {
@@ -122,185 +142,127 @@ export default function ReferAndEarnClient() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const rName = formValue.referrerName.trim();
-    const rPhone = formValue.referrerPhone.trim();
-    const cName = formValue.clientName.trim();
-    const cMobile = formValue.clientMobile.trim();
-    const cpId = formValue.channelPartnerId.trim();
-
-    if (!rName) {
-      toast.error("Your name is required");
+    if (!formValue.name.trim()) {
+      toast.error("Name is required");
       return;
     }
-    if (!/^\d{10}$/.test(rPhone)) {
-      toast.error("Please enter a valid 10 digit mobile number for yourself");
-      return;
-    }
-    if (!cName) {
-      toast.error("Client name is required");
-      return;
-    }
-    if (!/^\d{10}$/.test(cMobile)) {
-      toast.error("Please enter a valid 10 digit client mobile number");
+    if (!/^\d{10}$/.test(formValue.phoneNumber.trim())) {
+      toast.error("Please enter a valid 10 digit phone number");
       return;
     }
 
     setIsSubmitting(true);
     try {
-      saveReferrerProfile({ name: rName, phone: rPhone });
-      const uniqueId = getOrCreateUniqueUserId(rName);
-      const viaPartner = Boolean(cpId);
-      appendReferral({
-        referrerName: rName,
-        referrerPhone: rPhone,
-        clientName: cName,
-        clientMobile: cMobile,
-        propertyType: formValue.propertyType,
-        location: formValue.location.trim(),
-        channelPartnerId: cpId,
-        viaPartner,
-      });
-      setSubmittedUniqueId(uniqueId);
-      setStep("success");
+      await new Promise((resolve) => setTimeout(resolve, 500));
       toast.success("Referral submitted successfully");
+      setFormValue(isLoggedIn ? { ...prefilledForm, purpose: "Rent" } : initialForm);
+      setShowForm(false);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const resetToLanding = () => {
-    setStep("landing");
-    setFormValue(initialForm());
-  };
-
-  const openFormAgain = () => {
-    const saved = getReferrerProfile();
-    setFormValue({
-      ...initialForm(),
-      ...prefilledBase,
-      referrerName: prefilledBase.referrerName || saved?.name || "",
-      referrerPhone: prefilledBase.referrerPhone || saved?.phone || "",
-    });
-    setStep("form");
-  };
-
   return (
-    <ReferralUserShell
-      title="Refer and Earn"
-      description={`Help friends discover the right property with KMA and earn rewards. 1 coin = ₹${RUPEE_PER_COIN}.`}
-      breadcrumb="Home / Refer and Earn"
-    >
-      <div className="space-y-6">
-        {step !== "success" && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 -mt-2 mb-2">
-            <div className="rounded-xl border border-[#EAECF0] bg-white px-4 py-4 shadow-sm">
-              <p className="text-xs uppercase tracking-wide text-[#667085]">Reward rate</p>
-              <p className="text-2xl font-semibold text-[#0F172A] mt-1">1 coin = ₹{RUPEE_PER_COIN}</p>
+    <div className="bg-[#F8FAFC] min-h-screen">
+      <div className="relative pt-[25px] min-h-[500px] rounded-b-[60px] bg-[linear-gradient(120deg,#1B2DBE_0%,#0D9DF2_100%)]">
+        <HomeHeader />
+        <div className="w-[90%] max-w-[1100px] mx-auto mt-[70px] pb-[140px] text-white">
+          <p className="text-sm opacity-90">Home / Refer and Earn</p>
+          <h1 className="text-[30px] md:text-[42px] leading-[1.15] font-semibold mt-2">Refer and Earn ( 1 coin = Rs 10 )</h1>
+          <p className="text-sm md:text-base mt-3 max-w-[700px] opacity-95">
+            Help friends discover the right property with KMA and earn rewards for every valid referral.
+          </p>
+
+          <div className="mt-7 grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="rounded-xl border border-white/25 bg-white/10 backdrop-blur-sm px-4 py-4">
+              <p className="text-xs uppercase tracking-wide opacity-90">Reward Rate</p>
+              <p className="text-2xl font-semibold mt-1">1 Coin = Rs 10</p>
             </div>
-            <div className="rounded-xl border border-[#EAECF0] bg-white px-4 py-4 shadow-sm">
-              <p className="text-xs uppercase tracking-wide text-[#667085]">Steps</p>
-              <p className="text-2xl font-semibold text-[#0F172A] mt-1">3 simple steps</p>
+            <div className="rounded-xl border border-white/25 bg-white/10 backdrop-blur-sm px-4 py-4">
+              <p className="text-xs uppercase tracking-wide opacity-90">Fast Process</p>
+              <p className="text-2xl font-semibold mt-1">3 Simple Steps</p>
             </div>
-            <div className="rounded-xl border border-[#EAECF0] bg-white px-4 py-4 shadow-sm">
-              <p className="text-xs uppercase tracking-wide text-[#667085]">Network</p>
-              <p className="text-2xl font-semibold text-[#0F172A] mt-1">KMA</p>
+            <div className="rounded-xl border border-white/25 bg-white/10 backdrop-blur-sm px-4 py-4">
+              <p className="text-xs uppercase tracking-wide opacity-90">Trusted Brand</p>
+              <p className="text-2xl font-semibold mt-1">KMA Network</p>
             </div>
           </div>
-        )}
+        </div>
+      </div>
 
-        {step === "landing" && (
-          <div className="grid grid-cols-1 lg:grid-cols-[1.25fr_1fr] gap-6">
-            <div className="bg-white rounded-2xl border border-[#EAECF0] p-6 md:p-8 shadow-[0_10px_40px_rgba(0,0,0,0.08)]">
-              <h2 className="text-2xl font-semibold text-[#0F172A]">Terms and Conditions</h2>
-              <ul className="mt-4 space-y-2">
-                {termsAndConditions.map((item) => (
-                  <li key={item} className="text-[#475467] text-[15px] leading-6">
-                    - {item}
-                  </li>
-                ))}
-              </ul>
-              <button
-                type="button"
-                onClick={handleReferNow}
-                className="mt-6 animated-button px-10 py-3 border border-blue text-center cursor-pointer"
-              >
-                <span className="relative">Give a referral</span>
-              </button>
-            </div>
+      <div className="w-[90%] max-w-[1100px] mx-auto -mt-[110px] pb-[90px] space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.25fr_1fr] gap-6">
+          <div className="bg-white rounded-2xl border border-[#EAECF0] p-6 md:p-8 shadow-[0_10px_40px_rgba(0,0,0,0.08)]">
+            <h2 className="text-2xl font-semibold text-[#0F172A]">Terms and Conditions</h2>
+            <ul className="mt-4 space-y-2">
+              {termsAndConditions.map((item) => (
+                <li key={item} className="text-[#475467] text-[15px] leading-6">
+                  - {item}
+                </li>
+              ))}
+            </ul>
+            <button
+              type="button"
+              onClick={handleReferNow}
+              className="mt-6 animated-button px-10 py-3 border border-blue text-center cursor-pointer"
+            >
+              <span className="relative">Refer Now</span>
+            </button>
+          </div>
 
-            <div className="bg-white rounded-2xl border border-[#EAECF0] p-6 md:p-8 shadow-[0_10px_40px_rgba(0,0,0,0.08)]">
-              <h3 className="text-xl font-semibold text-[#0F172A]">How it works</h3>
-              <div className="mt-5 space-y-4">
-                {referralSteps.map((s, index) => (
-                  <div key={s.title} className="flex items-start gap-3">
-                    <div className="w-7 h-7 rounded-full bg-[#EEF4FF] text-[#1D4ED8] text-sm font-semibold flex items-center justify-center shrink-0">
-                      {index + 1}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-[#1D2939]">{s.title}</p>
-                      <p className="text-sm text-[#667085] mt-1">{s.description}</p>
-                    </div>
+          <div className="bg-white rounded-2xl border border-[#EAECF0] p-6 md:p-8 shadow-[0_10px_40px_rgba(0,0,0,0.08)]">
+            <h3 className="text-xl font-semibold text-[#0F172A]">How It Works</h3>
+            <div className="mt-5 space-y-4">
+              {referralSteps.map((step, index) => (
+                <div key={step.title} className="flex items-start gap-3">
+                  <div className="w-7 h-7 rounded-full bg-[#EEF4FF] text-[#1D4ED8] text-sm font-semibold flex items-center justify-center shrink-0">
+                    {index + 1}
                   </div>
-                ))}
-              </div>
+                  <div>
+                    <p className="font-semibold text-[#1D2939]">{step.title}</p>
+                    <p className="text-sm text-[#667085] mt-1">{step.description}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        )}
+        </div>
 
-        {step === "form" && (
+        {showForm && (
           <div className="bg-white rounded-2xl border border-[#EAECF0] p-6 md:p-8 shadow-[0_10px_40px_rgba(0,0,0,0.08)]">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-              <h3 className="text-xl font-semibold text-[#0F172A]">Referral details</h3>
-              <p className="text-sm text-[#667085]">Your details are saved after your first submission.</p>
+              <h3 className="text-xl font-semibold text-[#0F172A]">Referral Details</h3>
+              <p className="text-sm text-[#667085]">Fill details to submit your referral.</p>
             </div>
 
             <form className="mt-5 flex flex-col gap-4" onSubmit={handleSubmit}>
-              <p className="text-sm font-semibold text-[#344054]">About you</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input
                   type="text"
-                  placeholder="Your name *"
-                  value={formValue.referrerName}
-                  onChange={(e) => handleInputChange("referrerName", e.target.value)}
+                  placeholder="Name"
+                  value={formValue.name}
+                  onChange={(event) => handleInputChange("name", event.target.value)}
                   className="w-full border border-[#D0D5DD] rounded-xl px-4 py-3 outline-none focus:border-[#2563EB]"
                 />
                 <input
                   type="tel"
-                  placeholder="Your mobile *"
-                  value={formValue.referrerPhone}
-                  onChange={(e) => handleInputChange("referrerPhone", e.target.value.replace(/\D/g, "").slice(0, 10))}
-                  className="w-full border border-[#D0D5DD] rounded-xl px-4 py-3 outline-none focus:border-[#2563EB]"
-                />
-              </div>
-
-              <p className="text-sm font-semibold text-[#344054] pt-2">Client you are referring</p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input
-                  type="text"
-                  placeholder="Client name *"
-                  value={formValue.clientName}
-                  onChange={(e) => handleInputChange("clientName", e.target.value)}
-                  className="w-full border border-[#D0D5DD] rounded-xl px-4 py-3 outline-none focus:border-[#2563EB]"
-                />
-                <input
-                  type="tel"
-                  placeholder="Client mobile * (WhatsApp preferred)"
-                  value={formValue.clientMobile}
-                  onChange={(e) => handleInputChange("clientMobile", e.target.value.replace(/\D/g, "").slice(0, 10))}
+                  placeholder="Phone number"
+                  value={formValue.phoneNumber}
+                  onChange={(event) => handleInputChange("phoneNumber", event.target.value.replace(/\D/g, "").slice(0, 10))}
                   className="w-full border border-[#D0D5DD] rounded-xl px-4 py-3 outline-none focus:border-[#2563EB]"
                 />
               </div>
 
               <div>
-                <p className="text-sm text-[#344054] mb-2">Property type *</p>
-                <div className="inline-flex flex-wrap p-1 rounded-xl border border-[#D0D5DD] bg-[#F8FAFC] gap-1">
-                  {propertyTypes.map((item) => (
+                <p className="text-sm text-[#344054] mb-2">Purpose</p>
+                <div className="inline-flex p-1 rounded-xl border border-[#D0D5DD] bg-[#F8FAFC]">
+                  {(["Rent", "Buy"] as PurposeType[]).map((item) => (
                     <button
                       key={item}
                       type="button"
-                      onClick={() => handleInputChange("propertyType", item)}
+                      onClick={() => handleInputChange("purpose", item)}
                       className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
-                        formValue.propertyType === item ? "bg-blue text-white" : "text-[#475467] hover:bg-white"
+                        formValue.purpose === item ? "bg-blue text-white" : "text-[#475467] hover:bg-white"
                       }`}
                     >
                       {item}
@@ -309,40 +271,25 @@ export default function ReferAndEarnClient() {
                 </div>
               </div>
 
-              <input
-                type="text"
-                placeholder="Location (area or city, optional)"
-                value={formValue.location}
-                onChange={(e) => handleInputChange("location", e.target.value)}
+              <textarea
+                rows={4}
+                placeholder="Description (optional)"
+                value={formValue.description}
+                onChange={(event) => handleInputChange("description", event.target.value)}
                 className="w-full border border-[#D0D5DD] rounded-xl px-4 py-3 outline-none focus:border-[#2563EB]"
               />
 
-              <div>
-                <label className="text-sm text-[#344054]">Channel Partner ID</label>
-                <input
-                  type="text"
-                  placeholder="Optional — required if referring through a partner"
-                  value={formValue.channelPartnerId}
-                  onChange={(e) => handleInputChange("channelPartnerId", e.target.value)}
-                  className="mt-2 w-full border border-[#D0D5DD] rounded-xl px-4 py-3 outline-none focus:border-[#2563EB]"
-                />
-                <p className="text-xs text-[#667085] mt-1">
-                  Leave blank for a direct client referral. Pre-fill using{" "}
-                  <code className="text-[11px] bg-[#F2F4F7] px-1 rounded">?partnerId=...</code> when you have a partner ID.
-                </p>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3 pt-2">
+              <div className="flex items-center gap-3">
                 <button
                   type="submit"
                   disabled={isSubmitting}
                   className="w-fit animated-button px-10 py-3 border border-blue text-center cursor-pointer disabled:opacity-60"
                 >
-                  <span className="relative">{isSubmitting ? "Submitting..." : "Submit referral"}</span>
+                  <span className="relative">{isSubmitting ? "Submitting..." : "Submit"}</span>
                 </button>
                 <button
                   type="button"
-                  onClick={resetToLanding}
+                  onClick={() => setShowForm(false)}
                   className="px-6 py-3 rounded-full border border-[#D0D5DD] text-[#344054] hover:bg-[#F9FAFB]"
                 >
                   Cancel
@@ -351,31 +298,38 @@ export default function ReferAndEarnClient() {
             </form>
           </div>
         )}
-
-        {step === "success" && (
-          <div className="bg-white rounded-2xl border border-[#EAECF0] p-6 md:p-10 shadow-[0_10px_40px_rgba(0,0,0,0.08)] text-center">
-            <p className="text-lg font-semibold text-emerald-700">Thank you! Your referral has been submitted successfully.</p>
-            <div className="mt-6 p-5 rounded-2xl bg-[#F8FAFC] border border-[#E4E7EC]">
-              <p className="text-sm text-[#667085]">Your unique ID</p>
-              <p className="text-2xl md:text-3xl font-bold text-[#1B2DBE] mt-2 tracking-tight">{submittedUniqueId}</p>
-              <p className="text-sm text-[#475467] mt-4">
-                You can earn up to <strong>{EXPECTED_COINS_ON_DEAL_CLOSE} coins</strong> when this deal is marked closed by KMA.
-              </p>
-            </div>
-            <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-              <button type="button" onClick={openFormAgain} className="animated-button px-8 py-3 border border-blue text-center cursor-pointer">
-                <span className="relative">Submit another referral</span>
-              </button>
-              <Link
-                href="/refer-and-earn/my-referrals"
-                className="px-8 py-3 rounded-full border border-[#D0D5DD] text-[#344054] hover:bg-[#F9FAFB] text-center font-medium"
-              >
-                Go to my dashboard
-              </Link>
-            </div>
-          </div>
-        )}
       </div>
-    </ReferralUserShell>
+
+      <Dialog
+        open={isLoginDialogOpen}
+        onClose={closeLoginDialog}
+        slotProps={{
+          paper: {
+            sx: {
+              borderRadius: "0.75rem",
+            },
+          },
+        }}
+      >
+        <DialogContent sx={{ padding: 0 }}>
+          <div className="relative w-full rounded-xl bg-white sm:w-[460px]">
+            <button
+              type="button"
+              onClick={closeLoginDialog}
+              className="absolute right-4 top-4 z-10 rounded-full p-1 text-[#1E2236] transition hover:bg-black/5"
+              aria-label="Close login dialog"
+            >
+              ✕
+            </button>
+            {isOtpParam && flowParam === "login" ? <LoginOtpCard /> : <LoginCard />}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <div className="bg-text-black flex justify-center">
+        <AboutusDataSync />
+        <HomeFooter tab={1} />
+      </div>
+    </div>
   );
 }

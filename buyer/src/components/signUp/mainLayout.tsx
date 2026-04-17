@@ -12,7 +12,7 @@ export default function MainLayout({ children }:{children:React.ReactNode}) {
         <div className="absolute w-full flex justify-center w-full 2md:top-6">
         <PostPropertyFlowHeader />
         </div>
-        <div className="absolute w-full h-[450px] bg-blue rounded-b-[25px] sm:rounded-b-[60px] lg:rounded-b-[80px] xl:rounded-b-[100px]">
+        <div className="absolute w-full 2md:h-[450px] h-20 bg-blue rounded-b-[25px] sm:rounded-b-[60px] lg:rounded-b-[80px] xl:rounded-b-[100px]">
           {/* <div className="hidden sm:block w-[47%] ml-[8rem] mt-[14rem] ">
             <InfoSection/>
           </div> */}

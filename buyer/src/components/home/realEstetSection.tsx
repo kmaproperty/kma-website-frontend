@@ -74,7 +74,7 @@ function ExploreCard({
       onClick={() => router.push(id ? `/projects/${id}` : '/projects')}
       whileHover={{ y: -4 }}
       transition={{ type: "spring", stiffness: 260, damping: 20 }}
-      className="relative isolate overflow-hidden rounded-2xl bg-slate-200 shadow-[0_10px_30px_rgba(0,0,0,0.10)] ring-1 ring-black/5 group"
+      className="relative isolate min-w-0 overflow-hidden rounded-2xl bg-slate-200 shadow-[0_10px_30px_rgba(0,0,0,0.10)] ring-1 ring-black/5 group"
     >
       <div className="relative h-[170px] sm:h-[220px] w-full">
         {resolvedSrc ? (
@@ -82,7 +82,7 @@ function ExploreCard({
             src={resolvedSrc}
             alt={name}
             fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            sizes="(max-width: 1023px) 50vw, 33vw"
             className="cursor-pointer object-cover transition-transform duration-700 ease-out group-hover:scale-[1.12]"
             priority={false}
           />
@@ -179,15 +179,15 @@ export default function RealEstateSection() {
         hideButton={true}
       />
       <div className="mt-10" ref={ref}>
-        {/* First Row */}
+        {/* Below lg: single 2-column grid so pairs stay side-by-side */}
         <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 will-change-transform"
+          className="grid grid-cols-2 gap-4 will-change-transform lg:hidden"
           variants={leftRowVariant}
           animate={isInView ? "visible" : "hidden"}
         >
-          {cities.slice(0, 3).map((exploreDetail) => (
+          {cities.map((exploreDetail) => (
             <ExploreCard
-              key={exploreDetail.name}
+              key={exploreDetail.id ?? exploreDetail.name}
               id={exploreDetail.id}
               name={exploreDetail.name}
               image={exploreDetail.imageUrl}
@@ -195,22 +195,40 @@ export default function RealEstateSection() {
             />
           ))}
         </motion.div>
-        {/* Second Row */}
-        <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 will-change-transform"
-          variants={rightRowVariant}
-          animate={isInView ? "visible" : "hidden"}
-        >
-          {cities.slice(3).map((exploreDetail) => (
-            <ExploreCard
-              key={exploreDetail.name}
-              id={exploreDetail.id}
-              name={exploreDetail.name}
-              image={exploreDetail.imageUrl}
-              properties={exploreDetail.propertyCount}
-            />
-          ))}
-        </motion.div>
+
+        {/* lg+: original desktop layout — row of 3, then row of 2 */}
+        <div className="hidden lg:block">
+          <motion.div
+            className="grid grid-cols-3 gap-4 will-change-transform"
+            variants={leftRowVariant}
+            animate={isInView ? "visible" : "hidden"}
+          >
+            {cities.slice(0, 3).map((exploreDetail) => (
+              <ExploreCard
+                key={exploreDetail.id ?? exploreDetail.name}
+                id={exploreDetail.id}
+                name={exploreDetail.name}
+                image={exploreDetail.imageUrl}
+                properties={exploreDetail.propertyCount}
+              />
+            ))}
+          </motion.div>
+          <motion.div
+            className="grid grid-cols-2 gap-4 mt-4 will-change-transform"
+            variants={rightRowVariant}
+            animate={isInView ? "visible" : "hidden"}
+          >
+            {cities.slice(3).map((exploreDetail) => (
+              <ExploreCard
+                key={exploreDetail.id ?? exploreDetail.name}
+                id={exploreDetail.id}
+                name={exploreDetail.name}
+                image={exploreDetail.imageUrl}
+                properties={exploreDetail.propertyCount}
+              />
+            ))}
+          </motion.div>
+        </div>
       </div>
     </div>
   );

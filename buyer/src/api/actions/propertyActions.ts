@@ -22,7 +22,6 @@ export interface EndUserPropertyDetails {
 export interface GetEndUserPropertyDetailsPayload {
   id: string;
   correlationId?: string;
-  sessionId?: string;
 }
 
 /** Location object returned in property details API response */
@@ -555,18 +554,15 @@ export const getEndUserFiltersAction = async ({
 export const getEndUserPropertyDetailsAction = async ({
   id,
   correlationId,
-  sessionId,
 }: GetEndUserPropertyDetailsPayload): Promise<GetEndUserPropertyDetailsResponse> => {
   try {
-    const headers: Record<string, string> = {
-      "x-correlation-id": correlationId ?? getCorrelationId(),
-    };
-    if (sessionId) {
-      headers["X-Session-Id"] = sessionId;
-    }
     const response = await axiosInstance.get<GetEndUserPropertyDetailsResponse>(
       `end-user/properties/${id}`,
-      { headers }
+      {
+        headers: {
+          "x-correlation-id": correlationId ?? getCorrelationId(),
+        },
+      }
     );
 
     return response.data;

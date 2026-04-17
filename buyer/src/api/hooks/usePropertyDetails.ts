@@ -15,18 +15,11 @@ export const usePropertyDetails = ({
   enabled = true,
 }: UsePropertyDetailsParams) => {
   const sessionId = useSessionStore((s) => s.sessionId);
-  const hasHydrated = useSessionStore((s) => s._hasHydrated);
-
-  // Check if user is logged in (no need to wait for session)
-  const isLoggedIn = typeof window !== "undefined" && !!localStorage.getItem("user");
-
-  // Wait for session to be ready before fetching (unless logged in — they have unlimited views)
-  const sessionReady = isLoggedIn || (hasHydrated && !!sessionId);
 
   return useQuery<GetEndUserPropertyDetailsResponse>({
     queryKey: ["end-user-property-details", id ?? null, sessionId],
-    queryFn: () => getEndUserPropertyDetailsAction({ id: String(id), sessionId: sessionId ?? undefined }),
-    enabled: Boolean(id) && enabled && sessionReady,
+    queryFn: () => getEndUserPropertyDetailsAction({ id: String(id) }),
+    enabled: Boolean(id) && enabled,
     staleTime: 60_000,
     retry: (failureCount, error: unknown) => {
       // Don't retry if it's a view limit error

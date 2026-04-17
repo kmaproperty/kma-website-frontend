@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useTransition } from "react";
+import { useTransition } from "react";
 import { Search, RotateCcw, Check, ChevronDown } from "lucide-react";
 import ActiveFilterChips from "./ActiveFilterChips";
 import { useProjectsStore } from "../_store/useProjectsStore";
@@ -18,20 +18,16 @@ function SelectField({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative">
+    <div className="relative flex h-11 items-center rounded-[5px] border border-[#DBDBDB] bg-white px-3">
       <select
         value={value}
         onChange={onChange}
-        className={cx(
-          "h-10 w-full cursor-pointer appearance-none rounded-md border border-border bg-white px-3 pr-9 text-sm text-text-gray outline-none transition",
-          "hover:bg-background-gray/40",
-          "focus:border-blue focus:ring-2 focus:ring-blue/15"
-        )}
+        className="w-full cursor-pointer appearance-none bg-transparent pr-9 text-[16px] leading-[20px] text-[#888888] outline-none"
       >
         {children}
       </select>
       <ChevronDown
-        className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-gray"
+        className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#888888]"
         aria-hidden
       />
     </div>
@@ -42,18 +38,20 @@ function Section({
   title,
   hint,
   children,
+  compact = false,
 }: {
   title: string;
   hint?: string;
   children: React.ReactNode;
+  compact?: boolean;
 }) {
   return (
-    <div className="py-4">
+    <div className={compact ? "py-3" : "py-4"}>
       <div className="flex items-end justify-between gap-3">
-        <div className="text-sm font-semibold text-text-black">{title}</div>
+        <div className="text-[15px] font-medium text-text-black">{title}</div>
         {hint ? <div className="text-xs text-text-gray">{hint}</div> : null}
       </div>
-      <div className="mt-2">{children}</div>
+      <div className="mt-1.5">{children}</div>
     </div>
   );
 }
@@ -123,7 +121,13 @@ const POSTED_BY_OPTIONS: Array<{ id: PostedByTab; label: string }> = [
   { id: "channel_partner", label: "Channel Partner" },
 ];
 
-export default function FiltersSidebar() {
+export default function FiltersSidebar({
+  hideHeader = false,
+  compact = false,
+}: {
+  hideHeader?: boolean;
+  compact?: boolean;
+}) {
   const tab = useProjectsStore((s) => s.tab);
   const setTab = useProjectsStore((s) => s.setTab);
   const filters = useProjectsStore((s) => s.filters);
@@ -180,17 +184,31 @@ export default function FiltersSidebar() {
 
   return (
     <div className="overflow-hidden rounded-lg">
-      <div className="sticky top-0 z-10 border-b border-border pb-4 pt-1 backdrop-blur">
-        <div className="flex items-center justify-between gap-3">
-          <div className="text-base font-semibold text-text-black">Filters</div>
-          <button
-            onClick={() => startTransition(() => resetFilters())}
-            className="flex cursor-pointer items-center gap-1 rounded px-2 py-1 text-sm font-medium text-blue hover:bg-light-purple hover:underline"
-          >
-            <RotateCcw className="h-4 w-4" />
-            Reset
-          </button>
-        </div>
+      <div className={cx("z-10 border-b border-[#00000012] pb-3 pt-3", hideHeader ? "" : "sticky top-0 bg-white")}>
+        {!hideHeader && (
+          <div className="flex items-center justify-between gap-3">
+            <div className="text-base font-semibold text-text-black">Filters</div>
+            <button
+              onClick={() => startTransition(() => resetFilters())}
+              className="flex cursor-pointer items-center gap-1 rounded px-2 py-1 text-sm font-medium text-blue hover:bg-light-purple hover:underline"
+            >
+              <RotateCcw className="h-4 w-4" />
+              Reset
+            </button>
+          </div>
+        )}
+
+        {hideHeader && (
+          <div className="flex items-center justify-between pb-2.5">
+            <p className="text-[#8A8A8A] text-[16px] leading-[20px] font-medium">Filters</p>
+            <button
+              onClick={() => startTransition(() => resetFilters())}
+              className="text-sm text-text-black leading-[20px] font-medium cursor-pointer"
+            >
+              Clear All
+            </button>
+          </div>
+        )}
 
         <ActiveFilterChips />
 
@@ -201,13 +219,12 @@ export default function FiltersSidebar() {
         )}
       </div>
 
-      <div className="divide-y divide-border">
-        <Section title="Budget" hint="₹ Crore">
-          <div className="grid grid-cols-2 gap-1">
+      <div className="divide-y divide-[#00000012]">
+        <Section title="Budget" hint="₹ Crore" compact={compact}>
+          <div className="grid grid-cols-2 gap-3.5">
             <SelectField
               value={filters.minBudget ?? ""}
               onChange={(e) => setBudget("minBudget", e.target.value)}
-              className="h-9 w-full cursor-pointer rounded-md border border-border  px-3 text-sm text-text-gray outline-none transition focus:border-blue"
             >
               <option value="">Min</option>
               {[0.5, 1, 1.4, 2, 5, 10].map((v) => (
@@ -219,7 +236,6 @@ export default function FiltersSidebar() {
             <SelectField
               value={filters.maxBudget ?? ""}
               onChange={(e) => setBudget("maxBudget", e.target.value)}
-              className="h-9 w-full cursor-pointer rounded-md border border-border  px-3 text-sm text-text-gray outline-none transition focus:border-blue"
             >
               <option value="">Max</option>
               {[1, 2, 5, 10, 20].map((v) => (
@@ -231,12 +247,11 @@ export default function FiltersSidebar() {
           </div>
         </Section>
 
-        <Section title="Size" hint="Sq. Yd.">
-          <div className="grid grid-cols-2 gap-1">
+        <Section title="Size" hint="Sq. Yd." compact={compact}>
+          <div className="grid grid-cols-2 gap-3.5">
             <SelectField
               value={filters.minSizeSqYd ?? ""}
               onChange={(e) => setSize("minSizeSqYd", e.target.value)}
-              className="h-9 w-full cursor-pointer rounded-md border border-border px-3 text-sm text-text-gray outline-none transition focus:border-blue"
             >
               <option value="">Min</option>
               {[50, 100, 119, 150, 200].map((v) => (
@@ -248,7 +263,6 @@ export default function FiltersSidebar() {
             <SelectField
               value={filters.maxSizeSqYd ?? ""}
               onChange={(e) => setSize("maxSizeSqYd", e.target.value)}
-              className="h-9 w-full cursor-pointer rounded-md border border-border px-3 text-sm text-text-gray outline-none transition focus:border-blue"
             >
               <option value="">Max</option>
               {[119, 150, 200, 300].map((v) => (
@@ -260,12 +274,12 @@ export default function FiltersSidebar() {
           </div>
         </Section>
 
-        <Section title="Building Type">
-          <div className="grid grid-cols-2 gap-1">
+        <Section title="Building Type" compact={compact}>
+          <div className="grid grid-cols-2 gap-3.5">
             <button
               onClick={() => startTransition(() => setCategoryId(null))}
               className={cx(
-                "h-9 cursor-pointer rounded-md border text-sm font-medium transition",
+                "h-11 cursor-pointer rounded-[5px] border px-4 text-[15px] font-medium transition",
                 filters.categoryId == null
                   ? "border-blue bg-blue text-white"
                   : "border-border  text-text-gray hover:bg-background-gray"
@@ -283,7 +297,7 @@ export default function FiltersSidebar() {
                   )
                 }
                 className={cx(
-                  "h-9 cursor-pointer rounded-md border text-sm font-medium transition",
+                  "h-11 cursor-pointer rounded-[5px] border px-4 text-[15px] font-medium transition",
                   filters.categoryId === c.id
                     ? "border-blue bg-blue text-white"
                     : "border-border  text-text-gray hover:bg-background-gray"
@@ -296,7 +310,7 @@ export default function FiltersSidebar() {
           </div>
         </Section>
 
-        <Section title="Localities" hint="Search by area">
+        <Section title="Localities" hint="Search by area" compact={compact}>
           <div className="relative">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-gray" />
             <input
@@ -310,7 +324,7 @@ export default function FiltersSidebar() {
           </div>
         </Section>
 
-        <Section title="Posted by">
+        <Section title="Posted by" compact={compact}>
           <div className="grid grid-cols-2 gap-1">
             {POSTED_BY_OPTIONS.map((t) => (
               <button
@@ -330,7 +344,7 @@ export default function FiltersSidebar() {
           </div>
         </Section>
 
-        <Section title="Property Type">
+        <Section title="Property Type" compact={compact}>
           <div className="flex flex-wrap gap-1">
             {propertyTypes.map((p) => (
               <CheckboxRow
@@ -344,7 +358,7 @@ export default function FiltersSidebar() {
           </div>
         </Section>
 
-        <Section title="Bedroom">
+        <Section title="Bedroom" compact={compact}>
           <div className="flex flex-wrap gap-2">
             {bhkTypes.map((b) => (
               <CheckboxRow
@@ -358,7 +372,7 @@ export default function FiltersSidebar() {
           </div>
         </Section>
 
-        <Section title="Furnishing Status">
+        <Section title="Furnishing Status" compact={compact}>
           <div className="flex flex-wrap gap-2">
             <CheckboxRow
               checked={filters.furnishingTypeId == null}
@@ -386,7 +400,7 @@ export default function FiltersSidebar() {
           </div>
         </Section>
 
-        <Section title="Possession Status">
+        <Section title="Possession Status" compact={compact}>
           <div className="flex flex-wrap gap-2">
             {[
               { id: "ready_to_move" as const, label: "Ready To Move" },
@@ -403,7 +417,7 @@ export default function FiltersSidebar() {
           </div>
         </Section>
 
-        <Section title="Amenities">
+        <Section title="Amenities" compact={compact}>
           <div className="flex flex-wrap gap-2">
             {amenitiesList.map((a) => (
               <CheckboxRow

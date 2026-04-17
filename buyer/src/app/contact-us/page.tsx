@@ -58,7 +58,7 @@ const ContactUs = async () => {
     ]
     return (
         <div>
-            <div className="relative ">
+            <div className="relative non_home_page_slider">
                 <BannerSlider bannerHeight={'min-h-[600px] 2md:h-[60vh]'} backgroundImages={sliderImage} overlayClass='about-us-gradient-overlay' />
                 <div className="absolute flex flex-col items-center top-0 w-[100%] ">
                     <HomdeHeader />
@@ -71,12 +71,12 @@ const ContactUs = async () => {
                     </div>
                 </div>
             </div>
-            <div className='w-full py-[100px] px-[50px]'>
+            <div className='w-full px-4 2xl:py-[100px] xl:py-20 lg:py-16 md:py-12 py-10'>
                 <div className='max-w-[1444px] mx-auto'>
                     <SectionHeading title="" subtitle="Do you have some questions for us?" type={'center'} color='' lineTop={false}
                         description="Whether you're buying, selling, or just exploring—we’ve got answers."
                     />
-                    <div className='grid grid-cols-3 gap-x-8 mt-12 items-center'>
+                    <div className='grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-5 md:mt-12 mt-6 items-center'>
                         {
                             contactInformation.map((item, index) => (
                                 <div className='bg-[#F2F2F2] px-10 py-6 rounded-lg flex flex-col gap-2 h-full justify-center'>
@@ -122,11 +122,11 @@ const ContactUs = async () => {
                             <a href='https://maps.app.goo.gl/RfEn4XmFPCPAfNrT7' target='_blank' className='text-[#010048] text-[18px] leading-6 font-medium'>GG, Gurugram, Haryana 122016</a>
                         </div> */}
                     </div>
-                    <div className='mt-12 flex items-center border border-[#D9D9D9] rounded-lg'>
-                        <div className='w-[50%] h-[568px]'>
+                    <div className='md:mt-12 mt-6 flex xl:flex-row flex-col-reverse border border-[#D9D9D9] rounded-lg'>
+                        <div className='xl:w-[50%] w-full xl:h-[568px] h-[400px]'>
                             <iframe className='w-full h-full' src="https://www.google.com/maps/embed?pb=!1m13!1m8!1m3!1d448830.65552007704!2d77.000389!3d28.494917!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMjjCsDI5JzQxLjciTiA3N8KwMDAnMDEuNCJF!5e0!3m2!1sen!2sus!4v1767879656314!5m2!1sen!2sus" width="400" height="300" style={{ border: 0 }} loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
                         </div>
-                        <div className='px-16 w-[50%]'>
+                        <div className='xl:px-16 p-5 xl:w-[50%] w-full'>
                             <SectionHeading title="" subtitle="Contact us" type={'left'} color='' lineTop={false}
                                 description="send us a message and we will get back to you soon."
                             />
@@ -135,10 +135,10 @@ const ContactUs = async () => {
                     </div>
                 </div>
             </div>
-            <div className='w-full py-[100px] pr-[50px] bg-[#F2F2F2]'>
+            <div className='w-full px-4 2xl:py-[100px] xl:py-20 lg:py-16 md:py-12 py-10 bg-[#F2F2F2]'>
                 <div className='flex items-center justify-between gap-6 max-w-[1440] mx-auto'>
-                    <div className='w-[30%] max-w-[350px]  space-y-3'>
-                        <h2 className={`text-[38px] leading-11 font-semibold text-[#010048]`}>What People Are Saying</h2>
+                    <div className='     max-w-[350px]  space-y-3'>
+                        <h2 className={`xl:text-[38px] text-[28px] leading-11 font-semibold text-[#010048]`}>What People Are Saying</h2>
                         <p className={`text-[#5C727D] text-md leading-7`}>Real stories from real people who've found their dream properties with us.</p>
                         <div className='flex gap-3'>
 
@@ -152,7 +152,7 @@ const ContactUs = async () => {
                                 </button>
                             </Link>
                             <Link href={'/blogs'}>
-                                <button className="w-auto text-sm 1xl:text-base text-blue! py-2.5 hover:text-text-black! animated-button px-8 border border-blue bg-transparent! text-center cursor-pointer">
+                                <button className="w-auto text-sm 1xl:text-base text-blue! py-2.5 hover:text-white! animated-button px-8 border border-blue bg-transparent! text-center cursor-pointer">
                                     <span className="gap-3 relative flex justify-center">
                                         <p className={`text-nowrap`}>Add a Review</p>
                                     </span>

@@ -27,10 +27,11 @@ export default function ContactUs() {
         text-white
         shadow-lg
         cursor-pointer
-        flex
+        2md:flex
         items-center
         justify-center
         flex-row
+        hidden
       "
       style={{ writingMode: "sideways-rl" }}
     >

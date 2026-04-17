@@ -2,14 +2,14 @@
 
 import { clearAuthCookies } from "@/lib/helper";
 import {
-  endUserProfileApiHandler,
-  EndUserProfileResponse,
-  EndUserProfileUpdatePayload,
-  endUserProfileUpdateApiHandler,
+  userProfileApiHandler,
+  UserProfileResponse,
+  UserProfileUpdatePayload,
+  userProfileUpdateApiHandler,
   UserLogoutApiHandler,
   UserLogoutResponse,
 } from "@/services/userService";
-import type { EndUserProfileData } from "@/services/userService";
+import type { user } from "@/services/userService";
 import {
   getFileUploadUrlApiHandler,
   GetFileUploadUrlResponse,
@@ -45,7 +45,7 @@ function getInitials(name: string | undefined): string {
 }
 
 interface EditProfileContentProps {
-  user: EndUserProfileData;
+  user: user;
   onSuccess: () => void;
 }
 
@@ -69,7 +69,7 @@ function EditProfileContent({ user, onSuccess }: EditProfileContentProps) {
   }, [profilePreviewUrl]);
 
   const { mutate: updateProfile, isPending } = useMutation({
-    mutationFn: async (payload: EndUserProfileUpdatePayload) => endUserProfileUpdateApiHandler(payload),
+    mutationFn: async (payload: UserProfileUpdatePayload) => userProfileUpdateApiHandler(payload),
     onSuccess: () => {
       toast.success("Profile updated successfully");
       setProfilePhotoFile(null);
@@ -114,9 +114,10 @@ function EditProfileContent({ user, onSuccess }: EditProfileContentProps) {
   };
 
   const handleSave = async () => {
-    const payload: EndUserProfileUpdatePayload = {
+    const payload: UserProfileUpdatePayload = {
       name: name.trim() || undefined,
       email: email.trim() || undefined,
+      city: city.trim() || undefined,
     };
 
     if (profilePhotoFile) {
@@ -241,8 +242,8 @@ export default function EditProfileScreen() {
   const isLoggedIn = Boolean(tokenData?.accessToken);
 
   const { data: profileResponse, isLoading: profileLoading, refetch: refetchProfile } = useQuery({
-    queryKey: ["end-user-profile"],
-    queryFn: async (): Promise<EndUserProfileResponse> => endUserProfileApiHandler(),
+    queryKey: ["user-profile"],
+    queryFn: async (): Promise<UserProfileResponse> => userProfileApiHandler(),
     staleTime: 60 * 1000,
     enabled: isLoggedIn,
   });
@@ -264,28 +265,24 @@ export default function EditProfileScreen() {
       queryClient.clear();
       router.replace("/");
     },
-    onError: async () => {
-      // Even if logout API fails (401/token expired), still clear local state and redirect
-      localStorage.clear();
-      await clearAuthCookies();
-      queryClient.clear();
-      router.replace("/");
+    onError: (error: unknown) => {
+      const err = error as { message?: string | string[] };
+      const message = Array.isArray(err?.message) ? err.message.join(", ") : err?.message ?? "Unable to logout";
+      toast.error(message);
     },
   });
 
   const renderContent = () => {
     if (activeTab === "activity") return <MyActivityScreen />;
     if (activeTab === "reviews") return <MyReviewsScreen fetchEnabled={isLoggedIn} />;
-    if (profileLoading) return <div className="flex items-center justify-center py-20 text-text-gray">Loading profile...</div>;
     if (user) return <EditProfileContent user={user} onSuccess={() => refetchProfile()} />;
-    if (!isLoggedIn) return <div className="flex items-center justify-center py-20 text-text-gray">Please login to edit your profile.</div>;
-    return <div className="flex items-center justify-center py-20 text-text-gray">Unable to load profile. Please try again.</div>;
+    return null;
   };
 
   return (
     <section className="w-full rounded-2xl bg-[#F5F5F5] p-3 sm:p-5 lg:p-6 shadow-[0_8px_30px_rgba(17,24,39,0.08)]">
       <div className="flex flex-col gap-5 lg:flex-row">
-        <aside className="w-full rounded-2xl bg-[#EFEFEF] p-4 lg:w-[240px]">
+        <aside className="w-full min-w-0 shrink-0 rounded-2xl bg-[#EFEFEF] p-4 lg:w-[240px]">
           <div className="flex flex-col items-center border-b border-border pb-5">
             {tokenPending || (isLoggedIn && profileLoading) ? (
               <div className="flex h-[78px] w-[78px] animate-pulse items-center justify-center rounded-full bg-white shadow-sm" />
@@ -379,7 +376,7 @@ export default function EditProfileScreen() {
           )}
         </aside>
 
-        <div className="flex-1">{renderContent()}</div>
+        <div className="min-w-0 flex-1">{renderContent()}</div>
       </div>
     </section>
   );

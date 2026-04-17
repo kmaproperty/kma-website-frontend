@@ -81,9 +81,9 @@ const HelpCenter = () => {
 
     return (
         <div className='bg-[#f5f5f5]'>
-            <div className="relative pt-[25px] h-[100vh] rounded-br-[100px] rounded-bl-[100px] max-h-[600px]" style={{ backgroundImage: 'url(assets/app/help-center-herobg.jpg)', backgroundSize: 'cover', backgroundPosition: 'bottom' }}>
+            <div className="relative min-h-[385px] max-h-[385px] pt-[25px] rounded-br-[40px] rounded-bl-[40px] sm:min-h-[min(100dvh,600px)] sm:max-h-[600px] sm:rounded-br-[72px] sm:rounded-bl-[72px] lg:rounded-br-[100px] lg:rounded-bl-[100px]" style={{ backgroundImage: 'url(assets/app/help-center-herobg.jpg)', backgroundSize: 'cover', backgroundPosition: 'bottom' }}>
                 <HomdeHeader />
-                <div className="w-[75%] max-w-[600px] mx-auto mt-[150px]">
+        <div className="mx-auto mt-[70px] w-full max-w-[600px] px-4 sm:mt-28 sm:w-[85%] sm:px-0 md:mt-32 md:w-[75%] xl:mt-[150px] ">
                     <PageTitle
                         title="Help Center"
                         description="Have Questions? We've All the Answers"
@@ -91,54 +91,59 @@ const HelpCenter = () => {
                     />
                 </div>
             </div>
-            <div className='w-full pt-[100px] pb-[70px] px-[50px]'>
-                <div className='max-w-[1444px] flex gap-10 mx-auto'>
-                    <div className='col-auto space-y-8'>
-                        <SectionHeading title="" subtitle="Getting Started" type={'left'} color='' lineTop={true}
-                            description=""
-                        />
-                        <AccordionComponent
-                            data={gettingStartedAccordionData}
-                        />
+            <div className='w-full min-w-0 px-4 py-10 md:py-12 lg:py-16 xl:py-20 2xl:py-[100px]'>
+                <div className='mx-auto max-w-[1444px]'>
+                    <div className='flex flex-col gap-8 2md:flex-row 2md:gap-10'>
+                        <div className='col-auto space-y-8'>
+                            <SectionHeading title="" subtitle="Getting Started" type={'left'} color='' lineTop={true}
+                                description=""
+                            />
+                            <AccordionComponent
+                                data={gettingStartedAccordionData}
+                            />
+                        </div>
+                        <div className='col-auto space-y-8'>
+                            <SectionHeading title="" subtitle="Posting Projects & Properties" type={'left'} color='' lineTop={true}
+                                description=""
+                            />
+                            <AccordionComponent
+                                data={postPropertiesAccordionData}
+                            />
+                        </div>
                     </div>
-                    <div className='col-auto space-y-8'>
-                        <SectionHeading title="" subtitle="Posting Projects & Properties" type={'left'} color='' lineTop={true}
-                            description=""
-                        />
-                        <AccordionComponent
-                            data={postPropertiesAccordionData}
-                        />
+                </div>
+
+                <div className='mx-auto mt-10 max-w-[1444px] min-w-0 sm:mt-12 2md:mt-16'>
+                    <div className='flex flex-col gap-8 2md:flex-row 2md:gap-10'>
+                        <div className='col-auto space-y-8'>
+                            <SectionHeading title="" subtitle="Property Search & User Assistance" type={'left'} color='' lineTop={true}
+                                description=""
+                            />
+                            <AccordionComponent
+                                data={propertySearchAccordionData}
+                            />
+                        </div>
+                        <div className='col-auto space-y-8'>
+                            <SectionHeading title="" subtitle="General Questions" type={'left'} color='' lineTop={true}
+                                description=""
+                            />
+                            <AccordionComponent
+                                data={generalQuestionsAccordionData}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
-            <div className='w-full pb-[70px] px-[50px]'>
-                <div className='max-w-[1444px] flex gap-10 mx-auto'>
-                    <div className='col-auto space-y-8'>
-                        <SectionHeading title="" subtitle="Property Search & User Assistance" type={'left'} color='' lineTop={true}
-                            description=""
-                        />
-                        <AccordionComponent
-                            data={propertySearchAccordionData}
-                        />
-                    </div>
-                    <div className='col-auto space-y-8'>
-                        <SectionHeading title="" subtitle="General Questions" type={'left'} color='' lineTop={true}
-                            description=""
-                        />
-                        <AccordionComponent
-                            data={generalQuestionsAccordionData}
-                        />
-                    </div>
+            <div className='w-full min-w-0 bg-[#fff] px-4 py-10 md:py-12 lg:py-16 xl:py-20 2xl:py-[100px]'>
+                <div className='mx-auto w-full max-w-[720px] 2md:w-[50%]'>
+                    <h2 className="mb-4 text-center text-xl font-semibold leading-snug text-text-black sm:text-2xl md:text-[28px] md:leading-9">
+                      Need More Help?
+                    </h2>
+                    <p className='text-md leading-7 text-center font-normal text-[#0D1520] mb-0'>If your question isn’t listed above, feel free to reach out: <br /> <b>Mon–Sat, 10am–6pm</b></p>
                 </div>
-            </div>
-            <div className='py-[100px] px-[50px] bg-[#fff]'>
-                <div className='w-[50%] max-w-[720px] mx-auto'>
-                    <h2 className={`text-[28px] text-center leading-9 font-semibold text-text-black mb-4`}>Need More Help?</h2>
-                    <p className='text-md leading-7 text-center font-normal text-[#0D1520] mb-0'>If your question isn’t listed above, feel free to reach out: <br/> <b>Mon–Sat, 10am–6pm</b></p>
-                </div>
-                <div className='flex gap-3 justify-center mt-8'>
+                <div className='flex flex-wrap 2md:gap-3 gap-2 justify-center 2md:mt-8 mt-5'>
                     <div className='flex items-center gap-1 text-gray-600 text-[15px]'>
-                        <Image 
+                        <Image
                             src={'/assets/telephone.png'}
                             width={24}
                             height={24}
@@ -147,7 +152,7 @@ const HelpCenter = () => {
                         +91 7709904943
                     </div>
                     <div className='flex items-center gap-1 text-gray-600 text-[15px]'>
-                        <Image 
+                        <Image
                             src={'/assets/mail.png'}
                             width={24}
                             height={24}
@@ -156,7 +161,7 @@ const HelpCenter = () => {
                         info@kmaproperty.com
                     </div>
                     <div className='flex items-center gap-1 text-gray-600 text-[15px]'>
-                        <Image 
+                        <Image
                             src={'/assets/whatsapp.png'}
                             width={24}
                             height={24}
@@ -167,8 +172,8 @@ const HelpCenter = () => {
                 </div>
             </div>
             <div className="bg-text-black flex justify-center">
-                    <AboutusDataSync />
-                    <HomeFooter tab={1} />
+                <AboutusDataSync />
+                <HomeFooter tab={1} />
             </div>
         </div>
     )

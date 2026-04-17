@@ -117,10 +117,10 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
   }, [rawCommercialList, availablePropertyTypeIds, selectedCity?.id]);
 
   return (
-    <footer className="w-full bg-text-black">
+    <footer className="w-full bg-text-black overflow-hidden px-4">
       {/* Tabs */}
       <div ref={ref} className="w-full bg-[#121D2B] flex justify-center border-t border-white/5">
-        <div className="w-[90%] md:w-[75%] flex items-stretch">
+        <div className="max-w-[1444px] mx-auto w-full flex items-stretch">
           <button
             type="button"
             onClick={() => handleTab("1")}
@@ -154,7 +154,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
 
       {/* Property Links */}
       <div className="flex justify-center">
-        <div className="w-[90%] md:w-[75%] pt-6">
+        <div className="max-w-[1444px] mx-auto w-full pt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <motion.div
               variants={topVariant}
@@ -209,7 +209,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
 
       {/* Main Footer Content */}
       <div className="w-full flex justify-center py-8">
-        <div className="w-[90%] md:w-[75%]">
+        <div className="max-w-[1444px] mx-auto w-full">
           <div className="border-t border-text-gray/60 mb-8" />
 
           <motion.div
@@ -277,11 +277,11 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
               <h3 className="text-white text-base font-semibold mb-3">
                 Company
               </h3>
-              <ul className="space-y-3 text-[13px] text-white/90">
+              <ul className="md:space-y-3 md:block flex flex-wrap gap-x-3 gap-y-2 text-[13px] text-white/90">
                 {[
                   { label: "About Us", href: "/about-us" },
-                  // { label: "Careers", href: "/about-us" },
-                  // { label: "Services", href: "/about-us" },
+                  { label: "Careers", href: "/about-us" },
+                  { label: "Services", href: "/about-us" },
                   { label: "Contact Us", href: "/contact-us" },
                   { label: "Terms & Conditions", href: "/about-us" },
                   { label: "Privacy Policy", href: "/about-us" },
@@ -315,7 +315,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
             </div>
           </motion.div>
 
-          {/* <div className="border-t border-text-gray/60 my-8" /> */}
+          <div className="border-t border-text-gray/60 my-8" />
 
           {/* Gallery Section */}
           <motion.div
@@ -323,7 +323,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
             className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-10 items-center"
             animate={isInView ? "visible" : "hidden"}
           >
-            {/* <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <Image
                 src="/assets/kma-logo-white.svg"
                 width={100}
@@ -348,9 +348,9 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
                   Nice Gallery
                 </p>
               </div>
-            </div> */}
+            </div>
 
-            {/* <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
               {[1, 2, 3, 4, 5].map((i) => (
                 <div
                   key={i}
@@ -374,14 +374,14 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
                   </div>
                 </div>
               ))}
-            </div> */}
+            </div>
           </motion.div>
         </div>
       </div>
 
       {/* Bottom Bar */}
       <div className="w-full flex justify-center">
-        <div className="w-[90%] md:w-[75%] border-t border-text-gray/60 py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-xs text-white">
+        <div className="max-w-[1444px] mx-auto w-full border-t border-text-gray/60 py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-xs text-white">
           <p className="text-center md:text-left">
             Copyright © {currentYear} KMA. All Rights Reserved.
           </p>

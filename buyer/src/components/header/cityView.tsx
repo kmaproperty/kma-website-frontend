@@ -69,7 +69,7 @@ export default function CityView({ handleScroll }: { handleScroll?: () => void }
   const otherCities = filterdList(cityInput);
 
   return (
-    <div className="p-2 w-full sm:w-[330px]">
+    <div className="p-2 w-[280px] sm:w-[330px] max-w-[calc(100vw-32px)]">
       <div className="flex justify-between items-center px-4 flex-3 border border-border rounded-full">
         <InputBase
           placeholder="Select or type your city"

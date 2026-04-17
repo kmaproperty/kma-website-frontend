@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import MainLayout from "@/components/layouts/BuyerMainLayout";
+import MainLayout from "@/components/myList/mainLayout";
 import HomeFooter from "@/components/footer/homeFooter";
 import AboutusDataSync from "@/components/footer/AboutusDataSync";
 import HeaderDataSync from "@/components/header/HeaderDataSync";

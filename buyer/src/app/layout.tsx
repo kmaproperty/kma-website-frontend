@@ -32,10 +32,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <meta
-          name="facebook-domain-verification"
-          content="uyl7h2cdribbwphnomumbad3plrxd1"
-        />
         <script
           dangerouslySetInnerHTML={{
             __html: gtmScript,
@@ -43,7 +39,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${ibmPlexSans.variable} antialiased`}
+        className={`${ibmPlexSans.variable} antialiased min-w-0 overflow-x-hidden`}
       >
         <script
           dangerouslySetInnerHTML={{

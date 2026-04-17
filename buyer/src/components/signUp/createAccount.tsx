@@ -141,8 +141,7 @@ export default function CreateAccount({ step }: { step: number }) {
       localStorage.setItem("user", JSON.stringify(response.user));
             dispatch(resetForm())
       toast.success(response.message)
-      const sellerAppUrl = process.env.NEXT_PUBLIC_SELLER_URL || "http://localhost:3002";
-      window.location.href = `${sellerAppUrl}/post-property`;
+      router.replace('/post-property')
     },
     onError: (error: any) => {
       if(Array.isArray(error.message)){
@@ -168,8 +167,7 @@ export default function CreateAccount({ step }: { step: number }) {
       localStorage.setItem("user", JSON.stringify(response.user));
             dispatch(resetForm())
       toast.success(response.message)
-      const sellerAppUrl = process.env.NEXT_PUBLIC_SELLER_URL || "http://localhost:3002";
-      window.location.href = `${sellerAppUrl}/kyc`;
+      router.push('/kyc')
     },
     onError: (error: any) => {
       if(Array.isArray(error.message)){

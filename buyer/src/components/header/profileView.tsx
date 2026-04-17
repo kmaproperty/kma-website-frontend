@@ -1,14 +1,12 @@
 "use client";
 
 import { clearAuthCookies } from "@/lib/helper";
-import { USER_TYPE } from "@/lib/enums";
 import {
   getActivityCountsApiHandler,
   UserLogoutApiHandler,
   UserLogoutResponse,
   userProfileApiHandler,
   UserProfileResponse,
-  endUserProfileApiHandler,
 } from "@/services/userService";
 import { useSessionStore } from "@/store/useSessionStore";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -29,22 +27,14 @@ type MenuItem = {
 };
 
 const baseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
-const sellerUrl = process.env.NEXT_PUBLIC_SELLER_URL || "http://localhost:3002";
 
-// Seller-only items (shown for OWNER and CHANNEL_PARTNER) — redirect to seller app
-const SELLER_MENU_ITEMS: MenuItem[] = [
-  { label: "Dashboard", icon: "/assets/home-white.svg", route: `${sellerUrl}/user-dashboard` },
-  { label: "My Listings", icon: "/assets/service-blue.svg", route: `${sellerUrl}/my-listing` },
-  { label: "Leads", icon: "/assets/home-contact-blue.svg", route: `${sellerUrl}/lead-summary/list` },
-];
-
-// Common items for all logged-in users
-const COMMON_MENU_BASE: MenuItem[] = [
+const LOGGED_IN_MENU_BASE: MenuItem[] = [
   { label: "Recently Search", icon: "/assets/home-search-blue.svg", route: "/recently-viewed?tab=recentSearch" },
   { label: "Recently Viewed", icon: "/assets/home-recent-blue.svg", route: "/recently-viewed?tab=recentlyViewed" },
   { label: "Saved Properties", icon: "/assets/home-save-blue.svg", route: "/recently-viewed?tab=saved" },
   { label: "Contacted Properties", icon: "/assets/home-contact-blue.svg", route: "/recently-viewed?tab=contacted" },
   { label: "My Reviews (New)", icon: "/assets/review-blue.svg", route: "/profile" },
+  { label: "My Services", icon: "/assets/service-blue.svg", route: "/"},
   { label: "Refer And Earn", icon: "/assets/refer-earn-blue.svg", route: "/refer-and-earn" },
   { label: "Help", icon: "/assets/help-blue.svg", route: "/help-center" },
 ];
@@ -55,6 +45,7 @@ const GUEST_MENU_BASE: MenuItem[] = [
   { label: "Saved Properties", icon: "/assets/home-save-blue.svg", route: "/recently-viewed?tab=saved" },
   { label: "Contacted Properties", icon: "/assets/home-contact-blue.svg", route: "/recently-viewed?tab=contacted" },
   { label: "My Reviews (New)", icon: "/assets/review-blue.svg", route: "/profile" },
+  { label: "My Services", icon: "/assets/service-blue.svg", route: "/" },
   { label: "Refer And Earn", icon: "/assets/refer-earn-blue.svg", route: "/refer-and-earn" },
   { label: "Help", icon: "/assets/help-blue.svg", route: "/help-center" },
 ];
@@ -98,31 +89,9 @@ export default function ProfileView({ userRole }: ProfileViewProps) {
   const isLoggedIn = Boolean(userRole);
   const sessionId = useSessionStore((state) => state.sessionId);
 
-  const isSeller = userRole === USER_TYPE.CHANNEL_PARTNER || userRole === USER_TYPE.OWNER;
-
-  // Check if user came from seller app (crossApp flag in localStorage)
-  const crossApp = (() => {
-    if (typeof window === "undefined") return false;
-    try {
-      const raw = localStorage.getItem("user");
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        return parsed?.crossApp === true;
-      }
-    } catch { /* ignore */ }
-    return false;
-  })();
-
   const { data: profileResponse } = useQuery({
-    queryKey: ["user-profile", userRole, crossApp],
-    queryFn: async () => {
-      // Cross-app users have END_USER tokens but OWNER/CP role — use end-user/profile
-      if (isSeller && !crossApp) {
-        return userProfileApiHandler();
-      }
-      const res = await endUserProfileApiHandler();
-      return { success: res.success, user: res.user } as UserProfileResponse;
-    },
+    queryKey: ["user-profile"],
+    queryFn: async (): Promise<UserProfileResponse> => userProfileApiHandler(),
     enabled: isLoggedIn,
     staleTime: 60 * 1000,
   });
@@ -144,36 +113,21 @@ export default function ProfileView({ userRole }: ProfileViewProps) {
       queryClient.clear();
       router.replace("/");
     },
-    onError: async () => {
-      // Even if logout API fails (401/token expired), still clear local state and redirect
-      localStorage.clear();
-      await clearAuthCookies();
-      queryClient.clear();
-      router.replace("/");
+    onError: (error: any) => {
+      const message = Array.isArray(error?.message) ? error.message.join(", ") : error?.message ?? "Unable to logout";
+      toast.error(message);
     },
   });
 
   const menuItems = useMemo(() => {
-    if (!isLoggedIn) {
-      const base = GUEST_MENU_BASE;
-      if (!activityCounts) return base;
-      return base.map((item, index) => {
-        const key = ACTIVITY_COUNT_KEYS[index];
-        const count = key ? activityCounts[key] : undefined;
-        return { ...item, count };
-      });
-    }
-    // For sellers, prepend seller-specific items
-    const base = isSeller ? [...SELLER_MENU_ITEMS, ...COMMON_MENU_BASE] : COMMON_MENU_BASE;
+    const base = isLoggedIn ? LOGGED_IN_MENU_BASE : GUEST_MENU_BASE;
     if (!activityCounts) return base;
-    const sellerOffset = isSeller ? SELLER_MENU_ITEMS.length : 0;
     return base.map((item, index) => {
-      const commonIndex = index - sellerOffset;
-      const key = commonIndex >= 0 ? ACTIVITY_COUNT_KEYS[commonIndex] : undefined;
+      const key = ACTIVITY_COUNT_KEYS[index];
       const count = key ? activityCounts[key] : undefined;
       return { ...item, count };
     });
-  }, [isLoggedIn, isSeller, activityCounts]);
+  }, [isLoggedIn, activityCounts]);
   const profileImage =
     user?.profileImage && /^https?:\/\//.test(user.profileImage)
       ? user.profileImage
@@ -187,11 +141,7 @@ export default function ProfileView({ userRole }: ProfileViewProps) {
 
   const handleMenuClick = (item: MenuItem) => {
     if (item.route) {
-      if (item.route.startsWith("http")) {
-        window.location.href = item.route;
-      } else {
-        router.push(item.route);
-      }
+      router.push(item.route);
       return;
     }
     if (!isLoggedIn) {

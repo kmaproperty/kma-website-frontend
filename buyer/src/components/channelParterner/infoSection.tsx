@@ -41,9 +41,11 @@ interface InfoSectionProps {
 
 export default function InfoSection({ titlePrefix, title }: InfoSectionProps) {
   return (
-    <div className="flex justify-center items-start flex-col mt-8 md:mt-[7rem]">
-      <p className="text-white font-normal text-base md:text-lg mb-2">{titlePrefix}</p>
-      <h2 className="text-white font-semibold text-[2rem] leading-[2.2rem] mb-12">{title}</h2>
+    <div className="mt-8 flex flex-col items-start justify-center md:mt-[7rem]">
+      <p className="mb-2 text-base font-normal text-white md:text-lg">{titlePrefix}</p>
+      <h2 className="mb-8 text-xl font-semibold leading-tight text-white sm:text-2xl sm:leading-snug md:mb-12 md:text-[2rem] md:leading-[2.2rem]">
+        {title}
+      </h2>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 w-full">
         {cardInfo.map((info) => (
           <div key={info.title} className="bg-white rounded-[10px] shadow-md flex flex-col h-full">

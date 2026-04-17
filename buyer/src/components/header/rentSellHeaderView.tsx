@@ -8,27 +8,8 @@ import { useEndUserProperties } from "@/api/hooks/useEndUserProperties";
 export default function RentSellHeaderView({ type, onClose }: { type: string; onClose?: () => void }) {
   const router = useRouter();
   const selectedCity = useSelector(getSelectedCity);
-  const aboutusData = useSelector(getAboutusData) as {
-    phoneNumber?: string;
-    email?: string;
-    mobileAppAvailable?: boolean;
-  } | null;
-  const propertyMasterData = useSelector(getPropertyMasterData) as Array<{
-    code: string;
-    id?: string;
-    categories?: Array<{
-      id: string;
-      code: string;
-      name: string;
-      propertyTypes: Array<{ id: string; name: string }>;
-    }>;
-  }> | null;
-  const contactNumber = aboutusData?.phoneNumber ?? "";
-  const tollFreeDisplay = contactNumber
-    ? contactNumber.startsWith("+")
-      ? contactNumber
-      : `+91 ${contactNumber}`
-    : "";
+  const aboutusData = useSelector(getAboutusData);
+  const propertyMasterData = useSelector(getPropertyMasterData);
   const category = (Array.isArray(propertyMasterData) ? propertyMasterData : [])?.find((item: { code: string }) => item.code == type)?.categories ?? [];
   const defaultCategoryId = category.find((item: { code: string }) => item.code == 'residential')?.id ?? category[0]?.id;
   const [categoryType, setCategoryType] = useState(defaultCategoryId);
@@ -66,7 +47,7 @@ export default function RentSellHeaderView({ type, onClose }: { type: string; on
   }, [propertyList, availablePropertyTypeIds, selectedCity?.id]);
 
   return (
-    <div className="flex  flex-col 2md:flex-row justify-start overflow-hidden rounded-xl h-full 2md:h-[280px]">
+    <div className="flex flex-col 2md:flex-row justify-start overflow-hidden rounded-xl h-full 2md:h-[280px]">
       <div className="flex flex-col gap-6 2md:gap-0 justify-between bg-blue pl-8 pt-8 pb-3 pr-5">
         <div className="flex flex-col gap-2">
           {
@@ -81,7 +62,8 @@ export default function RentSellHeaderView({ type, onClose }: { type: string; on
         <div>
           <p className="text-white text-xs">Contact Us Toll Free on</p>
           <p className="text-white text-xs">
-            <span className="font-semibold text-xs">{tollFreeDisplay}</span> ( 9AM - 11PM IST )
+            <span className="font-semibold text-xs">1800 41 00000</span> ( 9AM -
+            11PM IST )
           </p>
         </div>
       </div>
@@ -116,9 +98,7 @@ export default function RentSellHeaderView({ type, onClose }: { type: string; on
 
             </div>
             <div>
-                <p className="text-xs text-text-gray max-w-[250px] lg:max-w-fit">
-                  Email Us at {aboutusData?.email || "Services@kma.com"} or call us at {tollFreeDisplay || "N/A"} (IND Toll-Free)
-                </p>
+                <p className="text-xs text-text-gray max-w-[250px] lg:max-w-fit">Email Us at Services@kma.com or call us at 1800 41 00000 (IND Toll-Free)</p>
             </div>
         </div>
         {aboutusData?.mobileAppAvailable && <div className="mt-5 2md:mt-0">

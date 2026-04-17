@@ -91,13 +91,7 @@ export default function Otp() {
       setOtp('')
       toast.success(res.message)
       queryClient.clear();
-      const sellerAppUrl = process.env.NEXT_PUBLIC_SELLER_URL || "http://localhost:3002";
-      const role = res.user?.role;
-      if (role === "END_USER" || role === "USER") {
-        router.replace('/');
-      } else {
-        window.location.href = `${sellerAppUrl}/user-dashboard`;
-      }
+      router.replace('/user-dashboard')
     },
     onError: (err: any) => {
       console.error("OTP Verify Error:", err);

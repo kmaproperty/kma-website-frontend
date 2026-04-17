@@ -158,8 +158,7 @@ export default function UserProfile() {
                     {!kycDetails?.kyc_completed && (
                       <button
                         onClick={() => {
-                          const sellerAppUrl = process.env.NEXT_PUBLIC_SELLER_URL || "http://localhost:3002";
-                          window.location.href = `${sellerAppUrl}/kyc`;
+                          router.push("/kyc");
                         }}
                         className="w-full md:w-auto text-xs 1xl:text-sm animated-button px-6 py-2 border border-blue text-center cursor-pointer"
                       >

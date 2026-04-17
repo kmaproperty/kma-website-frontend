@@ -3,7 +3,7 @@ import React from "react";
 const AboutUsImage = ({ imageUrl, width = '500px', height = '250px' }) => {
   return (
     <div
-      className="relative"
+      className="relative min-w-0 w-full max-w-full"
       style={{
         width: width,
         height: height,
@@ -64,7 +64,7 @@ const AboutUsImage = ({ imageUrl, width = '500px', height = '250px' }) => {
           x2="0.18"
           y2="1"
           stroke="white"
-          stroke-width="0.006"
+          strokeWidth="0.006"
         ></line>
         <line
           x1="0"
@@ -72,7 +72,7 @@ const AboutUsImage = ({ imageUrl, width = '500px', height = '250px' }) => {
           x2="0.18"
           y2="0.872"
           stroke="white"
-          stroke-width="0.01"
+          strokeWidth="0.01"
         ></line>
         <line
           x1="0.82"
@@ -80,7 +80,7 @@ const AboutUsImage = ({ imageUrl, width = '500px', height = '250px' }) => {
           x2="1"
           y2="0.128"
           stroke="white"
-          stroke-width="0.01"
+          strokeWidth="0.01"
         ></line>
         <line
           x1="0.82"
@@ -88,7 +88,7 @@ const AboutUsImage = ({ imageUrl, width = '500px', height = '250px' }) => {
           x2="0.82"
           y2="0.133"
           stroke="white"
-          stroke-width="0.006"
+          strokeWidth="0.006"
         ></line>
       </svg>
     </div>

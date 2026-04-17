@@ -1,8 +1,8 @@
 "use client";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { useEffect, useRef, useState } from "react";
-import Slider from "react-slick";
+import { useLayoutEffect, useRef, useState } from "react";
+import Slider, { type Settings } from "react-slick";
 import { motion, useInView } from "framer-motion";
 import SectionHeader from "../common/home/secionHeader";
 import Image from "next/image";
@@ -47,15 +47,32 @@ function Star({
   );
 }
 
+/** sm/md → lg → xl → 1xl+ (matches `globals.css` @theme tiers). */
+function getFeaturedSlidesToShow(viewportWidth: number, total: number): number {
+  if (total <= 0) return 1;
+  if (viewportWidth <= 640) return 1;
+  if (viewportWidth <= 1024) return Math.min(2, total);
+  if (viewportWidth < 1440) return Math.min(3, total);
+  return Math.min(4, total);
+}
+
 export default function FeaturedProperties({ topProperties }) {
   const router = useRouter();
   const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
-  const sliderRef = useRef(null);
+  const sliderRef = useRef<InstanceType<typeof Slider> | null>(null);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
   const [listingFilter, setListingFilter] = useState<"Sale" | "Rent">("Sale");
-  const [visibleSlides, setVisibleSlides] = useState(4);
+  const [windowWidth, setWindowWidth] = useState<number | null>(null);
+
+  // react-slick ^0.31 often ignores `responsive` on first paint; drive slidesToShow from real width instead.
+  useLayoutEffect(() => {
+    const update = () => setWindowWidth(window.innerWidth);
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
 
   const filteredProperties = (topProperties ?? []).filter((item: any) => {
     if (!item?.listingType) return true;
@@ -80,44 +97,21 @@ export default function FeaturedProperties({ topProperties }) {
   };
 
   const slidesCount = filteredProperties.length;
-  const shouldShowArrows = slidesCount > visibleSlides;
-
-  useEffect(() => {
-    const updateVisibleSlides = () => {
-      const width = window.innerWidth;
-      if (width < 640) {
-        setVisibleSlides(1);
-        return;
-      }
-      if (width < 1024) {
-        setVisibleSlides(2);
-        return;
-      }
-      if (width < 1280) {
-        setVisibleSlides(3);
-        return;
-      }
-      setVisibleSlides(4);
-    };
-
-    updateVisibleSlides();
-    window.addEventListener("resize", updateVisibleSlides);
-
-    return () => {
-      window.removeEventListener("resize", updateVisibleSlides);
-    };
-  }, []);
-
-  const settings = {
-    slidesToShow: Math.min(4, slidesCount),
+  const slidesToShow =
+    windowWidth == null
+      ? 1
+      : getFeaturedSlidesToShow(windowWidth, slidesCount);
+  const showSliderArrows =
+    windowWidth != null && slidesCount > slidesToShow;
+  const settings: Settings = {
+    slidesToShow: slidesCount > 0 ? Math.min(slidesToShow, slidesCount) : 1,
     slidesToScroll: 1,
     infinite: false,
     arrows: false,
-    responsive: [
-      { breakpoint: 1280, settings: { slidesToShow: 3 } },
-      { breakpoint: 1024, settings: { slidesToShow: 2 } },
-      { breakpoint: 640, settings: { slidesToShow: 1 } },
-    ],
+    swipe: true,
+    touchMove: true,
+    adaptiveHeight: false,
+    variableWidth: false,
   };
 
   return (
@@ -132,11 +126,15 @@ export default function FeaturedProperties({ topProperties }) {
         onListingFilterChange={setListingFilter}
       />
 
-      <div className="flex-1 w-full  2md:min-w-0 -mx-2 feature-property">
-        <Slider ref={sliderRef} {...settings} className="mt-10">
+      <div className="flex-1 w-full min-w-0 2md:min-w-0 -mx-2 feature-property">
+        <Slider
+          key={`featured-${slidesToShow}-${slidesCount}-${listingFilter}`}
+          ref={sliderRef}
+          {...settings}
+          className="mt-10"
+        >
           {filteredProperties.map((item, index) => {
             const img = item?.imageUrl || (item?.images?.length > 0 ? item.images[0]?.url : null);
-            const size = item?.units?.length > 0 ? item.units[0]?.size : null;
             const ratingNumber = Math.max(
               0,
               Math.min(5, Number.parseFloat(String(item?.rating ?? "5")) || 0)
@@ -151,12 +149,12 @@ export default function FeaturedProperties({ topProperties }) {
             return (
               <motion.div
                 key={item?.id ?? index}
-                className="px-1.5 w-[320px] h-[500px]"
+                className="px-2 sm:px-1.5 w-full min-w-0 max-w-full h-auto sm:h-[500px]"
                 variants={index == 0 || index == 1 ? topVariant : bottomVariant}
                 animate={isInView ? "visible" : "hidden"}
               >
-                <div onClick={() => item?.cityId && item?.id ? router.push(`/projects/${item.cityId}/${item.id}`) : null} className="h-full w-full rounded-[10px] border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 overflow-hidden cursor-pointer">
-                  <div className="h-full flex flex-col">
+                <div onClick={() => item?.cityId && item?.id ? router.push(`/projects/${item.cityId}/${item.id}`) : null} className="h-auto min-h-0 sm:h-full w-full rounded-[10px] border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 overflow-hidden cursor-pointer">
+                  <div className="flex h-auto min-h-0 flex-col sm:h-full">
                     {/* IMAGE */}
                     <div className="relative">
                       {img ? (
@@ -197,7 +195,7 @@ export default function FeaturedProperties({ topProperties }) {
                     </div>
 
                     {/* CONTENT */}
-                    <div className="flex flex-1 min-h-0 flex-col px-4 pb-4 pt-8 gap-2 overflow-hidden">
+                    <div className="flex flex-col gap-2 overflow-hidden px-3 pb-3 pt-6 sm:flex-1 sm:min-h-0 sm:px-4 sm:pb-4 sm:pt-8">
                       {/* Rating + Like */}
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -237,7 +235,7 @@ export default function FeaturedProperties({ topProperties }) {
                       </div>
 
                       {/* Title + Address */}
-                      <div className="min-h-[56px]">
+                      <div className="min-h-0 sm:min-h-[56px]">
                         <p className="text-lg font-semibold leading-snug text-text-black line-clamp-2">
                           {item?.propertyName}
                         </p>
@@ -262,7 +260,7 @@ export default function FeaturedProperties({ topProperties }) {
                       </div>
 
                       {/* Meta */}
-                      <div className="mt-1 border-t border-slate-200 pt-3 text-xs">
+                      <div className="mt-1 border-t border-slate-200 pt-2 text-xs sm:pt-3">
                         <div className="flex items-center gap-2">
                           <span className="text-text-gray">Listed on :</span>
                           <span className="text-text-black">25 May 2025</span>
@@ -279,57 +277,42 @@ export default function FeaturedProperties({ topProperties }) {
                         ) : null}
                       </div>
 
-                      {/* Amenities */}
-                      <div className="mt-2 border-t border-slate-200 pt-3">
-                        <div className="flex flex-wrap gap-3">
-                          {![
-                            "Office",
-                            "Plot",
-                            "Retail Shop",
-                            "Warehouse",
-                            "Showroom",
-                            "Agricultural Land",
-                          ].includes(item?.propertyType) ? (
-                            <>
-                              <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-2.5 py-1.5 text-xs text-text-black border border-slate-200">
-                                <Image
-                                  src={"/assets/property/bad.svg"}
-                                  width={16}
-                                  height={16}
-                                  alt="bed"
-                                />
-                                <span className="whitespace-nowrap">
-                                  {item?.bed} Bed
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-2.5 py-1.5 text-xs text-text-black border border-slate-200">
-                                <Image
-                                  src={"/assets/property/bathroom.svg"}
-                                  width={16}
-                                  height={16}
-                                  alt="bath"
-                                />
-                                <span className="whitespace-nowrap">
-                                  {item?.bath} Bath
-                                </span>
-                              </div>
-                            </>
-                          ) : null}
-
-                          {/* {size ? (
-                            <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-2.5 py-1.5 text-xs text-text-black border border-slate-200 max-w-full">
+                      {/* Amenities (skip empty block for commercial / land types) */}
+                      {![
+                        "Office",
+                        "Plot",
+                        "Retail Shop",
+                        "Warehouse",
+                        "Showroom",
+                        "Agricultural Land",
+                      ].includes(item?.propertyType) ? (
+                        <div className="mt-2 border-t border-slate-200 pt-2 sm:pt-3">
+                          <div className="flex flex-wrap gap-3">
+                            <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-2.5 py-1.5 text-xs text-text-black border border-slate-200">
                               <Image
-                                src={"/assets/property/major-white.svg"}
+                                src={"/assets/property/bad.svg"}
                                 width={16}
                                 height={16}
-                                alt="size"
-                                className="invert"
+                                alt="bed"
                               />
-                              <span className="truncate">{size}</span>
+                              <span className="whitespace-nowrap">
+                                {item?.bed} Bed
+                              </span>
                             </div>
-                          ) : null} */}
+                            <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-2.5 py-1.5 text-xs text-text-black border border-slate-200">
+                              <Image
+                                src={"/assets/property/bathroom.svg"}
+                                width={16}
+                                height={16}
+                                alt="bath"
+                              />
+                              <span className="whitespace-nowrap">
+                                {item?.bath} Bath
+                              </span>
+                            </div>
+                          </div>
                         </div>
-                      </div>
+                      ) : null}
                     </div>
                   </div>
                 </div>
@@ -341,47 +324,45 @@ export default function FeaturedProperties({ topProperties }) {
 
       {/* ---------- CONTROLS ---------- */}
       <motion.div
-        className="mt-10 flex justify-end gap-6"
+        className="mt-6 flex w-full flex-wrap justify-end gap-3 sm:mt-10 sm:gap-6"
         variants={bottomVariant}
         animate={isInView ? "visible" : "hidden"}
       >
         <div className="flex gap-3">
-          {shouldShowArrows ? (
-            <>
-              <button
-                type="button"
-                onClick={() => sliderRef.current?.slickPrev()}
-                className="bg-blue text-white cursor-pointer w-8 h-8 rounded-full flex justify-center"
-              >
-                <Image
-                  src="/assets/explore/left-arrow.svg"
-                  alt="left-arrow"
-                  width={14}
-                  height={14}
-                />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => sliderRef.current?.slickNext()}
-                className="bg-blue text-white cursor-pointer w-8 h-8 rounded-full flex justify-center"
-              >
-                <Image
-                  src="/assets/explore/right-arrow.svg"
-                  alt="left-arrow"
-                  width={14}
-                  height={14}
-                />
-              </button>
-            </>
-          ) : null}
-          {shouldShowArrows ? (
-            <button onClick={() => router.push('/projects')} className="w-auto text-xs 1xl:text-sm animated-button px-6 py-1.5 border border-blue text-center cursor-pointer">
-              <span className="gap-3 relative flex justify-center">
-                <p className={`text-nowrap`}>View All</p>
-              </span>
+          {showSliderArrows && (
+            <button
+              type="button"
+              onClick={() => sliderRef.current?.slickPrev?.()}
+              className="bg-blue text-white cursor-pointer w-8 h-8 rounded-full flex justify-center"
+            >
+              <Image
+                src="/assets/explore/left-arrow.svg"
+                alt="left-arrow"
+                width={14}
+                height={14}
+              />
             </button>
-          ) : null}
+          )}
+
+          {showSliderArrows && (
+            <button
+              type="button"
+              onClick={() => sliderRef.current?.slickNext?.()}
+              className="bg-blue text-white cursor-pointer w-8 h-8 rounded-full flex justify-center"
+            >
+              <Image
+                src="/assets/explore/right-arrow.svg"
+                alt="left-arrow"
+                width={14}
+                height={14}
+              />
+            </button>
+          )}
+          <button onClick={() => router.push('/projects')} className="w-auto text-xs 1xl:text-sm animated-button px-6 py-1.5 border border-blue text-center cursor-pointer">
+            <span className="gap-3 relative flex justify-center">
+              <p className="text-nowrap">View all</p>
+            </span>
+          </button>
         </div>
       </motion.div>
     </div>

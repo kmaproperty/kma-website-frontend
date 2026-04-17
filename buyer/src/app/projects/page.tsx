@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import ProjectsPageClient from "./_components/ProjectsPageClient";
-import MainLayout from "@/components/layouts/BuyerMainLayout";
+import MainLayout from "@/components/myList/mainLayout";
 import { fetchPropertyMasterData } from "../api/home";
 import HomeFooter from "@/components/footer/homeFooter";
 import AboutusDataSync from "@/components/footer/AboutusDataSync";

@@ -20,7 +20,7 @@ import {
 import { usePropertyDetails } from "@/api/hooks/usePropertyDetails";
 import { usePropertyRatingReviews } from "@/api/hooks/usePropertyRatingReviews";
 import type { PropertyRatingReviewItem } from "@/api/actions/propertyActions";
-import MainLayout from "@/components/layouts/BuyerMainLayout";
+import MainLayout from "@/components/myList/mainLayout";
 import HomeFooter from "@/components/footer/homeFooter";
 import { fetchPropertyMasterData } from "@/app/api/home";
 import { useDispatch } from "react-redux";

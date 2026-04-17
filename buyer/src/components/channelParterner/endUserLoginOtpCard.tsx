@@ -55,8 +55,14 @@ export default function EndUserLoginOtpCard() {
       toast.success(response.message);
       queryClient.clear();
 
-      // Always redirect End User to home after login
-      router.replace("/");
+      const safeRedirect =
+        redirect && redirect.startsWith("/") && !redirect.startsWith("//") ? redirect : null;
+      if (safeRedirect) {
+        router.replace(safeRedirect);
+        return;
+      }
+
+      router.replace("/projects");
     },
     onError: (error: any) => {
       setOtpError(error?.message ?? "Invalid OTP");

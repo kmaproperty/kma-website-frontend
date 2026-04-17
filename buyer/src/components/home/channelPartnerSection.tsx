@@ -57,9 +57,6 @@ const rightVariant = {
   },
 };
 
-/** Max partners shown on the home section; matches xl grid row (4 columns). */
-const CHANNEL_PARTNER_PREVIEW_LIMIT = 4;
-
 export default function ChannelPartnerSection({
   channelPartnerList,
 }: {
@@ -69,13 +66,10 @@ export default function ChannelPartnerSection({
   const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
+
   const [openContact, setOpenContact] = useState(false);
 
-  const list = Array.isArray(channelPartnerList) ? channelPartnerList : [];
-  const hasMorePartners = list.length > CHANNEL_PARTNER_PREVIEW_LIMIT;
-  const displayList = hasMorePartners
-    ? list.slice(0, CHANNEL_PARTNER_PREVIEW_LIMIT)
-    : list;
+
 
   // if (!Array.isArray(channelPartnerList) || channelPartnerList.length === 0) {
   //   return null;
@@ -86,15 +80,12 @@ export default function ChannelPartnerSection({
       <SectionHeader
         isInView={isInView}
         channelPartnerBtn={true}
-        hideButton={!hasMorePartners}
-        onViewMore={
-          hasMorePartners ? () => router.push("/channel-partner") : undefined
-        }
         heading="Become a Channel Partner"
         subHeading="Join hands with us and unlock new opportunities in the real estate ecosystem."
       />
       <div className="grid  grid-cols-1 sm:grid-cols-[1fr_1fr] 2md:grid-cols-[1fr_1fr_1fr] xl:grid-cols-[1fr_1fr_1fr_1fr] gap-3 mt-6">
-        {displayList.map((item, index) => {
+        {Array.isArray(channelPartnerList) &&
+          channelPartnerList?.map((item, index) => {
             const cityList =
               item?.cities
                 ?.split(",")
@@ -169,10 +160,7 @@ export default function ChannelPartnerSection({
                 )}
 
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setOpenContact(true);
-                  }}
+                  onClick={(e) => { e.stopPropagation(); setOpenContact(true); }}
                   className="animated-button mt-4 w-full py-3 px-6 cursor-pointer"
                 >
                   <span className="flex items-center justify-center gap-2 relative z-11">
@@ -189,7 +177,7 @@ export default function ChannelPartnerSection({
                 </button>
               </motion.div>
             );
-        })}
+          })}
       </div>
       <ContactUsPopup open={openContact} onClose={() => {
         setOpenContact(false);

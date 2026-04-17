@@ -19,8 +19,6 @@ import {
   sendEndUserLoginOtpApiHandler,
 } from "@/services/authService";
 
-const sellerUrl = process.env.NEXT_PUBLIC_SELLER_URL || "http://localhost:3002";
-
 type LoginRole = "END_USER" | "OWNER_CP";
 
 interface MobileState {
@@ -144,8 +142,12 @@ export default function LoginCard() {
         </button>
         <button
           type="button"
-          onClick={() => { window.location.href = `${sellerUrl}/user-flow?isLogin=true`; }}
-          className="flex-1 py-2.5 px-4 rounded-full text-sm font-medium border transition cursor-pointer bg-white text-text-black border-border hover:border-blue"
+          onClick={() => { setLoginRole("OWNER_CP"); setMobileInput((p) => ({ ...p, validationMessage: "" })); }}
+          className={`flex-1 py-2.5 px-4 rounded-full text-sm font-medium border transition cursor-pointer ${
+            loginRole === "OWNER_CP"
+              ? "bg-blue text-white border-blue"
+              : "bg-white text-text-black border-border hover:border-blue"
+          }`}
         >
           Owner / Channel Partner
         </button>

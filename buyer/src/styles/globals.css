@@ -22,10 +22,14 @@
   --color-list-background: #F2F2F2;
   --color-yellow: #F7BB06;
 
-  /* Custom Breakpoints */
-
+  /* Viewport: sm 640, md 768, 2md 864, lg 1024, xl 1280, 1xl 1440, 2xl 1536 */
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
   --breakpoint-2md: 54rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
   --breakpoint-1xl: 90rem;
+  --breakpoint-2xl: 96rem;
 }
 
 
@@ -156,7 +160,7 @@ body {
 }
 
 
-/* Equal height slick cards */
+/* Equal height slick cards — slide width comes from react-slick (JS), not fixed CSS */
 .feature-property .slick-track {
   display: flex !important;
   align-items: stretch;
@@ -164,37 +168,31 @@ body {
 
 .feature-property .slick-slide {
   height: auto !important;
-  max-width: 344px !important;
-  width: 344px !important;
 }
 
 .feature-property .slick-slide > div {
   height: 100%;
-  max-width: 344px !important;
-  width: 344px !important;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
-@media (max-width: 1279px) {
-  .feature-property .slick-slide,
-  .feature-property .slick-slide > div {
-    max-width: 344px !important;
-    width: 344px !important;
-  }
-}
 
-/* <= 1023px (slidesToShow: 2) */
-@media (max-width: 1023px) {
-  .feature-property .slick-slide,
-  .feature-property .slick-slide > div {
-    max-width: 344px !important;
-    width: 344px !important;
-  }
-}
 
-/* <= 639px (slidesToShow: 1) */
-@media (max-width: 639px) {
-  .feature-property .slick-slide,
-  .feature-property .slick-slide > div {
-    max-width: 100% !important;
+
+
+
+.home_hero_slider .slick-slider,
+.home_hero_slider .slick-slider .slick-list,
+.home_hero_slider .slick-slider .slick-list .slick-track,
+.home_hero_slider .slick-slider .slick-list .slick-track .slick-slide>div {
+ height: 100%;
+}
+.non_home_page_slider .home_hero_slider {
+  position: inherit !important;
+}
+@media (max-width: 863px) {
+  .gradient-mask {
+    mask-image: none;
   }
 }

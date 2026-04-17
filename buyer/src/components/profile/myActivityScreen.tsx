@@ -151,7 +151,7 @@ export default function MyActivityScreen() {
   const [searchSortBy, setSearchSortBy] = useState<"recent" | "relevance">("recent");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const listingTypeApi = activeIntent === "buy" ? "sale" : activeIntent === "rent" ? "rent" : "sale";
+  const listingTypeApi = activeIntent === "buy" ? "sale" : activeIntent === "rent" ? "rent" : undefined;
   const sortApi: "newest" | "oldest" | "price_high" | "price_low" | undefined =
     sortBy === "latest" ? "newest" : sortBy === "price_low_high" ? "price_low" : sortBy === "price_high_low" ? "price_high" : "newest";
 

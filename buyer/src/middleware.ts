@@ -1,96 +1,55 @@
 import { NextResponse, NextRequest } from "next/server";
 
-const BACKEND_URL = process.env.BACKEND_URL || "http://15.207.193.17:3000";
-const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN || undefined; // '.kmaglobalproperty.com' in prod
-
-export async function middleware(req: NextRequest) {
+export default function middleware(req: NextRequest) {
   const { pathname, searchParams } = req.nextUrl;
-
-  // Cross-app auth: seller passes tokens via URL params
-  const tokenParam = searchParams.get("_token");
-  const refreshParam = searchParams.get("_refresh");
-  const roleParam = searchParams.get("_role");
-  const nameParam = searchParams.get("_name");
-  if (tokenParam) {
-    const cleanUrl = req.nextUrl.clone();
-    cleanUrl.searchParams.delete("_token");
-    cleanUrl.searchParams.delete("_refresh");
-    cleanUrl.searchParams.delete("_role");
-    cleanUrl.searchParams.delete("_name");
-
-    let finalAccessToken = tokenParam;
-    let finalRefreshToken = refreshParam || "";
-    const originalRole = roleParam || "";
-    const originalName = nameParam || "";
-
-    // Owner/CP arriving from seller: swap for END_USER tokens so all buyer APIs work
-    if (roleParam === "OWNER" || roleParam === "CHANNEL_PARTNER") {
-      try {
-        const res = await fetch(`${BACKEND_URL}/end-user/cross-app-login`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ accessToken: tokenParam }),
-        });
-        if (res.ok) {
-          const data = await res.json();
-          finalAccessToken = data.accessToken;
-          finalRefreshToken = data.refreshToken;
-        }
-      } catch {
-        // If swap fails, fall through with original tokens
-      }
-    }
-
-    const response = NextResponse.redirect(cleanUrl);
-    const domainPart = COOKIE_DOMAIN ? `; Domain=${COOKIE_DOMAIN}` : "";
-    response.headers.append("Set-Cookie", `accessToken=${finalAccessToken}; Path=/; Max-Age=3600; HttpOnly; Secure; SameSite=Lax${domainPart}`);
-    if (finalRefreshToken) {
-      response.headers.append("Set-Cookie", `refreshToken=${finalRefreshToken}; Path=/; Max-Age=604800; HttpOnly; Secure; SameSite=Lax${domainPart}`);
-    }
-    // Store user info in JS-readable cookie — keep ORIGINAL role so UI shows "Seller Dashboard"
-    if (originalRole) {
-      const isCrossApp = originalRole === "OWNER" || originalRole === "CHANNEL_PARTNER";
-      const userObj = encodeURIComponent(JSON.stringify({ role: originalRole, name: originalName, ...(isCrossApp ? { crossApp: true } : {}) }));
-      response.headers.append("Set-Cookie", `kma_user=${userObj}; Path=/; Max-Age=3600; Secure; SameSite=Lax${domainPart}`);
-    }
-    return response;
-  }
-
   const accessToken = req.cookies.get("accessToken")?.value;
+  const refreshToken = req.cookies.get("refreshToken")?.value;
 
-  const isPublicPage =
-    pathname === "/" ||
-    pathname === "/about-us" ||
-    pathname === "/projects" || pathname.startsWith("/projects/") ||
-    pathname === "/user-flow" ||
-    pathname === "/recently-viewed" ||
-    pathname === "/contact-us" ||
-    pathname === "/help-center" ||
-    pathname === "/join-us" ||
-    pathname === "/profile" ||
-    pathname === "/refer-and-earn" || pathname.startsWith("/refer-and-earn/") ||
-    pathname === "/channel-partner" || pathname.startsWith("/channel-partner/") ||
-    pathname === "/sales-enquiry" ||
-    pathname === "/meet-the-team";
+  const isHomePage = pathname === "/";
+  const isAbooutUsPage = pathname === "/about-us";
+  const verifyProperty = pathname === "/verify-post-property";
+  const isProjectsPage = pathname === "/projects" || pathname.startsWith("/projects/");
+  const isUserFlowPage = pathname === "/user-flow";
+  const isRecentlyViewedPage = pathname === "/recently-viewed";
+  const isContactUsPage = pathname === '/contact-us';
+  const isHelpCenterPage = pathname === '/help-center';
+  const isJoinUsPage = pathname === '/join-us';
+  const isProfilePage = pathname === "/profile";
+  const isReferAndEarnPage = pathname === "/refer-and-earn";
+  const isChannelPartnerPage =
+    pathname === "/channel-partner" || pathname.startsWith("/channel-partner/");
+  const event = searchParams.get('event')
+  const isLegacySignupPage =
+    pathname === "/signup" ||
+    pathname === "/verify-otp";
 
   // Pages that require auth (post-OTP account creation flow)
   const isAccountCreationPage =
     pathname === "/create-account" ||
     pathname === "/additional-details";
 
-  const isLegacySignupPage =
-    pathname === "/signup" ||
-    pathname === "/verify-otp";
-
-  // Public pages — allow without auth
-  if (isPublicPage) {
+  // Public pages (no login required)
+  if (
+    isHomePage ||
+    isAbooutUsPage ||
+    verifyProperty ||
+    isProjectsPage ||
+    isUserFlowPage ||
+    isRecentlyViewedPage ||
+    isContactUsPage ||
+    isHelpCenterPage ||
+    isJoinUsPage ||
+    isProfilePage ||
+    isReferAndEarnPage ||
+    isChannelPartnerPage
+  ) {
     return NextResponse.next();
   }
 
-  // Legacy signup routes redirect to user-flow
+  // Legacy signup routes redirect to user-flow.
   if (isLegacySignupPage) {
     if (accessToken) {
-      return NextResponse.redirect(new URL("/", req.url));
+      return NextResponse.redirect(new URL("/user-dashboard", req.url));
     }
     return NextResponse.redirect(new URL("/user-flow?isLogin=true", req.url));
   }
@@ -100,19 +59,17 @@ export async function middleware(req: NextRequest) {
     if (accessToken) {
       return NextResponse.next();
     }
-    return NextResponse.redirect(new URL("/user-flow?isLogin=true", req.url));
+    return NextResponse.redirect(new URL("/user-flow?postProperty=true", req.url));
   }
 
-  // All remaining routes require auth
-  if (!accessToken) {
-    return NextResponse.redirect(new URL("/user-flow?isLogin=true", req.url));
+  // Protect all remaining routes: unauthenticated users must enter via user-flow (login).
+  if (!accessToken && !event) {
+    return NextResponse.redirect(new URL('/user-flow?isLogin=true', req.url));
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.png$|.*\\.svg$.*|.*\\.jpg$).*)",
-  ],
-};
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.png$|.*\\.svg$.*|.*\\.jpg$).*)'],
+}
