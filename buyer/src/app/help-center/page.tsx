@@ -149,7 +149,7 @@ const HelpCenter = () => {
                             height={24}
                             alt='phone'
                         />
-                        +91 7709904943
+                        +91 2589645266
                     </div>
                     <div className='flex items-center gap-1 text-gray-600 text-[15px]'>
                         <Image
@@ -167,7 +167,7 @@ const HelpCenter = () => {
                             height={24}
                             alt='whatsapp'
                         />
-                        +91 7709904943
+                        +91 2589645266
                     </div>
                 </div>
             </div>
