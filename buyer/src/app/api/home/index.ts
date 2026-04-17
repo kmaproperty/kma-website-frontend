@@ -39,7 +39,7 @@ export const fetchPropertyMedia = async (
 ): Promise<PropertyMediaResponse | null> => {
   if (!propertyId) return null;
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+    const baseUrl = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_URL;
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
     };
@@ -61,7 +61,7 @@ export const fetchPropertyMedia = async (
 
 export const fetchPropertyMasterData = async (): Promise<GetPropertyMasterDataResponse> => {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+    const baseUrl = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_URL;
 
     const response = await fetch(
       `${baseUrl}/end-user/property-master-data`,
@@ -93,7 +93,7 @@ export const fetchPropertyMasterData = async (): Promise<GetPropertyMasterDataRe
 
 export const fetchPropertyCitiesData = async (): Promise<CitiesResponse> => {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+    const baseUrl = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_URL;
 
     const response = await fetch(
       `${baseUrl}/end-user/home/cities`,

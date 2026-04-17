@@ -5,7 +5,6 @@ import AboutusDataSync from "@/components/footer/AboutusDataSync";
 import HomeFooter from "@/components/footer/homeFooter";
 import UserHeader from "@/components/header/userHeader";
 import LeadSummaryListClient from "./_components/LeadSummaryListClient";
-export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: "Lead Summary List | KMA Property",

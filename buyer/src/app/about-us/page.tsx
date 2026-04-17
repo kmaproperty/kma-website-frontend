@@ -1,6 +1,5 @@
 import AboutUsComponent from "@/components/about-us";
 import { fetchPropertyCitiesData, fetchPropertyMasterData } from "../api/home";
-export const dynamic = 'force-dynamic';
 
 
 export default async function AboutUs(){

@@ -1,6 +1,5 @@
 import Home from "@/components/home";
 import { fetchPropertyCitiesData, fetchPropertyMasterData } from "./api/home";
-export const dynamic = 'force-dynamic';
 
 export default async function HomeDashboard() {
   let propertyMasterData: any = await fetchPropertyMasterData();

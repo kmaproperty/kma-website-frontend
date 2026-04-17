@@ -7,7 +7,6 @@ import HeaderDataSync from "@/components/header/HeaderDataSync";
 import AboutusDataSync from "@/components/footer/AboutusDataSync";
 import { fetchPropertyMasterData, fetchPropertyMedia, type PropertyMediaCategory } from "@/app/api/home";
 import { GalleryContent, type GallerySection } from "./GalleryContent";
-export const dynamic = 'force-dynamic';
 
 const awsBaseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
 

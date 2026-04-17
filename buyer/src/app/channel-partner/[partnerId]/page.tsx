@@ -7,7 +7,6 @@ import { fetchPropertyMasterData } from "@/app/api/home";
 import ChannelPartnerPageClient from "../_components/ChannelPartnerPageClient";
 import ChannelPartnerDetailsClient from "./_components/ChannelPartnerDetailsClient";
 import HomeHeader from "@/components/header/homeHeader";
-export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: "Channel Partner | KMA Property",
