@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Spinner from "../common/spinner";
 import { DocusignResponse, docuSingStatusApiHanlder } from "@/services/kycService";
+import { axiosInstance } from "@/services/axiosService";
 
 export default function AggrementVerification({event}) {
   const router = useRouter();
@@ -72,6 +73,10 @@ export default function AggrementVerification({event}) {
       case "signing_complete":
         setMessage("Document signed successfully");
         toast.success("Document signed successfully");
+        axiosInstance.post("/users/docusign/sync-status").then(() => {
+          setStatus("Completed");
+          setIsSignDone(true);
+        }).catch(() => {});
         setNavigate(true);
         break;
       case "decline":
