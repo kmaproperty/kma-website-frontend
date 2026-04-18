@@ -486,7 +486,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
 
   return (
     <div className="w-full min-w-0">
-      <div className="hidden w-full px-4 lg:block lg:px-8">
+      <div className="hidden w-full md:block lg:px-8">
         <div className="text-xs font-medium text-text-light-gray">
           Home <span className="px-1">/</span>
           <span className="text-white"> New Properties in {initialProjects[0]?.city}</span>
@@ -494,8 +494,8 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
       </div>
 
       <section className="mt-7 w-full px-0 lg:px-8">
-        <div className="p-0 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0">
-        <div className="mb-4 lg:hidden">
+        <div className="p-0 md:rounded-none md:border-0 md:bg-transparent md:p-0">
+        <div className="mb-4 md:px-0 px-4 md:hidden">
           <div className="mb-3 flex items-center gap-2">
             <button
               type="button"
@@ -552,11 +552,11 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
         </div>
 
         <div className="relative">
-          <h1 className="mt-3 hidden text-2xl font-semibold text-white lg:block lg:text-3xl">
+          <h1 className="mt-3 hidden text-2xl font-semibold text-white md:block lg:text-3xl">
             All Properties List
           </h1>
 
-          <div className="mt-4 hidden w-full flex-col gap-3 rounded-[28px] bg-white p-4 lg:absolute lg:right-0 lg:top-15 lg:mt-0 lg:flex lg:w-[73%] lg:max-w-[73%] lg:flex-row lg:items-stretch lg:gap-3 lg:rounded-[34px_34px_0_0] lg:border-b-0 lg:p-5">
+          <div className="mt-4 hidden w-full flex-col gap-3 rounded-[28px] bg-white p-4 md:absolute md:right-0 md:top-15 md:mt-0 md:flex md:w-[73%] md:max-w-[73%] md:flex-row md:items-stretch md:gap-3 md:rounded-[34px_34px_0_0] md:border-b-0 md:p-5">
             <div className="relative min-w-0 flex-1">
               <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-text-gray" />
 
@@ -590,13 +590,13 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
           </div>
         </div>
 
-        <div className="mt-2 grid grid-cols-1 gap-6 rounded-xl p-0 lg:mt-20 lg:grid-cols-[320px_1fr] lg:rounded-xl lg:bg-white lg:p-4">
-          <aside className="hidden rounded-xl bg-[#f5f5f5] px-5 py-4 lg:block lg:sticky lg:top-6 lg:mt-0 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:overscroll-contain">
+        <div className="mt-2 grid grid-cols-1 gap-6 rounded-xl p-0 md:mt-20 md:grid-cols-[320px_1fr] md:rounded-xl md:bg-white md:p-4">
+          <aside className="hidden rounded-xl bg-[#f5f5f5] px-5 py-4 md:block md:sticky md:top-6 md:mt-0 md:max-h-[calc(100vh-3rem)] md:self-start md:overflow-y-auto md:overscroll-contain">
             <FiltersSidebar />
           </aside>
 
-          <main className="mt-1 min-w-0 lg:mt-2">
-            <div className="rounded-none p-0 lg:rounded-2xl lg:p-4">
+          <main className="mt-1 min-w-0 md:mt-2">
+            <div className="rounded-none px-4 md:rounded-2xl md:p-4">
               <div>
                 <ProjectsToolbar
                   total={initialProjects.length}
