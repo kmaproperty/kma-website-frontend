@@ -62,6 +62,13 @@ export default function AggrementVerification({event}) {
         if(documentDetails?.docusign_agreement_signed){
             setStatus('Completed')
             setIsSignDone(true)
+        } else {
+            axiosInstance.post("/users/docusign/sync-status").then((res) => {
+              if (res.data?.status === "completed") {
+                setStatus("Completed");
+                setIsSignDone(true);
+              }
+            }).catch(() => {});
         }
     }
   },[documentDetails])
