@@ -123,17 +123,13 @@ export default function BankDetails({isPopup = false, onClose}) {
       });
       const result = await res.json();
 
-      if (!result?.success || !result?.data?.account_exists) {
-        toast.error(result?.message || "Bank account verification failed. Please check your details.");
-        setVerifying(false);
-        return;
+      if (result?.success && result?.data?.account_exists) {
+        toast.success("Bank account verified successfully");
+      } else {
+        toast.warning("Bank verification could not confirm your account. Details will be reviewed manually.");
       }
-
-      toast.success("Bank account verified successfully");
     } catch {
-      toast.error("Bank verification service unavailable. Please try again.");
-      setVerifying(false);
-      return;
+      toast.warning("Bank verification service unavailable. Details will be reviewed manually.");
     }
     setVerifying(false);
 
