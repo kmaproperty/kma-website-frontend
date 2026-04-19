@@ -20,6 +20,7 @@ import { USER_TYPE } from "@/lib/enums";
 import { useHeaderStore } from "@/store/useHeaderStore";
 import { useQuery } from "@tanstack/react-query";
 import { userProfileApiHandler, UserProfileResponse, endUserProfileApiHandler } from "@/services/userService";
+import { clearAuthCookies } from "@/lib/helper";
 
 const baseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
 
@@ -42,16 +43,21 @@ export default function HomeHeader() {
   const { data: profileResponse } = useQuery({
     queryKey: ["user-profile", userRole, crossApp],
     queryFn: async () => {
-      // Cross-app users have END_USER tokens but OWNER/CP role in cookie
-      // Always use end-user/profile since the token is END_USER
-      if (isSeller && !crossApp) {
-        return userProfileApiHandler();
+      try {
+        const res = await endUserProfileApiHandler();
+        return { success: res.success, user: res.user } as UserProfileResponse;
+      } catch (err: any) {
+        if (err?.statusCode === 401 || err?.status === 401 || err?.message === 'Authentication failed') {
+          localStorage.clear();
+          clearAuthCookies();
+          window.location.replace("/");
+        }
+        throw err;
       }
-      const res = await endUserProfileApiHandler();
-      return { success: res.success, user: res.user } as UserProfileResponse;
     },
     enabled: isLoggedIn,
     staleTime: 60 * 1000,
+    retry: false,
   });
   const headerAvatarSrc = useMemo(() => {
     const user = profileResponse?.user;
