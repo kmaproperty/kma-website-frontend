@@ -98,7 +98,9 @@ export default function ProfileView({ userRole }: ProfileViewProps) {
   const isLoggedIn = Boolean(userRole);
   const sessionId = useSessionStore((state) => state.sessionId);
 
-  const isSeller = userRole === USER_TYPE.CHANNEL_PARTNER || userRole === USER_TYPE.OWNER;
+  // On buyer domain, treat everyone as end-user for profile data + menu.
+  // Seller-specific features only on seller domain.
+  const isSeller = false;
 
   // Check if user came from seller app (crossApp flag in localStorage)
   const crossApp = (() => {

@@ -36,7 +36,8 @@ export default function HomeHeader() {
   } = useHeaderStore(true);
   const isEndUser = userRole === USER_TYPE.END_USER || userRole === USER_TYPE.USER;
   const isLoggedIn = Boolean(userRole === USER_TYPE.CHANNEL_PARTNER || userRole === USER_TYPE.OWNER || isEndUser);
-  const isSeller = Boolean(userRole === USER_TYPE.CHANNEL_PARTNER || userRole === USER_TYPE.OWNER);
+  // On buyer domain, no one is treated as seller — seller features only on seller domain
+  const isSeller = false;
 
   const { data: profileResponse } = useQuery({
     queryKey: ["user-profile", userRole, crossApp],
