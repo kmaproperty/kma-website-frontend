@@ -334,6 +334,8 @@ export const endUserProfileApiHandler = async (): Promise<EndUserProfileResponse
 export interface EndUserProfileUpdatePayload {
   name?: string;
   email?: string;
+  city?: string;
+  profileImage?: string;
 }
 
 export interface EndUserProfileUpdateResponse {

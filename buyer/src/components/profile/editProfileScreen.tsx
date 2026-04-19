@@ -50,6 +50,7 @@ interface EditProfileContentProps {
 }
 
 function EditProfileContent({ user, onSuccess }: EditProfileContentProps) {
+  const queryClient = useQueryClient();
   const [name, setName] = useState(user.name ?? "");
   const [email, setEmail] = useState(user.email ?? "");
   const [city, setCity] = useState(user.city ?? "");
@@ -77,6 +78,7 @@ function EditProfileContent({ user, onSuccess }: EditProfileContentProps) {
         if (prev) URL.revokeObjectURL(prev);
         return null;
       });
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
       onSuccess();
     },
     onError: (error: unknown) => {
@@ -117,6 +119,7 @@ function EditProfileContent({ user, onSuccess }: EditProfileContentProps) {
     const payload: EndUserProfileUpdatePayload = {
       name: name.trim() || undefined,
       email: email.trim() || undefined,
+      city: city.trim() || undefined,
     };
 
     if (profilePhotoFile) {
