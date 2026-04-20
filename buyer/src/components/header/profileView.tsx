@@ -98,7 +98,9 @@ export default function ProfileView({ userRole }: ProfileViewProps) {
   const isLoggedIn = Boolean(userRole);
   const sessionId = useSessionStore((state) => state.sessionId);
 
-  const isSeller = userRole === USER_TYPE.CHANNEL_PARTNER || userRole === USER_TYPE.OWNER;
+  // On buyer domain, treat everyone as end-user for profile data + menu.
+  // Seller-specific features only on seller domain.
+  const isSeller = false;
 
   // Check if user came from seller app (crossApp flag in localStorage)
   const crossApp = (() => {
@@ -116,15 +118,22 @@ export default function ProfileView({ userRole }: ProfileViewProps) {
   const { data: profileResponse } = useQuery({
     queryKey: ["user-profile", userRole, crossApp],
     queryFn: async () => {
-      // Cross-app users have END_USER tokens but OWNER/CP role — use end-user/profile
-      if (isSeller && !crossApp) {
-        return userProfileApiHandler();
+      try {
+        const res = await endUserProfileApiHandler();
+        return { success: res.success, user: res.user } as UserProfileResponse;
+      } catch (err: any) {
+        if (err?.statusCode === 401 || err?.status === 401 || err?.message === 'Authentication failed') {
+          localStorage.clear();
+          await clearAuthCookies();
+          queryClient.clear();
+          window.location.replace("/");
+        }
+        throw err;
       }
-      const res = await endUserProfileApiHandler();
-      return { success: res.success, user: res.user } as UserProfileResponse;
     },
     enabled: isLoggedIn,
     staleTime: 60 * 1000,
+    retry: false,
   });
   const user = profileResponse?.user;
 

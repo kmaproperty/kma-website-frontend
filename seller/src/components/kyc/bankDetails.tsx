@@ -103,10 +103,35 @@ export default function BankDetails({isPopup = false, onClose}) {
     refetchOnMount: true,
   });
 
-  const handleSubmit = () => {
+  const [verifying, setVerifying] = useState(false);
+
+  const handleSubmit = async () => {
     if (validateForm()) {
       return;
     }
+
+    setVerifying(true);
+    try {
+      const res = await fetch("/api/verify-bank", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          account_number: formData.accountNumber,
+          ifsc: formData.ifscCode,
+          beneficiary_name: formData.holderName,
+        }),
+      });
+      const result = await res.json();
+
+      if (result?.success && result?.data?.account_exists) {
+        toast.success("Bank account verified successfully");
+      } else {
+        toast.warning("Bank verification could not confirm your account. Details will be reviewed manually.");
+      }
+    } catch {
+      toast.warning("Bank verification service unavailable. Details will be reviewed manually.");
+    }
+    setVerifying(false);
 
     const payload = {
       account_number: formData.accountNumber,
@@ -251,7 +276,7 @@ export default function BankDetails({isPopup = false, onClose}) {
               onClick={() => {
                 handleSubmit();
               }}
-              disabled={bankLoader}
+              disabled={bankLoader || verifying}
             >
               <span className="gap-3 relative flex justify-center">
                 <p className={`text-nowrap`}>Submit</p>

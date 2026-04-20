@@ -20,6 +20,7 @@ import { USER_TYPE } from "@/lib/enums";
 import { useHeaderStore } from "@/store/useHeaderStore";
 import { useQuery } from "@tanstack/react-query";
 import { userProfileApiHandler, UserProfileResponse, endUserProfileApiHandler } from "@/services/userService";
+import { clearAuthCookies } from "@/lib/helper";
 
 const baseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
 
@@ -36,21 +37,27 @@ export default function HomeHeader() {
   } = useHeaderStore(true);
   const isEndUser = userRole === USER_TYPE.END_USER || userRole === USER_TYPE.USER;
   const isLoggedIn = Boolean(userRole === USER_TYPE.CHANNEL_PARTNER || userRole === USER_TYPE.OWNER || isEndUser);
-  const isSeller = Boolean(userRole === USER_TYPE.CHANNEL_PARTNER || userRole === USER_TYPE.OWNER);
+  // On buyer domain, no one is treated as seller — seller features only on seller domain
+  const isSeller = false;
 
   const { data: profileResponse } = useQuery({
     queryKey: ["user-profile", userRole, crossApp],
     queryFn: async () => {
-      // Cross-app users have END_USER tokens but OWNER/CP role in cookie
-      // Always use end-user/profile since the token is END_USER
-      if (isSeller && !crossApp) {
-        return userProfileApiHandler();
+      try {
+        const res = await endUserProfileApiHandler();
+        return { success: res.success, user: res.user } as UserProfileResponse;
+      } catch (err: any) {
+        if (err?.statusCode === 401 || err?.status === 401 || err?.message === 'Authentication failed') {
+          localStorage.clear();
+          clearAuthCookies();
+          window.location.replace("/");
+        }
+        throw err;
       }
-      const res = await endUserProfileApiHandler();
-      return { success: res.success, user: res.user } as UserProfileResponse;
     },
     enabled: isLoggedIn,
     staleTime: 60 * 1000,
+    retry: false,
   });
   const headerAvatarSrc = useMemo(() => {
     const user = profileResponse?.user;

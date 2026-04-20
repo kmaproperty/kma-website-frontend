@@ -1,29 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import EditProfileScreen from "@/components/profile/editProfileScreen";
-import UserProfile from "@/components/profile/index";
 import CopyRightFooter from "@/components/footer/copyrightFooter";
 import ProfileHeader from "@/components/profile/profileHeader";
-import { USER_TYPE } from "@/lib/enums";
 
 export default function Profile() {
-  const [role, setRole] = useState<string | null>(null);
-
-  useEffect(() => {
-    try {
-      const user = localStorage.getItem("user");
-      if (user) {
-        const parsed = JSON.parse(user);
-        setRole(parsed.role ?? null);
-      }
-    } catch {
-      // ignore
-    }
-  }, []);
-
-  const isSeller = role === USER_TYPE.OWNER || role === USER_TYPE.CHANNEL_PARTNER;
-
   return (
     <div>
       <div className="relative min-h-[calc(100dvh-10dvh)] bg-background-gray md:min-h-[calc(100dvh-7dvh)]">
@@ -31,7 +12,7 @@ export default function Profile() {
         <ProfileHeader />
         <div className="relative z-10 flex justify-center px-4 pb-8 pt-[7.2rem] sm:px-6 lg:pt-[8.8rem]">
           <div className="w-full max-w-[1100px]">
-            {isSeller ? <UserProfile /> : <EditProfileScreen />}
+            <EditProfileScreen />
           </div>
         </div>
       </div>

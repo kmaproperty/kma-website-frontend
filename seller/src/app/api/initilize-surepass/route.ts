@@ -19,7 +19,7 @@ export async function GET() {
       body: JSON.stringify({
         data: {
           signup_flow: true,
-          logo_url: process.env.NEXT_PUBLIC_APP_LOGO,
+          logo_url: process.env.NEXT_PUBLIC_APP_LOGO || "https://kmaglobalproperty.com/favicon.ico",
           skip_main_screen: false,
         },
       }),
