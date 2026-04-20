@@ -13,6 +13,7 @@ import SectionHeading from "@/components/common/SectionHeading";
 import Image from "next/image";
 import BlogSection from "@/components/home/blogSection";
 import HomeFooter from "@/components/footer/homeFooter";
+import AboutusDataSync from "@/components/footer/AboutusDataSync";
 import { FaFacebook, FaLinkedin, FaTwitter, FaYoutube } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { getSelectedCity } from "@/store/homeHeaderSlice";
@@ -284,8 +285,8 @@ export default function AboutUsComponent({
           </div>
         </div>
       </div>
-      <div className="w-full px-[50px] py-[100px]">
-        <div className="max-w-[1444px] mx-auto ">
+      <div className="w-full py-[100px]">
+        <div className="w-[90%] md:w-[75%] mx-auto">
           <SectionHeading
             title="Team Members"
             subtitle="immediate help got from our team"
@@ -457,9 +458,8 @@ export default function AboutUsComponent({
           <BlogSection />
         </div>
       </div> */}
-      <div className="">
-          <HomeFooter />
-      </div>
+      <AboutusDataSync />
+      <HomeFooter />
     </div>
   );
 }

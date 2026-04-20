@@ -149,7 +149,7 @@ export default function LeadSummaryListClient() {
     }
   };
 
-  const handleCrmDashboard = async (lead: LeadItem) => {
+  const handleCrmDashboard = async (lead: LeadItem, ownerRole?: string) => {
     const firstProperty = lead.propertyContacts?.[0]?.property;
     const propertyContact = lead.propertyContacts?.[0];
     const propertyAny = (firstProperty ?? {}) as Record<string, unknown>;
@@ -193,6 +193,7 @@ export default function LeadSummaryListClient() {
         brokerage: getNumber(propertyAny.brokerage),
         owner_name: getString(propertyAny.ownerName),
         owner_mobile_no: getString(propertyAny.ownerMobileNo),
+        owner_role: getString(ownerRole, getString(propertyAny.ownerRole)),
         no_of_bedroom: getNumber(propertyAny.numberOfBedroom),
         no_of_washroom: getNumber(propertyAny.numberOfWashroom),
         no_of_kitchen: getNumber(propertyAny.numberOfKitchen),
@@ -216,6 +217,7 @@ export default function LeadSummaryListClient() {
         ),
         website_property_id: propertyContact?.propertyId || firstProperty?.id || "UNKNOWN_PROPERTY",
       },
+      
     };
 
     setCrmLoadingLeadId(lead.id);
@@ -426,7 +428,7 @@ export default function LeadSummaryListClient() {
                         <div className="my-3 border-t border-[#e5e5e5]" />
                         <div className="flex justify-end">
                           <button
-                            onClick={() => handleCrmDashboard(item)}
+                            onClick={() => handleCrmDashboard(item, firstProperty?.ownerRole)}
                             disabled={crmLoadingLeadId === item.id}
                             className="inline-flex items-center gap-2 rounded-md border border-[#8bcf97] bg-[#f5fff6] px-4 py-2 text-sm font-medium text-[#4a9e5a] disabled:opacity-60"
                           >

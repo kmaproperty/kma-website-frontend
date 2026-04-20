@@ -45,6 +45,7 @@ export interface LeadPropertyContact {
     bhkTypeName?: string;
     societyName?: string;
     localityName?: string;
+    ownerRole?: string;
   };
   contactedAt: string | null;
 }
