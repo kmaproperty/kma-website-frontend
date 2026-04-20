@@ -23,6 +23,8 @@ import { toast } from "react-toastify";
 import MyActivityScreen from "./myActivityScreen";
 import MyReviewsScreen from "./myReviewsScreen";
 import ImageUpload from "../common/upload";
+import { useCitySearch } from "@/api/hooks/useCitySearch";
+import AsyncSelect from "react-select/async";
 
 type ProfileTab = "activity" | "reviews" | "edit";
 
@@ -51,9 +53,13 @@ interface EditProfileContentProps {
 
 function EditProfileContent({ user, onSuccess }: EditProfileContentProps) {
   const queryClient = useQueryClient();
+  const { loadCities } = useCitySearch();
   const [name, setName] = useState(user.name ?? "");
   const [email, setEmail] = useState(user.email ?? "");
   const [city, setCity] = useState(user.city ?? "");
+  const [cityOption, setCityOption] = useState<{label: string; value: string} | null>(
+    user.city ? { label: user.city, value: user.city } : null
+  );
   const [profilePhotoFile, setProfilePhotoFile] = useState<File | null>(null);
   const [profilePreviewUrl, setProfilePreviewUrl] = useState<string | null>(null);
 
@@ -61,6 +67,7 @@ function EditProfileContent({ user, onSuccess }: EditProfileContentProps) {
     setName(user.name ?? "");
     setEmail(user.email ?? "");
     setCity(user.city ?? "");
+    setCityOption(user.city ? { label: user.city, value: user.city } : null);
   }, [user]);
 
   useEffect(() => {
@@ -196,11 +203,28 @@ function EditProfileContent({ user, onSuccess }: EditProfileContentProps) {
               </div>
               <div>
                 <label className="mb-1 block text-sm font-medium text-text-black">City</label>
-                <input
-                  className={inputClassName}
-                  placeholder="Enter your city"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
+                <AsyncSelect
+                  cacheOptions
+                  defaultOptions
+                  loadOptions={loadCities}
+                  value={cityOption}
+                  onChange={(opt: any) => {
+                    setCityOption(opt);
+                    setCity(opt?.label || "");
+                  }}
+                  placeholder="Search city..."
+                  isClearable
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      height: '42px',
+                      borderRadius: '9999px',
+                      borderColor: '#e5e7eb',
+                      fontSize: '14px',
+                      '&:hover': { borderColor: '#3538CD' },
+                    }),
+                    menu: (base) => ({ ...base, zIndex: 50 }),
+                  }}
                 />
               </div>
             </div>
