@@ -10,13 +10,12 @@ import Spinner from "../common/spinner";
 import { DocusignResponse, docuSingStatusApiHanlder } from "@/services/kycService";
 import { axiosInstance } from "@/services/axiosService";
 
-export default function AggrementVerification({event}) {
+export default function AggrementVerification({event}: {event?: string}) {
   const router = useRouter();
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState('Pending')
   const [isSignDone, setIsSignDone] = useState(false)
   const [canRetry, setCanRetry] = useState(false);
-  const [navigate, setNavigate] = useState(false);
 
   const { mutate: handleSignChannelPartnerAgreement, isPending } = useMutation({
     mutationFn: async (
@@ -26,7 +25,8 @@ export default function AggrementVerification({event}) {
     },
     onSuccess: (response: ChannelPartnerAgreementResponse) => {
       if (response.url) {
-        window.open(response.url, "_blank");
+        // Same tab redirect — after signing DocuSign redirects back to returnUrl
+        window.location.href = response.url;
       }
     },
     onError: (error: any) => {
@@ -41,7 +41,8 @@ export default function AggrementVerification({event}) {
   });
 
   const handleSignDocument = () => {
-    const domainUrl = `${window.location.origin}/user-dashboard`;
+    // Return to KYC page after signing — not dashboard
+    const domainUrl = `${window.location.origin}/kyc?tabName=Agreement%20Signature`;
     handleSignChannelPartnerAgreement(domainUrl);
   };
 
@@ -78,28 +79,27 @@ export default function AggrementVerification({event}) {
 
     switch (event) {
       case "signing_complete":
-        setMessage("Document signed successfully");
-        toast.success("Document signed successfully");
+        setMessage("Document signed successfully!");
+        toast.success("Document signed successfully!");
         axiosInstance.post("/users/docusign/sync-status").then(() => {
           setStatus("Completed");
           setIsSignDone(true);
         }).catch(() => {});
-        setNavigate(true);
         break;
       case "decline":
         setMessage("Document was declined");
         setCanRetry(true);
         break;
       case "view":
-        setMessage("Document viewed");
+        setMessage("Document viewed — please complete signing");
         setCanRetry(true);
         break;
       case "cancel":
-        setMessage("Document sign canceled");
+        setMessage("Document signing was canceled");
         setCanRetry(true);
         break;
       default:
-        setMessage("Document sign not completed");
+        setMessage("Document signing not completed");
         setCanRetry(true);
     }
   }, [event]);
@@ -107,13 +107,17 @@ export default function AggrementVerification({event}) {
   const handleCancel = () => {
     router.push('/user-dashboard')
   }
-  
+
+  if (detailsLoader) {
+    return <div className="flex justify-center py-10"><Spinner size={30} /></div>;
+  }
+
   return (
     <div>
       <p className="font-bold text-text-gray">
-        Status: <span className="text-blue">{status}</span>
+        Status: <span className={`${status === 'Completed' ? 'text-green-600' : 'text-blue'}`}>{status}</span>
       </p>
-      {message && <p>{message}</p>}
+      {message && <p className="mt-2 text-sm text-text-gray">{message}</p>}
 
       <div className="flex flex-wrap justify-center gap-2 mt-8">
         <button onClick={handleCancel} className="w-full md:w-[130px] text-sm 1xl:text-base px-12 py-3 border border-blue text-center cursor-pointer rounded-full bg-light-purple">
@@ -125,9 +129,7 @@ export default function AggrementVerification({event}) {
         {!isSignDone && <button
           disabled={isPending}
           className="cursor-pointer w-full md:w-[160px] px-12 py-3 animated-button border border-blue"
-          onClick={() => {
-            handleSignDocument();
-          }}
+          onClick={handleSignDocument}
         >
           <span className="gap-3 relative flex justify-center">
             {!isPending ? (
