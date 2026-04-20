@@ -29,53 +29,45 @@ const HelpCenter = () => {
     const gettingStartedAccordionData = [
         {
             question: "Who can post a property on KMA?",
-            answer: "Property Owners and verified Channel Partners (builders, brokers, agents) can list properties and projects."
+            answer: "Property Owners, Individual Brokers, and Builders can list. We welcome anyone who wants a transparent, spam-free way to close deals in Gurgaon."
         },
         {
             question: "How do I join as a Channel Partner?",
-            answer: "Apply through our partner portal. Our team will verify your credentials within 2–3 business days."
+            answer: "Simply sign up and complete your profile. Once you want to scale beyond 3 properties, you can upgrade to a Channel Partner for unlimited access."
         },
     ];
     const postPropertiesAccordionData = [
         {
             question: "Is it free to post a project/property?",
-            answer: "Yes. Owners can post up to 3 properties for free. To post unlimited, switch to a Channel Partner account."
+            answer: "Yes, 100% Free. Owners can post up to 3 listings after a digital MOU. For unlimited listings and advanced CRM access, you can join as a Channel Partner."
         },
         {
             question: "What documents are required to list a project?",
-            answer: "Apply through our partner portal. Our team will verify your credentials within 2–3 business days."
+            answer: "We keep it simple. Just basic property details and a digitally signed MOU to ensure all listings on our platform are genuine and verified."
         },
         {
             question: "Can I edit my listing after posting?",
-            answer: "Apply through our partner portal. Our team will verify your credentials within 2–3 business days."
+            answer: "Yes, you can manage and update your listings 24/7 through your personalized dashboard or KMA partner panel."
         },
     ];
     const propertySearchAccordionData = [
         {
             question: "How can I search for a property on KMA?",
-            answer: "Use the home page search bar to find by location, project name, or property type. Apply filters to refine results."
+            answer: "Use our smart filters on the home page. You can search by location, budget, or property type. No fake ads—only verified luxury options."
         },
         {
             question: "Do I need to log in to search?",
-            answer: "Apply through our partner portal. Our team will verify your credentials within 2–3 business days."
-        },
-        {
-            question: "Are the properties verified?",
-            answer: "Apply through our partner portal. Our team will verify your credentials within 2–3 business days."
+            answer: "You can browse freely, but logging in allows you to save favorites and get direct WhatsApp updates for new properties matching your profile."
         },
     ];
     const generalQuestionsAccordionData = [
         {
-            question: "What types of properties can be posted?",
-            answer: "KMA supports both residential (flats, villas, floors, plots) and commercial (offices, shops, commercial plots) listings."
+            question: "What makes KMA different from other portals?",
+            answer: "We don't sell your leads to 50 people. We provide 80% operational support, including pre-sales, WhatsApp filtering, and field support for site visits."
         },
         {
             question: "How long does it take for my project to go live?",
-            answer: "Apply through our partner portal. Our team will verify your credentials within 2–3 business days."
-        },
-        {
-            question: "Can I share property listings?",
-            answer: "Apply through our partner portal. Our team will verify your credentials within 2–3 business days."
+            answer: "Once submitted, our team verifies the details within 24 hours. After verification, your property goes live and matching leads are synced to your CRM"
         },
     ];
 
