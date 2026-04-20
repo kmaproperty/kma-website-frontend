@@ -176,7 +176,7 @@ export default function ExploreSection({ explorePropertyList = [] }: ExploreSect
                 animate={isInView ? "visible" : "hidden"}
               >
                 <Link
-                  href={`/properties?type=${encodeURIComponent(item.code)}`}
+                  href={`/projects?propertyTypeId=${encodeURIComponent(item.id)}`}
                   className="block group"
                 >
                   <div
