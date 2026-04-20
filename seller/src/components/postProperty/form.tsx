@@ -34,9 +34,16 @@ const activeStep = useSelector(getActiveStep);
     refetchOnMount: true,
   });
 
-  // Reset progress when creating a new property (no propertyId)
+  // Reset progress on mount:
+  // - CREATE mode without propertyId: fresh start
+  // - EDIT mode: always start at step 1 (user wants to edit from beginning)
   useEffect(() => {
-    if (mode === PROPERTY_FORM_MODE.CREATE && !params?.propertyId) {
+    hasRestoredStepRef.current = false;
+    if (mode === PROPERTY_FORM_MODE.EDIT) {
+      dispatch(resetProgress());
+      dispatch(setActiveStep({ step: 1 }));
+      hasRestoredStepRef.current = true; // prevent restore override
+    } else if (!params?.propertyId) {
       dispatch(resetProgress());
     }
   }, [mode, params?.propertyId, dispatch]);
