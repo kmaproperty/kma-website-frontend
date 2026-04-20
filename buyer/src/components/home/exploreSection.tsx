@@ -128,8 +128,8 @@ export default function ExploreSection({ explorePropertyList = [] }: ExploreSect
         </div>
 
         <p className="text-text-gray text-xs leading-relaxed ">
-          Whether you're looking for a cozy apartment, a luxurious villa, or a
-          commercial investment, we’ve got you covered.
+        Looking for a cozy apartment, a luxurious villa, a smart investment, or a premium office space? We’ve got you covered.
+
         </p>
 
         <div className="flex gap-3">

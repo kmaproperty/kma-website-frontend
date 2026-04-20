@@ -134,7 +134,8 @@ export default function HomeSuccessStories() {
                 isInView={isInView}
                 hideButton={true}
                 heading="Success stories in their own words"
-                subHeading="Read what our satisfied clients have to say about their experiences with our platform."
+                subHeading="Real experiences from real people.
+Hear directly from our clients how KMA helped them buy, sell, or rent properties with complete transparency and zero hassle."
               />
             </div>
             <Link href="/success-stories" className="w-fit text-sm 1xl:text-base animated-button px-8 py-2 border border-blue text-center cursor-pointer">

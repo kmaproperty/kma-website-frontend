@@ -9,22 +9,22 @@ const featureDetails = [
   {
     icon: "home.svg",
     heading: "Home Loan",
-    subHeading: "Make Your Dream Home a Reality",
-    text: "Get easy and fast home loans with minimum documentation and competitive interest rates.",
+    subHeading: " Make Your Dream Home Possible",
+    text: " Quick approvals with minimal paperwork and competitive rates.",
     background: "#FDF3E2",
   },
   {
     icon: "money.svg",
     heading: "Plot Loan",
-    subHeading: "Turn That Plot into a Home",
-    text: "Easy financing for residential land purchases in approved locations.",
+    subHeading: "Turn Your Land Into Opportunity",
+    text: "Easy financing for residential land in approved locations.",
     background: "#FCEDF4",
   },
   {
     icon: "key.svg",
     heading: "Rent Agreement",
-    subHeading: "Hassle-Free Online Rent Agreements",
-    text: "Create, verify, and register your rent agreement online quick, legal, and secure.",
+    subHeading: "Simple, Secure & Hassle-Free",
+    text: "Create and manage rent agreements online with ease.",
     background: "#D5E7E8",
   },
 ];

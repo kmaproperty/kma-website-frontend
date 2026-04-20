@@ -64,6 +64,7 @@ export interface LeadItem {
   propertyTypes?: string[] | null;
   locations?: string[] | null;
   status: LeadStatus;
+  syncWithCrm?: boolean;
   lastContactedAt?: string | null;
   propertiesContactedCount: number;
   propertyContacts: LeadPropertyContact[];

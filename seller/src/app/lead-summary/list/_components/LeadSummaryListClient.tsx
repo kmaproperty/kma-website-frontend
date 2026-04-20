@@ -223,6 +223,9 @@ export default function LeadSummaryListClient() {
     setCrmLoadingLeadId(lead.id);
     try {
       await syncCrmApiHandler(payload);
+      setLeads((prev) =>
+        prev.map((item) => (item.id === lead.id ? { ...item, syncWithCrm: true } : item))
+      );
     } catch (error) {
       console.error("Failed to sync lead to CRM", error);
     } finally {
@@ -349,6 +352,7 @@ export default function LeadSummaryListClient() {
                 ) : (
                   leads.map((item) => {
                     const firstProperty = item.propertyContacts?.[0]?.property;
+                    const isCrmSynced = Boolean(item.syncWithCrm);
                     return (
                       <article key={item.id} className="rounded-lg border border-[#e2e2e2] bg-[#fbfbfb] px-4 py-3">
                         <div className="flex items-center justify-between gap-3">
@@ -429,7 +433,7 @@ export default function LeadSummaryListClient() {
                         <div className="flex justify-end">
                           <button
                             onClick={() => handleCrmDashboard(item, firstProperty?.ownerRole)}
-                            disabled={crmLoadingLeadId === item.id}
+                            disabled={crmLoadingLeadId === item.id || isCrmSynced}
                             className="inline-flex items-center gap-2 rounded-md border border-[#8bcf97] bg-[#f5fff6] px-4 py-2 text-sm font-medium text-[#4a9e5a] disabled:opacity-60"
                           >
                             <span className="grid h-4 w-4 grid-cols-2 gap-0.5">
@@ -438,7 +442,11 @@ export default function LeadSummaryListClient() {
                               <span className="rounded-[1px] bg-[#7fc78c]" />
                               <span className="rounded-[1px] bg-[#7fc78c]" />
                             </span>
-                            {crmLoadingLeadId === item.id ? "Syncing CRM..." : "CRM Dashboard"}
+                            {crmLoadingLeadId === item.id
+                              ? "Syncing CRM..."
+                              : isCrmSynced
+                              ? "Already sync with CRM"
+                              : "CRM Dashboard"}
                           </button>
                         </div>
                       </article>

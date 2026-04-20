@@ -90,21 +90,22 @@ export default function WorkingSection(){
                         <div className="bg-gray-400 h-0.5 w-8 mb-2">
                             <div className="w-1/2 h-0.5 bg-white" />
                         </div>
-                        <p className="text-white font-semibold text-base">Want tailor this more for a specific niche</p>
+                        <p className="text-white font-semibold text-base">Finding your perfect property is simple with KMA Global Property.
+                        </p>
                         <div className="flex flex-col gap-1">
                             <p className="text-sm text-[#FFC107]">Step 1</p>
-                            <p className="text-sm text-white font-semibold">Search for Location</p>
-                            <p className="text-white text-xs">Search by location, category, budget, and amenities. Find listings that match your needs whether it's a home, office, or land.</p>
+                            <p className="text-sm text-white font-semibold">Search Smartly</p>
+                            <p className="text-white text-xs">Use powerful filters like budget, location, property type, size, amenities, and possession status to narrow down options.</p>
                         </div>
                         <div className="flex flex-col gap-1">
                             <p className="text-sm text-[#8A73DB]">Step 2</p>
-                            <p className="text-sm text-white font-semibold">Select Property Type</p>
-                            <p className="text-white text-xs">Choose from modern apartments, spacious houses, stylish condos, or commercial spaces that meet your specific needs.</p>
+                            <p className="text-sm text-white font-semibold">Explore Verified Listings</p>
+                            <p className="text-white text-xs">Browse handpicked and verified properties with complete details, photos, and transparent pricing.</p>
                         </div>
                         <div className="flex flex-col gap-1">
                             <p className="text-sm text-[#DA6A99]">Step 3</p>
-                            <p className="text-sm text-white font-semibold">Book Your Property</p>
-                            <p className="text-white text-xs">Select your preferred property type, provide your details, and confirm your booking in just a few easy steps.</p>
+                            <p className="text-sm text-white font-semibold">Get Personalized Matches</p>
+                            <p className="text-white text-xs">Our system intelligently matches your requirements and sends the best options directly to you.</p>
                         </div>
                     </motion.div>
                 </div>

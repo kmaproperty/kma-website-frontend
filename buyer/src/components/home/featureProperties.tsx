@@ -127,7 +127,7 @@ export default function FeaturedProperties({ topProperties }) {
         hideButton={true}
         sectionName="featureProperties"
         heading="Featured Properties"
-        subHeading="Discover Exclusive Listings of Premium Properties Available for Purchase"
+        subHeading="Discover exclusive listings of premium properties available for purchase."
         listingFilter={listingFilter}
         onListingFilterChange={setListingFilter}
       />

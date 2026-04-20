@@ -174,8 +174,8 @@ export default function RealEstateSection() {
     <div>
       <SectionHeader
         isInView={isInView}
-        heading="Explore Top Real Estate Opportunities Across India"
-        subHeading="Smart property choices in India's leading cities."
+        heading="Explore Real Estate Across Top Cities"
+        subHeading="Discover verified opportunities in prime urban markets."
         hideButton={true}
       />
       <div className="mt-10" ref={ref}>
