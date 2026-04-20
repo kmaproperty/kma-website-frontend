@@ -14,7 +14,7 @@ import { useSessionStore } from "@/store/useSessionStore";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter } from "nextjs-toploader/app";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { toast } from "react-toastify";
 
 type ProfileViewProps = {
@@ -136,6 +136,20 @@ export default function ProfileView({ userRole }: ProfileViewProps) {
     retry: false,
   });
   const user = profileResponse?.user;
+
+  // Sync latest profile data to localStorage so cached views stay up-to-date
+  useEffect(() => {
+    if (user?.name) {
+      try {
+        const raw = localStorage.getItem("user");
+        const existing = raw ? JSON.parse(raw) : {};
+        const updated = { ...existing, name: user.name, role: user.role };
+        if (user.email) updated.email = user.email;
+        if (user.profileImage) updated.profileImage = user.profileImage;
+        localStorage.setItem("user", JSON.stringify(updated));
+      } catch { /* ignore */ }
+    }
+  }, [user]);
 
   const { data: activityCounts } = useQuery({
     queryKey: ["end-user-activity-counts", isLoggedIn, sessionId ?? null],
