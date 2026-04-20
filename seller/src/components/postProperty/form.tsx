@@ -5,7 +5,7 @@ import Step2 from "./step2";
 import Step3 from "./step3";
 import Step4 from "./step4";
 import { useDispatch, useSelector } from "react-redux";
-import { getActiveStep, setActiveStep } from "@/store/postPropertyProgress";
+import { getActiveStep, setActiveStep, resetProgress } from "@/store/postPropertyProgress";
 import { useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { UserDashboardDetailsApiHandler, UserDashboardDetailsResponse } from "@/services/userService";
@@ -33,6 +33,13 @@ const activeStep = useSelector(getActiveStep);
     staleTime: 0,
     refetchOnMount: true,
   });
+
+  // Reset progress when creating a new property (no propertyId)
+  useEffect(() => {
+    if (mode === PROPERTY_FORM_MODE.CREATE && !params?.propertyId) {
+      dispatch(resetProgress());
+    }
+  }, [mode, params?.propertyId, dispatch]);
 
   useEffect(() => {
     if (containerRef.current) {
