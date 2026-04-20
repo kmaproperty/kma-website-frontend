@@ -68,10 +68,17 @@ function ExploreCard({
 }) {
   const router = useRouter();
   const resolvedSrc = resolveCityImageSrc(image);
+  const encodedCityName = encodeURIComponent(name);
 
   return (
     <motion.div
-      onClick={() => router.push(id ? `/projects/${id}` : '/projects')}
+      onClick={() =>
+        router.push(
+          id
+            ? `/projects/${id}?cityName=${encodedCityName}`
+            : `/projects?cityName=${encodedCityName}`
+        )
+      }
       whileHover={{ y: -4 }}
       transition={{ type: "spring", stiffness: 260, damping: 20 }}
       className="relative isolate overflow-hidden rounded-2xl bg-slate-200 shadow-[0_10px_30px_rgba(0,0,0,0.10)] ring-1 ring-black/5 group"

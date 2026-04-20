@@ -208,6 +208,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
 
   // Apply filters from URL query params (from homepage search / header dropdown)
   const searchParams = useSearchParams();
+  const cityNameFromQuery = searchParams.get("cityName")?.trim() || undefined;
   const appliedQueryRef = useRef<string | null>(null);
   useEffect(() => {
     const queryKey = searchParams.toString();
@@ -445,6 +446,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
 
   const routeLabels = useMemo(() => {
     const cityName =
+      cityNameFromQuery ??
       selectedCity?.name ??
       initialProjects[0]?.city ??
       undefined;
@@ -457,6 +459,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
       propertyMasterData,
     });
   }, [
+    cityNameFromQuery,
     selectedCity?.name,
     initialProjects,
     listingTypeId,
