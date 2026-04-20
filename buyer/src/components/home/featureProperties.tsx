@@ -200,7 +200,7 @@ export default function FeaturedProperties({ topProperties }) {
                     <div className="flex flex-1 min-h-0 flex-col px-4 pb-4 pt-8 gap-2 overflow-hidden">
                       {/* Rating + Like */}
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
+                        {/* <div className="flex items-center gap-2">
                           <div className="flex items-center">
                             {[...Array(5)].map((_, i) => (
                               <Star
@@ -213,9 +213,9 @@ export default function FeaturedProperties({ topProperties }) {
                           <span className="text-xs text-text-gray">
                             {ratingNumber.toFixed(1)}
                           </span>
-                        </div>
+                        </div> */}
 
-                        <button
+                        {/* <button
                           type="button"
                           onClick={(e) => toggleFavorite(e, item?.id)}
                           className={`rounded-full border border-slate-200 p-1.5 shadow-sm transition-colors hover:bg-slate-50 ${favoriteIds.has(item?.id) ? 'bg-red-50' : 'bg-white'}`}
@@ -233,7 +233,7 @@ export default function FeaturedProperties({ topProperties }) {
                               alt="Like"
                             />
                           )}
-                        </button>
+                        </button> */}
                       </div>
 
                       {/* Title + Address */}

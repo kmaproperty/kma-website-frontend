@@ -1,3 +1,5 @@
+ 'use client'
+
 import HomdeHeader from '@/components/header/homeHeader'
 import { BadgePercent, CircleCheckBig, House, Lightbulb, ListCheck, ListChecks, Mail, MapPin, Phone, PhoneCall, PhoneIncoming, Section } from 'lucide-react';
 import PageTitle from '@/components/common/PageTitle';
@@ -12,8 +14,15 @@ import Link from 'next/link';
 import ContactTable from '../../components/contactUs/ContactTable';
 import AccordionComponent from '@/components/common/accordion';
 import AboutusDataSync from '@/components/footer/AboutusDataSync';
+import { useSelector } from 'react-redux';
+import { getAboutusData } from '@/store/homeHeaderSlice';
 
 const HelpCenter = () => {
+    const aboutusData: any = useSelector(getAboutusData);
+    const contactPhoneNumber = aboutusData?.phoneNumber
+        ? (aboutusData.phoneNumber.startsWith('+') ? aboutusData.phoneNumber : `+91 ${aboutusData.phoneNumber}`)
+        : '+91 2589645266';
+    const contactEmail = aboutusData?.email || 'info@kmaproperty.com';
 
     const breadcrumps = [
         {
@@ -80,6 +89,7 @@ const HelpCenter = () => {
                         title="Help Center"
                         description="Have Questions? We've All the Answers"
                         breadcrumps={breadcrumps}
+                        actions={null}
                     />
                 </div>
             </div>
@@ -136,7 +146,7 @@ const HelpCenter = () => {
                             height={24}
                             alt='phone'
                         />
-                        +91 2589645266
+                        {contactPhoneNumber}
                     </div>
                     <div className='flex items-center gap-1 text-gray-600 text-[15px]'>
                         <Image 
@@ -145,7 +155,7 @@ const HelpCenter = () => {
                             height={24}
                             alt='mail'
                         />
-                        info@kmaproperty.com
+                        {contactEmail}
                     </div>
                     <div className='flex items-center gap-1 text-gray-600 text-[15px]'>
                         <Image 
@@ -154,7 +164,7 @@ const HelpCenter = () => {
                             height={24}
                             alt='whatsapp'
                         />
-                        +91 2589645266
+                        {contactPhoneNumber}
                     </div>
                 </div>
             </div>

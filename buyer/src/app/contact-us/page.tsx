@@ -135,7 +135,7 @@ const ContactUs = async () => {
                     </div>
                 </div>
             </div>
-            <div className='w-full py-[100px] pr-[50px] bg-[#F2F2F2]'>
+            {/* <div className='w-full py-[100px] pr-[50px] bg-[#F2F2F2]'>
                 <div className='flex items-center justify-between gap-6 max-w-[1440] mx-auto'>
                     <div className='w-[30%] max-w-[350px]  space-y-3'>
                         <h2 className={`text-[38px] leading-11 font-semibold text-[#010048]`}>What People Are Saying</h2>
@@ -161,7 +161,7 @@ const ContactUs = async () => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
             <div className="bg-text-black flex justify-center">
                     <AboutusDataSync />
                     <HomeFooter tab={1} />

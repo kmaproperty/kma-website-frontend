@@ -73,7 +73,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
     )?.propertyTypes ?? [];
 
   const isRentTab = footerTab === "1";
-  const propertyVerb = isRentTab ? "rent" : "sale";
+  const propertyVerb = isRentTab ? "rent" : "buy";
   const rawResidentialList = isRentTab
     ? residentialRentProperty
     : residentialSaleProperty;
@@ -116,6 +116,14 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
     return rawCommercialList.filter(item => availablePropertyTypeIds.has(item.id));
   }, [rawCommercialList, availablePropertyTypeIds, selectedCity?.id]);
 
+  const getPropertyLink = (propertyTypeId: string) => {
+    const basePath = selectedCity?.id ? `/projects/${selectedCity.id}` : "/projects";
+    const params = new URLSearchParams();
+    params.set("propertyTypeId", propertyTypeId);
+    if (listingTypeId) params.set("listingTypeId", listingTypeId);
+    return `${basePath}?${params.toString()}`;
+  };
+
   return (
     <footer className="w-full bg-text-black">
       {/* Tabs */}
@@ -146,7 +154,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
             aria-pressed={footerTab === "2"}
           >
             <span className="uppercase text-xs md:text-sm tracking-wide">
-              Properties for Sale
+              Properties for Buy
             </span>
           </button>
         </div>
@@ -155,6 +163,9 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
       {/* Property Links */}
       <div className="flex justify-center">
         <div className="w-[90%] md:w-[75%] pt-6">
+          <p className="text-white text-base font-semibold mb-4">
+            Property Type for {isRentTab ? "Rent" : "Buy"}
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <motion.div
               variants={topVariant}
@@ -169,7 +180,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
                   {residentialList.map((item) => (
                     <li key={item.id}>
                       <Link
-                        href={selectedCity?.id ? `/projects/${selectedCity.id}` : "/projects"}
+                        href={getPropertyLink(item.id)}
                         className="text-[#fffc] text-[13px] leading-5 cursor-pointer hover:underline hover:text-white"
                       >
                         {item.name} for {propertyVerb} {citySuffix ? ` ${citySuffix}` : ""}
@@ -193,7 +204,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
                   {commercialList.map((item) => (
                     <li key={item.id}>
                       <Link
-                        href={selectedCity?.id ? `/projects/${selectedCity.id}` : "/projects"}
+                        href={getPropertyLink(item.id)}
                         className="text-[#fffc] text-[13px] leading-5 cursor-pointer hover:underline hover:text-white"
                       >
                         {item.name} for {propertyVerb} {citySuffix ? ` ${citySuffix}` : ""}

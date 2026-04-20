@@ -473,7 +473,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
               />
             </div>
 
-            <button
+            {/* <button
               type="button"
               onClick={handleNearMeClick}
               disabled={isLocating}
@@ -491,7 +491,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
               </svg>
 
               {isLocating ? "Locating..." : "Near Me Properties"}
-            </button>
+            </button> */}
           </div>
         </div>
 
