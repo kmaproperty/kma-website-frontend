@@ -133,3 +133,24 @@ export const syncLeadsApiHandler = async (): Promise<{
     throw error.response?.data ?? error;
   }
 };
+
+export interface SyncCrmPayload {
+  customer: {
+    name: string;
+    email: string;
+    phone: string;
+    website_user_id: string;
+  };
+  property: Record<string, unknown>;
+}
+
+export const syncCrmApiHandler = async (
+  payload: SyncCrmPayload
+): Promise<{ success?: boolean; message?: string; [key: string]: unknown }> => {
+  try {
+    const response = await axiosInstance.post("property/sync-crm", payload);
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data ?? error;
+  }
+};

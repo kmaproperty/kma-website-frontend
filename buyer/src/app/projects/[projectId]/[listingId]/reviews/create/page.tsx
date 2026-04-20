@@ -139,6 +139,33 @@ export default function CreateReviewPage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [successOpen, setSuccessOpen] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const checkAuth = async () => {
+      try {
+        const response = await fetch("/api/get-token");
+        const data = (await response.json()) as { accessToken?: string | null };
+        if (!isMounted) return;
+        setIsUserLoggedIn(Boolean(data?.accessToken));
+      } catch {
+        if (!isMounted) return;
+        setIsUserLoggedIn(false);
+      } finally {
+        if (isMounted) {
+          setIsCheckingAuth(false);
+        }
+      }
+    };
+
+    checkAuth();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const propertyTitle =
     asString(propertyDetails?.propertyName) ??
@@ -179,7 +206,7 @@ export default function CreateReviewPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!canSubmit || submitting || !listingId) return;
+    if (!isUserLoggedIn || !canSubmit || submitting || !listingId) return;
     setSubmitError(null);
     setSubmitting(true);
     try {
@@ -266,109 +293,135 @@ export default function CreateReviewPage() {
                   </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="mt-6">
-                  {/* Role (optional in UI but API accepts it) */}
-                  <div className="mb-6">
-                    <label className="block text-sm font-medium text-text-black mb-2">
-                      I am a
-                    </label>
-                    <select
-                      value={role}
-                      onChange={(e) => setRole(e.target.value)}
-                      className="rounded-xl border border-[#D4D5D8] bg-white px-4 py-2.5 text-sm text-text-black focus:border-[#05085E] focus:outline-none focus:ring-1 focus:ring-[#05085E] min-w-[160px]"
-                    >
-                      {ROLE_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
+                {isCheckingAuth ? (
+                  <div className="mt-6 rounded-xl border border-[#E7E7E9] bg-[#F8F8F9] p-6 text-center text-sm text-text-gray">
+                    Checking login status...
                   </div>
-
-                  {/* Feature ratings – two columns */}
-                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 mb-8">
-                    {FEATURES.map(({ key, icon: Icon, label, description }) => (
-                      <div
-                        key={key}
-                        className="rounded-xl border border-[#E7E7E9] bg-[#F8F8F9] p-4"
-                      >
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#F0BC00] bg-white text-[#05085E]">
-                            <Icon className="h-5 w-5" />
-                          </span>
-                          <h3 className="text-base font-semibold text-text-black">
-                            {label}
-                          </h3>
-                        </div>
-                        <p className="text-xs text-text-gray mb-3">{description}</p>
-                        <StarRatingInput
-                          value={
-                            key === "connectivity"
-                              ? connectivityRating
-                              : key === "neighbourhood"
-                                ? neighbourhoodRating
-                                : key === "safety"
-                                  ? safetyRating
-                                  : livabilityRating
-                          }
-                          onChange={
-                            key === "connectivity"
-                              ? setConnectivityRating
-                              : key === "neighbourhood"
-                                ? setNeighbourhoodRating
-                                : key === "safety"
-                                  ? setSafetyRating
-                                  : setLivabilityRating
-                          }
-                        />
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* What do you like / dislike */}
-                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 mb-8">
-                    <div>
-                      <label className="block text-sm font-semibold text-text-black mb-2">
-                        What do you like about the locality?
-                      </label>
-                      <textarea
-                        value={likeText}
-                        onChange={(e) => setLikeText(e.target.value)}
-                        placeholder="We'd love to hear"
-                        rows={4}
-                        className="w-full rounded-xl border border-[#D4D5D8] bg-white px-4 py-3 text-sm text-text-black placeholder:text-text-gray focus:border-[#05085E] focus:outline-none focus:ring-1 focus:ring-[#05085E] resize-y"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-text-black mb-2">
-                        What do you dislike about the locality?
-                      </label>
-                      <textarea
-                        value={dislikeText}
-                        onChange={(e) => setDislikeText(e.target.value)}
-                        placeholder="We'd love to hear"
-                        rows={4}
-                        className="w-full rounded-xl border border-[#D4D5D8] bg-white px-4 py-3 text-sm text-text-black placeholder:text-text-gray focus:border-[#05085E] focus:outline-none focus:ring-1 focus:ring-[#05085E] resize-y"
-                      />
-                    </div>
-                  </div>
-
-                  {submitError && (
-                    <div className="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
-                      {submitError}
-                    </div>
-                  )}
-
-                  <div className="flex justify-center">
+                ) : !isUserLoggedIn ? (
+                  <div className="mt-6 rounded-xl border border-[#E7E7E9] bg-[#F8F8F9] p-6 text-center">
+                    <p className="text-base font-medium text-text-black">
+                      Please login first to add a review.
+                    </p>
+                    <p className="mt-2 text-sm text-text-gray">
+                      You need to login or sign up before submitting your rating and feedback.
+                    </p>
                     <button
-                      type="submit"
-                      disabled={!canSubmit || submitting}
-                      className="rounded-xl bg-[#05085E] px-8 py-3 text-sm font-semibold text-white hover:bg-[#0B127A] disabled:opacity-50 disabled:cursor-not-allowed"
+                      type="button"
+                      onClick={() =>
+                        router.push(
+                          `/user-flow?isLogin=true&redirect=${encodeURIComponent(createHref)}`
+                        )
+                      }
+                      className="mt-5 rounded-xl bg-[#05085E] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#0B127A]"
                     >
-                      {submitting ? "Submitting…" : "Submit Review"}
+                      Login / Sign Up
                     </button>
                   </div>
-                </form>
+                ) : (
+                  <form onSubmit={handleSubmit} className="mt-6">
+                    {/* Role (optional in UI but API accepts it) */}
+                    <div className="mb-6">
+                      <label className="block text-sm font-medium text-text-black mb-2">
+                        I am a
+                      </label>
+                      <select
+                        value={role}
+                        onChange={(e) => setRole(e.target.value)}
+                        className="rounded-xl border border-[#D4D5D8] bg-white px-4 py-2.5 text-sm text-text-black focus:border-[#05085E] focus:outline-none focus:ring-1 focus:ring-[#05085E] min-w-[160px]"
+                      >
+                        {ROLE_OPTIONS.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Feature ratings – two columns */}
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 mb-8">
+                      {FEATURES.map(({ key, icon: Icon, label, description }) => (
+                        <div
+                          key={key}
+                          className="rounded-xl border border-[#E7E7E9] bg-[#F8F8F9] p-4"
+                        >
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#F0BC00] bg-white text-[#05085E]">
+                              <Icon className="h-5 w-5" />
+                            </span>
+                            <h3 className="text-base font-semibold text-text-black">
+                              {label}
+                            </h3>
+                          </div>
+                          <p className="text-xs text-text-gray mb-3">{description}</p>
+                          <StarRatingInput
+                            value={
+                              key === "connectivity"
+                                ? connectivityRating
+                                : key === "neighbourhood"
+                                  ? neighbourhoodRating
+                                  : key === "safety"
+                                    ? safetyRating
+                                    : livabilityRating
+                            }
+                            onChange={
+                              key === "connectivity"
+                                ? setConnectivityRating
+                                : key === "neighbourhood"
+                                  ? setNeighbourhoodRating
+                                  : key === "safety"
+                                    ? setSafetyRating
+                                    : setLivabilityRating
+                            }
+                          />
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* What do you like / dislike */}
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 mb-8">
+                      <div>
+                        <label className="block text-sm font-semibold text-text-black mb-2">
+                          What do you like about the locality?
+                        </label>
+                        <textarea
+                          value={likeText}
+                          onChange={(e) => setLikeText(e.target.value)}
+                          placeholder="We'd love to hear"
+                          rows={4}
+                          className="w-full rounded-xl border border-[#D4D5D8] bg-white px-4 py-3 text-sm text-text-black placeholder:text-text-gray focus:border-[#05085E] focus:outline-none focus:ring-1 focus:ring-[#05085E] resize-y"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-text-black mb-2">
+                          What do you dislike about the locality?
+                        </label>
+                        <textarea
+                          value={dislikeText}
+                          onChange={(e) => setDislikeText(e.target.value)}
+                          placeholder="We'd love to hear"
+                          rows={4}
+                          className="w-full rounded-xl border border-[#D4D5D8] bg-white px-4 py-3 text-sm text-text-black placeholder:text-text-gray focus:border-[#05085E] focus:outline-none focus:ring-1 focus:ring-[#05085E] resize-y"
+                        />
+                      </div>
+                    </div>
+
+                    {submitError && (
+                      <div className="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+                        {submitError}
+                      </div>
+                    )}
+
+                    <div className="flex justify-center">
+                      <button
+                        type="submit"
+                        disabled={!canSubmit || submitting}
+                        className="rounded-xl bg-[#05085E] px-8 py-3 text-sm font-semibold text-white hover:bg-[#0B127A] disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {submitting ? "Submitting…" : "Submit Review"}
+                      </button>
+                    </div>
+                  </form>
+                )}
               </div>
             </div>
           </div>

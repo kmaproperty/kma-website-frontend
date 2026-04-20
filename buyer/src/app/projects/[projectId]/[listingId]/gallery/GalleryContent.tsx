@@ -76,7 +76,7 @@ export function GalleryContent({ tabs, sections, videoUrls, propertyName = "Prop
 
   return (
     <>
-      <div className="mt-6 border-b border-border">
+      <div className="sticky top-[170px] z-20 mt-6 border-b border-border bg-white sm:top-[128px]">
         <div className="flex w-max min-w-full items-center gap-6 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {tabs.map((tab, idx) => (
             <button

@@ -55,7 +55,18 @@ const PropertyView = ({ open, onClose, propertyId }) => {
       queryFn: () => {
         return getPropertyDetailsApiHandler(propertyId)
       },
-      select: (data: GetPropertyDetailsResponse) =>{
+      select: (data: GetPropertyDetailsResponse & {
+        property?: GetPropertyDetailsResponse;
+        verificationStatus?: string | null;
+        comments?: string | null;
+      }) =>{
+        if (data?.property) {
+          return {
+            ...data.property,
+            verificationStatus: data?.verificationStatus ?? data?.property?.verificationStatus ?? null,
+            comments: data?.comments ?? data?.property?.comments ?? null,
+          } as GetPropertyDetailsResponse;
+        }
         return data
       },
       enabled: !!propertyId,
@@ -119,6 +130,104 @@ const PropertyView = ({ open, onClose, propertyId }) => {
     const getStatusColor = (status) => {
       return propertyStatusColor.find(item => item.status == status) ?? null
     }
+
+    const mediaPreviewItems = React.useMemo(() => {
+      type MediaPreviewItem = {
+        id: string;
+        type: "photo" | "video";
+        fileKey: string;
+        src: string;
+        view?: string;
+        isCoverImage?: boolean;
+      };
+
+      const photoItems: MediaPreviewItem[] = Array.isArray(propertyDetails?.photos)
+        ? propertyDetails.photos.map((item, index) => ({
+            id: `photo-${item.fileKey}-${index}`,
+            type: "photo",
+            fileKey: item.fileKey,
+            src: (item as { url?: string })?.url ?? (imageBaseUrl + item.fileKey),
+            view: item.view,
+            isCoverImage: item.isCoverImage,
+          }))
+        : [];
+
+      const videoItems: MediaPreviewItem[] = Array.isArray(propertyDetails?.videos)
+        ? propertyDetails.videos.filter((item) => item?.fileKey || item?.url).map((item, index) => ({
+            id: `video-${item.fileKey}-${index}`,
+            type: "video",
+            fileKey: item.fileKey ?? `video-${index}`,
+            src: item?.url ?? (imageBaseUrl + item.fileKey),
+          }))
+        : [];
+
+      return [...photoItems, ...videoItems];
+    }, [propertyDetails?.photos, propertyDetails?.videos, imageBaseUrl]);
+
+    const {
+      mainMediaItem,
+      sideMediaItems,
+      extraMediaCount,
+      viewAllTileIndex,
+      totalMediaCount,
+    } = React.useMemo(() => {
+      const photos = mediaPreviewItems.filter((item) => item.type === "photo");
+      const videos = mediaPreviewItems.filter((item) => item.type === "video");
+      const mainItem =
+        photos.find((item) => item.isCoverImage) ?? photos[0] ?? videos[0] ?? null;
+
+      const usedMediaIds = new Set<string>();
+      if (mainItem) {
+        usedMediaIds.add(mainItem.id);
+      }
+
+      const remainingPhotos = photos.filter((item) => !usedMediaIds.has(item.id));
+      const remainingVideos = videos.filter((item) => !usedMediaIds.has(item.id));
+
+      const sideItems: typeof mediaPreviewItems = [];
+
+      if (remainingVideos.length > 0) {
+        sideItems.push(...remainingPhotos.slice(0, 3));
+        sideItems.push(remainingVideos[0]);
+
+        if (sideItems.length < 4) {
+          sideItems.push(
+            ...remainingPhotos.slice(3, 3 + (4 - sideItems.length))
+          );
+        }
+
+        if (sideItems.length < 4) {
+          sideItems.push(
+            ...remainingVideos.slice(1, 1 + (4 - sideItems.length))
+          );
+        }
+      } else {
+        sideItems.push(...remainingPhotos.slice(0, 4));
+      }
+
+      const normalizedSideItems = sideItems.slice(0, 4);
+      normalizedSideItems.forEach((item) => usedMediaIds.add(item.id));
+
+      const totalCount = mediaPreviewItems.length;
+      const remainingCount = Math.max(totalCount - usedMediaIds.size, 0);
+      const hasBottomRightVideo =
+        normalizedSideItems.length === 4 &&
+        normalizedSideItems[3]?.type === "video";
+      const allTileIndex =
+        normalizedSideItems.length === 0
+          ? -1
+          : hasBottomRightVideo
+          ? 2
+          : normalizedSideItems.length - 1;
+
+      return {
+        mainMediaItem: mainItem,
+        sideMediaItems: normalizedSideItems,
+        extraMediaCount: remainingCount,
+        viewAllTileIndex: allTileIndex,
+        totalMediaCount: totalCount,
+      };
+    }, [mediaPreviewItems]);
 
   return (
     <Dialog
@@ -218,55 +327,109 @@ const PropertyView = ({ open, onClose, propertyId }) => {
         </div>
         <div className="flex gap-3 justify-between">
           <div className="w-[80%] flex flex-col gap-3 flex-wrap">
-            <div className="grid grid-cols-[1fr] sm:grid-cols-[1fr_1fr] xl:grid-cols-[1fr_1fr_1fr] gap-3 items-stretch">
-              {
-                  Array.isArray(propertyDetails?.photos) && propertyDetails?.photos.map(item => {
-                      return(
-                          <div className="relative">
-                              <Image
-                              src={imageBaseUrl + item.fileKey}
-                              alt="property photo"
-                              width={600}
-                              height={600}
-                              className="aspect-video rounded-[5px]"
-                              />
-                              <p className="bg-[#00000099] text-white text-sm rounded-full absolute bottom-2 px-2 py-0.5 left-2">{item.view}</p>
+            <p className="text-sm font-medium text-blue">Property Photos & Videos</p>
+            <div className="flex flex-col lg:flex-row gap-3">
+              <div className="relative h-[240px] w-full overflow-hidden rounded-[6px] lg:h-[320px] lg:w-[60%]">
+                {mainMediaItem ? (
+                  <>
+                    {mainMediaItem.type === "video" ? (
+                      <video
+                        src={mainMediaItem.src + "?t=2"}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <Image
+                        src={mainMediaItem.src}
+                        alt="property media"
+                        fill
+                        className="object-cover"
+                      />
+                    )}
+                    {mainMediaItem.type === "video" ? (
+                      <div
+                        onClick={() => {
+                          handleOpenVideoPreview(mainMediaItem.src);
+                        }}
+                        className="absolute inset-0 flex cursor-pointer items-center justify-center"
+                      >
+                        <div className="flex items-center justify-center rounded-full w-12 h-12 bg-[#01004866]">
+                          <div className="flex items-center justify-center rounded-full w-10 h-10 bg-blue">
+                            <Image alt="play" src="/assets/play-white.svg" width={16} height={16} />
                           </div>
-                      )
-                  })
-              }
-              <div onClick={handleUploadPhoto} className="cursor-pointer relative aspect-video border border-dashed border-gray-300 rounded-[5px] flex items-center justify-center">
-                <Image
-                  src="/assets/upload-photo.svg"
-                  alt="upload photo"
-                  width={80}
-                  height={80}
-                />
+                        </div>
+                      </div>
+                    ) : null}
+                  </>
+                ) : (
+                  <div onClick={handleUploadPhoto} className="cursor-pointer h-full w-full border border-dashed border-gray-300 rounded-[6px] flex items-center justify-center">
+                    <Image
+                      src="/assets/upload-photo.svg"
+                      alt="upload photo or video"
+                      width={80}
+                      height={80}
+                    />
+                  </div>
+                )}
               </div>
-            </div>
-            
-            <div className="grid grid-cols-[1fr] lg:grid-cols-[1fr_1fr] xl:grid-cols-[1fr_1fr_1fr] gap-3 items-stretch">
-              {
-                  Array.isArray(propertyDetails?.videos) && propertyDetails.videos.map((item) => {
-                      return(
-                          <div className="relative">
-                              <video
-                                  src={imageBaseUrl + item.fileKey + '?t=2'}
-                                  className="rounded-[10px] w-full aspect-video"
-                              />
-                              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                                  <div className="flex cursor-pointer items-center justify-center rounded-full w-12 h-12 bg-[#01004866]">
-                                      <div onClick={() => {
-                                          handleOpenVideoPreview(imageBaseUrl + item.fileKey)
-                                      }} className="flex items-center justify-center rounded-full w-10 h-10 bg-blue">
-                                      <Image alt="play" src="/assets/play-white.svg" width={16} height={16} />
-                                      </div>
-                                  </div>
-                                  </div>
+
+              <div className="w-full lg:w-[40%] grid grid-cols-2 gap-3">
+                {sideMediaItems.map((item, index) => (
+                  <div key={item.id} className="relative h-[114px] overflow-hidden rounded-[6px] sm:h-[154px] lg:h-full">
+                    {item.type === "video" ? (
+                      <video
+                        src={item.src + "?t=2"}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <Image
+                        src={item.src}
+                        alt="property media"
+                        fill
+                        className="object-cover"
+                      />
+                    )}
+
+                    {item.type === "photo" && item.view ? (
+                      <p className="bg-[#00000099] text-white text-xs rounded-full absolute bottom-2 px-2 py-0.5 left-2">{item.view}</p>
+                    ) : null}
+
+                    {item.type === "video" ? (
+                      <div
+                        onClick={() => {
+                          handleOpenVideoPreview(item.src);
+                        }}
+                        className="absolute inset-0 flex cursor-pointer items-center justify-center"
+                      >
+                        <div className="flex items-center justify-center rounded-full w-10 h-10 bg-[#01004866]">
+                          <div className="flex items-center justify-center rounded-full w-8 h-8 bg-blue">
+                            <Image alt="play" src="/assets/play-white.svg" width={14} height={14} />
                           </div>
-                      )
-                  })
-              }
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {index === viewAllTileIndex && extraMediaCount > 0 ? (
+                      <div
+                        onClick={handleUploadPhoto}
+                        className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/45 text-sm font-semibold text-white"
+                      >
+                        View All({totalMediaCount}+)
+                      </div>
+                    ) : null}
+                  </div>
+                ))}
+
+                {sideMediaItems.length < 4 ? (
+                  <div onClick={handleUploadPhoto} className="cursor-pointer relative h-[114px] overflow-hidden rounded-[6px] border border-dashed border-gray-300 flex items-center justify-center sm:h-[154px] lg:h-full">
+                    <Image
+                      src="/assets/upload.svg"
+                      alt="upload media"
+                      width={40}
+                      height={40}
+                    />
+                  </div>
+                ) : null}
+              </div>
             </div>
           </div>
           <div className="flex flex-col gap-3">

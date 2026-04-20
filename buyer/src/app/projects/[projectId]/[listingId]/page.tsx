@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import {
   ArrowLeft,
   ArrowRight,
@@ -13,7 +13,6 @@ import {
   Building2,
   CarFront,
   ChevronRight,
-  CheckCircle2,
   Dumbbell,
   Heart,
   Hospital,
@@ -41,6 +40,9 @@ import { FAVORITE_PROPERTIES_QUERY_KEY } from "@/api/hooks/useFavoriteProperties
 import MainLayout from "@/components/layouts/BuyerMainLayout";
 import { useProjectsStore } from "@/app/projects/_store/useProjectsStore";
 import { useRouter } from "nextjs-toploader/app";
+import { useSelector } from "react-redux";
+import { getPropertyMasterData } from "@/store/homeHeaderSlice";
+import { buildProjectsRouteLabels } from "@/app/projects/_utils/routeLabels";
 
 const placeholderImage = "";
 
@@ -114,6 +116,52 @@ const getFurnishingIcon = (itemName: string): string => {
   return furnishingIconMap[lower] ?? "/assets/sofa.png";
 };
 
+type AmenityListItem = {
+  id: string;
+  name: string;
+  iconUrl: string | null;
+};
+
+const normalizeAmenityItems = (value: unknown): AmenityListItem[] => {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .map((item, idx) => {
+      if (typeof item === "string") {
+        const name = item.trim();
+        if (!name) return null;
+        return {
+          id: `${name}-${idx}`,
+          name,
+          iconUrl: null,
+        };
+      }
+
+      if (typeof item === "object" && item !== null) {
+        const rec = item as Record<string, unknown>;
+        const name =
+          asString(rec.name) ??
+          asString(rec.label) ??
+          asString(rec.amenityName) ??
+          asString(rec.value);
+        if (!name) return null;
+        const rawIcon =
+          asString(rec.icon) ??
+          asString(rec.iconUrl) ??
+          asString(rec.image) ??
+          asString(rec.fileKey);
+        return {
+          id: asString(rec.id) ?? `${name}-${idx}`,
+          name,
+          iconUrl: rawIcon ? toFullAssetUrl(rawIcon) : null,
+        };
+      }
+
+      return null;
+    })
+    .filter((item): item is AmenityListItem => Boolean(item));
+};
+
 const localityCategories = [
   { key: "schools", label: "Schools", icon: School },
   { key: "busStops", label: "Bus Stops", icon: BusFront },
@@ -122,6 +170,23 @@ const localityCategories = [
   { key: "gym", label: "Gym Fitness", icon: Dumbbell },
   { key: "restaurants", label: "Restaurants", icon: UtensilsCrossed },
 ] as const;
+
+type ListingSectionId =
+  | "overview"
+  | "furnishing"
+  | "locality"
+  | "amenities"
+  | "channel-partner-details"
+  | "ratings-and-reviews";
+
+const listingSectionTabs: Array<{ id: ListingSectionId; label: string }> = [
+  { id: "overview", label: "Overview" },
+  { id: "furnishing", label: "Furnishing" },
+  { id: "locality", label: "Locality" },
+  { id: "amenities", label: "Amenities" },
+  { id: "channel-partner-details", label: "Channel Partner Details" },
+  { id: "ratings-and-reviews", label: "Ratings and Reviews" },
+];
 
 
 
@@ -141,6 +206,16 @@ const formatListedOn = (dateStr: string) => {
 export default function ListingDetailsPage() {
   const router = useRouter();
   const params = useParams<{ projectId: string; listingId: string }>();
+  const searchParams = useSearchParams();
+  const propertyMasterData = useSelector(getPropertyMasterData) as Array<{
+    id?: string;
+    code?: string;
+    categories?: Array<{
+      id?: string;
+      code?: string;
+      propertyTypes?: Array<{ id?: string; name?: string }>;
+    }>;
+  }>;
   const listingId = params?.listingId ?? "";
   const { data: detailsResponse, isPending, isError, error } = usePropertyDetails({
     id: listingId,
@@ -158,6 +233,9 @@ export default function ListingDetailsPage() {
   const apiOwnerDetails = detailsResponse?.ownerDetails;
   const apiRatings = detailsResponse?.ratingsAndReviews;
   const apiSampleReviews = detailsResponse?.sampleReviews;
+  const channelPartnerDetailsHref = apiChannelPartner?.id
+    ? `/channel-partner/${apiChannelPartner.id}`
+    : "/channel-partner";
 
   const similarParams = useMemo(() => {
     const city =
@@ -240,6 +318,30 @@ export default function ListingDetailsPage() {
   const propertyDescription =
     asString(propertyDetails?.description) ?? "";
 
+  const routeLabels = useMemo(() => {
+    const propertyTypeIds = (
+      searchParams.get("propertyTypeIds")?.split(",").filter(Boolean) ?? []
+    ) as string[];
+    const singlePropertyTypeId = searchParams.get("propertyTypeId");
+    if (singlePropertyTypeId && !propertyTypeIds.includes(singlePropertyTypeId)) {
+      propertyTypeIds.push(singlePropertyTypeId);
+    }
+
+    const categoryId = searchParams.get("categoryIds")?.split(",").filter(Boolean)[0] ?? null;
+    const cityName =
+      asString(propertyDetails?.cityName) ??
+      asString(detailsResponse?.location?.city) ??
+      undefined;
+
+    return buildProjectsRouteLabels({
+      cityName,
+      listingTypeId: searchParams.get("listingTypeId"),
+      categoryId,
+      propertyTypeIds,
+      propertyMasterData,
+    });
+  }, [searchParams, propertyDetails?.cityName, detailsResponse?.location?.city, propertyMasterData]);
+
   const monthlyRent = asNumber(propertyDetails?.monthlyRent);
   const salePrice = asNumber(propertyDetails?.price);
   const currentPriceLabel =
@@ -319,6 +421,20 @@ export default function ListingDetailsPage() {
   const reviewsPerPage = 3;
   const totalReviewPages = Math.ceil(resolvedReviews.length / reviewsPerPage);
   const [activeReviewPage, setActiveReviewPage] = useState(0);
+  const [activeSectionTab, setActiveSectionTab] = useState<ListingSectionId>("overview");
+  const tabsNavRef = useRef<HTMLElement | null>(null);
+  const sectionRefs = useRef<Record<ListingSectionId, HTMLElement | null>>({
+    overview: null,
+    furnishing: null,
+    locality: null,
+    amenities: null,
+    "channel-partner-details": null,
+    "ratings-and-reviews": null,
+  });
+
+  const setSectionRef = (sectionId: ListingSectionId) => (element: HTMLElement | null) => {
+    sectionRefs.current[sectionId] = element;
+  };
 
   const currentReviews = useMemo(() => {
     const start = activeReviewPage * reviewsPerPage;
@@ -406,6 +522,72 @@ export default function ListingDetailsPage() {
   >({});
   const [nearbyLoading, setNearbyLoading] = useState(false);
 
+  const furnishingsCounts = Array.isArray(propertyDetails?.furnishingsCounts)
+    ? (propertyDetails.furnishingsCounts as Array<{ item: string; count: number }>)
+    : [];
+  const amenitiesList = normalizeAmenityItems(propertyDetails?.amenitiesList);
+  const hasFurnishingSection = furnishingsCounts.length > 0;
+  const hasAmenitiesSection = amenitiesList.length > 0;
+
+  const availableSectionTabs = useMemo(
+    () =>
+      listingSectionTabs.filter((tab) => {
+        if (tab.id === "furnishing") return hasFurnishingSection;
+        if (tab.id === "amenities") return hasAmenitiesSection;
+        return true;
+      }),
+    [hasAmenitiesSection, hasFurnishingSection],
+  );
+
+  useEffect(() => {
+    if (!availableSectionTabs.some((tab) => tab.id === activeSectionTab)) {
+      setActiveSectionTab(availableSectionTabs[0]?.id ?? "overview");
+    }
+  }, [activeSectionTab, availableSectionTabs]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntries = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+        const topVisibleSection = visibleEntries[0]?.target.id as ListingSectionId | undefined;
+        if (topVisibleSection) {
+          setActiveSectionTab(topVisibleSection);
+        }
+      },
+      {
+        root: null,
+        rootMargin: "-160px 0px -55% 0px",
+        threshold: [0.2, 0.4, 0.6],
+      },
+    );
+
+    const sectionsToObserve = availableSectionTabs
+      .map((tab) => sectionRefs.current[tab.id])
+      .filter((section): section is HTMLElement => Boolean(section));
+
+    sectionsToObserve.forEach((section) => observer.observe(section));
+
+    return () => observer.disconnect();
+  }, [availableSectionTabs]);
+
+  const scrollToSection = (sectionId: ListingSectionId) => {
+    const section = sectionRefs.current[sectionId];
+    if (!section) return;
+
+    const navHeight = tabsNavRef.current?.offsetHeight ?? 0;
+    const absoluteTop = section.getBoundingClientRect().top + window.scrollY;
+    const pageTopOffset = navHeight + 96;
+
+    window.scrollTo({
+      top: Math.max(0, absoluteTop - pageTopOffset),
+      behavior: "smooth",
+    });
+    setActiveSectionTab(sectionId);
+  };
+
   useEffect(() => {
     if (!lat || !lng) return;
     const apiType = categoryToApiType[activeLocalityCategory];
@@ -466,7 +648,7 @@ export default function ListingDetailsPage() {
 
       <div className="pt-10 pb-6">
         <div className="text-sm text-white absolute top-35 left-62">
-          Home / {propertyTitle}
+          Home / {routeLabels.breadcrumbLabel} / {propertyTitle}
         </div>
         <h2 className="text-4xl mb-8 rounded-lg font-semibold text-white">
           Property Details
@@ -481,7 +663,7 @@ export default function ListingDetailsPage() {
                 <h1 className="mt-1 text-2xl font-semibold text-text-black">
                   {propertyTitle}
                 </h1>
-                <p className="mt-2.5 flex items-center gap-1 text-sm text-text-gray">
+                <p className="mt-2.5 flex items-center gap-1 text-sm text-text-black">
                   <MapPin className="h-4 w-4" />
                   {propertyAddress}
                 </p>
@@ -558,25 +740,22 @@ export default function ListingDetailsPage() {
             </div>
 
             <div className="mt-4 border-b border-border bg-background-gray rounded-sm p-5">
-              <nav className=" overflow-x-auto rounded-md bg-white text-sm">
+              <nav
+                ref={tabsNavRef}
+                className="sticky top-0 z-20 overflow-x-auto rounded-md bg-white text-sm"
+              >
                 <div className="flex w-max min-w-full items-center">
-                  {[
-                    "Overview",
-                    "Furnishing",
-                    "Locality",
-                    "Amenities",
-                    "Channel Partner Details",
-                    "Ratings and Reviews",
-                  ].map((item, idx) => (
+                  {availableSectionTabs.map((tab) => (
                     <button
-                      key={item}
+                      key={tab.id}
                       type="button"
-                      className={`whitespace-nowrap border-b-2 px-6 py-4 transition ${idx === 0
+                      onClick={() => scrollToSection(tab.id)}
+                      className={`whitespace-nowrap border-b-2 px-6 py-4 transition ${activeSectionTab === tab.id
                         ? "border-blue bg-white/70 text-text-black font-semibold"
                         : "border-transparent text-text-gray hover:text-text-black"
                         }`}
                     >
-                      {item}
+                      {tab.label}
                     </button>
                   ))}
                 </div>
@@ -591,7 +770,11 @@ export default function ListingDetailsPage() {
                     </section>
                   ) : null}
 
-                  <section className="rounded-xl">
+                  <section
+                    id="overview"
+                    ref={setSectionRef("overview")}
+                    className="rounded-xl scroll-mt-32"
+                  >
                     <h2 className="text-xl font-semibold text-text-black">
                       Property Information
                     </h2>
@@ -610,11 +793,15 @@ export default function ListingDetailsPage() {
                     </div>
                   </section>
 
-                  {Array.isArray(propertyDetails?.furnishingsCounts) && propertyDetails.furnishingsCounts.length > 0 ? (
-                    <section className="rounded-xl">
+                  {hasFurnishingSection ? (
+                    <section
+                      id="furnishing"
+                      ref={setSectionRef("furnishing")}
+                      className="rounded-xl scroll-mt-32"
+                    >
                       <h2 className="text-xl font-semibold text-text-black">Furnishing Details</h2>
                       <div className="mt-4 rounded-lg bg-white px-5 py-4 grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-4">
-                        {propertyDetails.furnishingsCounts.map((f: { item: string; count: number }) => (
+                        {furnishingsCounts.map((f) => (
                           <div
                             key={`${f.count}-${f.item}`}
                             className="inline-flex items-center gap-3 leading-none text-text-black"
@@ -633,22 +820,41 @@ export default function ListingDetailsPage() {
                     </section>
                   ) : null}
 
-                  <section className="rounded-xl p-4">
+                  <section
+                    id="locality"
+                    ref={setSectionRef("locality")}
+                    className="rounded-xl p-4 scroll-mt-32"
+                  >
                     <h2 className="text-xl font-semibold text-text-black">Locality</h2>
                     <div className="mt-3 relative h-[300px] overflow-hidden rounded-tr-lg border border-[#D4D5D8] rounded-tl-lg bg-[#ECEEF3]">
-                      <Image
-                        src="/assets/city/city1.svg"
-                        alt="Locality map"
-                        fill
-                        className="object-cover"
-                      />
-                      <button
-                        type="button"
-                        className="absolute left-1/2 top-1/2 inline-flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-lg bg-[#0E1730] px-5 py-2.5 text-base font-medium text-white shadow-sm"
-                      >
-                        <MapPin className="h-4 w-4" />
-                        Check on Map
-                      </button>
+                      {lat && lng ? (
+                        <iframe
+                          src={`https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`}
+                          width="100%"
+                          height="100%"
+                          style={{ border: 0 }}
+                          loading="lazy"
+                          referrerPolicy="no-referrer-when-downgrade"
+                          allowFullScreen
+                          title="Property location"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center text-text-gray">
+                          <MapPin className="mr-2 h-5 w-5" />
+                          Location not available
+                        </div>
+                      )}
+                      {lat && lng && (
+                        <a
+                          href={`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="absolute bottom-3 right-3 inline-flex items-center gap-2 rounded-lg bg-[#0E1730] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#1a2445]"
+                        >
+                          <MapPin className="h-4 w-4" />
+                          Open in Google Maps
+                        </a>
+                      )}
                     </div>
 
                     <div className=" divide-y divide-[#D4D5D8] rounded-br-lg rounded-bl-lg border border-[#D4D5D8] bg-white px-5">
@@ -694,26 +900,42 @@ export default function ListingDetailsPage() {
                     </div>
                   </section>
 
-                  {Array.isArray(propertyDetails?.amenitiesList) && propertyDetails.amenitiesList.length > 0 ? (
-                    <section className="rounded-xl">
+                  {hasAmenitiesSection ? (
+                    <section
+                      id="amenities"
+                      ref={setSectionRef("amenities")}
+                      className="rounded-xl scroll-mt-32"
+                    >
                       <h2 className="text-xl font-semibold text-text-black">Amenities</h2>
-                      <div className="mt-4 rounded-lg bg-white p-4 grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
-                        {propertyDetails.amenitiesList.map((name: string) => (
+                      <div className="mt-4 rounded-lg bg-white p-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                        {amenitiesList.map((amenity) => (
                           <div
-                            key={name}
-                            className="inline-flex items-center gap-3"
+                            key={amenity.id}
+                            className="inline-flex items-center gap-3 rounded-md border border-[#E2E2E4] bg-[#F4F4F5] px-3 py-2"
                           >
-                            <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-[#E7E7E9] text-text-black">
-                              <CheckCircle2 className="h-5 w-5" />
+                            <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[#E7E7E9] text-text-black">
+                              {amenity.iconUrl ? (
+                                <img
+                                  src={amenity.iconUrl}
+                                  alt=""
+                                  className="h-5 w-5 object-contain"
+                                />
+                              ) : (
+                                <Building2 className="h-4 w-4 text-text-gray" />
+                              )}
                             </span>
-                            <span className="text-sm font-medium text-text-black">{name}</span>
+                            <span className="text-sm font-medium text-text-black">{amenity.name}</span>
                           </div>
                         ))}
                       </div>
                     </section>
                   ) : null}
 
-                  <section className="rounded-xl">
+                  <section
+                    id="channel-partner-details"
+                    ref={setSectionRef("channel-partner-details")}
+                    className="rounded-xl scroll-mt-32"
+                  >
                     <h2 className="text-xl font-semibold text-text-black">
                       Channel Partner Details
                     </h2>
@@ -746,13 +968,13 @@ export default function ListingDetailsPage() {
                             <PhoneCall className="h-4 w-4" />
                             View Number
                           </button>
-                          <button
-                            type="button"
+                          <Link
+                            href={channelPartnerDetailsHref}
                             className="inline-flex items-center gap-2 rounded-xl bg-[#05085E] px-4 py-2.5 text-sm font-semibold text-white"
                           >
                             Learn More
                             <ArrowRight className="h-4 w-4" />
-                          </button>
+                          </Link>
                         </div>
                       </div>
 
@@ -777,9 +999,9 @@ export default function ListingDetailsPage() {
                           ["Property for Rent", apiChannelPartner?.propertyListings?.rent != null ? String(apiChannelPartner.propertyListings.rent) : "—"],
                           ["Property for Sale", apiChannelPartner?.propertyListings?.sale != null ? String(apiChannelPartner.propertyListings.sale) : "—"],
                         ].map(([label, count]) => (
-                          <button
+                          <Link
                             key={label}
-                            type="button"
+                            href={channelPartnerDetailsHref}
                             className="inline-flex w-full items-center justify-between rounded-lg border border-[#D1D5DB] px-3 py-2.5 text-left hover:bg-white/60 bg-background-gray"
                           >
                             <span className="text-sm font-medium text-text-black">{label}</span>
@@ -789,13 +1011,17 @@ export default function ListingDetailsPage() {
                               </span>
                               <ChevronRight className="h-4 w-4 text-text-light-black" />
                             </span>
-                          </button>
+                          </Link>
                         ))}
                       </div>
                     </div>
                   </section>
 
-                  <section className="">
+                  <section
+                    id="ratings-and-reviews"
+                    ref={setSectionRef("ratings-and-reviews")}
+                    className="scroll-mt-32"
+                  >
                     <h2 className="text-lg font-semibold text-text-black">Ratings and Reviews</h2>
                     <div className="mt-4 rounded-xl bg-white p-4 sm:p-6">
                       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[220px_1fr]">
@@ -904,12 +1130,12 @@ export default function ListingDetailsPage() {
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                           <h3 className="text-xl font-semibold text-text-black">Reviews</h3>
                           <div className="flex items-center gap-3">
-                            <button
-                              type="button"
+                            <Link
+                              href={`/projects/${params?.projectId ?? ""}/${listingId || ""}/reviews/create`}
                               className="rounded-xl border border-blue bg-white px-5 py-2.5 text-sm font-semibold text-blue"
                             >
                               Add a Review
-                            </button>
+                            </Link>
                             <Link
                               href={`/projects/${params?.projectId ?? ""}/${listingId || ""}/reviews`}
                               className="inline-flex items-center gap-2 rounded-xl bg-[#05085E] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0B127A]"
@@ -1032,6 +1258,7 @@ export default function ListingDetailsPage() {
                             const isFav = favorites[item.id] ?? Boolean(item.isFavorite);
                             const imageSrc = toFullAssetUrl(item.imageUrl) || "/assets/property/img-4.png";
                             const ownerImage = toFullAssetUrl(item.owner?.profileImage) || "/assets/profile.png";
+                            const ownerName = asString(item.owner?.name) ?? "Property Owner";
                             const rating = Number.isFinite(item.averageRating) ? item.averageRating : 5;
                             const priceLabel =
                               item.priceType === "rent"
@@ -1087,7 +1314,7 @@ export default function ListingDetailsPage() {
                                         )}
                                       </span>
                                     </div>
-                                    <button
+                                    {/* <button
                                       type="button"
                                       aria-label={isFav ? "Remove from favorites" : "Save"}
                                       onClick={(e) => {
@@ -1105,7 +1332,7 @@ export default function ListingDetailsPage() {
                                       <Heart
                                         className={`h-5 w-5 ${isFav ? "fill-red-500 text-red-500" : ""}`}
                                       />
-                                    </button>
+                                    </button> */}
                                   </div>
 
                                   <Link
@@ -1118,6 +1345,9 @@ export default function ListingDetailsPage() {
                                     <p className="mt-1 flex items-center gap-1 text-sm text-text-gray">
                                       <MapPin className="h-4 w-4 shrink-0" />
                                       {item.address}
+                                    </p>
+                                    <p className="mt-1 text-xs font-medium text-text-black text-bold">
+                                      Owner: <span className="text-text-black">{ownerName}</span>
                                     </p>
                                     <p className="mt-2 text-xl font-semibold leading-none text-[#05085E]">
                                       {priceLabel}

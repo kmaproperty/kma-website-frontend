@@ -54,7 +54,7 @@ export default function EndUserSignupOtpCard() {
       localStorage.setItem("user", JSON.stringify(response.user));
       toast.success(response.message);
       queryClient.clear();
-      window.location.href = `${process.env.NEXT_PUBLIC_BUYER_URL || "http://localhost:3001"}/projects`;
+      window.location.href = `/api/redirect-to-buyer?path=/projects`;
     },
     onError: (error: any) => {
       setOtpError(error?.message ?? "Invalid OTP");

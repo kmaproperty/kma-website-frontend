@@ -3,6 +3,7 @@
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { Search } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { useSelector } from "react-redux";
 import type { Project } from "../_types";
 import FiltersSidebar from "./FiltersSidebar";
 import ProjectsToolbar from "./ProjectsToolbar";
@@ -14,6 +15,8 @@ import {
 } from "@/api/hooks/useEndUserProperties";
 import ProjectsPagination from "./ProjectsPagination";
 import { getUserCoordinates } from "@/api/hooks/useGeoloaction";
+import { getPropertyMasterData, getSelectedCity } from "@/store/homeHeaderSlice";
+import { buildProjectsRouteLabels } from "../_utils/routeLabels";
 
 const awsBaseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
 const fallbackProjectImage = "/assets/properties_pic_1.png";
@@ -181,6 +184,16 @@ const normalizeBuildingType = (value?: string) => {
 };
 
 export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
+  const selectedCity = useSelector(getSelectedCity) as { name?: string } | null;
+  const propertyMasterData = useSelector(getPropertyMasterData) as Array<{
+    id?: string;
+    code?: string;
+    categories?: Array<{
+      id?: string;
+      code?: string;
+      propertyTypes?: Array<{ id?: string; name?: string }>;
+    }>;
+  }>;
   const tab = useProjectsStore((s) => s.tab);
   const sort = useProjectsStore((s) => s.sort);
   const filters = useProjectsStore((s) => s.filters);
@@ -430,6 +443,28 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
     });
   }, [apiProperties]);
 
+  const routeLabels = useMemo(() => {
+    const cityName =
+      selectedCity?.name ??
+      initialProjects[0]?.city ??
+      undefined;
+
+    return buildProjectsRouteLabels({
+      cityName,
+      listingTypeId,
+      categoryId: filters.categoryId,
+      propertyTypeIds: filters.propertyTypeIds,
+      propertyMasterData,
+    });
+  }, [
+    selectedCity?.name,
+    initialProjects,
+    listingTypeId,
+    filters.categoryId,
+    filters.propertyTypeIds,
+    propertyMasterData,
+  ]);
+
   const handleNearMeClick = async () => {
     if (isLocating) return;
 
@@ -451,14 +486,14 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="text-xs font-medium text-text-light-gray">
           Home <span className="px-1">/</span>
-          <span className="text-white"> New Properties in {initialProjects[0]?.city}</span>
+          <span className="text-white"> {routeLabels.breadcrumbLabel}</span>
         </div>
       </div>
 
       <section className="mt-7 w-full px-4 sm:px-6 lg:px-8">
         <div className="relative">
           <h1 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">
-            All Properties List
+            {routeLabels.headingLabel}
           </h1>
 
           <div className="mt-4 flex flex-row space-between gap-3 rounded-[28px]  bg-white p-4  sm:p-5 lg:absolute lg:right-0 lg:top-15 lg:mt-0 lg:w-[73%] lg:max-w-[73%] lg:rounded-[34px_34px_0_0] lg:border-b-0">

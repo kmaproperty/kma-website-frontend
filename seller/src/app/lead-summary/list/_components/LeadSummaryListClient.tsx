@@ -10,6 +10,7 @@ import {
   getLeadsApiHandler,
   exportLeadsApiHandler,
   syncLeadsApiHandler,
+  syncCrmApiHandler,
   LeadItem,
   LeadListQueryParams,
   LeadTabCounts,
@@ -149,8 +150,6 @@ export default function LeadSummaryListClient() {
   };
 
   const handleCrmDashboard = async (lead: LeadItem) => {
-    const crmEndpoint =
-      "https://www.zohoapis.in/crm/v7/functions/properties_from_website_to_crm/actions/execute?auth_type=apikey&zapikey=1003.bd10ff840aa25477a4646948c5bb8f92.537526bc9225f903d9ac7966fb1ea927";
     const firstProperty = lead.propertyContacts?.[0]?.property;
     const propertyContact = lead.propertyContacts?.[0];
     const propertyAny = (firstProperty ?? {}) as Record<string, unknown>;
@@ -221,15 +220,7 @@ export default function LeadSummaryListClient() {
 
     setCrmLoadingLeadId(lead.id);
     try {
-      const response = await fetch(crmEndpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-      const result = await response.json();
-      console.log("CRM sync success", result);
+      await syncCrmApiHandler(payload);
     } catch (error) {
       console.error("Failed to sync lead to CRM", error);
     } finally {

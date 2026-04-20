@@ -100,10 +100,24 @@ export default function ProfileView({ userRole }: ProfileViewProps) {
 
   const isSeller = userRole === USER_TYPE.CHANNEL_PARTNER || userRole === USER_TYPE.OWNER;
 
+  // Check if user came from seller app (crossApp flag in localStorage)
+  const crossApp = (() => {
+    if (typeof window === "undefined") return false;
+    try {
+      const raw = localStorage.getItem("user");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        return parsed?.crossApp === true;
+      }
+    } catch { /* ignore */ }
+    return false;
+  })();
+
   const { data: profileResponse } = useQuery({
-    queryKey: ["user-profile", userRole],
+    queryKey: ["user-profile", userRole, crossApp],
     queryFn: async () => {
-      if (isSeller) {
+      // Cross-app users have END_USER tokens but OWNER/CP role — use end-user/profile
+      if (isSeller && !crossApp) {
         return userProfileApiHandler();
       }
       const res = await endUserProfileApiHandler();

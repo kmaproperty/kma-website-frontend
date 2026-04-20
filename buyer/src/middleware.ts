@@ -1,7 +1,61 @@
 import { NextResponse, NextRequest } from "next/server";
 
-export default function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl;
+const BACKEND_URL = process.env.BACKEND_URL || "http://15.207.193.17:3000";
+const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN || undefined; // '.kmaglobalproperty.com' in prod
+
+export async function middleware(req: NextRequest) {
+  const { pathname, searchParams } = req.nextUrl;
+
+  // Cross-app auth: seller passes tokens via URL params
+  const tokenParam = searchParams.get("_token");
+  const refreshParam = searchParams.get("_refresh");
+  const roleParam = searchParams.get("_role");
+  const nameParam = searchParams.get("_name");
+  if (tokenParam) {
+    const cleanUrl = req.nextUrl.clone();
+    cleanUrl.searchParams.delete("_token");
+    cleanUrl.searchParams.delete("_refresh");
+    cleanUrl.searchParams.delete("_role");
+    cleanUrl.searchParams.delete("_name");
+
+    let finalAccessToken = tokenParam;
+    let finalRefreshToken = refreshParam || "";
+    const originalRole = roleParam || "";
+    const originalName = nameParam || "";
+
+    // Owner/CP arriving from seller: swap for END_USER tokens so all buyer APIs work
+    if (roleParam === "OWNER" || roleParam === "CHANNEL_PARTNER") {
+      try {
+        const res = await fetch(`${BACKEND_URL}/end-user/cross-app-login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ accessToken: tokenParam }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          finalAccessToken = data.accessToken;
+          finalRefreshToken = data.refreshToken;
+        }
+      } catch {
+        // If swap fails, fall through with original tokens
+      }
+    }
+
+    const response = NextResponse.redirect(cleanUrl);
+    const domainPart = COOKIE_DOMAIN ? `; Domain=${COOKIE_DOMAIN}` : "";
+    response.headers.append("Set-Cookie", `accessToken=${finalAccessToken}; Path=/; Max-Age=3600; HttpOnly; Secure; SameSite=Lax${domainPart}`);
+    if (finalRefreshToken) {
+      response.headers.append("Set-Cookie", `refreshToken=${finalRefreshToken}; Path=/; Max-Age=604800; HttpOnly; Secure; SameSite=Lax${domainPart}`);
+    }
+    // Store user info in JS-readable cookie — keep ORIGINAL role so UI shows "Seller Dashboard"
+    if (originalRole) {
+      const isCrossApp = originalRole === "OWNER" || originalRole === "CHANNEL_PARTNER";
+      const userObj = encodeURIComponent(JSON.stringify({ role: originalRole, name: originalName, ...(isCrossApp ? { crossApp: true } : {}) }));
+      response.headers.append("Set-Cookie", `kma_user=${userObj}; Path=/; Max-Age=3600; Secure; SameSite=Lax${domainPart}`);
+    }
+    return response;
+  }
+
   const accessToken = req.cookies.get("accessToken")?.value;
 
   const isPublicPage =

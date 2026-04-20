@@ -396,7 +396,7 @@ export default function UserDashboard() {
             </p>
           </div>
           <div>
-            <a href={`${process.env.NEXT_PUBLIC_BUYER_URL || "http://localhost:3001"}/help-center`} className="w-full text-sm 1xl:text-base px-5 py-3 border border-[#E7E7E7] text-center cursor-pointer rounded-[5px] bg-light-purple block">
+            <a href={`/api/redirect-to-buyer?path=/help-center`} target="_blank" rel="noopener noreferrer" className="w-full text-sm 1xl:text-base px-5 py-3 border border-[#E7E7E7] text-center cursor-pointer rounded-[5px] bg-light-purple block">
               <span className="gap-3 relative flex justify-center">
                 <p className={`text-nowrap font-medium`}>Go to Help Center</p>
               </span>

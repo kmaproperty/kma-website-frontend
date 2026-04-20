@@ -132,10 +132,12 @@ function PropertyCard({
   property,
   partnerProfileSrc,
   partnerRating,
+  onCardClick,
 }: {
   property: ChannelPartnerActiveProperty;
   partnerProfileSrc: string | null;
   partnerRating: number;
+  onCardClick: (propertyId: string) => void;
 }) {
   const priceLabel = getPriceLabel(property);
   const title = property.propertyName ?? "Property";
@@ -153,9 +155,21 @@ function PropertyCard({
   const possessionStatus = formatPossessionStatus(
     property.constructionStatus ?? null
   );
+  const handleCardClick = () => onCardClick(property.id);
 
   return (
-    <div className="bg-white rounded-2xl border border-[#EEF0F4] shadow-[0_6px_24px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col hover:shadow-[0_10px_40px_rgba(0,0,0,0.09)] transition">
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={handleCardClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleCardClick();
+        }
+      }}
+      className="bg-white rounded-2xl border border-[#EEF0F4] shadow-[0_6px_24px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col hover:shadow-[0_10px_40px_rgba(0,0,0,0.09)] transition cursor-pointer"
+    >
       <div className="relative w-full aspect-[4/3] bg-[#F2F2F2]">
         {imageUrl ? (
           <Image
@@ -172,7 +186,7 @@ function PropertyCard({
         )}
 
         {/* Image controls (visual-only to match the design) */}
-        <button
+        {/* <button
           type="button"
           aria-label="Previous image"
           className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/30 text-white flex items-center justify-center"
@@ -185,10 +199,10 @@ function PropertyCard({
           className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/30 text-white flex items-center justify-center"
         >
           <ChevronRight className="h-4 w-4" />
-        </button>
+        </button> */}
 
         {/* Like button */}
-        <button
+        {/* <button
           type="button"
           aria-label="Like property"
           className="absolute top-3 right-3 w-9 h-9 rounded-full bg-black/20 backdrop-blur flex items-center justify-center"
@@ -199,7 +213,7 @@ function PropertyCard({
             width={18}
             height={18}
           />
-        </button>
+        </button> */}
 
         {/* Badge */}
         {badgeLabel ? (
@@ -230,7 +244,7 @@ function PropertyCard({
 
       <div className="p-4 flex flex-col gap-2 flex-1">
         {/* Rating + badge */}
-        <div className="flex items-center gap-2">
+        {/* <div className="flex items-center gap-2">
           <div className="flex items-center gap-0.5">
             {Array.from({ length: 5 }).map((_, i) => (
               <Star
@@ -243,7 +257,7 @@ function PropertyCard({
           <span className="text-xs font-medium text-text-black">
             {Number.isFinite(partnerRating) ? partnerRating.toFixed(1) : "4.2"}
           </span>
-        </div>
+        </div> */}
 
         <h3 className="text-sm font-semibold text-text-black line-clamp-2">
           {title}
@@ -419,7 +433,27 @@ export default function ChannelPartnerDetailsClient({
     setLikedOptions((prev) => prev.filter((x) => allowed.has(x)));
   }, [likedOptionsForRating.left, likedOptionsForRating.right]);
 
-  const openReviewModal = () => {
+  const ensureLoggedIn = useCallback(async () => {
+    try {
+      const response = await fetch("/api/get-token");
+      const tokenData = await response.json();
+      if (tokenData?.accessToken) {
+        return true;
+      }
+    } catch {
+      // Fallback to login redirect when token check fails.
+    }
+
+    toast.info("Please login first to continue.");
+    const redirectTo = `${window.location.pathname}${window.location.search}`;
+    router.push(`/user-flow?isLogin=true&redirect=${encodeURIComponent(redirectTo)}`);
+    return false;
+  }, [router]);
+
+  const openReviewModal = async () => {
+    const isLoggedIn = await ensureLoggedIn();
+    if (!isLoggedIn) return;
+
     setReviewModalMode("form");
     setLikedOptions([]);
     setReviewName("");
@@ -462,18 +496,8 @@ export default function ChannelPartnerDetailsClient({
     const text = reviewText.trim();
     if (!text) return;
 
-    // Check if user is logged in
-    try {
-      const res = await fetch("/api/get-token");
-      const data = await res.json();
-      if (!data?.accessToken) {
-        toast.error("Please login to submit a review.");
-        return;
-      }
-    } catch {
-      toast.error("Please login to submit a review.");
-      return;
-    }
+    const isLoggedIn = await ensureLoggedIn();
+    if (!isLoggedIn) return;
 
     submitReviewMutation({ rating: reviewRating, review: text });
   };
@@ -521,6 +545,13 @@ export default function ChannelPartnerDetailsClient({
   const handleBack = useCallback(() => {
     router.push("/channel-partner");
   }, [router]);
+  const handlePropertyCardClick = useCallback(
+    (propertyId: string) => {
+      if (!propertyId) return;
+      router.push(`/projects/${propertyId}/${propertyId}`);
+    },
+    [router]
+  );
 
   if (isLoading) {
     return (
@@ -608,7 +639,7 @@ export default function ChannelPartnerDetailsClient({
                   {partner.firm_name ?? "Channel Partner"}
                 </p>
 
-                <div className="flex items-center gap-2 mt-3 justify-center text-sm">
+                {/* <div className="flex items-center gap-2 mt-3 justify-center text-sm">
                   <Star
                     fill={Math.min(100, (rating / 5) * 100)}
                     className="h-4 w-4 text-[#F7BB06]"
@@ -617,7 +648,7 @@ export default function ChannelPartnerDetailsClient({
                     {ratingText}
                   </span>
                   <span className="text-white">{ratingCount} Ratings</span>
-                </div>
+                </div> */}
               </div>
 
               <button
@@ -834,6 +865,7 @@ export default function ChannelPartnerDetailsClient({
                         property={p}
                         partnerProfileSrc={profileSrc}
                         partnerRating={rating}
+                        onCardClick={handlePropertyCardClick}
                       />
                     ))}
                   </div>
@@ -847,6 +879,7 @@ export default function ChannelPartnerDetailsClient({
                         property={p}
                         partnerProfileSrc={profileSrc}
                         partnerRating={rating}
+                        onCardClick={handlePropertyCardClick}
                       />
                     ))}
                   </div>

@@ -62,7 +62,7 @@ export default function EndUserLoginOtpCard() {
         return;
       }
 
-      window.location.href = `${process.env.NEXT_PUBLIC_BUYER_URL || "http://localhost:3001"}/projects`;
+      window.location.href = `/api/redirect-to-buyer?path=/projects`;
     },
     onError: (error: any) => {
       setOtpError(error?.message ?? "Invalid OTP");

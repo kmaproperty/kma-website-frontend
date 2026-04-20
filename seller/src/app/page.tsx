@@ -8,6 +8,6 @@ export default async function SellerHome() {
   if (accessToken) {
     redirect("/user-dashboard");
   } else {
-    redirect("/user-flow");
+    redirect("/user-flow?isLogin=true");
   }
 }

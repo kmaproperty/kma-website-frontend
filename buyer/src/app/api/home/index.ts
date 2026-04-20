@@ -33,13 +33,18 @@ export interface PropertyMediaResponse {
   videos?: PropertyMediaVideo[];
 }
 
+// Server-side fetches need an absolute URL (build time has no running server for relative paths).
+// BACKEND_URL is the absolute backend origin; NEXT_PUBLIC_API_URL is the client-side proxy prefix.
+const getServerBaseUrl = () =>
+  process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_URL;
+
 export const fetchPropertyMedia = async (
   propertyId: string,
   correlationId?: string
 ): Promise<PropertyMediaResponse | null> => {
   if (!propertyId) return null;
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+    const baseUrl = getServerBaseUrl();
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
     };
@@ -61,7 +66,7 @@ export const fetchPropertyMedia = async (
 
 export const fetchPropertyMasterData = async (): Promise<GetPropertyMasterDataResponse> => {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+    const baseUrl = getServerBaseUrl();
 
     const response = await fetch(
       `${baseUrl}/end-user/property-master-data`,
@@ -93,7 +98,7 @@ export const fetchPropertyMasterData = async (): Promise<GetPropertyMasterDataRe
 
 export const fetchPropertyCitiesData = async (): Promise<CitiesResponse> => {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+    const baseUrl = getServerBaseUrl();
 
     const response = await fetch(
       `${baseUrl}/end-user/home/cities`,

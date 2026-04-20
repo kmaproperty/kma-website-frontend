@@ -23,7 +23,7 @@ type ReferralUserShellProps = {
 export default function ReferralUserShell({
   title,
   description,
-  breadcrumb = "Home / Refer and Earn",
+  breadcrumb = "Home1 / Refer and Earn",
   showSubNav = true,
   children,
 }: ReferralUserShellProps) {
@@ -39,7 +39,7 @@ export default function ReferralUserShell({
 
   return (
     <div className="bg-[#F8FAFC] min-h-screen">
-      <div className="relative pt-[25px] min-h-[280px] rounded-b-[60px] bg-[linear-gradient(120deg,#1B2DBE_0%,#0D9DF2_100%)]">
+      <div className="relative pt-[25px] min-h-[280px] rounded-b-[60px] bg-[#010048]">
         <HomeHeader />
         <div className="w-[90%] max-w-[1100px] mx-auto mt-[70px] pb-[100px] text-white">
           <p className="text-sm opacity-90">{breadcrumb}</p>

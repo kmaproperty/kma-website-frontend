@@ -1,11 +1,21 @@
 import type { NextConfig } from "next";
 
+const API_URL = process.env.BACKEND_URL || "http://15.207.193.17:3000";
+
 const nextConfig: NextConfig = {
   /* config options here */
   logging: {
     fetches: {
       fullUrl: true,
     },
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/api/backend/:path*",
+        destination: `${API_URL}/:path*`,
+      },
+    ];
   },
   reactStrictMode: false,
   transpilePackages: ['mui-one-time-password-input'],

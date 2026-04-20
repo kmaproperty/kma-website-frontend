@@ -1,13 +1,12 @@
 import { Menu, MenuItem } from "@mui/material";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ListCard from "./listCard";
 import CustomPagination from "../common/pagination";
-import PropertyView from "./propertyProfile";
 import FullscreenSpinner from "../common/spinner/fullScreenSpinner";
-import { useSearchParams } from "next/navigation";
-import { FILTER_STATUS, PROPERTY_STATUS } from "@/lib/enums";
+import { useRouter } from "next/navigation";
+import { FILTER_STATUS } from "@/lib/enums";
 
 const sortField = {
     price: 'Price',
@@ -16,14 +15,11 @@ const sortField = {
     expiresAt: 'Expiring On'
 }
 
-export default function Listing({propertyList = [],listLoader, fetchPropertyList,setPagination, pagination, topStatusFilter, setTopStatusFilter, sorting, setSorting, propertyListLoader}) {
-  const searchParams = useSearchParams();
-  const redirectPropertyId = searchParams.get('propertyId');
+export default function Listing({propertyList = [],listLoader, setPagination, pagination, topStatusFilter, setTopStatusFilter, sorting, setSorting, propertyListLoader}) {
+  const router = useRouter();
 
   const [anchorElOrder, setAnchorElOrder] = useState(null);
   const [anchorElSort, setAnchorElSort] = useState(null);
-  const [openPropertyDetails, setOpenPropertyDetails] = useState(false)
-  const [propertyId, setPropertyId] = useState(null)
   
 
   const openOrder = Boolean(anchorElOrder);
@@ -50,24 +46,8 @@ export default function Listing({propertyList = [],listLoader, fetchPropertyList
   }
 
   const handleManage = (id) => {
-      setOpenPropertyDetails(true)
-      setPropertyId(id)
-  }
-
-  const handleClose = (isUpdate) => {
-    if(isUpdate){
-      fetchPropertyList()
-    }
-    setPropertyId(null)
-    setOpenPropertyDetails(false)
-  }
-
-  useEffect(() => {
-    if(redirectPropertyId){
-      setOpenPropertyDetails(true)
-      setPropertyId(redirectPropertyId)
-    }
-  },[])
+      router.push(`/post-property/${id}`)
+  };
   
   return (
     <div className="flex flex-col px-2 py-5 gap-3">
@@ -195,7 +175,6 @@ export default function Listing({propertyList = [],listLoader, fetchPropertyList
             {Array.isArray(propertyList) &&  propertyList.length != 0 && <div>
                 <CustomPagination page={pagination.page} totalPages={pagination.totalPage} onChange={(value) => handlePagination(value)}/>
             </div>}
-            <PropertyView open={openPropertyDetails} onClose={(isUpdate) => handleClose(isUpdate)} propertyId={propertyId}/>
     </div>
   );
 }
