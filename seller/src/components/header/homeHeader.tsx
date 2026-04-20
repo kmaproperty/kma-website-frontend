@@ -240,10 +240,7 @@ const handleHeaderSubMenuClick = (label: string) => {
         ].join(" ")}
       >
         <div
-          onClick={() => {
-            window.location.href = "/api/redirect-to-buyer?path=/";
-          }}
-          className="flex items-center px-1.5 shrink-0 cursor-pointer"
+          className="flex items-center px-1.5 shrink-0"
         >
           <Image
             src="/assets/kma-logo-white.svg"
