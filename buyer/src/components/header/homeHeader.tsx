@@ -364,7 +364,7 @@ const handleHeaderSubMenuClick = (label: string) => {
           </div>
         </div>
         <div className="flex items-center justify-start gap-[7px] shrink-0">
-          {(!userRole || isEndUser) && <button onClick={navigatePostProperty} className="animated-button px-[10px] sm:px-[20px] py-[6px] sm:py-[9px] cursor-pointer">
+          {<button onClick={navigatePostProperty} className="animated-button px-[10px] sm:px-[20px] py-[6px] sm:py-[9px] cursor-pointer">
             <span className="flex items-center justify-between gap-[6px] relative z-11">
               <Image
                 src="/assets/home-white.svg"
