@@ -37,8 +37,7 @@ export default function HomeHeader() {
   } = useHeaderStore(true);
   const isEndUser = userRole === USER_TYPE.END_USER || userRole === USER_TYPE.USER;
   const isLoggedIn = Boolean(userRole === USER_TYPE.CHANNEL_PARTNER || userRole === USER_TYPE.OWNER || isEndUser);
-  // On buyer domain, no one is treated as seller — seller features only on seller domain
-  const isSeller = false;
+  const isSeller = Boolean(userRole === USER_TYPE.CHANNEL_PARTNER || userRole === USER_TYPE.OWNER);
 
   const { data: profileResponse } = useQuery({
     queryKey: ["user-profile", userRole, crossApp],
@@ -364,7 +363,7 @@ const handleHeaderSubMenuClick = (label: string) => {
           </div>
         </div>
         <div className="flex items-center justify-start gap-[7px] shrink-0">
-          {<button onClick={navigatePostProperty} className="animated-button px-[10px] sm:px-[20px] py-[6px] sm:py-[9px] cursor-pointer">
+          {!isSeller && <button onClick={navigatePostProperty} className="animated-button px-[10px] sm:px-[20px] py-[6px] sm:py-[9px] cursor-pointer">
             <span className="flex items-center justify-between gap-[6px] relative z-11">
               <Image
                 src="/assets/home-white.svg"
