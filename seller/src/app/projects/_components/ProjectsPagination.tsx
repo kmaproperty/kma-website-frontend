@@ -55,7 +55,7 @@ export default function ProjectsPagination({
             className={`inline-flex h-12 w-12 items-center justify-center rounded border transition ${
               isActive
                 ? "border-[#010048] bg-[#010048] text-white"
-                : "border-border bg-white text-[#888888] hover:bg-background-gray"
+                : "border-border bg-white text-[#888888]"
             }`}
           >
             {page}

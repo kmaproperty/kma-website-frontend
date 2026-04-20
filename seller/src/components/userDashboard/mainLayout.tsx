@@ -10,11 +10,11 @@ export default function MainLayout({
   return (
     <SellerGuard>
       <div>
-        <div className="relative w-full min-h-[calc(100dvh-10dvh)] md:min-h-[calc(100dvh-7dvh)] bg-background-gray">
-          <div className="absolute w-full flex justify-center w-full 2md:top-6">
+        <div className="relative w-full min-h-[calc(100dvh-10dvh)] md:min-h-[calc(100dvh-7dvh)] bg-list-background">
+          <div className="sticky top-0 z-50 w-full flex justify-center 2md:pt-6">
             <UserHeader />
           </div>
-          <div className="absolute w-full h-[450px] bg-blue rounded-b-[25px] sm:rounded-b-[60px] lg:rounded-b-[80px] xl:rounded-b-[100px]"></div>
+          <div className="absolute top-0 left-0 w-full h-[450px] bg-blue rounded-b-[25px] sm:rounded-b-[60px] lg:rounded-b-[80px] xl:rounded-b-[100px]"></div>
           <div className="flex justify-center pt-[10rem] pb-[2rem]  relative z-1 w-full">
             <div className="w-[80%] xl:w-[85%]  flex">
               {children}

@@ -24,7 +24,6 @@ function SelectField({
         onChange={onChange}
         className={cx(
           "h-10 w-full cursor-pointer appearance-none rounded-md border border-border bg-white px-3 pr-9 text-sm text-text-gray outline-none transition",
-          "hover:bg-background-gray/40",
           "focus:border-blue focus:ring-2 focus:ring-blue/15"
         )}
       >
@@ -80,7 +79,7 @@ function CheckboxRow({
         checked
           ? "border-blue bg-light-purple"
           : compact
-            ? "border-border bg-background-gray"
+            ? "border-border"
             : "border-border bg-white",
         disabled
           ? "cursor-not-allowed opacity-50"
@@ -88,7 +87,7 @@ function CheckboxRow({
             ? "hover:brightness-[0.98]"
             : compact
               ? "hover:bg-white"
-              : "hover:bg-background-gray"
+              : ""
       )}
     >
       <input
@@ -268,7 +267,7 @@ export default function FiltersSidebar() {
                 "h-9 cursor-pointer rounded-md border text-sm font-medium transition",
                 filters.categoryId == null
                   ? "border-blue bg-blue text-white"
-                  : "border-border  text-text-gray hover:bg-background-gray"
+                  : "border-border  text-text-gray"
               )}
               aria-pressed={filters.categoryId == null}
             >
@@ -286,7 +285,7 @@ export default function FiltersSidebar() {
                   "h-9 cursor-pointer rounded-md border text-sm font-medium transition",
                   filters.categoryId === c.id
                     ? "border-blue bg-blue text-white"
-                    : "border-border  text-text-gray hover:bg-background-gray"
+                    : "border-border  text-text-gray"
                 )}
                 aria-pressed={filters.categoryId === c.id}
               >
@@ -320,7 +319,7 @@ export default function FiltersSidebar() {
                   "h-9 cursor-pointer rounded-md border text-sm transition",
                   tab === t.id
                     ? "border-blue bg-blue text-white"
-                    : "border-border  text-text-gray hover:bg-background-gray"
+                    : "border-border  text-text-gray"
                 )}
                 aria-pressed={tab === t.id}
               >

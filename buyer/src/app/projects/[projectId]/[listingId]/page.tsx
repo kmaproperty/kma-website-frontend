@@ -731,7 +731,7 @@ export default function ListingDetailsPage() {
               {quickFactsData.map((fact) => (
                 <div
                   key={fact.label}
-                  className="inline-flex items-center gap-2 rounded-md border border-border bg-background-gray px-2.5 py-2 text-[13px] text-text-black pr-4"
+                  className="inline-flex items-center gap-2 rounded-md border border-border px-2.5 py-2 text-[13px] text-text-black pr-4"
                 >
                   <span className="flex w-[30px] h-[30px] justify-center items-center rounded-md bg-white">{fact.icon}</span>
                   <span>{fact.label}</span>
@@ -739,7 +739,7 @@ export default function ListingDetailsPage() {
               ))}
             </div>
 
-            <div className="mt-4 border-b border-border bg-background-gray rounded-sm p-5">
+            <div className="mt-4 border-b border-border rounded-sm p-5">
               <nav
                 ref={tabsNavRef}
                 className="sticky top-0 z-20 overflow-x-auto rounded-md bg-white text-sm"
@@ -1002,7 +1002,7 @@ export default function ListingDetailsPage() {
                           <Link
                             key={label}
                             href={channelPartnerDetailsHref}
-                            className="inline-flex w-full items-center justify-between rounded-lg border border-[#D1D5DB] px-3 py-2.5 text-left hover:bg-white/60 bg-background-gray"
+                            className="inline-flex w-full items-center justify-between rounded-lg border border-[#D1D5DB] px-3 py-2.5 text-left hover:bg-white/60"
                           >
                             <span className="text-sm font-medium text-text-black">{label}</span>
                             <span className="inline-flex items-center gap-2">
@@ -1327,7 +1327,7 @@ export default function ListingDetailsPage() {
                                         });
                                       }}
                                       disabled={isSimilarFavoriteUpdating}
-                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full text-text-light-black hover:bg-background-gray disabled:opacity-70"
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full text-text-light-black disabled:opacity-70"
                                     >
                                       <Heart
                                         className={`h-5 w-5 ${isFav ? "fill-red-500 text-red-500" : ""}`}

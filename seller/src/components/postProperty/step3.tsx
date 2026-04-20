@@ -1043,7 +1043,7 @@ const { data: amenitiesList } = useQuery({
             {errors?.liftAvalability && <p className="pt-1 text-red-500 text-xs">{errors.liftAvalability}</p>}
         </div>}
 
-        {renderShowField(FIELD_NAME.FURNISH_TYPE) &&<div id='furnishType' className="bg-background-gray rounded-[10px] p-3">
+        {renderShowField(FIELD_NAME.FURNISH_TYPE) &&<div id='furnishType' className="rounded-[10px] p-3">
           <FieldLabel label="Furnish Type" customClass="text-base!" required={true}/>
           <div className="flex flex-wrap gap-3 pt-2">
             {FURNISH_TYPE.map((item) => {
@@ -1105,7 +1105,7 @@ const { data: amenitiesList } = useQuery({
           </div>
         </div>}
 
-        {renderShowField(FIELD_NAME.AMENITIES) &&<div className="bg-background-gray rounded-[10px] p-3">
+        {renderShowField(FIELD_NAME.AMENITIES) &&<div className="rounded-[10px] p-3">
           <FieldLabel label="Amenities" customClass="text-base!" />
 
           <div
