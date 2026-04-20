@@ -493,7 +493,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
         </div>
       </div>
 
-      <section className="mt-7 w-full px-4 sm:px-6 lg:px-8">
+      <section className="w-full px-4 sm:px-6 lg:px-8">
         <div className="relative">
           <h1 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">
             {routeLabels.headingLabel}

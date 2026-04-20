@@ -17,7 +17,7 @@ export default function MainLayout({ children }:{children:React.ReactNode}) {
             <InfoSection/>
           </div> */}
         </div>
-        <div className="flex justify-center pt-[6rem] md:pt-[10rem] pb-[2rem]  relative z-1 w-full">
+        <div className="flex justify-center pt-[6rem] md:pt-[5rem] pb-[2rem]  relative z-1 w-full">
           <div className="w-[80%] xl:w-[85%] min-h-[66dvh] flex">
             {children}
           </div>    

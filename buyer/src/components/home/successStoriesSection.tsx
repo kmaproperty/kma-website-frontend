@@ -200,7 +200,7 @@ export default function SuccessStoriesSection() {
               </div>
 
               <div className="flex flex-col gap-3 2md:flex-row 2md:items-center">
-                <div className="flex items-center gap-2">
+                {/* <div className="flex items-center gap-2">
                   <div className="relative">
                     <input
                       placeholder=""
@@ -264,14 +264,17 @@ export default function SuccessStoriesSection() {
                       />
                     </svg>
                   </button>
-                </div>
+                </div> */}
 
-                <button
+                {/* <button
                   type="button"
                   className="h-9 rounded-[6px] bg-blue px-4 text-xs font-medium text-white"
                 >
                   Write Review
-                </button>
+                </button> */}
+
+
+                {/* show this again */}
               </div>
             </div>
 

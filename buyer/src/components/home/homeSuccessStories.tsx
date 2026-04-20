@@ -138,7 +138,7 @@ export default function HomeSuccessStories() {
 Hear directly from our clients how KMA helped them buy, sell, or rent properties with complete transparency and zero hassle."
               />
             </div>
-            <Link href="/about-us" className="w-fit text-sm 1xl:text-base animated-button px-8 py-2 border border-blue text-center cursor-pointer">
+            <Link href="/success-stories" className="w-fit text-sm 1xl:text-base animated-button px-8 py-2 border border-blue text-center cursor-pointer">
               <span className="gap-3 relative flex justify-center">
                 <p className={`text-nowrap`}>View More</p>
               </span>
