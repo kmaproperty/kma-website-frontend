@@ -126,7 +126,7 @@ export default function FeaturedProperties({ topProperties }) {
         onListingFilterChange={setListingFilter}
       />
 
-      <div className="flex-1 w-full min-w-0 2md:min-w-0 -mx-2 feature-property">
+      <div className="flex-1 min-w-0 2md:min-w-0 -ml-1 w-[calc(100%_+_8px)] feature-property">
         <Slider
           key={`featured-${slidesToShow}-${slidesCount}-${listingFilter}`}
           ref={sliderRef}
@@ -149,7 +149,7 @@ export default function FeaturedProperties({ topProperties }) {
             return (
               <motion.div
                 key={item?.id ?? index}
-                className="px-2 sm:px-1.5 w-full min-w-0 max-w-full h-auto sm:h-[500px]"
+                className="px-1 w-full min-w-0 max-w-full h-auto sm:h-[500px]"
                 variants={index == 0 || index == 1 ? topVariant : bottomVariant}
                 animate={isInView ? "visible" : "hidden"}
               >

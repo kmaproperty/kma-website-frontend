@@ -62,7 +62,7 @@ const SalesEnquiry = () => {
                 </button>
             </div>
             <div className='w-full py-[80px] px-4 sm:px-6 md:px-[50px]'>
-                <div className='max-w-[1444px] mx-auto'>
+                <div className='max-w-[1440px] mx-auto'>
                     <SectionHeading title="" subtitle="KMA Headquarters" type={'left'} color='' lineTop={false}
                         description=""
                     />
@@ -81,7 +81,7 @@ const SalesEnquiry = () => {
                 </div>
             </div>
             <div className='w-full pb-[100px] px-4 sm:px-6 md:px-[50px]'>
-                <div className='max-w-[1444px] mx-auto'>
+                <div className='max-w-[1440px] mx-auto'>
                     <SectionHeading title="" subtitle="KMA Regional Offices" type={'left'} color='' lineTop={false}
                         description=""
                     />

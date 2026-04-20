@@ -67,7 +67,7 @@ export default function WorkingSection(){
    }
     return(
         <>
-            <div ref={ref} className="my-16 w-[90%] md:w-[75%] z-1">
+            <div ref={ref} className="my-16 max-w-[1440px] mx-auto w-full z-1">
                 <div className="grid grid-cols-1 2md:grid-cols-2 gap-3 justify-between items-center">
                     <motion.div
                             className="relative h-[300px] 2md:h-full w-full 2md:w-auto"
@@ -81,7 +81,7 @@ export default function WorkingSection(){
                         </div>
                     </motion.div>
                         <motion.div
-                           className="flex flex-col gap-4 pl-6"
+                           className="flex flex-col gap-4 2md:pl-6"
                             ref={ref}
                             variants={bottomVariant}
                             animate={isInView ? "visible" : "hidden"}

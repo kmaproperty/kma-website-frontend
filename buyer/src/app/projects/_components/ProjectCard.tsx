@@ -39,7 +39,7 @@ function FeaturePill({
   label: string;
 }) {
   return (
-    <div className="flex min-w-0 items-center gap-2 px-1.5 py-1 text-[15px] font-normal text-[#0D1520] xl:px-2 xl:text-sm xl:font-medium">
+    <div className="flex min-w-0 items-center gap-2 md:px-1.5 py-1 text-[15px] font-normal text-[#0D1520] xl:px-2 xl:text-sm xl:font-medium">
       <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-white text-[#0D1520] shadow-[0_0_0_1px_rgba(0,0,0,0.05)] xl:h-10 xl:w-10">
         {icon}
       </span>
@@ -224,7 +224,7 @@ export default function ProjectCard({
         nextPhone = parsed?.phone ?? "";
         nextCountryCode = parsed?.countryCode ?? "+91";
       }
-    } catch {}
+    } catch { }
 
     setUserContact({
       name: nextName,
@@ -365,7 +365,7 @@ export default function ProjectCard({
       className="group relative cursor-pointer overflow-hidden rounded-[14px] border border-[#DADCE2] border-b-2 border-b-black bg-[#F5F5F5] transition will-change-transform md:border-b md:border-b-[#DADCE2] xl:rounded-lg xl:border-0 xl:shadow-sm xl:hover:-translate-y-[1px] xl:hover:shadow-md"
       role="link"
       tabIndex={0}
-      
+
       onKeyDown={handleCardKeyDown}
       aria-label={`Open details for ${project.title}`}
     >
@@ -392,22 +392,24 @@ export default function ProjectCard({
               (isFavoriteUpdating || isFavoriteAuthChecking) && "cursor-not-allowed opacity-70"
             )}
             aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
-            // style={{
-            //   background: "linear-gradient(180deg, #1894F8 0%, #0B57C7 100%)",
-            //   boxShadow: "0 4px 16px 0 rgba(26,110,254,0.18)",
-            // }}
+          // style={{
+          //   background: "linear-gradient(180deg, #1894F8 0%, #0B57C7 100%)",
+          //   boxShadow: "0 4px 16px 0 rgba(26,110,254,0.18)",
+          // }}
           >
             <Heart className={cx("h-6 w-6", isFav ? "fill-current" : "")} stroke="white" />
           </button>
 
-          <div className="absolute bottom-3 right-3 flex items-center gap-3 rounded-full bg-black/55 px-3 py-1 text-xs font-medium text-white">
-            <span className="inline-flex items-center gap-1">
-              <Images className="h-3.5 w-3.5" />{" "}
-              {project.mediaCounts?.photos ?? project.images.length}
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <Video className="h-3.5 w-3.5" /> {project.mediaCounts?.videos ?? 0}
-            </span>
+          <div className="absolute bottom-3 right-3 ">
+            <div className="flex items-center gap-3">
+              <span className="inline-flex items-center gap-1 rounded-full bg-black/55 px-3 py-1 text-xs font-medium text-white">
+                <Images className="h-3.5 w-3.5" />{" "}
+                {project.mediaCounts?.photos ?? project.images.length}
+              </span>
+              <span className="inline-flex items-center gap-1 rounded-full bg-black/55 px-3 py-1 text-xs font-medium text-white">
+                <Video className="h-3.5 w-3.5" /> {project.mediaCounts?.videos ?? 0}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -423,11 +425,11 @@ export default function ProjectCard({
             </div>
           </div>
           <div className="mt-3">
-              <div className="text-lg leading-tight text-[#010048]">
-                <span>{pricePrimary}</span>
-                {priceSuffix ? <span className="ml-1 text-[#888888]">{priceSuffix}</span> : null}
-              </div>
+            <div className="text-lg leading-tight text-[#010048]">
+              <span>{pricePrimary}</span>
+              {priceSuffix ? <span className="ml-1 text-[#888888]">{priceSuffix}</span> : null}
             </div>
+          </div>
 
           <div className="mt-3.5 space-y-1.5 xl:mt-4 xl:space-y-0 xl:flex xl:flex-wrap xl:items-center xl:gap-x-2 xl:gap-y-2">
             <div className="space-y-1.5 xl:hidden">
@@ -438,7 +440,7 @@ export default function ProjectCard({
                   </div>
                   {row[1] ? (
                     <>
-                      <span className="mx-1 h-8 w-px bg-border" />
+                      <span className="md:mx-1 mx-2 h-8 w-px bg-border" />
                       <div className="min-w-0 flex-1">
                         <FeaturePill icon={row[1].icon} label={row[1].label} />
                       </div>
@@ -508,11 +510,11 @@ export default function ProjectCard({
             {project.agent?.badge ? (
               <div className="mt-1 gap-1 inline-flex items-center rounded-md bg-[#C75C10] px-2.5 py-1 text-[13px] text-white">
                 <Image
-                src='/assets/app/shield.svg'
-                width={20}
-                height={20}
-                alt="Shield"
-                className="w-4 h-4 "
+                  src='/assets/app/shield.svg'
+                  width={20}
+                  height={20}
+                  alt="Shield"
+                  className="w-4 h-4 "
                 />
                 {project.agent.badge}
               </div>
@@ -533,7 +535,7 @@ export default function ProjectCard({
             type="button"
             onClick={handleCallBackClick}
             disabled={isAuthChecking}
-            className="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-[#4CAF50] bg-white text-[#2F9E44] transition hover:bg-[#E9F7EE] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1B8836]/25 md:h-12 md:w-auto md:gap-2 md:px-6 md:text-sm md:font-semibold"
+            className="cursor-pointer inline-flex h-12 w-12 items-center justify-center rounded-xl border border-[#4CAF50] bg-white text-[#2F9E44] transition hover:bg-[#E9F7EE] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1B8836]/25 md:h-12 md:w-auto md:gap-2 md:px-6 md:text-sm md:font-semibold"
           >
             <PhoneCall className="h-5 w-5" />
             <span className="hidden md:inline">{isAuthChecking ? <Spinner size={16} /> : "Get a Call Back"}</span>

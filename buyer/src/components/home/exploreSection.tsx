@@ -113,7 +113,7 @@ export default function ExploreSection({ explorePropertyList = [] }: ExploreSect
         variants={leftVariant}
         animate={isInView ? "visible" : "hidden"}
       >
-        <h2 className="text-xl font-semibold text-black leading-tight">
+        <h2 className="kma_title font-semibold text-black leading-tight">
           Explore by <br /> Property Type
         </h2>
 

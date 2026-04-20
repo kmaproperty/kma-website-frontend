@@ -687,42 +687,42 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
           </div>
         </div>
       </div>
-      <div className="my-9 lg:my-16 flex justify-center overflow-hidden">
-        <div className="w-[90%] md:w-[75%]">
+      <div className="my-9 lg:my-16 flex justify-center overflow-hidden px-4">
+        <div className="max-w-[1440px] mx-auto w-full">
           <LazyNeedSection />
         </div>
       </div>
-      <div className="bg-[#F2F2F2] flex justify-center overflow-hidden">
-        <div className="my-9 lg:my-16 w-[90%] md:w-[75%]">
+      <div className="bg-[#F2F2F2] flex justify-center overflow-hidden px-4">
+        <div className="my-9 lg:my-16 max-w-[1440px] mx-auto w-full">
           <LazyRealEstateSection />
         </div>
       </div>
-      <div className="relative bg-text-black flex justify-center overflow-hidden">
+      <div className="relative bg-text-black flex justify-center overflow-hidden px-4">
         <LazyAboutUsSection />
       </div>
       {(Array.isArray(explorePropertyList) && explorePropertyList.length > 0 && typeof explorePropertyList[0] !== "undefined") && (
-        <div className="my-9 lg:my-16 flex justify-center">
-          <div className="w-[90%] md:w-[75%]">
+        <div className="my-9 lg:my-16 flex justify-center px-4">
+          <div className="max-w-[1440px] mx-auto w-full">
             <LazyExploreSection explorePropertyList={explorePropertyList} />
           </div>
         </div>
       )}
-      {Array.isArray(featuredData?.properties) && featuredData?.properties.length > 0 && <div className="bg-[#F2F2F2] flex justify-center">
-        <div className="my-9 lg:my-16 w-[90%] md:w-[75%]">
+      {Array.isArray(featuredData?.properties) && featuredData?.properties.length > 0 && <div className="bg-[#F2F2F2] flex justify-center px-4">
+        <div className="my-9 lg:my-16 max-w-[1440px] mx-auto w-full">
           <LazyFeaturedProperties topProperties={featuredData?.properties ?? []} />
         </div>
       </div>}
 
-      <div className="relative bg-[#F2F2F2] flex justify-center overflow-hidden">
+      <div className="relative bg-[#F2F2F2] flex justify-center overflow-hidden px-4">
         <LazySuccessStoriesSection />
       </div>
 
-      <div className="relative bg-text-black flex justify-center overflow-hidden">
+      <div className="relative bg-text-black flex justify-center overflow-hidden px-4">
         <LazyWorkingSection />
       </div>
       {Array.isArray(channelPartnerList) && channelPartnerList.length > 0 && (
-        <div className="bg-[#F2F2F2] flex justify-center overflow-hidden">
-          <div className="my-16 w-[90%] 2md:w-[75%]">
+        <div className="bg-[#F2F2F2] flex justify-center overflow-hidden px-4">
+          <div className="my-16 max-w-[1440px] mx-auto w-full">
             <LazyChannelPartnerSection channelPartnerList={channelPartnerList} />
           </div>
         </div>
@@ -730,8 +730,8 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
       {/* <div className="">
         <LazyAppDownloadSection />
       </div> */}
-      <div className="flex justify-center overflow-hidden hidden">
-        <div className="my-16 w-[90%] 2md:w-[75%]">
+      <div className="flex justify-center overflow-hidden !hidden px-4">
+        <div className="my-16 max-w-[1440px] mx-auto w-full">
           <LazyBlogSection />
         </div>
       </div>

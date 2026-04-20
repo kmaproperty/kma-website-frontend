@@ -58,11 +58,11 @@ const ContactUs = async () => {
     ]
     return (
         <div>
-            <div className="relative non_home_page_slider">
-                <BannerSlider bannerHeight={'min-h-[600px] 2md:h-[60vh]'} backgroundImages={sliderImage} overlayClass='about-us-gradient-overlay' />
-                <div className="absolute flex flex-col items-center top-0 w-[100%] ">
+            <div className="relative overflow-hidden rounded-b-[20px] sm:rounded-br-[30px] non_home_page_slider">
+                <BannerSlider bannerHeight={'h-full'} backgroundImages={sliderImage} overlayClass='about-us-gradient-overlay' />
+                <div className="relative flex flex-col items-center top-0 w-[100%] ">
                     <HomdeHeader />
-                    <div className="mt-[150px]">
+                    <div className="2xl:py-[180px] 1xl:py-[160px] xl:py-[140px] lg:py-[120px] 2md:py-[100px] md:py-[80px] sm:py-[60px] py-[50px]">
                         <PageTitle
                             title="Let’s Connect"
                             description="Let our team of real estate specialists assist you with bespoke solutions for buying, selling, or renting luxury properties in Gurugram."
@@ -72,7 +72,7 @@ const ContactUs = async () => {
                 </div>
             </div>
             <div className='w-full px-4 2xl:py-[100px] xl:py-20 lg:py-16 md:py-12 py-10'>
-                <div className='max-w-[1444px] mx-auto'>
+                <div className='max-w-[1440px] mx-auto'>
                     <SectionHeading title="" subtitle="Do you have some questions for us?" type={'center'} color='' lineTop={false}
                         description="Whether you're buying, selling, or just exploring—we’ve got answers."
                     />
