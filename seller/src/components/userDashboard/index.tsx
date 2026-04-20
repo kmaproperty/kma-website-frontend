@@ -109,14 +109,7 @@ export default function UserDashboard() {
                 </p>
               </div>
               </div>
-              {userDashboardDetails?.role == USER_TYPE.CHANNEL_PARTNER && 
-              <div className="flex justify-start items-center gap-1">
-                <div className="w-fit flex px-4 py-2 rounded-full bg-white ">
-                    <Image src='/assets/doller.svg' width={20} height={20} alt="doller" />
-                    <p className="text-text-black underline text-sm pl-2">400 Credits</p>
-                </div>
-                    <Image src='/assets/info-blue.svg' width={20} height={20} alt="info" />
-              </div>}
+              {/* Credits section removed */}
           </div>
         </div>
         <div className="flex gap-4 flex-col 2md:flex-row">
