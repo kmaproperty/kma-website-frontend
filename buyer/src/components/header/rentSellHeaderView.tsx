@@ -36,7 +36,8 @@ export default function RentSellHeaderView({ type, onClose }: { type: string; on
 
   // Fetch properties for this city + listing type to know which property types have results
   const listingTypeId = (Array.isArray(propertyMasterData) ? propertyMasterData : [])?.find((item: { code: string }) => item.code == type)?.id;
-  const { data: properties = [] } = useEndUserProperties(
+  const shouldFilterByCity = !!selectedCity?.id && !!listingTypeId;
+  const { data: properties = [], isFetching } = useEndUserProperties(
     {
       cityId: selectedCity?.id,
       listingTypeIds: listingTypeId ? [listingTypeId] : undefined,
@@ -44,7 +45,7 @@ export default function RentSellHeaderView({ type, onClose }: { type: string; on
       limit: 100,
       page: 1,
     },
-    { enabled: !!selectedCity?.id && !!listingTypeId }
+    { enabled: shouldFilterByCity }
   );
 
   // Extract property type IDs that have at least 1 property
@@ -59,11 +60,13 @@ export default function RentSellHeaderView({ type, onClose }: { type: string; on
     return ids;
   }, [properties]);
 
-  // Filter property types to only show ones with properties
+  const isFilterLoading = shouldFilterByCity && isFetching;
+
+  // Filter property types to only show ones with properties (only once query has resolved)
   const visiblePropertyList = useMemo(() => {
-    if (!selectedCity?.id || availablePropertyTypeIds.size === 0) return propertyList;
+    if (!shouldFilterByCity) return propertyList;
     return propertyList.filter(item => availablePropertyTypeIds.has(item.id));
-  }, [propertyList, availablePropertyTypeIds, selectedCity?.id]);
+  }, [propertyList, availablePropertyTypeIds, shouldFilterByCity]);
 
   return (
     <div className="flex  flex-col 2md:flex-row justify-start overflow-hidden rounded-xl h-full 2md:h-[280px]">
@@ -92,7 +95,12 @@ export default function RentSellHeaderView({ type, onClose }: { type: string; on
           </p>
             <div className="2md:columns-2 2md:h-[180px] [column-fill:auto]">
               {
-                visiblePropertyList.length > 0 ? visiblePropertyList.map(item => {
+                isFilterLoading ? (
+                  <div className="flex items-center gap-2 text-sm text-text-gray">
+                    <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-text-gray border-t-transparent" />
+                    Loading properties...
+                  </div>
+                ) : visiblePropertyList.length > 0 ? visiblePropertyList.map((item: { id: string; name: string }) => {
                   return(
                     <p
                       key={item.id}
