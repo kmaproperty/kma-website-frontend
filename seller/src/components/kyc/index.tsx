@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import PhotoIcon from "@/assets/photo-upload.svg";
 import AadharIcon from "@/assets/aadhar-verify.svg";
@@ -14,19 +14,35 @@ import { useRouter } from "nextjs-toploader/app";
 import { useQuery } from "@tanstack/react-query";
 import { getKycStatusApiHandler, KycStatusResponse } from "@/services/kycService";
 import KycSuccess from "./kycSuccess";
+import { USER_TYPE } from "@/lib/enums";
 
 export default function UserKyc({tabName, event}) {
-  const [activeStep, setActiveStep] = useState(tabName ? tabName : 'Photo Upload');
+  const isOwner = useMemo(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      const raw = localStorage.getItem("user");
+      if (!raw) return false;
+      const parsed = JSON.parse(raw);
+      return parsed?.role === USER_TYPE.OWNER;
+    } catch {
+      return false;
+    }
+  }, []);
+
+  const defaultTab = isOwner ? 'Agreement Signature' : 'Photo Upload';
+  const [activeStep, setActiveStep] = useState(tabName ? tabName : defaultTab);
   const router = useRouter()
 
   const [isKycComplete, setIsKycComplete] = useState(false)
 
-  const kycList = [
-    { icon: PhotoIcon, name: "Photo Upload" },
-    { icon: AadharIcon, name: "Aadhar Verification" },
-    { icon: BankIcon, name: "Bank Details" },
-    { icon: AgreementIcon, name: "Agreement Signature" },
-  ];
+  const kycList = isOwner
+    ? [{ icon: AgreementIcon, name: "Agreement Signature" }]
+    : [
+        { icon: PhotoIcon, name: "Photo Upload" },
+        { icon: AadharIcon, name: "Aadhar Verification" },
+        { icon: BankIcon, name: "Bank Details" },
+        { icon: AgreementIcon, name: "Agreement Signature" },
+      ];
 
 
 
@@ -55,7 +71,7 @@ export default function UserKyc({tabName, event}) {
         'Photo Upload': 'Upload Your Photo',
         'Aadhar Verification': 'Verify Your Aadhar Number',
         'Bank Details': 'Enter Your Bank Details',
-        'Agreement Signature': 'Channel Partner Agreement',
+        'Agreement Signature': isOwner ? 'Owner Agreement' : 'Channel Partner Agreement',
     }
 
     return titleList[activeStep]
@@ -71,10 +87,10 @@ export default function UserKyc({tabName, event}) {
     if(tabName){
       setActiveStep(tabName)
     }else{
-      setActiveStep('Photo Upload')
+      setActiveStep(defaultTab)
     }
     refreshKyc()
-  },[tabName])
+  },[tabName, defaultTab])
 
   return (
     <div className="bg-white rounded-xl p-10 w-full">
