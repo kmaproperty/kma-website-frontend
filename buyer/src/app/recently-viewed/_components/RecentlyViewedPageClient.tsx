@@ -545,15 +545,18 @@ export default function RecentlyViewedPageClient() {
                       />
                       <span>{tab.label}</span>
                     </span>
-                    <span
-                      className={`inline-flex h-full min-w-7 items-center justify-center border-l px-2 text-[11px] font-semibold ${
-                        isActive
-                          ? "border-[#0C145E] bg-[#0C145E] text-white"
-                          : "border-[#E4E7EE] bg-[#F8F9FC] text-[#0C145E]"
-                      }`}
-                    >
-                      {tab.count}
-                    </span>
+                    {tab.count > 0 && (
+                      <span
+                        className={`inline-flex h-full min-w-7 items-center justify-center border-l px-2 text-[11px] font-semibold ${
+                          isActive
+                            ? "border-[#0C145E] bg-[#0C145E] text-white"
+                            : "border-[#E4E7EE] bg-[#F8F9FC] text-[#0C145E]"
+                        }`}
+                      >
+                        {tab.count}
+                      </span>
+                    )}
+               
                   </button>
                 );
               })}

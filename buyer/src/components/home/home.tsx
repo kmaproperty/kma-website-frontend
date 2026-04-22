@@ -16,7 +16,7 @@ export default function MainHome({ topProperties }: MainHomeProps) {
   return (
     <>
     <div className="fixed -top-[25px] left-0 right-0 z-[60] flex justify-center pointer-events-none">
-      <div className="pointer-events-auto w-full flex justify-center">
+      <div className="pointer-events-auto w-full flex justify-center pt-6">
         <HomeHeader />
       </div>
     </div>

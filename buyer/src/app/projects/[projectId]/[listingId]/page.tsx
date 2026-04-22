@@ -398,7 +398,7 @@ export default function ListingDetailsPage() {
       ["Additional Rooms", asString(propertyDetails?.additionalRoomsText)],
       ["Total Floor Count", asString(propertyDetails?.totalFloorCount)],
       ["Floor Number", asString(propertyDetails?.floorNumber)],
-      ["Tower/Block", asString(propertyDetails?.towerOrBlock)],
+      ["Block", asString(propertyDetails?.towerOrBlock)],
     ];
 
     return fromApi.filter(([, value]) => value != null) as Array<[string, string]>;
