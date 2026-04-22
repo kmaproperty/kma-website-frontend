@@ -1,9 +1,8 @@
 "use client";
-
-import AboutusDataSync from "@/components/footer/AboutusDataSync";
-import HomeFooter from "@/components/footer/homeFooter";
 import HomeHeader from "@/components/header/homeHeader";
 import SuccessStoriesSection from "@/components/home/successStoriesSection";
+import AboutusDataSync from "@/components/footer/AboutusDataSync";
+import HomeFooter from "@/components/footer/homeFooter";
 
 export default function SuccessStoriesPage() {
   return (

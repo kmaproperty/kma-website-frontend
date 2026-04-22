@@ -305,3 +305,51 @@ export const getActivityCountsApiHandler = async (
     throw error.response?.data ?? error;
   }
 };
+
+// End-user profile endpoints
+export interface EndUserProfileData {
+  id: string;
+  name: string | null;
+  email: string | null;
+  phone: string;
+  profileImage: string | null;
+  city: string | null;
+  isActive: boolean;
+}
+
+export interface EndUserProfileResponse {
+  success: boolean;
+  user: EndUserProfileData;
+}
+
+export const endUserProfileApiHandler = async (): Promise<EndUserProfileResponse> => {
+  try {
+    const response = await axiosInstance.get<EndUserProfileResponse>("end-user/profile");
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data ?? error;
+  }
+};
+
+export interface EndUserProfileUpdatePayload {
+  name?: string;
+  email?: string;
+  city?: string;
+  profileImage?: string;
+}
+
+export interface EndUserProfileUpdateResponse {
+  success: boolean;
+  message: string;
+}
+
+export const endUserProfileUpdateApiHandler = async (
+  payload: EndUserProfileUpdatePayload
+): Promise<EndUserProfileUpdateResponse> => {
+  try {
+    const response = await axiosInstance.put<EndUserProfileUpdateResponse>("end-user/profile", payload);
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data ?? error;
+  }
+};

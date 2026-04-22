@@ -730,11 +730,11 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
       {/* <div className="">
         <LazyAppDownloadSection />
       </div> */}
-      <div className="flex justify-center overflow-hidden !hidden px-4">
+      {/* <div className="flex justify-center overflow-hidden px-4">
         <div className="my-16 max-w-[1440px] mx-auto w-full">
           <LazyBlogSection />
         </div>
-      </div>
+      </div> */}
       <div className="">
         <LazyHomeFooter />
       </div>

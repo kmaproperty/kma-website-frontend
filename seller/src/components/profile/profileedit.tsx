@@ -1,5 +1,6 @@
 "use client";
 import * as React from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import Dialog, { DialogProps } from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -56,6 +57,7 @@ interface FormErrors {
 }
 
 export default function ProfileUpdate({ open, onClose }) {
+  const queryClient = useQueryClient();
   const { loadCities } = useCitySearch();
   const baseUrl = process.env.NEXT_PUBLIC_AWS_URL;
   const theme = useTheme();
@@ -178,6 +180,8 @@ export default function ProfileUpdate({ open, onClose }) {
     },
     onSuccess: (response) => {
         toast.success('Profile Updated Successfully')
+        queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+        queryClient.invalidateQueries({ queryKey: ["user-dashboard-details"] });
         onClose(true)
     },
     onError: (error: any) => {

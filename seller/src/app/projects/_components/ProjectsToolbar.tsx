@@ -87,7 +87,7 @@ export default function ProjectsToolbar({ total }: { total: number }) {
                 "inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-md border px-5 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/30",
                 tab === t.id
                   ? "border-blue bg-blue text-white"
-                  : "border-border bg-white text-text-gray hover:bg-background-gray"
+                  : "border-border bg-white text-text-gray"
               )}
               aria-pressed={tab === t.id}
             >
@@ -103,7 +103,7 @@ export default function ProjectsToolbar({ total }: { total: number }) {
             <select
               value={sort}
               onChange={(e) => startTransition(() => setSort(e.target.value as SortOption))}
-              className="h-10 min-w-[180px] cursor-pointer appearance-none rounded-full border border-border bg-background-gray px-4 pr-10 text-sm text-text-gray outline-none focus:border-blue"
+              className="h-10 min-w-[180px] cursor-pointer appearance-none rounded-full border border-border px-4 pr-10 text-sm text-text-gray outline-none focus:border-blue"
             >
               {SORTS.map((s) => (
                 <option key={s.id} value={s.id}>

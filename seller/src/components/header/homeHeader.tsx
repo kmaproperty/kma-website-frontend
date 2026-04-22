@@ -228,8 +228,8 @@ const handleHeaderSubMenuClick = (label: string) => {
 
   return (
     <>
-    <div className="sticky top-0 z-50 w-full flex justify-center">
-    <div className="w-[90%] mx-auto max-w-[1440px] mt-[25px]">
+    <div className="sticky top-0 z-50 w-full flex justify-center pt-[25px]">
+    <div className="w-[90%] mx-auto max-w-[1440px]">
       <div
         ref={headerBarRef}
         className={[
@@ -240,10 +240,7 @@ const handleHeaderSubMenuClick = (label: string) => {
         ].join(" ")}
       >
         <div
-          onClick={() => {
-            window.location.href = "/api/redirect-to-buyer?path=/";
-          }}
-          className="flex items-center px-1.5 shrink-0 cursor-pointer"
+          className="flex items-center px-1.5 shrink-0"
         >
           <Image
             src="/assets/kma-logo-white.svg"

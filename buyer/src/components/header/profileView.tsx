@@ -2,6 +2,7 @@
 
 import { clearAuthCookies } from "@/lib/helper";
 import {
+  endUserProfileApiHandler,
   getActivityCountsApiHandler,
   UserLogoutApiHandler,
   UserLogoutResponse,
@@ -12,7 +13,7 @@ import { useSessionStore } from "@/store/useSessionStore";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter } from "nextjs-toploader/app";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { toast } from "react-toastify";
 
 type ProfileViewProps = {
@@ -89,13 +90,58 @@ export default function ProfileView({ userRole }: ProfileViewProps) {
   const isLoggedIn = Boolean(userRole);
   const sessionId = useSessionStore((state) => state.sessionId);
 
+  // On buyer domain, treat everyone as end-user for profile data + menu.
+  // Seller-specific features only on seller domain.
+  const isSeller = false;
+
+  // Check if user came from seller app (crossApp flag in localStorage)
+  const crossApp = (() => {
+    if (typeof window === "undefined") return false;
+    try {
+      const raw = localStorage.getItem("user");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        return parsed?.crossApp === true;
+      }
+    } catch { /* ignore */ }
+    return false;
+  })();
+
   const { data: profileResponse } = useQuery({
-    queryKey: ["user-profile"],
-    queryFn: async (): Promise<UserProfileResponse> => userProfileApiHandler(),
+    queryKey: ["user-profile", userRole, crossApp],
+    queryFn: async () => {
+      try {
+        const res = await endUserProfileApiHandler();
+        return { success: res.success, user: res.user } as UserProfileResponse;
+      } catch (err: any) {
+        if (err?.statusCode === 401 || err?.status === 401 || err?.message === 'Authentication failed') {
+          localStorage.clear();
+          await clearAuthCookies();
+          queryClient.clear();
+          window.location.replace("/");
+        }
+        throw err;
+      }
+    },
     enabled: isLoggedIn,
     staleTime: 60 * 1000,
+    retry: false,
   });
   const user = profileResponse?.user;
+
+  // Sync latest profile data to localStorage so cached views stay up-to-date
+  useEffect(() => {
+    if (user?.name) {
+      try {
+        const raw = localStorage.getItem("user");
+        const existing = raw ? JSON.parse(raw) : {};
+        const updated = { ...existing, name: user.name, role: user.role };
+        if (user.email) updated.email = user.email;
+        if (user.profileImage) updated.profileImage = user.profileImage;
+        localStorage.setItem("user", JSON.stringify(updated));
+      } catch { /* ignore */ }
+    }
+  }, [user]);
 
   const { data: activityCounts } = useQuery({
     queryKey: ["end-user-activity-counts", isLoggedIn, sessionId ?? null],

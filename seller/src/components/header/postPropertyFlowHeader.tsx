@@ -4,8 +4,8 @@ import Image from "next/image";
 
 export default function PostPropertyFlowHeader() {
   return (
-    <div className="sticky top-0 z-50 w-full flex justify-center">
-      <div className="w-[90%] mx-auto max-w-[1440px] mt-[25px]">
+    <div className="sticky top-0 z-50 w-full flex justify-center pt-[25px]">
+      <div className="w-[90%] mx-auto max-w-[1440px]">
         <div className="rounded-[200px] h-[50px] 2md:h-[63px] px-4 lg:px-7 pt-[4px] flex justify-between items-center border border-[#FFFFFF33] bg-white/10 bg-clip-padding backdrop-filter backdrop-blur-[20px]">
           <a
             href="/api/redirect-to-buyer?path=/"

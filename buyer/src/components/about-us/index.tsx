@@ -13,6 +13,7 @@ import SectionHeading from "@/components/common/SectionHeading";
 import Image from "next/image";
 import BlogSection from "@/components/home/blogSection";
 import HomeFooter from "@/components/footer/homeFooter";
+import AboutusDataSync from "@/components/footer/AboutusDataSync";
 import { FaFacebook, FaLinkedin, FaTwitter, FaYoutube } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { getSelectedCity } from "@/store/homeHeaderSlice";
@@ -463,6 +464,7 @@ export default function AboutUsComponent({
           <BlogSection />
         </div>
       </div> */}
+      <AboutusDataSync />
       <div className="">
         <HomeFooter />
       </div>

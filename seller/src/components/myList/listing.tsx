@@ -7,6 +7,7 @@ import CustomPagination from "../common/pagination";
 import FullscreenSpinner from "../common/spinner/fullScreenSpinner";
 import { useRouter } from "next/navigation";
 import { FILTER_STATUS } from "@/lib/enums";
+import PropertyView from "./propertyProfile";
 
 const sortField = {
     price: 'Price',
@@ -45,8 +46,10 @@ export default function Listing({propertyList = [],listLoader, setPagination, pa
     }
   }
 
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
+
   const handleManage = (id) => {
-      router.push(`/post-property/${id}`)
+      setSelectedPropertyId(id);
   };
   
   return (
@@ -175,6 +178,14 @@ export default function Listing({propertyList = [],listLoader, setPagination, pa
             {Array.isArray(propertyList) &&  propertyList.length != 0 && <div>
                 <CustomPagination page={pagination.page} totalPages={pagination.totalPage} onChange={(value) => handlePagination(value)}/>
             </div>}
+
+            {selectedPropertyId && (
+              <PropertyView
+                open={!!selectedPropertyId}
+                onClose={() => setSelectedPropertyId(null)}
+                propertyId={selectedPropertyId}
+              />
+            )}
     </div>
   );
 }

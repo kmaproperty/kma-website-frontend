@@ -86,7 +86,7 @@ export default function UserProfile() {
               <div className="flex  gap-4">
                 <div className="w-fit rounded-full overflow-hidden">
                   <Image
-                    src={baseUrl + userProfile.profileImage}
+                    src={userProfile.profileImage ? baseUrl + userProfile.profileImage : "/assets/profile.png"}
                     width={100}
                     height={100}
                     alt="user profile"

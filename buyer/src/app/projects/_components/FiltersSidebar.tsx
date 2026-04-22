@@ -22,7 +22,7 @@ function SelectField({
       <select
         value={value}
         onChange={onChange}
-        className="w-full cursor-pointer appearance-none bg-transparent pr-9 text-[16px] leading-[20px] text-[#888888] outline-none"
+        className="w-full cursor-pointer appearance-none bg-transparent pr-9 text-[16px] leading-[20px] text-[#888888] outline-none focus:ring-2 focus:ring-blue/15"
       >
         {children}
       </select>
@@ -78,7 +78,7 @@ function CheckboxRow({
         checked
           ? "border-blue bg-light-purple"
           : compact
-            ? "border-border bg-background-gray"
+            ? "border-border"
             : "border-border bg-white",
         disabled
           ? "cursor-not-allowed opacity-50"
@@ -86,7 +86,7 @@ function CheckboxRow({
             ? "hover:brightness-[0.98]"
             : compact
               ? "hover:bg-white"
-              : "hover:bg-background-gray"
+              : ""
       )}
     >
       <input
@@ -282,7 +282,7 @@ export default function FiltersSidebar({
                 "h-11 cursor-pointer rounded-[5px] border px-4 text-[15px] font-medium transition",
                 filters.categoryId == null
                   ? "border-blue bg-blue text-white"
-                  : "border-border  text-text-gray hover:bg-background-gray"
+                  : "border-border  text-text-gray"
               )}
               aria-pressed={filters.categoryId == null}
             >
@@ -300,7 +300,7 @@ export default function FiltersSidebar({
                   "h-11 cursor-pointer rounded-[5px] border px-4 text-[15px] font-medium transition",
                   filters.categoryId === c.id
                     ? "border-blue bg-blue text-white"
-                    : "border-border  text-text-gray hover:bg-background-gray"
+                    : "border-border  text-text-gray"
                 )}
                 aria-pressed={filters.categoryId === c.id}
               >
@@ -334,7 +334,7 @@ export default function FiltersSidebar({
                   "h-9 cursor-pointer rounded-md border text-sm transition",
                   tab === t.id
                     ? "border-blue bg-blue text-white"
-                    : "border-border  text-text-gray hover:bg-background-gray"
+                    : "border-border  text-text-gray"
                 )}
                 aria-pressed={tab === t.id}
               >

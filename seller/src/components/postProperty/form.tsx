@@ -5,7 +5,7 @@ import Step2 from "./step2";
 import Step3 from "./step3";
 import Step4 from "./step4";
 import { useDispatch, useSelector } from "react-redux";
-import { getActiveStep, setActiveStep } from "@/store/postPropertyProgress";
+import { getActiveStep, setActiveStep, resetProgress } from "@/store/postPropertyProgress";
 import { useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { UserDashboardDetailsApiHandler, UserDashboardDetailsResponse } from "@/services/userService";
@@ -33,6 +33,20 @@ const activeStep = useSelector(getActiveStep);
     staleTime: 0,
     refetchOnMount: true,
   });
+
+  // Reset progress on mount:
+  // - CREATE mode without propertyId: fresh start
+  // - EDIT mode: always start at step 1 (user wants to edit from beginning)
+  useEffect(() => {
+    hasRestoredStepRef.current = false;
+    if (mode === PROPERTY_FORM_MODE.EDIT) {
+      dispatch(resetProgress());
+      dispatch(setActiveStep({ step: 1 }));
+      hasRestoredStepRef.current = true; // prevent restore override
+    } else if (!params?.propertyId) {
+      dispatch(resetProgress());
+    }
+  }, [mode, params?.propertyId, dispatch]);
 
   useEffect(() => {
     if (containerRef.current) {

@@ -1,5 +1,6 @@
 "use client";
 import Social from "./social";
+import HomeHeader from "../header/homeHeader";
 import BannerText from "./bannertext";
 import TopProperties from "./topProperties";
 import Filter from "./filter";
@@ -14,6 +15,11 @@ export default function MainHome({ topProperties }: MainHomeProps) {
 
   return (
     <>
+      <div className="fixed -top-[25px] left-0 right-0 z-[60] flex justify-center pointer-events-none">
+        <div className="pointer-events-auto w-full flex justify-center pt-6">
+          <HomeHeader />
+        </div>
+      </div>
       <div className="flex 2md:flex-col flex-col-reverse relative w-[100%] top-0 2xl:py-[150px] 1xl:py-[120px] xl:py-[110px] lg:py-[90px] 2md:py-[80px] md:pt-[110px] sm:pt-[90px] pt-[80px] 2md:px-0 px-10 2md:mb-0 mb-32">
         <div>
           <Social />

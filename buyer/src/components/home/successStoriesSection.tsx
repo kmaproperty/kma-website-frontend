@@ -163,6 +163,9 @@ export default function SuccessStoriesSection() {
     },
   });
 
+  const reviews = reviewData?.reviews ?? [];
+  const totalReviews = reviews.length;
+
   return (
     <>
       <div ref={ref} className="my-16 max-w-[1440px] mx-auto w-full z-10">
@@ -252,6 +255,142 @@ export default function SuccessStoriesSection() {
                   />
                 ))}
               </div>
+            </div>
+          </div>
+
+          {/* Reviews header + controls */}
+          <div className="p-6 2md:p-8">
+            <div className="flex flex-col gap-4 2md:flex-row 2md:items-center 2md:justify-between">
+              <div>
+                <p className="text-sm font-semibold text-[#111827]">
+                  All Reviews ({totalReviews})
+                </p>
+                <p className="mt-1 text-[11px] text-[#9CA3AF]">0.20</p>
+              </div>
+
+              <div className="flex flex-col gap-3 2md:flex-row 2md:items-center">
+                {/* show this again */}
+              </div>
+            </div>
+
+            {/* Review list */}
+            <div className="mt-6 rounded-[8px] border border-[#EEF0F3]">
+              {(reviews.length
+                ? (reviews as (Rating | null)[])
+                : (Array.from({ length: 4 }).map(() => null) as (Rating | null)[])
+              ).map((item: Rating | null, idx: number) => {
+                const name = item?.name ?? "Meera";
+                const rating = Number(item?.rating ?? 4.2);
+                const review =
+                  item?.review ??
+                  "This society has been a great and harmonious place. The security, amenities, and maintenance are consistently reliable...";
+                const profileImage =
+                  item?.endUser?.profileImage && profileBaseUrl
+                    ? profileBaseUrl + item.endUser?.profileImage
+                    : null;
+
+                return (
+                  <div
+                    key={item?.id ?? idx}
+                    className="px-5 py-5 2md:px-6 2md:py-6 border-b last:border-b-0 border-[#EEF0F3]"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex gap-3">
+                        {profileImage ? (
+                          <Image
+                            src={profileImage}
+                            width={36}
+                            height={36}
+                            alt="profile"
+                            className="rounded-full object-cover h-9 w-9"
+                          />
+                        ) : (
+                          <div className="h-9 w-9 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold text-gray-700 uppercase">
+                            {name?.charAt(0)}
+                          </div>
+                        )}
+
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-[#111827]">
+                            {name}
+                          </p>
+                          <div className="mt-1 flex items-center gap-2">
+                            <RatingStars rating={rating} total={5} />
+                            <p className="text-[11px] text-[#6B7280]">
+                              {rating.toFixed(1)}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        className="flex items-center gap-2 text-xs text-[#6B7280]"
+                      >
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M7 10v10h10V10"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinejoin="round"
+                          />
+                          <path
+                            d="M9 10l3-6 3 6"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                        Helpful
+                      </button>
+                    </div>
+
+                    <p className="mt-4 text-xs leading-5 text-[#6B7280]">
+                      {review}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Pagination */}
+            <div className="mt-5 flex items-center justify-end gap-2 text-xs text-[#6B7280]">
+              <button
+                type="button"
+                className="h-7 rounded-[4px] px-3 border border-[#EEF0F3] bg-white"
+              >
+                Prev
+              </button>
+              <button
+                type="button"
+                className="h-7 w-7 rounded-[4px] border border-[#1E3A8A] bg-[#1E3A8A] text-white"
+              >
+                1
+              </button>
+              <button
+                type="button"
+                className="h-7 w-7 rounded-[4px] border border-[#EEF0F3] bg-white"
+              >
+                2
+              </button>
+              <button
+                type="button"
+                className="h-7 w-7 rounded-[4px] border border-[#EEF0F3] bg-white"
+              >
+                3
+              </button>
+              <button
+                type="button"
+                className="h-7 rounded-[4px] px-3 border border-[#EEF0F3] bg-white"
+              >
+                Next
+              </button>
             </div>
           </div>
         </div>

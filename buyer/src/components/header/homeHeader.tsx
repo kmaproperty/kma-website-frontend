@@ -19,7 +19,8 @@ import { useRouter } from "nextjs-toploader/app";
 import { USER_TYPE } from "@/lib/enums";
 import { useHeaderStore } from "@/store/useHeaderStore";
 import { useQuery } from "@tanstack/react-query";
-import { userProfileApiHandler, UserProfileResponse } from "@/services/userService";
+import { userProfileApiHandler, UserProfileResponse, endUserProfileApiHandler } from "@/services/userService";
+import { clearAuthCookies } from "@/lib/helper";
 
 const baseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
 
@@ -35,11 +36,36 @@ export default function HomeHeader() {
   } = useHeaderStore(true);
   const isLoggedIn = Boolean(userRole === USER_TYPE.CHANNEL_PARTNER || userRole === USER_TYPE.OWNER);
 
+  const crossApp = (() => {
+    if (typeof window === "undefined") return false;
+    try {
+      const raw = localStorage.getItem("user");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        return parsed?.crossApp === true;
+      }
+    } catch { /* ignore */ }
+    return false;
+  })();
+
   const { data: profileResponse } = useQuery({
-    queryKey: ["user-profile"],
-    queryFn: async (): Promise<UserProfileResponse> => userProfileApiHandler(),
+    queryKey: ["user-profile", userRole, crossApp],
+    queryFn: async () => {
+      try {
+        const res = await endUserProfileApiHandler();
+        return { success: res.success, user: res.user } as UserProfileResponse;
+      } catch (err: any) {
+        if (err?.statusCode === 401 || err?.status === 401 || err?.message === 'Authentication failed') {
+          localStorage.clear();
+          clearAuthCookies();
+          window.location.replace("/");
+        }
+        throw err;
+      }
+    },
     enabled: isLoggedIn,
     staleTime: 60 * 1000,
+    retry: false,
   });
   const headerAvatarSrc = useMemo(() => {
     const user = profileResponse?.user;

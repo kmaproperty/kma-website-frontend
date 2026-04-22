@@ -93,9 +93,9 @@ export default function AboutUsSection() {
               </p>
             </div>
             <div className="flex gap-4 mt-2">
-              <button onClick={openContactPopup} className="w-auto text-sm 1xl:text-base text-white! hover:text-text-black! animated-button-white px-8 py-2 border border-white bg-transparent! text-center cursor-pointer">
+              <button onClick={() => router.push("/about-us")} className="w-auto text-sm 1xl:text-base text-white! hover:text-text-black! animated-button-white px-8 py-2 border border-white bg-transparent! text-center cursor-pointer">
                 <span className="gap-3 relative flex justify-center">
-                  <p className={`text-nowrap`}>Contact Us</p>
+                  <p className={`text-nowrap`}> About Us</p>
                 </span>
               </button>
             </div>

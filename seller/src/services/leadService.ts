@@ -45,6 +45,7 @@ export interface LeadPropertyContact {
     bhkTypeName?: string;
     societyName?: string;
     localityName?: string;
+    ownerRole?: string;
   };
   contactedAt: string | null;
 }
@@ -63,6 +64,7 @@ export interface LeadItem {
   propertyTypes?: string[] | null;
   locations?: string[] | null;
   status: LeadStatus;
+  syncWithCrm?: boolean;
   lastContactedAt?: string | null;
   propertiesContactedCount: number;
   propertyContacts: LeadPropertyContact[];

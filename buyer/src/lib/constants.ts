@@ -65,15 +65,15 @@ export const moreMenuList = [
   {
     label: "Meet The Team",
   },
-  {
-    label: "Social Media",
-  },
-  {
-    label: "Blog",
-  },
-  {
-    label: "Videos (Our Happy Customer)",
-  },
+  // {
+  //   label: "Social Media",
+  // },
+  // {
+  //   label: "Blog",
+  // },
+  // {
+  //   label: "Videos (Our Happy Customer)",
+  // },
 ];
 
 

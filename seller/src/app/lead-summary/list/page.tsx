@@ -21,7 +21,7 @@ export default async function LeadSummaryListPage() {
   return (
     <>
       <HeaderDataSync propertyMasterData={propertyMasterData} />
-      <div className="relative w-full bg-background-gray">
+      <div className="relative w-full bg-list-background">
         <div className="absolute h-[420px] w-full rounded-b-[25px] bg-blue sm:rounded-b-[60px] lg:rounded-b-[80px] xl:rounded-b-[100px]" />
         <div className="absolute left-0 top-6 z-20 flex w-full justify-center">
           <UserHeader />

@@ -91,7 +91,7 @@ export default function VerifyPropertyLink({open, onClose, link}) {
                 <div title={link} className="select-none flex-1 min-w-0 border border-border rounded-[5px] py-2 px-3 truncate">
                    {link}
                 </div>
-                <div onClick={handleCopyLink} title="Click here to Copy Link" className="flex items-center justify-center border border-border rounded-[5px] py-1 px-1 bg-background-gray cursor-pointer hover:bg-list-background">
+                <div onClick={handleCopyLink} title="Click here to Copy Link" className="flex items-center justify-center border border-border rounded-[5px] py-1 px-1 cursor-pointer hover:bg-list-background">
                     <Image src={'/assets/copy.svg'} width={20} height={20} alt="copy link" />
                 </div>
             </div>

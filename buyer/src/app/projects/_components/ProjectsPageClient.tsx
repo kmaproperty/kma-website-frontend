@@ -222,6 +222,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
 
   // Apply filters from URL query params (from homepage search / header dropdown)
   const searchParams = useSearchParams();
+  const cityNameFromQuery = searchParams.get("cityName")?.trim() || undefined;
   const appliedQueryRef = useRef<string | null>(null);
   useEffect(() => {
     const queryKey = searchParams.toString();
@@ -457,6 +458,30 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
     });
   }, [apiProperties]);
 
+  const routeLabels = useMemo(() => {
+    const cityName =
+      cityNameFromQuery ??
+      selectedCity?.name ??
+      initialProjects[0]?.city ??
+      undefined;
+
+    return buildProjectsRouteLabels({
+      cityName,
+      listingTypeId,
+      categoryId: filters.categoryId,
+      propertyTypeIds: filters.propertyTypeIds,
+      propertyMasterData,
+    });
+  }, [
+    cityNameFromQuery,
+    selectedCity?.name,
+    initialProjects,
+    listingTypeId,
+    filters.categoryId,
+    filters.propertyTypeIds,
+    propertyMasterData,
+  ]);
+
   const handleNearMeClick = async () => {
     if (isLocating) return;
 
@@ -493,7 +518,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
         </div>
       </div>
 
-      <section className="mt-7 w-full px-0 lg:px-8">
+      <section className="mt-7 w-full px-0 sm:px-6 lg:px-8">
         <div className="p-0 md:rounded-none md:border-0 md:bg-transparent md:p-0">
         <div className="mb-4 md:px-0 px-4 md:hidden">
           <div className="mb-3 flex items-center gap-2">
@@ -568,7 +593,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
               />
             </div>
 
-            <button
+            {/* <button
               type="button"
               onClick={handleNearMeClick}
               disabled={isLocating}
@@ -586,7 +611,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
               </svg>
 
               {isLocating ? "Locating..." : "Near Me Properties"}
-            </button>
+            </button> */}
           </div>
         </div>
 

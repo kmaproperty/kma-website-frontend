@@ -578,8 +578,8 @@ export default function ChannelPartnerDetailsClient({
     <div className="w-full flex flex-col">
       {/* Hero */}
       <div className="">
-        <div className="pt-6 pb-10 px-4 md:px-6 flex flex-col items-center">
-            <div className="w-full rounded-2xl sm:p-6">
+        <div className=" flex flex-col items-center">
+            <div className="w-full rounded-2xl">
             <div className="flex flex-col items-center text-center gap-4">
               <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-[#F2F2F2] overflow-hidden">
                 {profileSrc ? (

@@ -369,7 +369,7 @@ export default function ProjectCard({
       onKeyDown={handleCardKeyDown}
       aria-label={`Open details for ${project.title}`}
     >
-      <div className="grid grid-cols-1 gap-0 xl:grid-cols-[350px_1fr]">
+      <div className="grid grid-cols-1 gap-0 xl:grid-cols-[350px_1fr]" onClick={(event) => handleCardClick(event)}>
         <div className="relative h-[240px] w-full lg:h-[300px] xl:h-[318px]">
           <ImageCarousel
             images={project.images}

@@ -195,6 +195,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
 
   // Apply filters from URL query params (from homepage search / header dropdown)
   const searchParams = useSearchParams();
+  const cityNameFromQuery = searchParams.get("cityName")?.trim();
   const appliedQueryRef = useRef<string | null>(null);
   useEffect(() => {
     const queryKey = searchParams.toString();
@@ -451,7 +452,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="text-xs font-medium text-text-light-gray">
           Home <span className="px-1">/</span>
-          <span className="text-white"> New Properties in {initialProjects[0]?.city}</span>
+          <span className="text-white"> New Properties in {cityNameFromQuery || initialProjects[0]?.city}</span>
         </div>
       </div>
 
@@ -473,11 +474,11 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
               />
             </div>
 
-            <button
+            {/* <button
               type="button"
               onClick={handleNearMeClick}
               disabled={isLocating}
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-border bg-background-gray px-6 text-sm font-medium text-text-gray transition hover:brightness-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/20"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-border px-6 text-sm font-medium text-text-gray transition hover:brightness-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/20"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g clipPath="url(#clip0_1_12821)">
@@ -491,7 +492,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
               </svg>
 
               {isLocating ? "Locating..." : "Near Me Properties"}
-            </button>
+            </button> */}
           </div>
         </div>
 
