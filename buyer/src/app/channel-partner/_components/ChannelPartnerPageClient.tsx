@@ -1,10 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
-import { useCallback, useId, useState } from "react";
+import { useCallback, useEffect, useId, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { ChevronDown } from "lucide-react";
+import { createPortal } from "react-dom";
+import { useSelector } from "react-redux";
 import {
   getChannelPartnerListApiHandler,
   type ChannelPartner,
@@ -12,9 +14,8 @@ import {
   type GetChannelPartnerListResponse,
 } from "@/services/homeService";
 import { joinUrl } from "@/lib/helper";
-import { useSelector } from "react-redux";
-import { getSelectedCity } from "@/store/homeHeaderSlice";
 import ContactUsPopup from "@/components/contactUsPopup";
+import { getSelectedCity } from "@/store/homeHeaderSlice";
 
 const PROFILE_BASE = process.env.NEXT_PUBLIC_AWS_URL;
 const DEFAULT_PAGE_SIZE = 12;
@@ -198,6 +199,75 @@ function ChannelPartnerCard({
   );
 }
 
+function ChannelPartnerMobileCard({
+  partner,
+  onOpenDetails,
+}: {
+  partner: ChannelPartner;
+  onOpenDetails?: (partner: ChannelPartner) => void;
+}) {
+  const handleOpenDetails = () => onOpenDetails?.(partner);
+  const profileSrc = joinUrl(PROFILE_BASE, partner.profile_image);
+  const rating = Number(partner.rating ?? 4.3);
+  const ratingText = Number.isFinite(rating) ? rating.toFixed(1) : "4.3";
+  const cityList = partner.cities
+    ?.split(",")
+    .map((c) => c.trim())
+    .filter(Boolean) ?? [];
+
+  return (
+    <article
+      className="rounded-2xl border border-[#EEF0F4] bg-white p-3.5 shadow-[0_6px_20px_rgba(16,24,40,0.08)]"
+      role="button"
+      tabIndex={0}
+      onClick={handleOpenDetails}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleOpenDetails();
+        }
+      }}
+    >
+      <div className="flex items-start gap-3.5">
+        <div className="relative h-[116px] w-[116px] shrink-0 overflow-hidden rounded-xl bg-[#F2F2F2]">
+          {profileSrc ? (
+            <Image src={profileSrc} alt={`${partner.name} profile`} fill className="object-cover" sizes="112px" />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center text-3xl font-semibold text-text-black uppercase">
+              {partner.name?.charAt(0) ?? "?"}
+            </div>
+          )}
+          <div className="absolute bottom-2 right-2 flex items-center gap-1 rounded-md bg-[#02035A] px-1.5 py-1 text-white">
+            <Star fill={100} className="h-3 w-3 text-white" />
+            <span className="text-xs font-semibold leading-none">{ratingText}</span>
+          </div>
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <h3 className="line-clamp-1 text-[20px] font-semibold leading-tight text-[#101828]">{partner.name}</h3>
+          <span className="mt-2 inline-flex rounded-md bg-[#1F2A7B] px-3 py-1 text-[12px] font-semibold text-white">
+            KMA Expert Pro
+          </span>
+          {cityList.length > 0 && (
+            <div className="mt-2.5 flex flex-wrap gap-2">
+              {cityList.slice(0, 2).map((city, i) => (
+                <span key={`${city}-${i}`} className="rounded-full bg-[#EEF2FF] px-3 py-1 text-[13px] font-medium text-[#3F3F8F]">
+                  {city}
+                </span>
+              ))}
+            </div>
+          )}
+          <p className="mt-2.5 text-[14px] font-medium text-[#1D2939]">
+            {partner.experience_years ?? 0} Years Experience
+            <span className="mx-2 text-[#D0D5DD]">|</span>
+            {partner.property_count ?? 0} Properties
+          </p>
+        </div>
+      </div>
+    </article>
+  );
+}
+
 export default function ChannelPartnerPageClient() {
   const selectedCity = useSelector(getSelectedCity);
   const router = useRouter();
@@ -209,6 +279,8 @@ export default function ChannelPartnerPageClient() {
   const [filterCity, setFilterCity] = useState("");
   const [filterProperties, setFilterProperties] = useState("");
   const [citySearch, setCitySearch] = useState("");
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   const payload: GetChannelPartnerListPayload = {
     search: search || null,
@@ -245,14 +317,27 @@ export default function ChannelPartnerPageClient() {
     setPage(1);
   }, []);
 
+  const handleApplyMobileFilters = useCallback(() => {
+    setPage(1);
+    setMobileSearchOpen(false);
+  }, []);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mobileSearchOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [mobileSearchOpen]);
+
   const filteredCities = FILTER_CITIES.filter((c) =>
     c.toLowerCase().includes(citySearch.toLowerCase().trim())
   );
-
-  const handleApplyFilters = useCallback(() => {
-    setPage(1);
-    setFilterOpen(false);
-  }, []);
 
   const handleClearFilters = useCallback(() => {
     setFilterExperience("");
@@ -263,62 +348,99 @@ export default function ChannelPartnerPageClient() {
   }, []);
 
   return (
-    <div className="w-full flex flex-col mt-[150px]">
+    <div className="w-full flex flex-col">
       {/* Hero */}
-      <div className="relative mt-[120px] sm:-mt-[100px]  mb-8 md:mb-10">
-        <div className="absolute inset-0 bg-blue rounded-b-[25px] sm:rounded-b-[60px] lg:rounded-b-[80px] xl:rounded-b-[100px]" />
-        <div className="relative pt-6 pb-10 px-4 md:px-6 flex flex-col items-center">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white text-center mb-2">
-            Find Trusted Property Experts
-          </h1>
-          <p className="text-white/90 text-sm sm:text-base text-center mb-6 max-w-xl">
-            Connect with verified KMA channel partners to assist you
-            professionally.
-          </p>
-          <div className="w-full max-w-3xl flex flex-col sm:flex-row gap-3 bg-white rounded-xl shadow-lg p-2 sm:p-1">
-            <button
-              type="button"
-              onClick={() => setFilterOpen((o) => !o)}
-              className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-[#D9D9D9] text-text-black font-medium text-sm shrink-0"
-            >
-              <Image
-                src="/assets/fitler-line.svg"
-                width={20}
-                height={20}
-                alt=""
-              />
-              Filter
-            </button>
-            <div className="flex-1 flex items-center gap-2 pl-3 pr-2 py-2 rounded-lg bg-[#F5F5F5] border border-transparent focus-within:bg-white focus-within:border-[#D9D9D9]">
-              <Image
-                src="/assets/search-gray.svg"
-                width={20}
-                height={20}
-                alt=""
-                className="shrink-0"
-              />
-              <input
-                type="search"
-                placeholder="Search by Channel Partner Name"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                className="flex-1 min-w-0 bg-transparent text-text-black placeholder:text-text-gray text-sm outline-none"
-              />
+      <div className="relative mb-5 md:mb-10">
+        <div className="absolute inset-0 rounded-b-[25px] sm:rounded-b-[60px] lg:rounded-b-[80px] xl:rounded-b-[100px]" />
+        <div className="relative -mt-6 sm:mt-0 py-5 sm:py-7 px-4 md:px-6 flex flex-col items-center">
+          <div className="w-full max-w-4xl rounded-2xl px-4 py-4 sm:px-0 sm:py-6 md:px-8 ">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white text-center mb-2">
+              Find Trusted Property Experts
+            </h1>
+            <p className="text-white/90 text-sm sm:text-base text-center mb-4 sm:mb-6 max-w-xl mx-auto">
+              Connect with verified KMA channel partners to assist you
+              professionally.
+            </p>
+            <div className="sm:hidden w-full">
+              <div className="w-full flex items-center gap-2 bg-white rounded-[14px] shadow-[0_8px_24px_rgba(15,23,42,0.18)] p-2.5">
+                <Image
+                  src="/assets/search-gray.svg"
+                  width={18}
+                  height={18}
+                  alt=""
+                  className="shrink-0 ml-1"
+                />
+                <input
+                  type="search"
+                  placeholder="Search by Chanel Partner Name"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  onClick={() => setMobileSearchOpen(true)}
+                  readOnly
+                  className="flex-1 min-w-0 bg-transparent text-[#0F172A] placeholder:text-[#98A2B3] text-sm outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => setMobileSearchOpen(true)}
+                  className="h-8 w-8 rounded-full bg-[#EEF2FF] flex items-center justify-center shrink-0"
+                  aria-label="Search"
+                >
+                  <Image
+                    src="/assets/home-search-blue.svg"
+                    width={14}
+                    height={14}
+                    alt=""
+                  />
+                </button>
+              </div>
             </div>
-            <button
-              type="button"
-              onClick={handleSearch}
-              className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#7C3AED] text-white font-semibold text-sm hover:opacity-90 transition-opacity shrink-0"
-            >
-              <Image
-                src="/assets/white-search.svg"
-                width={18}
-                height={18}
-                alt=""
-              />
-              Search
-            </button>
+
+            <div className="hidden sm:flex w-full flex-col sm:flex-row gap-2 bg-white rounded-[14px] shadow-[0_8px_24px_rgba(15,23,42,0.18)] p-2">
+              <button
+                type="button"
+                onClick={() => setFilterOpen((o) => !o)}
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-[10px] border border-[#E6E8EF] text-[#0F172A] font-medium text-sm shrink-0 bg-white sm:min-w-[112px]"
+              >
+                <Image
+                  src="/assets/fitler-line.svg"
+                  width={16}
+                  height={16}
+                  alt=""
+                />
+                Filter
+                <ChevronDown className="h-4 w-4 text-[#0F172A]" />
+              </button>
+              <div className="flex-1 flex items-center gap-2 pl-3 pr-2 py-2 rounded-[10px] bg-white border border-[#E6E8EF] focus-within:border-[#CBD2E1]">
+                <Image
+                  src="/assets/search-gray.svg"
+                  width={16}
+                  height={16}
+                  alt=""
+                  className="shrink-0"
+                />
+                <input
+                  type="search"
+                  placeholder="Search by Channel Partner Name"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                  className="flex-1 min-w-0 bg-transparent text-[#0F172A] placeholder:text-[#98A2B3] text-sm outline-none"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={handleSearch}
+                className="flex items-center justify-center gap-2 px-7 py-3 rounded-full bg-[#02035A] text-white font-semibold text-sm hover:opacity-90 transition-opacity shrink-0"
+              >
+                <Image
+                  src="/assets/white-search.svg"
+                  width={16}
+                  height={16}
+                  alt=""
+                />
+                Search
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -327,7 +449,22 @@ export default function ChannelPartnerPageClient() {
 
 
       {/* Grid */}
-     <div className="w-full py-[180px]">
+     <div className="w-full px-4 md:px-6 pt-2 pb-16 md:pb-20">
+      <div className="mx-auto w-full max-w-[1440px]">
+      {!isLoading && list.length > 0 && (
+        <div className="mb-4 flex items-center justify-between sm:hidden">
+          <p className="text-base font-normal text-[#98A2B3]">
+            Showing <span className="font-semibold text-[#02035A]">{pagination?.total ?? list.length}</span> Partners
+          </p>
+          <button
+            type="button"
+            className="inline-flex items-center gap-1 text-base font-medium text-[#667085]"
+          >
+            Sort Listing
+            <ChevronDown className="h-4 w-4" />
+          </button>
+        </div>
+      )}
      {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
           {Array.from({ length: 8 }).map((_, i) => (
@@ -352,17 +489,29 @@ export default function ChannelPartnerPageClient() {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-          {list.map((partner, index) => (
-            <ChannelPartnerCard
-              key={partner.id ?? `${partner.name}-${index}`}
-              partner={partner}
-              onContact={() => setContactPopupOpen(true)}
-              onOpenDetails={handleOpenDetails}
-            />
-          ))}
-        </div>
+        <>
+          <div className="space-y-3.5 sm:hidden">
+            {list.map((partner, index) => (
+              <ChannelPartnerMobileCard
+                key={partner.id ?? `${partner.name}-${index}`}
+                partner={partner}
+                onOpenDetails={handleOpenDetails}
+              />
+            ))}
+          </div>
+          <div className="hidden sm:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+            {list.map((partner, index) => (
+              <ChannelPartnerCard
+                key={partner.id ?? `${partner.name}-${index}`}
+                partner={partner}
+                onContact={() => setContactPopupOpen(true)}
+                onOpenDetails={handleOpenDetails}
+              />
+            ))}
+          </div>
+        </>
       )}
+      </div>
      </div>
 
       {/* Pagination */}
@@ -480,6 +629,108 @@ export default function ChannelPartnerPageClient() {
           </div>
         </>
       )}
+
+      {isMounted &&
+        mobileSearchOpen &&
+        createPortal(
+          <div className="fixed inset-0 z-[9999] sm:hidden bg-white">
+            <div className="h-full w-full overflow-y-auto overscroll-contain bg-white px-5 pb-8 pt-6">
+              <div className="mx-auto w-full max-w-[460px]">
+                <div className="mb-6 flex items-center justify-between">
+                  <h3 className="text-[32px] font-semibold text-[#101828]">Filter</h3>
+                  <button
+                    type="button"
+                    onClick={() => setMobileSearchOpen(false)}
+                    className="h-8 w-8 rounded-full text-[32px] leading-none text-[#101828]"
+                    aria-label="Close filter"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <p className="mb-1.5 text-[15px] font-semibold text-[#1D2939]">By Name</p>
+                    <input
+                      type="text"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      placeholder="i.e. Sam john"
+                      className="w-full rounded-xl border border-[#E4E7EC] px-4 py-3 text-[15px] text-[#101828] placeholder:text-[#98A2B3] outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <p className="mb-1.5 text-[15px] font-semibold text-[#1D2939]">By Experience</p>
+                    <div className="relative">
+                      <select
+                        value={filterExperience}
+                        onChange={(e) => setFilterExperience(e.target.value)}
+                        className="w-full appearance-none rounded-xl border border-[#E4E7EC] bg-white px-4 py-3 pr-10 text-[15px] text-[#98A2B3] outline-none"
+                      >
+                        <option value="">i.e. 1</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="10">10+</option>
+                      </select>
+                      <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#667085]" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="mb-1.5 text-[15px] font-semibold text-[#1D2939]">By City</p>
+                    <div className="relative">
+                      <select
+                        value={filterCity}
+                        onChange={(e) => setFilterCity(e.target.value)}
+                        className="w-full appearance-none rounded-xl border border-[#E4E7EC] bg-white px-4 py-3 pr-10 text-[15px] text-[#98A2B3] outline-none"
+                      >
+                        <option value="">Select City</option>
+                        {FILTER_CITIES.map((city) => (
+                          <option key={city} value={city}>
+                            {city}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#667085]" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="mb-1.5 text-[15px] font-semibold text-[#1D2939]">By Properties</p>
+                    <div className="relative">
+                      <select
+                        value={filterProperties}
+                        onChange={(e) => setFilterProperties(e.target.value)}
+                        className="w-full appearance-none rounded-xl border border-[#E4E7EC] bg-white px-4 py-3 pr-10 text-[15px] text-[#98A2B3] outline-none"
+                      >
+                        <option value="">Select No. of Properties</option>
+                        {PROPERTY_RANGES.map((range) => (
+                          <option key={range} value={range}>
+                            {range}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#667085]" />
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleApplyMobileFilters}
+                    className="mt-2 w-full rounded-xl bg-[#02035A] px-4 py-3 text-[18px] font-medium text-white"
+                  >
+                    Apply
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
 
       <ContactUsPopup
         open={contactPopupOpen}
