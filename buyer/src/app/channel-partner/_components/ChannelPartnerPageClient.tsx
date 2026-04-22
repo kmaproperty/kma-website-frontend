@@ -375,9 +375,13 @@ export default function ChannelPartnerPageClient() {
                   placeholder="Search by Chanel Partner Name"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
+                  onFocus={(e) => {
+                    e.currentTarget.blur();
+                    setMobileSearchOpen(true);
+                  }}
                   onClick={() => setMobileSearchOpen(true)}
                   readOnly
-                  className="flex-1 min-w-0 bg-transparent text-[#0F172A] placeholder:text-[#98A2B3] text-sm outline-none"
+                  className="flex-1 min-w-0 bg-transparent text-[#0F172A] placeholder:text-[#98A2B3] text-[16px] outline-none"
                 />
                 <button
                   type="button"
@@ -386,7 +390,7 @@ export default function ChannelPartnerPageClient() {
                   aria-label="Search"
                 >
                   <Image
-                    src="/assets/home-search-blue.svg"
+                    src="/assets/blue-location-tracker.svg"
                     width={14}
                     height={14}
                     alt=""
@@ -656,7 +660,7 @@ export default function ChannelPartnerPageClient() {
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                       placeholder="i.e. Sam john"
-                      className="w-full rounded-xl border border-[#E4E7EC] px-4 py-3 text-[15px] text-[#101828] placeholder:text-[#98A2B3] outline-none"
+                      className="w-full rounded-xl border border-[#E4E7EC] px-4 py-3 text-[16px] text-[#101828] placeholder:text-[#98A2B3] outline-none"
                     />
                   </div>
 
@@ -666,7 +670,7 @@ export default function ChannelPartnerPageClient() {
                       <select
                         value={filterExperience}
                         onChange={(e) => setFilterExperience(e.target.value)}
-                        className="w-full appearance-none rounded-xl border border-[#E4E7EC] bg-white px-4 py-3 pr-10 text-[15px] text-[#98A2B3] outline-none"
+                        className="w-full appearance-none rounded-xl border border-[#E4E7EC] bg-white px-4 py-3 pr-10 text-[16px] text-[#98A2B3] outline-none"
                       >
                         <option value="">i.e. 1</option>
                         <option value="1">1</option>
@@ -686,7 +690,7 @@ export default function ChannelPartnerPageClient() {
                       <select
                         value={filterCity}
                         onChange={(e) => setFilterCity(e.target.value)}
-                        className="w-full appearance-none rounded-xl border border-[#E4E7EC] bg-white px-4 py-3 pr-10 text-[15px] text-[#98A2B3] outline-none"
+                        className="w-full appearance-none rounded-xl border border-[#E4E7EC] bg-white px-4 py-3 pr-10 text-[16px] text-[#98A2B3] outline-none"
                       >
                         <option value="">Select City</option>
                         {FILTER_CITIES.map((city) => (
@@ -705,7 +709,7 @@ export default function ChannelPartnerPageClient() {
                       <select
                         value={filterProperties}
                         onChange={(e) => setFilterProperties(e.target.value)}
-                        className="w-full appearance-none rounded-xl border border-[#E4E7EC] bg-white px-4 py-3 pr-10 text-[15px] text-[#98A2B3] outline-none"
+                        className="w-full appearance-none rounded-xl border border-[#E4E7EC] bg-white px-4 py-3 pr-10 text-[16px] text-[#98A2B3] outline-none"
                       >
                         <option value="">Select No. of Properties</option>
                         {PROPERTY_RANGES.map((range) => (
