@@ -20,6 +20,7 @@ export default function middleware(req: NextRequest) {
     "/user-dashboard",
     "/user-flow",
     "/verify-otp",
+    "/verify-post-property",
   ];
   if (sellerPathPrefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`))) {
     const target = new URL(
