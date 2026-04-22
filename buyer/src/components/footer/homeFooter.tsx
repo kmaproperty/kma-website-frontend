@@ -324,69 +324,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
                 ></iframe>
               </div>
             </div>
-          </motion.div>
-
-          <div className="border-t border-text-gray/60 my-8" />
-
-          {/* Gallery Section */}
-          <motion.div
-            variants={rightVariant}
-            className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-10 items-center"
-            animate={isInView ? "visible" : "hidden"}
-          >
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <Image
-                src="/assets/kma-logo-white.svg"
-                width={100}
-                height={35}
-                alt="logo"
-                style={{ height: "38px" }}
-              />
-              <div className="sm:text-right">
-                {instagramLink ? (
-                  <a
-                    href={instagramLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-[#FFBB55] hover:underline"
-                  >
-                    @kma on Instagram
-                  </a>
-                ) : (
-                  <p className="text-xs text-[#FFBB55]">@kma on Instagram</p>
-                )}
-                <p className="text-sm font-semibold text-white mt-1">
-                  Nice Gallery
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div
-                  key={i}
-                  className="relative group w-full overflow-hidden rounded-lg border border-white/10 aspect-square"
-                >
-                  <Image
-                    src="/assets/blogs/blog-img-1.png"
-                    alt="Gallery"
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 20vw"
-                  />
-
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <Image
-                      src="/assets/footor/instagram.svg"
-                      alt="Instagram"
-                      width={24}
-                      height={24}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
+          </motion.div> 
         </div>
       </div>
 

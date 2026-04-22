@@ -26,22 +26,35 @@ const SalesEnquiry = () => {
     ]
     return (
         <div className='overflow-x-hidden'>
-            <div className="fixed -top-[25px] left-0 right-0 z-[60] flex justify-center pointer-events-none">
+            <div className="fixed left-0 right-0 z-[60] flex justify-center pointer-events-none">
                 <div className="pointer-events-auto w-full flex justify-center">
                     <HomdeHeader />
                 </div>
             </div>
-            <div className="relative pt-[25px] h-[100vh] max-h-[600px]" style={{ backgroundImage: 'url(assets/app/sales-enquiry-bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'bottom' }}>
-                <div className="w-[90%] md:w-[75%] max-w-[600px] mx-auto mt-[150px]">
-                    <PageTitle
-                        title="Contact KMA"
-                        description="Looking to list or promote your property? Our team is ready to guide you every step of the way."
-                        breadcrumps={breadcrumps}
-                    />
-
+            <div className="relative pt-[25px] h-[320px] md:h-[78vh] lg:h-[100vh] max-h-[320px] md:max-h-[500px] lg:max-h-[600px] rounded-b-[24px] md:rounded-none overflow-hidden" style={{ backgroundImage: 'url(assets/app/sales-enquiry-bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'bottom' }}>
+                <div className="w-[92%] md:w-[75%] max-w-[600px] mx-auto mt-[108px] md:mt-[120px] lg:mt-[150px]">
+                    <div className='md:hidden flex flex-col items-center text-center px-1'>
+                        <h1 className="text-[30px] leading-[1.1] font-semibold text-white">Contact KMA</h1>
+                        <p className="text-white text-[12px] leading-[1.45] mt-2">
+                            Looking to list or promote your property? Our team is ready to guide you every step of the way.
+                        </p>
+                        <div className="flex items-center mt-2 text-[11px] leading-4 text-white/95">
+                            <House className='w-3.5 h-3.5 mr-1.5' />
+                            <a href='/' className='underline'>Home</a>
+                            <span className='mx-1.5'>/</span>
+                            <span className='underline'>Sales Enquiry</span>
+                        </div>
+                    </div>
+                    <div className='hidden md:block'>
+                        <PageTitle
+                            title="Contact KMA"
+                            description="Looking to list or promote your property? Our team is ready to guide you every step of the way."
+                            breadcrumps={breadcrumps}
+                        />
+                    </div>
                 </div>
             </div>
-            <div className='relative flex flex-col lg:flex-row items-start lg:items-center justify-between w-[90%] md:w-[75%] mx-auto max-w-[1020px] bg-white rounded-lg shadow-lg px-4 md:px-6 py-4 gap-6 lg:gap-8' style={{ transform: 'translateY(-50%)' }}>
+            <div className='relative hidden md:flex md:flex-col lg:flex-row items-start lg:items-center justify-between w-[90%] md:w-[75%] mx-auto max-w-[1020px] bg-white rounded-lg shadow-lg px-4 md:px-6 py-4 gap-6 lg:gap-8' style={{ transform: 'translateY(-42%)' }}>
                 <div className='flex items-start md:items-center gap-3 min-w-0'>
                     <Image
                         src={'/assets/app/call-person.svg'}
@@ -54,14 +67,14 @@ const SalesEnquiry = () => {
                         <p className='text-md font-normal text-[#888888] mb-0'>Our KMA Partner Specialist will guide you step-by-step.</p>
                     </div>
                 </div>
-                <button className="animated-button px-6 py-3.5 cursor-pointer w-full lg:w-auto">
+                <button className="animated-button px-6 py-3.5 cursor-pointer w-fit self-start lg:self-auto">
                     <span className="flex items-center justify-between gap-[10px] relative z-11">
                         <PhoneIncoming className='w-5 h-5 text-white' />
                         <p className="text-nowrap text-xs lg:text-sm">Request a Callback</p>
                     </span>
                 </button>
             </div>
-            <div className='w-full py-[80px] px-4 sm:px-6 md:px-[50px]'>
+            <div className='w-full pt-[8px] md:pt-[8px] lg:pt-[80px] pb-[36px] md:pb-[80px] px-4 sm:px-6 md:px-[50px]'>
                 <div className='max-w-[1440px] mx-auto'>
                     <SectionHeading title="" subtitle="KMA Headquarters" type={'left'} color='' lineTop={false}
                         description=""
@@ -80,7 +93,7 @@ const SalesEnquiry = () => {
                     </div>
                 </div>
             </div>
-            <div className='w-full pb-[100px] px-4 sm:px-6 md:px-[50px]'>
+            <div className='w-full pb-[48px] md:pb-[100px] px-4 sm:px-6 md:px-[50px]'>
                 <div className='max-w-[1440px] mx-auto'>
                     <SectionHeading title="" subtitle="KMA Regional Offices" type={'left'} color='' lineTop={false}
                         description=""
@@ -88,7 +101,25 @@ const SalesEnquiry = () => {
                     <ContactTable />
                 </div>
             </div>
-            <div className='py-[100px] px-4 sm:px-6 md:px-[50px] bg-[#f5f5f5]'>
+            <div className='w-full px-4 pb-[48px] md:hidden'>
+                <div className='max-w-[360px] mx-auto rounded-[18px] bg-[#f7f8fc] px-4 py-5 text-center'>
+                    <Image
+                        src={'/assets/app/call-person.svg'}
+                        width={60}
+                        height={60}
+                        className='w-[56px] h-[56px] rounded-full mx-auto'
+                    />
+                    <h3 className='mt-3 text-[22px] leading-[1.1] font-semibold text-[#0D1520]'>Confused about how to post or promote your property/project?</h3>
+                    <p className='mt-2 text-[12px] leading-5 font-normal text-[#8A8FA0]'>Our KMA Partner Specialist will guide you step-by-step.</p>
+                    <button className="animated-button px-5 py-2.5 cursor-pointer w-fit mx-auto mt-4">
+                        <span className="flex items-center justify-between gap-[8px] relative z-11">
+                            <PhoneIncoming className='w-4 h-4 text-white' />
+                            <p className="text-[11px] leading-4 whitespace-nowrap">Request a Callback</p>
+                        </span>
+                    </button>
+                </div>
+            </div>
+            <div className='py-[48px] md:py-[100px] px-4 sm:px-6 md:px-[50px] bg-[#f5f5f5]'>
                 <div className='max-w-[1440px] mx-auto flex flex-col lg:flex-row gap-10 justify-between'>
                     <div className='w-full lg:w-[50%] max-w-[720px]'>
                         <h2 className={`text-[28px] leading-9 font-semibold text-text-black mb-6`}>About KMA</h2>

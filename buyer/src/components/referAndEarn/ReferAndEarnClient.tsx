@@ -164,33 +164,33 @@ export default function ReferAndEarnClient() {
 
   return (
     <div className="bg-[#F8FAFC] min-h-screen">
-      <div className="relative pt-[25px] min-h-[500px] rounded-b-[60px] bg-[linear-gradient(120deg,#1B2DBE_0%,#0D9DF2_100%)]">
+      <div className="relative pt-[25px] min-h-[240px] md:min-h-[290px] lg:min-h-[clamp(320px,48dvh,420px)] rounded-b-[32px] sm:rounded-b-[60px] bg-[linear-gradient(120deg,#1B2DBE_0%,#0D9DF2_100%)]">
         <HomeHeader />
-        <div className="w-[90%] max-w-[1100px] mx-auto mt-[70px] pb-[140px] text-white">
+        <div className="w-[90%] max-w-[1100px] mx-auto mt-[46px] md:mt-[52px] lg:mt-[70px] pb-[56px] md:pb-[72px] lg:pb-[110px] text-white">
           <p className="text-sm opacity-90">Home / Refer and Earn</p>
-          <h1 className="text-[30px] md:text-[42px] leading-[1.15] font-semibold mt-2">Refer and Earn ( 1 coin = Rs 10 )</h1>
+          <h1 className="text-[24px] md:text-[34px] lg:text-[42px] leading-[1.15] font-semibold mt-2">Refer and Earn ( 1 coin = Rs 10 )</h1>
           <p className="text-sm md:text-base mt-3 max-w-[700px] opacity-95">
             Help friends discover the right property with KMA and earn rewards for every valid referral.
           </p>
 
-          <div className="mt-7 grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="rounded-xl border border-white/25 bg-white/10 backdrop-blur-sm px-4 py-4">
-              <p className="text-xs uppercase tracking-wide opacity-90">Reward Rate</p>
-              <p className="text-2xl font-semibold mt-1">1 Coin = Rs 10</p>
+          <div className="mt-5 md:mt-7 grid grid-cols-2 sm:grid-cols-3 gap-2 md:gap-3">
+            <div className="rounded-xl border border-white/25 bg-white/10 backdrop-blur-sm px-3 py-3 md:px-4 md:py-4">
+              <p className="text-[10px] md:text-xs uppercase tracking-wide opacity-90">Reward Rate</p>
+              <p className="text-xl md:text-2xl font-semibold mt-1">1 Coin = Rs 10</p>
             </div>
-            <div className="rounded-xl border border-white/25 bg-white/10 backdrop-blur-sm px-4 py-4">
-              <p className="text-xs uppercase tracking-wide opacity-90">Fast Process</p>
-              <p className="text-2xl font-semibold mt-1">3 Simple Steps</p>
+            <div className="rounded-xl border border-white/25 bg-white/10 backdrop-blur-sm px-3 py-3 md:px-4 md:py-4">
+              <p className="text-[10px] md:text-xs uppercase tracking-wide opacity-90">Fast Process</p>
+              <p className="text-xl md:text-2xl font-semibold mt-1">3 Simple Steps</p>
             </div>
-            <div className="rounded-xl border border-white/25 bg-white/10 backdrop-blur-sm px-4 py-4">
-              <p className="text-xs uppercase tracking-wide opacity-90">Trusted Brand</p>
-              <p className="text-2xl font-semibold mt-1">KMA Network</p>
+            <div className="rounded-xl border border-white/25 bg-white/10 backdrop-blur-sm px-3 py-3 md:px-4 md:py-4">
+              <p className="text-[10px] md:text-xs uppercase tracking-wide opacity-90">Trusted Brand</p>
+              <p className="text-xl md:text-2xl font-semibold mt-1">KMA Network</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="w-[90%] max-w-[1100px] mx-auto -mt-[110px] pb-[90px] space-y-6">
+      <div className="w-[90%] max-w-[1100px] mx-auto mt-[10px]  pb-[90px] space-y-6">
         <div className="grid grid-cols-1 lg:grid-cols-[1.25fr_1fr] gap-6">
           <div className="bg-white rounded-2xl border border-[#EAECF0] p-6 md:p-8 shadow-[0_10px_40px_rgba(0,0,0,0.08)]">
             <h2 className="text-2xl font-semibold text-[#0F172A]">Terms and Conditions</h2>

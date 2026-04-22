@@ -24,31 +24,33 @@ const dummyData = [
 
 const ContactTable = () => {
   return (
-    <div className="w-full text-sm mt-6">
-      {/* Header */}
-      <div className="flex border-b border-gray-300 py-3 font-medium">
-        <p className="w-[6%] px-2 text-[#888]">S.No.</p>
-        <p className="w-[12%] px-2 text-[#888]">City</p>
-        <p className="w-[42%] px-2 text-[#888]">Address</p>
-        <p className="w-[20%] px-2 text-[#888]">Phone</p>
-        <p className="w-[20%] px-2 text-[#888]">Email</p>
+    <div className="w-full mt-6">
+      <div className="overflow-x-auto rounded-md border border-[#E5E7EB]">
+        <table className="w-full min-w-[760px] border-collapse text-sm">
+          <thead>
+            <tr className="border-b border-gray-300">
+              <th className="px-3 py-3 text-left font-medium text-[#888]">S.No.</th>
+              <th className="px-3 py-3 text-left font-medium text-[#888]">City</th>
+              <th className="px-3 py-3 text-left font-medium text-[#888]">Address</th>
+              <th className="px-3 py-3 text-left font-medium text-[#888]">Phone</th>
+              <th className="px-3 py-3 text-left font-medium text-[#888]">Email</th>
+            </tr>
+          </thead>
+          <tbody>
+            {dummyData.map((item) => (
+              <tr key={item.sno} className="border-b border-gray-200 last:border-0">
+                <td className="px-3 py-3 align-top">{item.sno}</td>
+                <td className="px-3 py-3 align-top">{item.city}</td>
+                <td className="px-3 py-3 align-top">
+                  <b>{item.address.split(" ")[0]}</b> {item.address.split(" ").slice(1).join(" ")}
+                </td>
+                <td className="px-3 py-3 align-top whitespace-nowrap">{item.phone}</td>
+                <td className="px-3 py-3 align-top whitespace-nowrap">{item.email}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
-
-      {
-        dummyData.map((item, index) => (
-          <div key={index} className="flex border-b border-gray-200 py-3">
-            <p className="w-[6%] px-2">{item.sno}</p>
-            <p className="w-[12%] px-2">{item.city}</p>
-            <p className="w-[42%] px-2">
-              <b>{item.address.split(" ")[0]}</b> {item.address.split(" ").slice(1).join(" ")}
-            </p>
-            <p className="w-[20%] px-2">{item.phone}</p>
-            <p className="w-[20%] px-2">{item.email}</p>
-          </div>
-        ))
-      }
-      
-      
     </div>
   );
 };
