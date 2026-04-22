@@ -7,7 +7,7 @@ export default function BuyerMainLayout({ children }: { children: React.ReactNod
   return (
     <div className="">
       <div className="relative w-full min-h-[calc(100dvh-10dvh)] md:min-h-[calc(100dvh-7dvh)] bg-list-background">
-        <div className="sticky top-0 z-50 w-full flex justify-center 2md:pt-6">
+        <div className="sticky top-0 z-50 w-full flex justify-center">
           <Suspense fallback={null}>
             <HomeHeader />
           </Suspense>
