@@ -218,12 +218,14 @@ export default function HomeHeader() {
 
 
 
+  const sellerUrl = process.env.NEXT_PUBLIC_SELLER_URL || "https://seller.kmaglobalproperty.com";
+
   const navigatePostProperty = () => {
-    router.push('/user-flow?postProperty=true')
+    window.location.href = `${sellerUrl}/user-flow?postProperty=true`;
   }
 
   const navigateDashboard = () => {
-    router.push('/user-dashboard')
+    window.location.href = `${sellerUrl}/user-dashboard`;
   }
 
   const handleHeaderSubMenuClick = (label: string) => {

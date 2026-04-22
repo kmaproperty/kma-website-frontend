@@ -62,25 +62,10 @@ export default function UserHeader() {
     return `${baseUrl}${user.profileImage}`;
   }, [profileResponse?.user?.profileImage]);
 
+  const sellerUrl = process.env.NEXT_PUBLIC_SELLER_URL || "https://seller.kmaglobalproperty.com";
+
   const handleRedirectPostProperty = () => {
-    if(userDashboardDetails?.role == USER_TYPE.CHANNEL_PARTNER){
-      if(userDashboardDetails?.kycStatus?.kyc_completed){
-        router.push('/post-property')
-      }else{
-        if(userDashboardDetails?.kycStatus?.kyc_status == 'in_review'){
-          toast.info('Your KYC is under review. You can post property once it is approved.')
-        }else{
-          router.push('/kyc')
-        }
-      }
-    }else if(userDashboardDetails?.role == USER_TYPE.OWNER){
-      if(userDashboardDetails.freeListings.remaining != 0){
-        router.push('/post-property')
-      }else{
-        toast.error('Your free listing used upgread to channel partner to post property.')
-      }
-    }
-    
+    window.location.href = `${sellerUrl}/user-flow?postProperty=true`;
   }
 
   return (

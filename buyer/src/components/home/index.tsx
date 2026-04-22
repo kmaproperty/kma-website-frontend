@@ -160,8 +160,9 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
   });
   
   const router = useRouter();
+  const sellerUrl = process.env.NEXT_PUBLIC_SELLER_URL || "https://seller.kmaglobalproperty.com";
   const navigatePostProperty = () => {
-    router.push('/user-flow?postProperty=true')
+    window.location.href = `${sellerUrl}/user-flow?postProperty=true`;
   }
 
   
