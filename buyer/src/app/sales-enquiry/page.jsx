@@ -1,15 +1,10 @@
 import HomdeHeader from '@/components/header/homeHeader'
-import { BadgePercent, CircleCheckBig, House, Lightbulb, ListCheck, ListChecks, Mail, MapPin, Phone, PhoneCall, PhoneIncoming, Section } from 'lucide-react';
+import { House, Mail, MapPin, Phone, PhoneIncoming } from 'lucide-react';
 import PageTitle from '@/components/common/PageTitle';
-import { TbBulb } from "react-icons/tb";
 import SectionHeading from '@/components/common/SectionHeading';
 import Image from 'next/image';
-import BlogSection from '@/components/home/blogSection';
 import HomeFooter from '@/components/footer/homeFooter';
 import AboutusDataSync from '@/components/footer/AboutusDataSync';
-import { FaFacebook, FaLinkedin, FaTwitter, FaYoutube } from 'react-icons/fa';
-import ContactFormComponent from '@/components/contactUs/contactForm';
-import Link from 'next/link';
 import ContactTable from '../../components/contactUs/ContactTable';
 
 const SalesEnquiry = () => {

@@ -1,6 +1,7 @@
 "use client"
 import { submitContactForm } from '@/services/contactService';
 import { getEndUserStates, getEndUserStateCities, type EndUserStateCityRow } from '@/services/homeService';
+import { ChevronDown } from 'lucide-react';
 import React from 'react'
 import { toast } from 'react-toastify';
 
@@ -123,58 +124,64 @@ const JoinUsForm = () => {
     }
   }
   return (
-    <div className='mt-6'>
+    <div className='mt-2 md:mt-6'>
       <form action="" className='flex flex-col gap-4.5' onSubmit={handleSubmit}>
-        <div className='flex gap-4'>
+        <div className='flex flex-col sm:flex-row gap-3 sm:gap-4'>
           <input type="text" value={formValue.lasstName} onChange={handleChange} name="lasstName" placeholder='First Name' className='w-full border border-[#D9D9D9] rounded-full px-5 py-3' />
           <input type="text" value={formValue.firstName} onChange={handleChange} name="firstName" placeholder='Last Name' className='w-full border border-[#D9D9D9] rounded-full px-5 py-3' />
         </div>
-        <div className='flex gap-4'>
-          <select
-            name="state"
-            value={formValue.state}
-            onChange={handleChange}
-            disabled={statesLoading}
-            className='w-full border border-[#D9D9D9] rounded-full px-5 py-3 bg-white disabled:bg-[#F5F5F5] disabled:cursor-not-allowed'
-          >
-            <option value="">
-              {statesLoading ? 'Loading states...' : 'Select State'}
-            </option>
-            {states.map((state) => (
-              <option key={state} value={state}>
-                {state}
+        <div className='flex flex-col sm:flex-row gap-3 sm:gap-4'>
+          <div className='relative w-full'>
+            <select
+              name="state"
+              value={formValue.state}
+              onChange={handleChange}
+              disabled={statesLoading}
+              className='w-full border border-[#D9D9D9] rounded-full px-5 py-3 pr-10 bg-white appearance-none disabled:bg-[#F5F5F5] disabled:cursor-not-allowed'
+            >
+              <option value="">
+                {statesLoading ? 'Loading states...' : 'Select State'}
               </option>
-            ))}
-          </select>
-          <select
-            name="city"
-            value={formValue.city}
-            onChange={handleChange}
-            disabled={!formValue.state || citiesLoading}
-            className='w-full border border-[#D9D9D9] rounded-full px-5 py-3 bg-white disabled:bg-[#F5F5F5] disabled:cursor-not-allowed'
-          >
-            <option value="">
-              {!formValue.state
-                ? 'Select state first'
-                : citiesLoading
-                  ? 'Loading cities...'
-                  : 'Select City'}
-            </option>
-            {cities.map((city) => (
-              <option key={city.id} value={city.id}>
-                {city.name}
+              {states.map((state) => (
+                <option key={state} value={state}>
+                  {state}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className='pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#111827]' />
+          </div>
+          <div className='relative w-full'>
+            <select
+              name="city"
+              value={formValue.city}
+              onChange={handleChange}
+              disabled={!formValue.state || citiesLoading}
+              className='w-full border border-[#D9D9D9] rounded-full px-5 py-3 pr-10 bg-white appearance-none disabled:bg-[#F5F5F5] disabled:cursor-not-allowed'
+            >
+              <option value="">
+                {!formValue.state
+                  ? 'Select state first'
+                  : citiesLoading
+                    ? 'Loading cities...'
+                    : 'Select City'}
               </option>
-            ))}
-          </select>
+              {cities.map((city) => (
+                <option key={city.id} value={city.id}>
+                  {city.name}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className='pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#111827]' />
+          </div>
         </div>
-        <div className='flex gap-4'>
+        <div className='flex flex-col sm:flex-row gap-3 sm:gap-4'>
             <input type="email" name="email" value={formValue.email} onChange={handleChange} placeholder='Email address' className='w-full border border-[#D9D9D9] rounded-full px-5 py-3' />
             <input type="number" name="mobile" value={formValue.mobile} onChange={handleChange} placeholder='Phone number' className='w-full border border-[#D9D9D9] rounded-full px-5 py-3' />
         </div>
         <textarea name="message" rows={4} id="" value={formValue.message} placeholder='Your message' onChange={handleChange} className='w-full border border-[#D9D9D9] rounded-xl px-5 py-3'></textarea>
         <button
           type='submit'
-          className="w-fit text-sm 1xl:text-base animated-button px-10 mt-6 py-3 border border-blue text-center cursor-pointer"
+          className="w-fit text-sm 1xl:text-base animated-button px-8 md:px-10 mt-3 md:mt-6 py-2.5 md:py-3 border border-blue text-center cursor-pointer mx-auto md:mx-0"
         >
           <span className="gap-3 relative flex justify-center">
             <p className={`text-nowrap`}>Submit Application</p>
