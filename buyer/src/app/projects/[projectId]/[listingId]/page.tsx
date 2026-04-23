@@ -1205,14 +1205,16 @@ export default function ListingDetailsPage() {
                             <div className="grid grid-cols-[128px_1fr] items-start gap-4 lg:block">
                               <div className="flex flex-col items-start lg:items-center">
                                 <p className="text-3xl font-semibold leading-none text-text-black">
-                                  {apiRatings?.averageOverallRating?.toFixed(1) ?? "4.2"}
+                                  {apiRatings?.averageOverallRating != null
+                                    ? apiRatings.averageOverallRating.toFixed(1)
+                                    : "0.0"}
                                   <span className="ml-1 text-sm font-medium text-text-light-gray">/5</span>
                                 </p>
                                 <div className="mt-3 flex items-center gap-1 text-[#F4B400]">
                                   {Array.from({ length: 5 }).map((_, idx) => (
                                     <Star
                                       key={`star-${idx}`}
-                                      className={`h-5 w-5 ${idx < Math.round(apiRatings?.averageOverallRating ?? 4) ? "fill-[#F4B400] text-[#F4B400]" : ""}`}
+                                      className={`h-5 w-5 ${idx < Math.round(apiRatings?.averageOverallRating ?? 0) ? "fill-[#F4B400] text-[#F4B400]" : ""}`}
                                     />
                                   ))}
                                 </div>
