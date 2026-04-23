@@ -9,7 +9,6 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { useRouter } from "nextjs-toploader/app";
 
 import MobileInput from "@/components/common/mobileInput";
 import OtpInput from "@/components/common/optInput";
@@ -47,7 +46,6 @@ export default function ProjectCallBackModal({
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const persistedSessionId = useSessionStore((state) => state.sessionId);
-  const router = useRouter();
   const queryClient = useQueryClient();
 
   const [step, setStep] = React.useState<ModalStep>("form");
@@ -197,11 +195,14 @@ export default function ProjectCallBackModal({
       }
       toast.success(response?.message ?? "Request submitted successfully");
       closeModal();
-      if (didAutoLogin) {
-        // Force header / favourite / get-token consumers to re-read the new
-        // session so the UI reflects the logged-in state without a manual refresh.
+      if (didAutoLogin && typeof window !== "undefined") {
+        // Header / favourites / anything that reads the token on mount is a
+        // client component — router.refresh() only re-runs server work, so
+        // a hard reload is the reliable way to surface the new session.
         queryClient.clear();
-        router.refresh();
+        window.setTimeout(() => {
+          window.location.reload();
+        }, 400);
       }
     },
     onError: (error: any) => {
