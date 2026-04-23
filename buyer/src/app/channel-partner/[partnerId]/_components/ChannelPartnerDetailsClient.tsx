@@ -577,10 +577,10 @@ export default function ChannelPartnerDetailsClient({
   return (
     <div className="w-full flex flex-col">
       {/* Hero */}
-      <div className="">
-        <div className=" flex flex-col items-center">
-            <div className="w-full rounded-2xl">
-            <div className="flex flex-col items-center text-center gap-4">
+      <div className="px-4 md:px-6">
+        <div className="flex flex-col items-center">
+            <div className="w-full max-w-[1240px] rounded-2xl">
+            <div className="flex flex-col items-center text-center gap-2">
               <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-[#F2F2F2] overflow-hidden">
                 {profileSrc ? (
                   <Image
@@ -595,20 +595,20 @@ export default function ChannelPartnerDetailsClient({
                     {partner.name?.charAt(0) ?? "?"}
                   </div>
                 )}
-                <span className="absolute bottom-2 right-2 bg-[#7C3AED] text-white text-[10px] font-semibold px-2.5 py-1 rounded-lg">
-                  KMA Expert Pro
-                </span>
               </div>
 
               <div className="min-w-0">
-                <h1 className="text-white text-2xl sm:text-3xl font-bold leading-tight truncate">
+                <h1 className="text-white text-[30px] sm:text-3xl font-bold leading-tight truncate">
                   {partner.name ?? "Channel Partner"}
                 </h1>
-                <p className="mt-1 text-white text-sm sm:text-base">
+                <p className="mt-0.5 text-white text-sm sm:text-base">
                   {partner.firm_name ?? "Channel Partner"}
                 </p>
+                <div className="mt-1.5 inline-flex items-center rounded-md border border-white/40 bg-white/10 px-2.5 py-1 text-[10px] font-semibold text-white">
+                  KMA Expert Pro
+                </div>
 
-                <div className="flex items-center gap-2 mt-3 justify-center text-sm">
+                <div className="flex items-center gap-2 mt-2 justify-center text-sm">
                   <Star
                     fill={Math.min(100, (rating / 5) * 100)}
                     className="h-4 w-4 text-[#F7BB06]"
@@ -623,7 +623,7 @@ export default function ChannelPartnerDetailsClient({
               <button
                 type="button"
                 onClick={() => setContactPopupOpen(true)}
-                className="w-full sm:w-auto px-5 py-2.5 rounded-full border border-white text-white font-semibold text-sm hover:bg-black transition-opacity flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-5 py-2 rounded-full border border-white text-white font-semibold text-sm hover:bg-black/20 transition-opacity flex items-center justify-center gap-2"
               >
                 <Image
                   src="/assets/call-ring-white.svg"
@@ -636,47 +636,44 @@ export default function ChannelPartnerDetailsClient({
             </div>
 
             {/* Stats Row */}
-            <div className="mt-5 grid grid-cols-2  rounded-xl  sm:grid-cols-3 lg:grid-cols-5 gap-3 bg-white">
-              <div className="rounded-xl  p-3">
-                <p className="text-xs text-text-gray">Years Experience</p>
-                <p className="mt-1 text-lg font-bold text-text-black">
-                  {expYears}
-                </p>
-              </div>
-              <div className="rounded-xl  p-3">
-                <p className="text-xs text-text-gray">Properties for Sale</p>
-                <p className="mt-1 text-lg font-bold text-text-black">
-                  {formatCountPlus(
-                    partner.active_properties?.buy?.length ?? 0,
-                    99
-                  )}
-                </p>
-              </div>
-              <div className="rounded-xl  p-3">
-                <p className="text-xs text-text-gray">Properties for Rent</p>
-                <p className="mt-1 text-lg font-bold text-text-black">
-                  {formatCountPlus(
-                    partner.active_properties?.rent?.length ?? 0,
-                    99
-                  )}
-                </p>
-              </div>
-              <div className="rounded-xl  p-3">
-                <p className="text-xs text-text-gray">Team Size</p>
-                <p className="mt-1 text-lg font-bold text-text-black">
-                  {partner.statistics?.team_size ?? "-"}
-                </p>
-              </div>
-              <div className="rounded-xl  p-3">
-                <p className="text-xs text-text-gray">Areas of Operation</p>
-                <p className="mt-1 text-lg font-bold text-text-black">
-                  {formatCountPlus(
-                    partner.statistics?.areas_of_operation ??
-                      areasOfOperation.length ??
-                      0,
-                    19
-                  )}
-                </p>
+            <div className="mt-4 w-full overflow-x-auto rounded-xl bg-white shadow-[0_8px_28px_rgba(16,24,40,0.08)]">
+              <div className="grid min-w-[900px] grid-cols-5 px-6 sm:px-8 py-4">
+                <div className="py-1 pr-2">
+                  <div className="flex items-center gap-3">
+                    <p className="text-[36px] font-semibold leading-none text-[#02035A]">{expYears}</p>
+                    <p className="text-[13px] leading-4 text-text-gray">Years Experience</p>
+                  </div>
+                </div>
+                <div className="border-l border-[#EAECF0] py-1 px-4">
+                  <div className="flex items-center gap-3">
+                    <p className="text-[36px] font-semibold leading-none text-[#02035A]">
+                      {formatCountPlus(partner.active_properties?.buy?.length ?? 0, 99)}
+                    </p>
+                    <p className="text-[13px] leading-4 text-text-gray">Properties for Sale</p>
+                  </div>
+                </div>
+                <div className="border-l border-[#EAECF0] py-1 px-4">
+                  <div className="flex items-center gap-3">
+                    <p className="text-[36px] font-semibold leading-none text-[#02035A]">
+                      {formatCountPlus(partner.active_properties?.rent?.length ?? 0, 99)}
+                    </p>
+                    <p className="text-[13px] leading-4 text-text-gray">Properties for Rent</p>
+                  </div>
+                </div>
+                <div className="border-l border-[#EAECF0] py-1 px-4">
+                  <div className="flex items-center gap-3">
+                    <p className="text-[36px] font-semibold leading-none text-[#02035A]">{partner.statistics?.team_size ?? "-"}</p>
+                    <p className="text-[13px] leading-4 text-text-gray">Team Size</p>
+                  </div>
+                </div>
+                <div className="border-l border-[#EAECF0] py-1 pl-4 pr-2">
+                  <div className="flex items-center gap-3">
+                    <p className="text-[36px] font-semibold leading-none text-[#02035A]">
+                      {formatCountPlus(partner.statistics?.areas_of_operation ?? areasOfOperation.length ?? 0, 19)}
+                    </p>
+                    <p className="text-[13px] leading-4 text-text-gray">Areas of Operation</p>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -684,12 +681,13 @@ export default function ChannelPartnerDetailsClient({
         </div>
       </div>
 
-      <div className="">
-        <div className="w-full">
+      <div className="px-4 md:px-6">
+        <div className="w-full max-w-[1240px] mx-auto">
           {/* About */}
-          <section className="  sm:p-7">
-            <div className="flex flex-col lg:flex-row gap-5 lg:gap-10">
-              <div className="lg:flex-1 min-w-0">
+          <section className="pb-6 sm:pb-8">
+            <div className="rounded-2xl border border-[#EEF0F4] bg-white p-5 sm:p-7 shadow-[0_10px_40px_rgba(15,23,42,0.06)]">
+            <div className="flex flex-col xl:flex-row xl:items-start gap-7 xl:gap-12">
+              <div className="min-w-0 xl:w-[58%]">
                 <div className="flex items-start gap-4">
                   <div className="relative w-12 h-12 rounded-full bg-[#F2F2F2] overflow-hidden flex-shrink-0">
                     {profileSrc ? (
@@ -708,9 +706,18 @@ export default function ChannelPartnerDetailsClient({
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <h2 className="text-lg sm:text-xl font-bold text-text-black truncate">
-                      {partner.name ?? "Channel Partner"}
-                    </h2>
+                    <div className="flex items-start justify-between gap-3">
+                      <h2 className="min-w-0 text-lg sm:text-xl font-bold text-text-black truncate">
+                        {partner.name ?? "Channel Partner"}
+                      </h2>
+                      <div className="flex shrink-0 items-center gap-2">
+                        <div className="inline-flex items-center gap-1 rounded-full bg-[#02035A] px-2.5 py-1 text-white">
+                          <Star fill={100} className="h-3.5 w-3.5 text-white" />
+                          <span className="text-xs font-semibold leading-none">{ratingText}</span>
+                        </div>
+                        <span className="text-xs text-text-gray whitespace-nowrap">{ratingCount} Ratings</span>
+                      </div>
+                    </div>
                     <p className="mt-1 text-sm text-text-gray truncate">
                       {partner.firm_name ?? ""}
                     </p>
@@ -729,7 +736,7 @@ export default function ChannelPartnerDetailsClient({
                       : "This partner is a verified channel partner supporting buyers and sellers across multiple locations."}
                 </p>
 
-                <div className="mt-4 border-t border-slate-200 pt-4">
+                <div className="mt-5 border-t border-slate-200 pt-4">
                   <div className="flex items-start gap-2 text-xs text-text-gray">
                     <MapPin className="h-4 w-4 text-[#7C3AED] mt-0.5" />
                     <span className="text-text-black font-medium">
@@ -748,22 +755,12 @@ export default function ChannelPartnerDetailsClient({
                 </div>
               </div>
 
-              <div className="lg:w-[420px] xl:w-[440px]">
-                <div className="flex items-center gap-2 mb-3">
-                  <Star
-                    fill={Math.min(100, (rating / 5) * 100)}
-                    className="h-4 w-4 text-[#F7BB06]"
-                  />
-                  <span className="text-sm font-bold text-text-black">
-                    {ratingText}
-                  </span>
-                  <span className="text-xs text-text-gray">{ratingCount} Ratings</span>
-                </div>
+              <div className="xl:w-[42%] xl:pl-2 xl:pt-0.5">
                 <h3 className="text-sm font-semibold text-text-black mb-3">
                   Areas of Operation
                 </h3>
                 {areasOfOperation.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2.5">
                     {areasOfOperation.map((city) => (
                       <span
                         key={city}
@@ -780,17 +777,18 @@ export default function ChannelPartnerDetailsClient({
                 )}
               </div>
             </div>
+            </div>
           </section>
 
           {/* Properties */}
-          <section className="mt-6">
+          <section className="mt-6 sm:mt-8">
             {/* Tabs */}
             <div className="border-b border-slate-200">
-              <div className="flex gap-8 sm:gap-12">
+              <div className="flex gap-6 sm:gap-8">
                 <button
                   type="button"
                   onClick={() => setPropertyTab("sale")}
-                  className={`pb-4 text-sm font-semibold whitespace-nowrap border-b-2 ${
+                  className={`pb-3 text-sm font-semibold whitespace-nowrap border-b-2 ${
                     propertyTab === "sale"
                       ? "text-text-black border-blue"
                       : "text-text-gray border-transparent hover:text-text-black"
@@ -801,7 +799,7 @@ export default function ChannelPartnerDetailsClient({
                 <button
                   type="button"
                   onClick={() => setPropertyTab("rent")}
-                  className={`pb-4 text-sm font-semibold whitespace-nowrap border-b-2 ${
+                  className={`pb-3 text-sm font-semibold whitespace-nowrap border-b-2 ${
                     propertyTab === "rent"
                       ? "text-text-black border-blue"
                       : "text-text-gray border-transparent hover:text-text-black"
@@ -812,7 +810,7 @@ export default function ChannelPartnerDetailsClient({
                 <button
                   type="button"
                   onClick={() => setPropertyTab("rating")}
-                  className={`pb-4 text-sm font-semibold whitespace-nowrap border-b-2 ${
+                  className={`pb-3 text-sm font-semibold whitespace-nowrap border-b-2 ${
                     propertyTab === "rating"
                       ? "text-text-black border-blue"
                       : "text-text-gray border-transparent hover:text-text-black"
@@ -827,7 +825,7 @@ export default function ChannelPartnerDetailsClient({
             {propertyTab !== "rating" ? (
               <>
                 {propertyTab === "sale" && saleProperties.length > 0 ? (
-                  <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
                     {saleProperties.slice(0, 8).map((p) => (
                       <PropertyCard
                         key={p.id}
@@ -840,7 +838,7 @@ export default function ChannelPartnerDetailsClient({
                 ) : null}
 
                 {propertyTab === "rent" && rentProperties.length > 0 ? (
-                  <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
                     {rentProperties.slice(0, 8).map((p) => (
                       <PropertyCard
                         key={p.id}
@@ -853,13 +851,13 @@ export default function ChannelPartnerDetailsClient({
                 ) : null}
 
                 {propertyTab === "sale" && saleProperties.length === 0 ? (
-                  <p className="mt-5 text-sm text-text-gray">
+                  <p className="mt-4 text-sm text-text-gray">
                     No properties available for sale.
                   </p>
                 ) : null}
 
                 {propertyTab === "rent" && rentProperties.length === 0 ? (
-                  <p className="mt-5 text-sm text-text-gray">
+                  <p className="mt-4 text-sm text-text-gray">
                     No properties available for rent.
                   </p>
                 ) : null}
