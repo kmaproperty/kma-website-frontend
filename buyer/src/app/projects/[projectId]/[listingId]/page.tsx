@@ -1286,8 +1286,8 @@ export default function ListingDetailsPage() {
                           <div className="mt-4 rounded-xl border border-[#D4D5D8] bg-background-gray">
                             <div className="grid grid-cols-2 divide-x divide-[#D4D5D8] border-b border-[#D4D5D8]">
                               {[
-                                [apiChannelPartner?.buyersServed != null && apiChannelPartner.buyersServed > 0 ? `${apiChannelPartner.buyersServed}+` : "—", "Buyers Served"],
-                                [apiChannelPartner?.yearsOfExperience != null ? String(apiChannelPartner.yearsOfExperience) : "—", "Years of Experience"],
+                                [String(apiChannelPartner?.buyersServed ?? 0), "Buyers Served"],
+                                [String(apiChannelPartner?.yearsOfExperience ?? 0), "Years of Experience"],
                               ].map(([value, label]) => (
                                 <div key={label} className="px-4 py-3">
                                   <p className="text-2xl font-semibold leading-none text-[#05085E]">{value}</p>
@@ -1297,8 +1297,8 @@ export default function ListingDetailsPage() {
                             </div>
                             <div className="grid grid-cols-2 divide-x divide-[#D4D5D8]">
                               {[
-                                [apiChannelPartner?.propertyHoldings != null ? String(apiChannelPartner.propertyHoldings) : "—", "Property Holdings"],
-                                [apiChannelPartner?.areasOfOperation != null && apiChannelPartner.areasOfOperation > 0 ? `${apiChannelPartner.areasOfOperation}+` : "—", "Areas of Operation"],
+                                [String(apiChannelPartner?.propertyHoldings ?? 0), "Property Holdings"],
+                                [String(apiChannelPartner?.areasOfOperation ?? 0), "Areas of Operation"],
                               ].map(([value, label]) => (
                                 <div key={label} className="px-4 py-3">
                                   <p className="text-2xl font-semibold leading-none text-[#05085E]">{value}</p>
@@ -1310,8 +1310,8 @@ export default function ListingDetailsPage() {
 
                           <div className="mt-3 grid grid-cols-1 gap-3">
                             {[
-                              ["Property for Rent", apiChannelPartner?.propertyListings?.rent != null ? String(apiChannelPartner.propertyListings.rent) : "—"],
-                              ["Property for Sale", apiChannelPartner?.propertyListings?.sale != null ? String(apiChannelPartner.propertyListings.sale) : "—"],
+                              ["Property for Rent", String(apiChannelPartner?.propertyListings?.rent ?? 0)],
+                              ["Property for Sale", String(apiChannelPartner?.propertyListings?.sale ?? 0)],
                             ].map(([label, count]) => (
                               <button
                                 key={`${label}-mobile`}
@@ -1334,7 +1334,7 @@ export default function ListingDetailsPage() {
                             onClick={() => router.push(channelPartnerDetailsHref)}
                             className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#05085E] px-4 py-3 text-sm font-semibold text-white"
                           >
-                            Learn More
+                            View Details
                             <ArrowRight className="h-4 w-4" />
                           </button>
                         </div>
@@ -1366,7 +1366,7 @@ export default function ListingDetailsPage() {
                                 onClick={() => router.push(channelPartnerDetailsHref)}
                                 className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#05085E] px-4 py-2.5 text-sm font-semibold text-white sm:w-auto"
                               >
-                                Learn More
+                                View Details
                                 <ArrowRight className="h-4 w-4" />
                               </button>
                             </div>
@@ -1375,10 +1375,10 @@ export default function ListingDetailsPage() {
                           <div className="mt-4 border-t border-[#D4D5D8] pt-5">
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                               {[
-                                [apiChannelPartner?.buyersServed != null && apiChannelPartner.buyersServed > 0 ? `${apiChannelPartner.buyersServed}+` : "—", "Buyers Served"],
-                                [apiChannelPartner?.yearsOfExperience != null ? String(apiChannelPartner.yearsOfExperience) : "—", "Years of Experience"],
-                                [apiChannelPartner?.propertyHoldings != null ? String(apiChannelPartner.propertyHoldings) : "—", "Property Holdings"],
-                                [apiChannelPartner?.areasOfOperation != null && apiChannelPartner.areasOfOperation > 0 ? `${apiChannelPartner.areasOfOperation}+` : "—", "Areas of Operation"],
+                                [String(apiChannelPartner?.buyersServed ?? 0), "Buyers Served"],
+                                [String(apiChannelPartner?.yearsOfExperience ?? 0), "Years of Experience"],
+                                [String(apiChannelPartner?.propertyHoldings ?? 0), "Property Holdings"],
+                                [String(apiChannelPartner?.areasOfOperation ?? 0), "Areas of Operation"],
                               ].map(([value, label]) => (
                                 <div key={`${label}-desktop`} className="flex min-w-0 items-center gap-3">
                                   <p className="shrink-0 text-2xl font-semibold leading-none text-[#05085E] sm:text-3xl">{value}</p>
@@ -1390,8 +1390,8 @@ export default function ListingDetailsPage() {
 
                           <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
                             {[
-                              ["Property for Rent", apiChannelPartner?.propertyListings?.rent != null ? String(apiChannelPartner.propertyListings.rent) : "—"],
-                              ["Property for Sale", apiChannelPartner?.propertyListings?.sale != null ? String(apiChannelPartner.propertyListings.sale) : "—"],
+                              ["Property for Rent", String(apiChannelPartner?.propertyListings?.rent ?? 0)],
+                              ["Property for Sale", String(apiChannelPartner?.propertyListings?.sale ?? 0)],
                             ].map(([label, count]) => (
                               <button
                                 key={`${label}-desktop`}
