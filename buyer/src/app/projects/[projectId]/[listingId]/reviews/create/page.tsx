@@ -26,17 +26,6 @@ const toFullAssetUrl = (value?: string | null) => {
 };
 const asString = (value: unknown): string | null =>
   typeof value === "string" && value.trim().length > 0 ? value.trim() : null;
-const asNumber = (value: unknown): number | null =>
-  typeof value === "number" && Number.isFinite(value)
-    ? value
-    : typeof value === "string"
-      ? (() => {
-          const n = Number(value.trim());
-          return Number.isFinite(n) ? n : null;
-        })()
-      : null;
-const formatInr = (value: number) =>
-  new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(value);
 
 const FEATURES = [
   {
@@ -106,7 +95,8 @@ export default function CreateReviewPage() {
   const router = useRouter();
   const projectId = params?.projectId ?? "";
   const listingId = params?.listingId ?? "";
-  const { data: propertyDetails } = usePropertyDetails({ id: listingId });
+  const { data: detailsResponse } = usePropertyDetails({ id: listingId });
+  const propertyDetails = detailsResponse?.property ?? detailsResponse?.data ?? null;
 
   const dispatch = useDispatch();
   const [propertyMasterData, setPropertyMasterData] = useState<unknown[]>([]);
@@ -130,28 +120,24 @@ export default function CreateReviewPage() {
   const [successOpen, setSuccessOpen] = useState(false);
 
   const propertyTitle =
-    asString(propertyDetails?.propertyName) ??
-    asString(propertyDetails?.title) ??
+    asString((propertyDetails as any)?.propertyName) ??
+    asString((propertyDetails as any)?.title) ??
     "";
-  const propertyAddress = asString(propertyDetails?.address) ?? "";
-  const monthlyRent = asNumber(propertyDetails?.monthlyRent);
-  const salePrice = asNumber(propertyDetails?.price);
-  const priceLabel =
-    monthlyRent && monthlyRent > 0
-      ? `₹${formatInr(monthlyRent)}/month`
-      : salePrice && salePrice > 0
-        ? `₹${formatInr(salePrice)}`
-        : "";
+  const propertyAddress = asString((propertyDetails as any)?.address) ?? "";
 
   const coverImage = useMemo(() => {
     const media = [
-      ...((propertyDetails?.photos ?? []) as Array<{ fileKey?: string | null }>),
-      ...((propertyDetails?.images ?? []) as Array<{ fileKey?: string | null }>),
+      ...(((propertyDetails as any)?.photos ?? []) as Array<{ fileKey?: string | null; url?: string | null }>),
+      ...(((propertyDetails as any)?.images ?? []) as Array<{ fileKey?: string | null; url?: string | null }>),
     ];
     const urls = media
-      .map((item) => toFullAssetUrl(asString(item?.fileKey)))
+      .map((item) => toFullAssetUrl(asString(item?.fileKey) ?? asString(item?.url)))
       .filter((url): url is string => Boolean(url));
-    return urls[0] ?? placeholderImage;
+    if (urls[0]) return urls[0];
+
+    // Fallback: some endpoints expose a single imageUrl on the listing summary.
+    const single = asString((propertyDetails as any)?.imageUrl);
+    return toFullAssetUrl(single) || placeholderImage;
   }, [propertyDetails]);
 
   const listingHref = `/projects/${projectId}/${listingId}`;
@@ -212,11 +198,8 @@ export default function CreateReviewPage() {
                       <ChevronLeft className="h-6 w-6" />
                     </Link>
                     <div className="min-w-0">
-                      <span className="text-lg font-semibold leading-tight text-text-black">
+                      <p className="text-lg font-semibold leading-tight text-text-black">
                         {propertyTitle}
-                      </span>
-                      <p className="mt-1 text-sm font-semibold leading-none text-text-black">
-                        {priceLabel}
                       </p>
                       <p className="mt-1 text-xs text-text-gray">{propertyAddress}</p>
                     </div>
