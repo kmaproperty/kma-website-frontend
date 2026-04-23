@@ -875,19 +875,34 @@ export default function ListingDetailsPage() {
                       <h2 className="hidden text-lg font-semibold text-text-black sm:text-xl md:block">Locality</h2>
                       <div id="locality-content" className={isLocalityOpen ? "block" : "hidden md:block"}>
                         <div className="relative mt-3 h-[200px] overflow-hidden rounded-tl-lg rounded-tr-lg border border-[#D4D5D8] bg-[#ECEEF3] sm:h-[260px] md:h-[300px]">
-                          <Image
-                            src="/assets/city/city1.svg"
-                            alt="Locality map"
-                            fill
-                            className="object-cover"
-                          />
-                          <button
-                            type="button"
-                            className="absolute left-1/2 top-1/2 inline-flex max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-lg bg-[#0E1730] px-3 py-2 text-sm font-medium text-white shadow-sm sm:px-5 sm:py-2.5 sm:text-base"
-                          >
-                            <MapPin className="h-4 w-4 shrink-0" />
-                            Check on Map
-                          </button>
+                          {lat && lng ? (
+                            <>
+                              <iframe
+                                src={`https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`}
+                                width="100%"
+                                height="100%"
+                                style={{ border: 0 }}
+                                loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
+                                allowFullScreen
+                                title="Property location"
+                              />
+                              <a
+                                href={`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="absolute left-1/2 top-1/2 inline-flex max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-lg bg-[#0E1730] px-3 py-2 text-sm font-medium text-white shadow-sm sm:px-5 sm:py-2.5 sm:text-base"
+                              >
+                                <MapPin className="h-4 w-4 shrink-0" />
+                                Check on Map
+                              </a>
+                            </>
+                          ) : (
+                            <div className="flex h-full items-center justify-center text-text-gray">
+                              <MapPin className="mr-2 h-5 w-5" />
+                              Location not available
+                            </div>
+                          )}
                         </div>
 
                         <div className="divide-y divide-[#D4D5D8] md:rounded-br-lg md:rounded-bl-lg md:border border-[#D4D5D8] bg-white md::px-5 pb-3 sm:pb-5">
