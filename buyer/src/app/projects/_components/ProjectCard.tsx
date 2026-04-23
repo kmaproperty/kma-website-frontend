@@ -329,7 +329,9 @@ export default function ProjectCard({
   );
 
   const shouldSkipCardNavigation = (target: EventTarget | null) => {
-    if (!(target instanceof HTMLElement)) {
+    // Clicks on the heart / chevron icons land on SVG elements (not HTMLElement),
+    // so widen the check to any Element and use closest to walk ancestors.
+    if (!(target instanceof Element)) {
       return false;
     }
 
