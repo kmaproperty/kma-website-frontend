@@ -1528,12 +1528,12 @@ export default function ListingDetailsPage() {
                           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <h3 className="text-lg font-semibold text-text-black sm:text-xl">Reviews</h3>
                             <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-3">
-                              <button
-                                type="button"
-                                className="w-full rounded-xl border border-blue bg-white px-5 py-2.5 text-sm font-semibold text-blue sm:w-auto"
+                              <Link
+                                href={`/projects/${params?.projectId ?? ""}/${listingId || ""}/reviews/create`}
+                                className="w-full rounded-xl border border-blue bg-white px-5 py-2.5 text-sm font-semibold text-blue sm:w-auto text-center"
                               >
                                 Add a Review
-                              </button>
+                              </Link>
                               <Link
                                 href={`/projects/${params?.projectId ?? ""}/${listingId || ""}/reviews`}
                                 className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#05085E] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0B127A] sm:w-auto"
