@@ -126,7 +126,7 @@ export default function CreateReviewPage() {
   const propertyAddress =
     asString((detailsResponse as any)?.location?.address) ??
     asString((propertyDetails as any)?.address) ??
-    [
+    ([
       asString((detailsResponse as any)?.location?.society),
       asString((detailsResponse as any)?.location?.locality),
       asString((detailsResponse as any)?.location?.city),
@@ -134,7 +134,7 @@ export default function CreateReviewPage() {
     ]
       .filter(Boolean)
       .join(", ") ||
-    "";
+      "");
 
   const coverImage = useMemo(() => {
     const media = [
