@@ -57,6 +57,7 @@ export interface User {
   phone: string;
   role: UserType
   isActive: boolean;
+  channelPartnerCode?: string | null;
 }
 
 export interface ValidateOtpResponse {
@@ -130,7 +131,6 @@ export interface CreateChannelPartnerPayload {
     name: string;
     email: string;
     phone: string;
-    channelPartnerCode: string;
     firmName: string;
     businessSince: string;
     cities: string;

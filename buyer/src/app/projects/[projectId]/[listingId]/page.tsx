@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams, usePathname } from "next/navigation";
+import { useParams } from "next/navigation";
 import {
   ArrowLeft,
   ArrowRight,
@@ -43,8 +43,10 @@ import { FAVORITE_PROPERTIES_QUERY_KEY } from "@/api/hooks/useFavoriteProperties
 import MainLayout from "@/components/myList/mainLayout";
 import { useProjectsStore } from "@/app/projects/_store/useProjectsStore";
 import { useRouter } from "nextjs-toploader/app";
-import { fetchPropertyMasterData } from "@/app/api/home";
-import { setPropertyMasterData } from "@/store/homeHeaderSlice";
+import { useSelector } from "react-redux";
+import { getPropertyMasterData } from "@/store/homeHeaderSlice";
+import { buildProjectsRouteLabels } from "@/app/projects/_utils/routeLabels";
+import { useSearchParams } from "next/navigation";
 import AboutusDataSync from "@/components/footer/AboutusDataSync";
 import HomeFooter from "@/components/footer/homeFooter";
 
@@ -129,8 +131,50 @@ const localityCategories = [
   { key: "restaurants", label: "Restaurants", icon: UtensilsCrossed },
 ] as const;
 
+type ListingSectionId =
+  | "overview"
+  | "furnishing"
+  | "locality"
+  | "amenities"
+  | "channel-partner-details"
+  | "ratings-and-reviews";
 
+const listingSectionTabs: Array<{ id: ListingSectionId; label: string }> = [
+  { id: "overview", label: "Overview" },
+  { id: "furnishing", label: "Furnishing" },
+  { id: "locality", label: "Locality" },
+  { id: "amenities", label: "Amenities" },
+  { id: "channel-partner-details", label: "Channel Partner Details" },
+  { id: "ratings-and-reviews", label: "Ratings and Reviews" },
+];
 
+type AmenityListItem = { id: string; name: string };
+
+const normalizeAmenityItems = (value: unknown): AmenityListItem[] => {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item, idx) => {
+      if (typeof item === "string") {
+        const name = item.trim();
+        if (!name) return null;
+        return { id: `${name}-${idx}`, name };
+      }
+      if (typeof item === "object" && item !== null) {
+        const rec = item as Record<string, unknown>;
+        const rawName =
+          typeof rec.name === "string" ? rec.name :
+          typeof rec.label === "string" ? rec.label :
+          typeof rec.amenityName === "string" ? rec.amenityName :
+          typeof rec.value === "string" ? rec.value : "";
+        const name = rawName.trim();
+        if (!name) return null;
+        const rawId = typeof rec.id === "string" && rec.id ? rec.id : `${name}-${idx}`;
+        return { id: rawId, name };
+      }
+      return null;
+    })
+    .filter((item): item is AmenityListItem => Boolean(item));
+};
 
 
 const formatListedOn = (dateStr: string) => {
@@ -166,6 +210,20 @@ export default function ListingDetailsPage() {
   const apiOwnerDetails = detailsResponse?.ownerDetails;
   const apiRatings = detailsResponse?.ratingsAndReviews;
   const apiSampleReviews = detailsResponse?.sampleReviews;
+  const channelPartnerDetailsHref = apiChannelPartner?.id
+    ? `/channel-partner/${apiChannelPartner.id}`
+    : "/channel-partner";
+
+  const searchParams = useSearchParams();
+  const propertyMasterData = useSelector(getPropertyMasterData) as Array<{
+    id?: string;
+    code?: string;
+    categories?: Array<{
+      id?: string;
+      code?: string;
+      propertyTypes?: Array<{ id?: string; name?: string }>;
+    }>;
+  }>;
 
   const similarParams = useMemo(() => {
     const city =
@@ -453,12 +511,78 @@ export default function ListingDetailsPage() {
   >({});
   const [nearbyLoading, setNearbyLoading] = useState(false);
 
+  // Sticky tab navigation state + refs
+  const [activeSectionTab, setActiveSectionTab] = useState<ListingSectionId>("overview");
+  const tabsNavRef = useRef<HTMLElement | null>(null);
+  const sectionRefs = useRef<Record<ListingSectionId, HTMLElement | null>>({
+    overview: null,
+    furnishing: null,
+    locality: null,
+    amenities: null,
+    "channel-partner-details": null,
+    "ratings-and-reviews": null,
+  });
+  const setSectionRef = (sectionId: ListingSectionId) => (element: HTMLElement | null) => {
+    sectionRefs.current[sectionId] = element;
+  };
+  const furnishingsCounts = Array.isArray(propertyDetails?.furnishingsCounts)
+    ? (propertyDetails.furnishingsCounts as Array<{ item: string; count: number }>)
+    : [];
+  const amenitiesList = normalizeAmenityItems(propertyDetails?.amenitiesList);
+  const hasFurnishingSection = furnishingsCounts.length > 0;
+  const hasAmenitiesSection = amenitiesList.length > 0;
+  const availableSectionTabs = useMemo(
+    () =>
+      listingSectionTabs.filter((tab) => {
+        if (tab.id === "furnishing") return hasFurnishingSection;
+        if (tab.id === "amenities") return hasAmenitiesSection;
+        return true;
+      }),
+    [hasAmenitiesSection, hasFurnishingSection],
+  );
   useEffect(() => {
-    fetchPropertyMasterData().then((response) => {
-      const data = response?.success ? ((response.data as unknown[]) ?? []) : [];
-      dispatch(setPropertyMasterData(data));
+    if (!availableSectionTabs.some((tab) => tab.id === activeSectionTab)) {
+      setActiveSectionTab(availableSectionTabs[0]?.id ?? "overview");
+    }
+  }, [activeSectionTab, availableSectionTabs]);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntries = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        const topVisibleSection = visibleEntries[0]?.target.id as ListingSectionId | undefined;
+        if (topVisibleSection) setActiveSectionTab(topVisibleSection);
+      },
+      { root: null, rootMargin: "-160px 0px -55% 0px", threshold: [0.2, 0.4, 0.6] },
+    );
+    const sectionsToObserve = availableSectionTabs
+      .map((tab) => sectionRefs.current[tab.id])
+      .filter((section): section is HTMLElement => Boolean(section));
+    sectionsToObserve.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, [availableSectionTabs]);
+  const scrollToSection = (sectionId: ListingSectionId) => {
+    const section = sectionRefs.current[sectionId] ?? document.getElementById(sectionId);
+    if (!section) return;
+    section.scrollIntoView({ behavior: "smooth", block: "start" });
+    setActiveSectionTab(sectionId);
+  };
+  const routeLabels = useMemo(() => {
+    const propertyTypeIds = searchParams.get("propertyTypeIds")?.split(",").filter(Boolean) ?? [];
+    const categoryId = searchParams.get("categoryIds")?.split(",").filter(Boolean)[0] ?? null;
+    const cityName =
+      asString(propertyDetails?.cityName) ??
+      asString(detailsResponse?.location?.city) ??
+      undefined;
+    return buildProjectsRouteLabels({
+      cityName,
+      listingTypeId: searchParams.get("listingTypeId"),
+      categoryId,
+      propertyTypeIds,
+      propertyMasterData,
     });
-  }, [dispatch]);
+  }, [searchParams, propertyDetails?.cityName, detailsResponse?.location?.city, propertyMasterData]);
 
   useEffect(() => {
     if (!lat || !lng) return;
@@ -707,27 +831,22 @@ export default function ListingDetailsPage() {
 
               <div className="mt-4 rounded-sm md:border-b border-border md:bg-background-gray md:p-5">
                 <nav
-                  className="-mx-1 overflow-x-auto rounded-md bg-white px-1 text-sm [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                  ref={tabsNavRef}
+                  className="sticky top-0 z-20 -mx-1 overflow-x-auto rounded-md bg-white px-1 text-sm [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                   aria-label="Property sections"
                 >
                   <div className="flex w-max min-w-full items-stretch">
-                    {[
-                      "Overview",
-                      "Furnishing",
-                      "Locality",
-                      "Amenities",
-                      "Channel Partner Details",
-                      "Ratings and Reviews",
-                    ].map((item, idx) => (
+                    {availableSectionTabs.map((tab) => (
                       <button
-                        key={item}
+                        key={tab.id}
                         type="button"
-                        className={`whitespace-nowrap border-b-2 px-3 py-3 text-xs transition sm:px-5 sm:py-4 sm:text-sm ${idx === 0
+                        onClick={() => scrollToSection(tab.id)}
+                        className={`whitespace-nowrap border-b-2 px-3 py-3 text-xs transition sm:px-5 sm:py-4 sm:text-sm ${activeSectionTab === tab.id
                           ? "border-blue bg-white/70 font-semibold text-text-black"
                           : "border-transparent text-text-gray hover:text-text-black"
                           }`}
                       >
-                        {item}
+                        {tab.label}
                       </button>
                     ))}
                   </div>
@@ -742,7 +861,11 @@ export default function ListingDetailsPage() {
                       </section>
                     ) : null}
 
-                    <section className="md:px-0 px-4">
+                    <section
+                      id="overview"
+                      ref={setSectionRef("overview")}
+                      className="scroll-mt-32 md:px-0 px-4"
+                    >
                       <button
                         type="button"
                         onClick={() => setIsPropertyInfoOpen((prev) => !prev)}
@@ -798,7 +921,11 @@ export default function ListingDetailsPage() {
                     </section>
 
                     {Array.isArray(propertyDetails?.furnishingsCounts) && propertyDetails.furnishingsCounts.length > 0 ? (
-                      <section className="md:mx-0 mx-4">
+                      <section
+                        id="furnishing"
+                        ref={setSectionRef("furnishing")}
+                        className="scroll-mt-32 md:mx-0 mx-4"
+                      >
                         <button
                           type="button"
                           onClick={() => setIsFurnishingOpen((prev) => !prev)}
@@ -857,7 +984,11 @@ export default function ListingDetailsPage() {
                       </section>
                     ) : null}
 
-                    <section className="mx-4 md:mx-0">
+                    <section
+                      id="locality"
+                      ref={setSectionRef("locality")}
+                      className="scroll-mt-32 mx-4 md:mx-0"
+                    >
                       <button
                         type="button"
                         onClick={() => setIsLocalityOpen((prev) => !prev)}
@@ -964,7 +1095,11 @@ export default function ListingDetailsPage() {
                     </section>
 
                     {Array.isArray(propertyDetails?.amenitiesList) && propertyDetails.amenitiesList.length > 0 ? (
-                      <section className="rounded-xl">
+                      <section
+                        id="amenities"
+                        ref={setSectionRef("amenities")}
+                        className="scroll-mt-32 rounded-xl"
+                      >
                         <button
                           type="button"
                           onClick={() => setIsAmenitiesOpen((prev) => !prev)}
@@ -1013,7 +1148,11 @@ export default function ListingDetailsPage() {
                       </section>
                     ) : null}
 
-                    <section className="md:mx-0 mx-4">
+                    <section
+                      id="channel-partner-details"
+                      ref={setSectionRef("channel-partner-details")}
+                      className="scroll-mt-32 md:mx-0 mx-4"
+                    >
                       <button
                         type="button"
                         onClick={() => setIsChannelPartnerOpen((prev) => !prev)}
@@ -1197,7 +1336,11 @@ export default function ListingDetailsPage() {
                       </div>
                     </section>
 
-                    <section className="!border-0 md:bg-transparent bg-background-gray md:px-0 px-4 md:!py-0 !py-10">
+                    <section
+                      id="ratings-and-reviews"
+                      ref={setSectionRef("ratings-and-reviews")}
+                      className="scroll-mt-32 !border-0 md:bg-transparent bg-background-gray md:px-0 px-4 md:!py-0 !py-10"
+                    >
                       <h2 className="text-lg font-semibold text-text-black">Ratings and Reviews</h2>
                       <div className="mt-4 rounded-xl bg-white p-4 sm:p-6">
                         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[220px_1fr]">
