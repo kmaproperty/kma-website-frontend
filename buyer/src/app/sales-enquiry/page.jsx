@@ -80,14 +80,14 @@ const SalesEnquiry = () => {
                     </div>
                 </div>
             </div>
-            <div className='w-full pb-[100px] px-4 sm:px-6 md:px-[50px]'>
+            {/* <div className='w-full pb-[100px] px-4 sm:px-6 md:px-[50px]'>
                 <div className='max-w-[1440px] mx-auto'>
                     <SectionHeading title="" subtitle="KMA Regional Offices" type={'left'} color='' lineTop={false}
                         description=""
                     />
                     <ContactTable />
                 </div>
-            </div>
+            </div> */}
             <div className='py-[100px] px-4 sm:px-6 md:px-[50px] bg-[#f5f5f5]'>
                 <div className='max-w-[1440px] mx-auto flex flex-col lg:flex-row gap-10 justify-between'>
                     <div className='w-full lg:w-[50%] max-w-[720px]'>
