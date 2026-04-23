@@ -25,42 +25,32 @@ const breadcrumps = [
 
 const foundersDetails = [
   {
-    name: ' Tomer Fridman',
-    image: '/assets/team/founder1.png',
+    name: 'Abhishek j',
+    image: '/assets/team/Abhishek j.png',
     position: 'Co-Founder/Broker Associate',
-    number: '(970) 948-3876',
-    mail: 'joshua.saslove@elliman.com',
   },
   {
-    name: 'Isidora Fridman',
-    image: '/assets/team/founder2.png',
+    name: 'Ananjay j',
+    image: '/assets/team/Ananjay j.png',
     position: 'Founder of The KMA Group',
-    number: '(970) 948-3876',
-    mail: 'joshua.saslove@elliman.com',
   },
 ];
 
 const teamDetails = [
   {
-    name: 'Emery Holton',
-    image: '/assets/team/team1.png',
+    name: "Co founder's",
+    image: "/assets/team/Co founder's.jpg",
     position: 'Broker Associate',
-    number: '(970) 948-3876',
-    mail: 'joshua.saslove@elliman.com',
   },
   {
-    name: 'Hannah Surnow',
-    image: '/assets/team/team2.png',
+    name: 'karmjeet Sir',
+    image: '/assets/team/karmjeet Sir .png',
     position: 'Broker Associate',
-    number: '(970) 948-3876',
-    mail: 'joshua.saslove@elliman.com',
   },
   {
-    name: 'Isaac Silverman',
-    image: '/assets/team/team3.png',
-    position: ' Broker Associate',
-    number: '(970) 948-3876',
-    mail: 'joshua.saslove@elliman.com',
+    name: 'Surender ji',
+    image: '/assets/team/Surender ji.jpeg',
+    position: 'Broker Associate',
   },
 ];
 
