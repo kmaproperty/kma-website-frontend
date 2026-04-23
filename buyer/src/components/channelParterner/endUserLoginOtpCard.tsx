@@ -62,7 +62,7 @@ export default function EndUserLoginOtpCard() {
         return;
       }
 
-      router.replace("/projects");
+      router.replace("/");
     },
     onError: (error: any) => {
       setOtpError(error?.message ?? "Invalid OTP");
