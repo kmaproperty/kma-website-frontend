@@ -112,8 +112,8 @@ function ChannelPartnerCard({
   const handleOpenDetails = () => onOpenDetails?.(partner);
 
   const profileSrc = joinUrl(PROFILE_BASE, partner.profile_image);
-  const rating = Number(partner.rating ?? 4.2);
-  const ratingText = Number.isFinite(rating) ? rating.toFixed(1) : "4.2";
+  const rating = Number(partner.rating);
+  const ratingText = Number.isFinite(rating) ? rating.toFixed(1) : "0.0";
   const cityList = partner.cities
     ?.split(",")
     .map((c) => c.trim())

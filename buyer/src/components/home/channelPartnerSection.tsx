@@ -103,8 +103,8 @@ export default function ChannelPartnerSection({
 
             const profileSrc =
               joinUrl(profileBaseUrl, item?.profile_image);
-            const rating = Number(item?.rating ?? 4.3);
-            const ratingText = Number.isFinite(rating) ? rating.toFixed(1) : "4.3";
+            const ratingValue = Number(item?.rating);
+            const ratingText = Number.isFinite(ratingValue) ? ratingValue.toFixed(1) : "0.0";
 
             return (
               <motion.div
