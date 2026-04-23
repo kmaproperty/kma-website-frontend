@@ -36,7 +36,7 @@ const SalesEnquiry = () => {
                 <div className="w-[90%] md:w-[75%] max-w-[600px] mx-auto mt-[150px]">
                     <PageTitle
                         title="Contact KMA"
-                        description="Looking to list or promote your property? Our team is ready to guide you every step of the way."
+                        description="Want to sell, list, or promote your property? Our experts are here to make the process simple."
                         breadcrumps={breadcrumps}
                     />
 
@@ -51,8 +51,8 @@ const SalesEnquiry = () => {
                         className='w-[66px] h-[66px] rounded-full'
                     />
                     <div>
-                        <h3 className='text-[20px] font-semibold text-text-black mb-0'>Confused about how to post or promote your property/project?</h3>
-                        <p className='text-md font-normal text-[#888888] mb-0'>Our KMA Partner Specialist will guide you step-by-step.</p>
+                        <h3 className='text-[20px] font-semibold text-text-black mb-0'>Ready to showcase your property or project?</h3>
+                        <p className='text-md font-normal text-[#888888] mb-0'>Get expert support from listing to successful closure</p>
                     </div>
                 </div>
                 <Link href="?isContactInformation=true" scroll={false} className="animated-button px-6 py-3.5 cursor-pointer w-full lg:w-auto">
