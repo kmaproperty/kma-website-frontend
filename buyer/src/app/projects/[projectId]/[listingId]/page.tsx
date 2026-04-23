@@ -449,7 +449,7 @@ export default function ListingDetailsPage() {
   const lng = detailsResponse?.location?.longitude;
 
   const [nearbyPlacesCache, setNearbyPlacesCache] = useState<
-    Record<string, Array<{ name: string; distance: string }>>
+    Record<string, Array<{ name: string; distance: string; address: string | null }>>
   >({});
   const [nearbyLoading, setNearbyLoading] = useState(false);
 
@@ -471,7 +471,7 @@ export default function ListingDetailsPage() {
       .then((res) => {
         setNearbyPlacesCache((prev) => ({
           ...prev,
-          [activeLocalityCategory]: res.places?.map((p) => ({ name: p.name, distance: p.distance })) ?? [],
+          [activeLocalityCategory]: res.places?.map((p) => ({ name: p.name, distance: p.distance, address: p.address ?? null })) ?? [],
         }));
       })
       .catch(() => { })
@@ -931,21 +931,30 @@ export default function ListingDetailsPage() {
                             {nearbyLoading ? (
                               <p className="py-5 text-sm text-text-gray">Loading nearby places...</p>
                             ) : activeLocalityPlaces.length > 0 ? (
-                              activeLocalityPlaces.map((place) => (
-                                <div
-                                  key={place.name}
-                                  className="inline-flex items-start justify-between gap-3 md:p-4 py-4 text-sm text-text-black border-b border-[#D9D9D9]"
-                                >
-                                  <div className="inline-flex items-start gap-3 ">
-                                  <School className="shrink-0 mt-0.5 h-6 w-6 text-[#05085E]" />
-                                  <div>
-                                    <p className="font-medium text-text-black">{place.name}</p>
-                                    <span className="md:block hidden mt-1 block text-[#888888]">{place.distance}</span>
-                                  </div>
-                                  </div>
-                                  <span className="md:hidden block text-[#888888]">{place.distance}</span>
-                                </div>
-                              ))
+                              activeLocalityPlaces.map((place) => {
+                                const mapsQuery = encodeURIComponent(
+                                  [place.name, place.address].filter(Boolean).join(", "),
+                                );
+                                const mapsHref = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`;
+                                return (
+                                  <a
+                                    key={place.name}
+                                    href={mapsHref}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-start justify-between gap-3 md:p-4 py-4 text-sm text-text-black border-b border-[#D9D9D9] cursor-pointer hover:bg-[#F5F6FA]"
+                                  >
+                                    <div className="inline-flex items-start gap-3 ">
+                                    <School className="shrink-0 mt-0.5 h-6 w-6 text-[#05085E]" />
+                                    <div>
+                                      <p className="font-medium text-text-black">{place.name}</p>
+                                      <span className="md:block hidden mt-1 block text-[#888888]">{place.distance}</span>
+                                    </div>
+                                    </div>
+                                    <span className="md:hidden block text-[#888888]">{place.distance}</span>
+                                  </a>
+                                );
+                              })
                             ) : (
                               <p className="py-5 text-sm text-text-gray">No nearby places found.</p>
                             )}
