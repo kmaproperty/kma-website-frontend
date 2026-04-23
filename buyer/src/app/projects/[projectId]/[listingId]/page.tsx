@@ -32,11 +32,17 @@ import {
 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useDispatch } from "react-redux";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import { toast } from "react-toastify";
 import {
   addEndUserFavoriteAction,
   removeEndUserFavoriteAction,
   getNearbyPlacesAction,
+  submitEndUserPropertyContactAction,
 } from "@/api/actions/propertyActions";
+import { useSessionStore } from "@/store/useSessionStore";
+import Spinner from "@/components/common/spinner";
 import { usePropertyDetails } from "@/api/hooks/usePropertyDetails";
 import { useSimilarProperties } from "@/api/hooks/useSimilarProperties";
 import { FAVORITE_PROPERTIES_QUERY_KEY } from "@/api/hooks/useFavoriteProperties";
@@ -622,6 +628,15 @@ export default function ListingDetailsPage() {
   };
 
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [isQuickContactOpen, setIsQuickContactOpen] = useState(false);
+  const [isContactAuthChecking, setIsContactAuthChecking] = useState(false);
+  const [contactUser, setContactUser] = useState<{ name: string; email: string; phone: string; countryCode: string }>({
+    name: "",
+    email: "",
+    phone: "",
+    countryCode: "+91",
+  });
+  const persistedSessionId = useSessionStore((state) => state.sessionId);
   const contactProject = useMemo<Project | null>(() => {
     if (!propertyDetails?.id) return null;
     return {
@@ -642,7 +657,79 @@ export default function ListingDetailsPage() {
       },
     };
   }, [propertyDetails, apiChannelPartner, specialistName, specialistImage]);
-  const openContactModal = () => setIsContactModalOpen(true);
+
+  const { mutate: submitQuickContact, isPending: isQuickSubmitting } = useMutation({
+    mutationFn: submitEndUserPropertyContactAction,
+    onSuccess: (response) => {
+      toast.success(response?.message ?? "Request submitted successfully");
+      setIsQuickContactOpen(false);
+    },
+    onError: (error: any) => {
+      const msg = error?.message ?? "Unable to submit request";
+      toast.error(Array.isArray(msg) ? msg.join(", ") : msg);
+    },
+  });
+
+  const openContactModal = async () => {
+    if (!contactProject) return;
+
+    let nextName = "";
+    let nextEmail = "";
+    let nextPhone = "";
+    let nextCountryCode = "+91";
+
+    if (typeof window !== "undefined") {
+      try {
+        const rawUser = localStorage.getItem("user");
+        if (rawUser) {
+          const parsed = JSON.parse(rawUser) as {
+            name?: string;
+            email?: string;
+            phone?: string;
+            countryCode?: string;
+          };
+          nextName = parsed?.name ?? "";
+          nextEmail = parsed?.email ?? "";
+          nextPhone = parsed?.phone ?? "";
+          nextCountryCode = parsed?.countryCode ?? "+91";
+        }
+      } catch { }
+    }
+
+    setContactUser({ name: nextName, email: nextEmail, phone: nextPhone, countryCode: nextCountryCode });
+    setIsContactAuthChecking(true);
+    try {
+      const response = await fetch("/api/get-token");
+      const data = (await response.json()) as { accessToken?: string | null };
+      const isUserLoggedIn = Boolean(data?.accessToken);
+
+      if (isUserLoggedIn && nextName.trim() && nextPhone.trim()) {
+        setIsQuickContactOpen(true);
+        return;
+      }
+      setIsContactModalOpen(true);
+    } catch {
+      setIsContactModalOpen(true);
+    } finally {
+      setIsContactAuthChecking(false);
+    }
+  };
+
+  const handleQuickContactSubmit = () => {
+    if (!contactProject || !contactUser.name.trim() || !contactUser.phone.trim()) {
+      setIsQuickContactOpen(false);
+      setIsContactModalOpen(true);
+      return;
+    }
+    submitQuickContact({
+      propertyId: contactProject.id,
+      name: contactUser.name.trim(),
+      email: contactUser.email.trim() || undefined,
+      phone: contactUser.phone.trim(),
+      countryCode: contactUser.countryCode,
+      sessionId: persistedSessionId ?? undefined,
+    });
+  };
 
   // Show login prompt when guest user has exceeded 3 free views
   if (viewLimitExceeded) {
@@ -1779,11 +1866,10 @@ export default function ListingDetailsPage() {
                     <button
                       type="button"
                       onClick={openContactModal}
-                      disabled={!contactProject}
+                      disabled={!contactProject || isContactAuthChecking}
                       className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-blue px-4 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
                     >
-                      <PhoneCall className="h-4 w-4" />
-                      Contact Now
+                      {isContactAuthChecking ? <Spinner size={16} /> : <><PhoneCall className="h-4 w-4" />Contact Now</>}
                     </button>
                   </aside>
                 </div>
@@ -1811,22 +1897,83 @@ export default function ListingDetailsPage() {
               <button
                 type="button"
                 onClick={openContactModal}
-                disabled={!contactProject}
+                disabled={!contactProject || isContactAuthChecking}
                 className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-[#05085E] px-5 py-3 text-sm font-semibold text-white shadow-[0_1px_3px_rgba(16,24,40,0.20)] disabled:cursor-not-allowed disabled:opacity-70"
               >
-                <PhoneCall className="h-4 w-4" />
-                Contact Now
+                {isContactAuthChecking ? <Spinner size={16} /> : <><PhoneCall className="h-4 w-4" />Contact Now</>}
               </button>
             </div>
           </div>
         </div>
       </MainLayout>
       {contactProject ? (
-        <ProjectCallBackModal
-          open={isContactModalOpen}
-          onClose={() => setIsContactModalOpen(false)}
-          project={contactProject}
-        />
+        <>
+          <ProjectCallBackModal
+            open={isContactModalOpen}
+            onClose={() => setIsContactModalOpen(false)}
+            project={contactProject}
+          />
+          <Dialog
+            open={isQuickContactOpen}
+            onClose={() => setIsQuickContactOpen(false)}
+            slotProps={{ paper: { sx: { borderRadius: "0.75rem" } } }}
+          >
+            <DialogContent sx={{ padding: 0 }}>
+              <div className="w-full rounded-xl bg-[#EFEFEF] p-4 sm:w-[520px]">
+                <div className="mb-4 flex items-start justify-between gap-3">
+                  <h3 className="text-[28px] font-semibold text-[#1E2236]">
+                    Contact Our Channel Partners
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => setIsQuickContactOpen(false)}
+                    className="rounded-full p-1 text-[#1E2236] transition hover:bg-black/5"
+                    aria-label="Close"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div className="mb-3 flex items-center justify-between gap-3 rounded-lg bg-[#E3E3E3] px-3 py-2">
+                  <div className="flex items-center gap-3">
+                    <Image
+                      src={contactProject.agent?.avatarUrl ?? "/assets/app/call-person.svg"}
+                      alt={contactProject.agent?.name ?? "KMA Expert"}
+                      width={40}
+                      height={40}
+                      className="h-11 w-11 rounded-full object-cover"
+                    />
+                    <div>
+                      <p className="text-sm font-semibold text-text-black">
+                        {contactProject.agent?.name ?? "KMA Expert"}
+                      </p>
+                      {contactProject.agent?.badge ? (
+                        <span className="mt-0.5 inline-flex rounded-md bg-[#D08A2F] px-2 py-1 text-[12px] text-white">
+                          {contactProject.agent.badge}
+                        </span>
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+
+                <p className="mb-4 rounded-md bg-white px-3 py-2 text-sm text-[#7A7A7A]">
+                  Hi {contactUser.name || "there"}, would you like to connect with{" "}
+                  {contactProject.agent?.name ?? "our channel partner"} for {contactProject.title}
+                  {contactProject.address ? ` in ${contactProject.address}` : ""}?
+                </p>
+
+                <button
+                  type="button"
+                  onClick={handleQuickContactSubmit}
+                  disabled={isQuickSubmitting}
+                  className="inline-flex h-11 w-full items-center justify-center rounded-full bg-[#0A0A63] px-6 text-sm font-semibold text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {isQuickSubmitting ? <Spinner size={18} /> : "Contact Now"}
+                </button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </>
       ) : null}
       <AboutusDataSync />
       <HomeFooter />

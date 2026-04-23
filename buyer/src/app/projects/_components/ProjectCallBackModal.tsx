@@ -7,8 +7,9 @@ import DialogContent from "@mui/material/DialogContent";
 import { InputBase } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { useRouter } from "nextjs-toploader/app";
 
 import MobileInput from "@/components/common/mobileInput";
 import OtpInput from "@/components/common/optInput";
@@ -46,6 +47,8 @@ export default function ProjectCallBackModal({
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const persistedSessionId = useSessionStore((state) => state.sessionId);
+  const router = useRouter();
+  const queryClient = useQueryClient();
 
   const [step, setStep] = React.useState<ModalStep>("form");
   const [isUserLoggedIn, setIsUserLoggedIn] = React.useState(false);
@@ -180,18 +183,26 @@ export default function ProjectCallBackModal({
     onSuccess: async (response) => {
       // Backend issues tokens on OTP verification for guests — drop them into
       // a signed-in session so they don't have to log in again.
+      let didAutoLogin = false;
       if (response?.accessToken && response?.refreshToken) {
         try {
           await setAuthCookies(response.accessToken, response.refreshToken);
           if (response.user && typeof window !== "undefined") {
             localStorage.setItem("user", JSON.stringify(response.user));
           }
+          didAutoLogin = true;
         } catch {
           // Non-fatal: keep the success flow even if cookie write fails.
         }
       }
       toast.success(response?.message ?? "Request submitted successfully");
       closeModal();
+      if (didAutoLogin) {
+        // Force header / favourite / get-token consumers to re-read the new
+        // session so the UI reflects the logged-in state without a manual refresh.
+        queryClient.clear();
+        router.refresh();
+      }
     },
     onError: (error: any) => {
       const message = error?.message ?? "Unable to submit request";
