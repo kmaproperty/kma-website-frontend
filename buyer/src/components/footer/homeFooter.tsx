@@ -307,7 +307,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
                   { label: "Careers", href: "/about-us" },
                   { label: "Services", href: "/about-us" },
                   { label: "Contact Us", href: "/contact-us" },
-                  { label: "Terms & Conditions", href: "/about-us" },
+                  { label: "Terms & Conditions", href: "/terms-and-conditions" },
                   { label: "Privacy Policy", href: "/about-us" },
                 ].map((item) => (
                   <li key={item.label}>
