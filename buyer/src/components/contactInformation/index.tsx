@@ -214,10 +214,10 @@ export default function ContactInformation({isEndUser = false}: {isEndUser?: boo
                 </div>
 
                 <div className="flex items-center gap-4">
-                  <div className="rounded-full border border-white p-2 flex items-center justify-center">
+                  <div className="shrink-0 rounded-full border border-white p-2 flex items-center justify-center">
                     <Mail className="h-5 w-5 text-white" />
                   </div>
-                  <p className="text-sm">{aboutusData?.email || 'info@kmaproperty.com'}</p>
+                  <p className="text-sm min-w-0 flex-1 break-all">{aboutusData?.email || 'info@kmaproperty.com'}</p>
                 </div>
 
                 <div className="flex items-center gap-4">
