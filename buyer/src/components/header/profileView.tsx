@@ -13,13 +13,8 @@ import { useSessionStore } from "@/store/useSessionStore";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter } from "nextjs-toploader/app";
-import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo } from "react";
 import { toast } from "react-toastify";
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
-import LoginCard from "@/components/channelParterner/loginCard";
-import LoginOtpCard from "@/components/channelParterner/loginOtpCard";
 
 type ProfileViewProps = {
   userRole?: string | null;
@@ -186,37 +181,8 @@ export default function ProfileView({ userRole }: ProfileViewProps) {
         ? `${baseUrl}${user.profileImage}`
         : "/assets/profile.png";
 
-  const searchParams = useSearchParams();
-  const isLoginParam = searchParams.get("isLogin") === "true";
-  const isOtpParam = searchParams.get("isOtp") === "true";
-  const flowParam = searchParams.get("flow");
-  const isOtpStep =
-    isOtpParam && (flowParam === "login" || flowParam === "enduser-login");
-  const isLoginDialogOpen = isLoginParam || isOtpStep;
-
   const navigateToLogin = () => {
-    if (typeof window === "undefined") return;
-    const next = new URLSearchParams(window.location.search);
-    next.delete("isOtp");
-    next.delete("flow");
-    next.delete("mobile");
-    next.delete("code");
-    next.delete("redirect");
-    next.set("isLogin", "true");
-    router.push(`${window.location.pathname}?${next.toString()}`);
-  };
-
-  const closeLoginDialog = () => {
-    if (typeof window === "undefined") return;
-    const next = new URLSearchParams(window.location.search);
-    next.delete("isLogin");
-    next.delete("isOtp");
-    next.delete("flow");
-    next.delete("mobile");
-    next.delete("code");
-    next.delete("redirect");
-    const qs = next.toString();
-    router.replace(`${window.location.pathname}${qs ? `?${qs}` : ""}`);
+    router.push("/user-flow?isLogin=true");
   };
 
   const handleMenuClick = (item: MenuItem) => {
@@ -301,32 +267,6 @@ export default function ProfileView({ userRole }: ProfileViewProps) {
           </button>
         )}
       </div>
-
-      <Dialog
-        open={isLoginDialogOpen}
-        onClose={closeLoginDialog}
-        slotProps={{
-          paper: {
-            sx: {
-              borderRadius: "0.75rem",
-            },
-          },
-        }}
-      >
-        <DialogContent sx={{ padding: 0 }}>
-          <div className="relative w-full rounded-xl bg-white sm:w-[460px]">
-            <button
-              type="button"
-              onClick={closeLoginDialog}
-              className="absolute right-4 top-4 z-10 rounded-full p-1 text-[#1E2236] transition hover:bg-black/5"
-              aria-label="Close login dialog"
-            >
-              ✕
-            </button>
-            {isOtpStep ? <LoginOtpCard /> : <LoginCard />}
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

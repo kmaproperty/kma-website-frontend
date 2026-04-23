@@ -18,7 +18,6 @@ export default function middleware(req: NextRequest) {
     "/sign-document",
     "/signup",
     "/user-dashboard",
-    "/user-flow",
     "/verify-otp",
     "/verify-post-property",
   ];
