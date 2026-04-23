@@ -339,10 +339,10 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
             </div>
           </motion.div>
 
-          <div className="border-t border-text-gray/60 my-8" />
+          {/* <div className="border-t border-text-gray/60 my-8" /> */}
 
           {/* Gallery Section */}
-          <motion.div
+          {/* <motion.div
             variants={rightVariant}
             className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-10 items-center"
             animate={isInView ? "visible" : "hidden"}
@@ -399,7 +399,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
                 </div>
               ))}
             </div>
-          </motion.div>
+          </motion.div> */}
         </div>
       </div>
 
