@@ -11,6 +11,7 @@ import { FaFacebook, FaLinkedin, FaTwitter, FaYoutube } from 'react-icons/fa';
 import ContactFormComponent from '@/components/contactUs/contactForm';
 import Link from 'next/link';
 import ContactTable from '../../components/contactUs/ContactTable';
+import ContactInformation from '@/components/contactInformation';
 
 const SalesEnquiry = () => {
 
@@ -54,12 +55,12 @@ const SalesEnquiry = () => {
                         <p className='text-md font-normal text-[#888888] mb-0'>Our KMA Partner Specialist will guide you step-by-step.</p>
                     </div>
                 </div>
-                <button className="animated-button px-6 py-3.5 cursor-pointer w-full lg:w-auto">
+                <Link href="?isContactInformation=true" scroll={false} className="animated-button px-6 py-3.5 cursor-pointer w-full lg:w-auto">
                     <span className="flex items-center justify-between gap-[10px] relative z-11">
                         <PhoneIncoming className='w-5 h-5 text-white' />
                         <p className="text-nowrap text-xs lg:text-sm">Request a Callback</p>
                     </span>
-                </button>
+                </Link>
             </div>
             <div className='w-full py-[80px] px-4 sm:px-6 md:px-[50px]'>
                 <div className='max-w-[1440px] mx-auto'>
@@ -117,8 +118,9 @@ const SalesEnquiry = () => {
             <div className="bg-text-black flex justify-center">
                     <AboutusDataSync />
                     <HomeFooter tab={1} />
-                
+
             </div>
+            <ContactInformation />
         </div>
     )
 };
