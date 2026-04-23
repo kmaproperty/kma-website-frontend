@@ -1,5 +1,5 @@
 "use client";
-import { InputBase } from "@mui/material";
+import { InputBase, Dialog, DialogContent } from "@mui/material";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { OptionType } from "../common/asyncSelect";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -59,6 +59,8 @@ export default function CreateAccount({ step }: { step: number }) {
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [codeError, setCodeError] = useState(false)
   const [emailError, setEmailError] = useState(false)
+  const [generatedCpCode, setGeneratedCpCode] = useState<string | null>(null);
+  const [showCpCodeDialog, setShowCpCodeDialog] = useState(false);
   // const [step, setStep] = useState<number>(1); // 1 = initial, 2 = extended
   const { data } = useQuery<CitiesResponse, Error, string[]>({
     queryKey: ["cities"],
@@ -160,7 +162,13 @@ export default function CreateAccount({ step }: { step: number }) {
     },
     onSuccess: (response: CreateOwnerResponse) => {
       localStorage.setItem("user", JSON.stringify(response.user));
-            dispatch(resetForm())
+      dispatch(resetForm())
+      const code = response.user?.channelPartnerCode;
+      if (code) {
+        setGeneratedCpCode(code);
+        setShowCpCodeDialog(true);
+        return;
+      }
       toast.success(response.message)
       router.push('/kyc')
     },
@@ -651,6 +659,57 @@ export default function CreateAccount({ step }: { step: number }) {
           </div>
         </div>
       </div>
+
+      <Dialog
+        open={showCpCodeDialog}
+        onClose={() => { /* force acknowledgment via button */ }}
+        slotProps={{ paper: { sx: { borderRadius: "14px" } } }}
+      >
+        <DialogContent sx={{ padding: 0 }}>
+          <div className="w-full sm:w-[460px] bg-white rounded-[14px] p-6 sm:p-8 text-center">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#EEF2FF]">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 13l4 4L19 7" stroke="#010048" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-semibold text-text-black">Welcome to KMA!</h2>
+            <p className="mt-2 text-sm text-[#5C727D]">
+              Your Channel Partner account is ready. Please note and save your
+              Channel Partner code — you'll need it for future reference.
+            </p>
+            <div className="mt-5 rounded-xl border border-dashed border-[#C7CBE2] bg-[#F7F8FC] px-4 py-5">
+              <p className="text-xs uppercase tracking-wide text-[#5C727D]">Your Channel Partner Code</p>
+              <p className="mt-2 text-2xl sm:text-3xl font-bold tracking-wider text-[#010048]">
+                {generatedCpCode}
+              </p>
+            </div>
+            <div className="mt-6 flex flex-col sm:flex-row gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  if (generatedCpCode && typeof navigator !== "undefined" && navigator.clipboard) {
+                    navigator.clipboard.writeText(generatedCpCode).catch(() => { /* ignore */ });
+                    toast.success("Code copied to clipboard");
+                  }
+                }}
+                className="w-full sm:flex-1 h-11 rounded-full border border-[#010048] text-sm font-medium text-[#010048] hover:bg-[#0100481A]"
+              >
+                Copy Code
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowCpCodeDialog(false);
+                  router.push("/kyc");
+                }}
+                className="w-full sm:flex-1 h-11 rounded-full bg-[#010048] text-sm font-semibold text-white hover:opacity-95"
+              >
+                Continue to KYC
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
