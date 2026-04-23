@@ -5,6 +5,8 @@ import { createPortal } from "react-dom";
 import { ChevronLeft, Search, X } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "nextjs-toploader/app";
+import { useSelector } from "react-redux";
+import { getSelectedCity, getPropertyMasterData } from "@/store/homeHeaderSlice";
 import type { Project } from "../_types";
 import FiltersSidebar from "./FiltersSidebar";
 import ProjectsToolbar from "./ProjectsToolbar";
@@ -16,6 +18,7 @@ import {
 } from "@/api/hooks/useEndUserProperties";
 import ProjectsPagination from "./ProjectsPagination";
 import { getUserCoordinates } from "@/api/hooks/useGeoloaction";
+import { buildProjectsRouteLabels } from "../_utils/routeLabels";
 
 const awsBaseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
 const fallbackProjectImage = "/assets/properties_pic_1.png";
@@ -184,6 +187,8 @@ const normalizeBuildingType = (value?: string) => {
 
 export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
   const router = useRouter();
+  const selectedCity = useSelector(getSelectedCity) as { name?: string } | null;
+  const propertyMasterData = useSelector(getPropertyMasterData);
   const tab = useProjectsStore((s) => s.tab);
   const sort = useProjectsStore((s) => s.sort);
   const filters = useProjectsStore((s) => s.filters);
