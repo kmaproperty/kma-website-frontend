@@ -69,15 +69,15 @@ const SalesEnquiry = () => {
                     />
                     <div className='flex items-center gap-3 mt-7'>
                         <MapPin className='w-5 h-5 text-[#7575BC]' />
-                        <p className='text-md font-normal text-[#0D1520] mb-0'><b className='font-semibold'>KMA Realty Services Pvt. Ltd. -</b> Tower A, Business Park, Sector 62, Noida - 201309, U.P.</p>
+                        <p className='text-md font-normal text-[#0D1520] mb-0'>Gurgaon, Haryana, India</p>
                     </div>
                     <div className='flex items-center gap-3 mt-3'>
                         <Phone className='w-5 h-5 text-[#7575BC]' />
-                        <a href='tel:+919876543210' className='text-md font-normal text-[#0D1520] mb-0'>+91 9876543210</a>
+                        <a href='tel:+919056580022' className='text-md font-normal text-[#0D1520] mb-0'>+91 9056580022</a>
                     </div>
                     <div className='flex items-center gap-3 mt-3'>
                         <Mail className='w-5 h-5 text-[#7575BC]' />
-                        <a href='mailto:info@kma.com' className='text-md font-normal text-[#0D1520] mb-0'>info@kma.com</a>
+                        <a href='mailto:md.karmjeet@kmaglobalproperty.com' className='text-md font-normal text-[#0D1520] mb-0'>md.karmjeet@kmaglobalproperty.com</a>
                     </div>
                 </div>
             </div>
@@ -93,10 +93,9 @@ const SalesEnquiry = () => {
                 <div className='max-w-[1440px] mx-auto flex flex-col lg:flex-row gap-10 justify-between'>
                     <div className='w-full lg:w-[50%] max-w-[720px]'>
                         <h2 className={`text-[28px] leading-9 font-semibold text-text-black mb-6`}>About KMA</h2>
-                        <p className='text-md leading-7 font-normal text-[#888888] mb-0'>KMA (Knowledge Market Advisors) is a fast-growing digital real estate platform designed for builders, brokers, agents, and property buyers. We empower our partners to showcase unlimited properties and projects, generate verified leads, and scale their business digitally — all in one place.
+                        <p className='text-md leading-7 font-normal text-[#888888] mb-0'>KMA Global Properties is a fast-growing real estate platform built for brokers, channel partners, and property buyers across Gurgaon. We empower every partner with free listings, exclusive leads, and a complete support system — so they can focus on closing deals, not chasing them.
                            <br /> <br />
-                            With an intuitive listing dashboard, verified buyer engagement tools, and a trusted partner community, KMA is building the future of transparent and efficient property marketing in India.
-                            Whether you're looking to post a project, explore new launches, or buy your dream home, KMA connects the right people with the right properties — smarter and faster.</p>
+                            With a Live CRM dashboard, a dedicated Pre-Sales and Field Support team, and a trusted network of 2500+ brokers and 200+ societies, KMA is redefining what transparent and efficient real estate looks like in India. Whether you&apos;re looking to list a property, find your dream home, or grow your brokerage business — KMA connects the right people with the right properties. Smarter, faster, and always fair.</p>
                     </div>
                     <div className='w-full lg:w-[45%] max-w-[624px]'>
                         <h2 className={`text-[28px] leading-9 font-semibold text-text-black mb-6`}>Popular Cities in India</h2>
