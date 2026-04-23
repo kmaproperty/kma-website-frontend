@@ -99,7 +99,7 @@ const SalesEnquiry = () => {
                     </div>
                     <div className='w-full lg:w-[45%] max-w-[624px]'>
                         <h2 className={`text-[28px] leading-9 font-semibold text-text-black mb-6`}>Popular Cities in India</h2>
-                        <p className='text-md leading-7 font-normal text-[#888888] mb-0'><b className='font-semibold'>Buy / Rent / Sell in:</b><br/> Delhi NCR | Mumbai | Noida | Pune | Gurgaon | Bengaluru | Hyderabad | Ahmedabad | Jaipur | Lucknow </p>
+                        <p className='text-md leading-7 font-normal text-[#888888] mb-0'><b className='font-semibold'>Buy / Rent / Sell in:</b><br/> Gurgaon </p>
                         <div className='flex gap-3  mt-4'>
                             <a className='flex w-10 h-10 items-center justify-center rounded-full border border-[#ccc]' href='#'>
                                 <Image height={46} width={46} src="assets/app/instagram.svg" className='w-6 h-6' />
