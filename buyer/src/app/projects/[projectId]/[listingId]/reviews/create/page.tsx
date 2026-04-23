@@ -123,7 +123,18 @@ export default function CreateReviewPage() {
     asString((propertyDetails as any)?.propertyName) ??
     asString((propertyDetails as any)?.title) ??
     "";
-  const propertyAddress = asString((propertyDetails as any)?.address) ?? "";
+  const propertyAddress =
+    asString((detailsResponse as any)?.location?.address) ??
+    asString((propertyDetails as any)?.address) ??
+    [
+      asString((detailsResponse as any)?.location?.society),
+      asString((detailsResponse as any)?.location?.locality),
+      asString((detailsResponse as any)?.location?.city),
+      asString((detailsResponse as any)?.location?.state),
+    ]
+      .filter(Boolean)
+      .join(", ") ||
+    "";
 
   const coverImage = useMemo(() => {
     const media = [
