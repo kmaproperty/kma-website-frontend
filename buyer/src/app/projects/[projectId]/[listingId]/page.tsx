@@ -28,7 +28,6 @@ import {
   Trees,
   UtensilsCrossed,
   ChevronLeft,
-  Share2,
 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useDispatch } from "react-redux";
@@ -836,13 +835,6 @@ export default function ListingDetailsPage() {
               <section className="mt-4 flex min-w-0 flex-col gap-3 md:flex-row md:gap-3 md:px-0 px-4">
                 <div className="mb-1 flex items-center justify-between md:hidden">
                   <h3 className="text-[18px] font-semibold text-text-black">Images</h3>
-                  <button
-                    type="button"
-                    className="cursor-pointer inline-flex items-center gap-2 rounded-[5px] text-sm bg-[#0A0E67] hover:bg-black px-2 py-1.5 font-medium text-white"
-                  >
-                    <Share2 className="h-3.5 w-3.5" />
-                    Share
-                  </button>
                 </div>
                 <div
                   ref={mobileGalleryRef}
@@ -859,15 +851,6 @@ export default function ListingDetailsPage() {
                         fill
                         className="object-cover"
                       />
-                      {idx === 0 ? (
-                        <button
-                          type="button"
-                          className="absolute right-3 top-3 hidden items-center gap-2 rounded-lg bg-white/95 px-3 py-2 text-xs font-medium text-text-black"
-                        >
-                          <Share2 className="h-3.5 w-3.5" />
-                          Share
-                        </button>
-                      ) : null}
                     </div>
                   ))}
                 </div>
@@ -895,13 +878,6 @@ export default function ListingDetailsPage() {
                     className="object-cover"
                     priority
                   />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-3 inline-flex items-center gap-2 rounded-lg bg-white/95 px-3 py-2 text-xs font-medium text-text-black"
-                  >
-                    <Share2 className="h-3.5 w-3.5" />
-                    Share
-                  </button>
                 </div>
 
                 <div className="hidden w-full min-h-0 min-w-0 grid-cols-2 grid-rows-2 gap-2 sm:gap-3 md:grid md:h-[420px] md:w-[42%] md:grid-rows-[minmax(0,1fr)_minmax(0,1fr)] md:self-stretch lg:h-[480px] lg:w-[40%]">
