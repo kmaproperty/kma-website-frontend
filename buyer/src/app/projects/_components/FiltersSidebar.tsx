@@ -161,10 +161,28 @@ export default function FiltersSidebar({
 
   const categories = filtersData?.categories ?? [];
   const propertyTypes = filtersData?.propertyTypes ?? [];
-  const bhkTypes =
+  const rawBhkTypes =
     propertyTypeId != null
       ? (filtersDataWithBhk?.bhkTypes ?? [])
       : (filtersData?.bhkTypes ?? []);
+
+  // Backend sometimes returns the same label (e.g. "1 BHK") under multiple ids
+  // tied to different property types. Collapse them so the UI shows each label
+  // once and toggling it flips every id in the group.
+  const bhkTypes = (() => {
+    const byName = new Map<string, { name: string; ids: string[] }>();
+    for (const b of rawBhkTypes) {
+      const label = (b?.name ?? "").trim();
+      if (!label) continue;
+      const existing = byName.get(label);
+      if (existing) {
+        if (!existing.ids.includes(b.id)) existing.ids.push(b.id);
+      } else {
+        byName.set(label, { name: label, ids: [b.id] });
+      }
+    }
+    return Array.from(byName.values());
+  })();
   const furnishingList = filtersData?.furnishing ?? [];
   const amenitiesList = filtersData?.amenities ?? [];
 
@@ -360,15 +378,30 @@ export default function FiltersSidebar({
 
         <Section title="Bedroom" compact={compact}>
           <div className="flex flex-wrap gap-2">
-            {bhkTypes.map((b) => (
-              <CheckboxRow
-                key={b.id}
-                checked={filters.bhkTypeIds.includes(b.id)}
-                label={b.name}
-                onChange={() => startTransition(() => toggleBhkTypeId(b.id))}
-                compact
-              />
-            ))}
+            {bhkTypes.map((b) => {
+              const isChecked = b.ids.some((id) => filters.bhkTypeIds.includes(id));
+              return (
+                <CheckboxRow
+                  key={b.name}
+                  checked={isChecked}
+                  label={b.name}
+                  onChange={() =>
+                    startTransition(() => {
+                      if (isChecked) {
+                        b.ids.forEach((id) => {
+                          if (filters.bhkTypeIds.includes(id)) toggleBhkTypeId(id);
+                        });
+                      } else {
+                        b.ids.forEach((id) => {
+                          if (!filters.bhkTypeIds.includes(id)) toggleBhkTypeId(id);
+                        });
+                      }
+                    })
+                  }
+                  compact
+                />
+              );
+            })}
           </div>
         </Section>
 
