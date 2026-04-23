@@ -70,7 +70,7 @@ export default function AboutUsSection() {
 
   return (
     <>
-      <div ref={ref} className="my-16 max-w-[1440px] mx-auto w-full z-10">
+      <div ref={ref} className="my-16 w-[90%] 2md:w-[75%] z-10">
         <motion.div
           className="grid grid-cols-1 2md:grid-cols-2 gap-6 justify-between items-center"
           
@@ -85,7 +85,7 @@ export default function AboutUsSection() {
               About Us
             </p>
             <div>
-              <p className="kma_title text-white text-wrap font-semibold">
+              <p className="text-xl text-white text-wrap font-semibold">
                 {aboutus?.aboutUs?.heading}
               </p>
               <p className="mt-1 leading-4 text-xs text-white text-wrap font-regular">
@@ -113,7 +113,7 @@ export default function AboutUsSection() {
           </motion.div>
         </motion.div>
         <motion.div
-          className="grid grid-cols-2 2md:grid-cols-4 gap-3 mt-15 justify-items-stretch 2md:justify-items-center"
+          className="grid grid-cols-1 2md:grid-cols-4 gap-3 mt-15 justify-items-center "
           variants={staggerContainer}
           animate={isInView ? "visible" : "hidden"}
         >
@@ -148,15 +148,9 @@ export default function AboutUsSection() {
               key={index}
               variants={bottomVariant}
               animate={isInView ? "visible" : "hidden"}
-              className="flex min-w-0 items-center gap-2 2md:gap-4 bg-[#131D2C] w-full max-w-none 2md:max-w-[343px] h-[117px] px-3 py-4 2md:px-5 rounded-[10px] border border-white/5 shadow-[0_8px_24px_rgba(0,0,0,0.25)] hover:border-white/10 transition-colors"
+              className="flex items-center gap-4 bg-[#131D2C] w-full max-w-[343px] h-[117px] px-5 py-4 rounded-[10px] border border-white/5 shadow-[0_8px_24px_rgba(0,0,0,0.25)] hover:border-white/10 transition-colors"
             >
-              <Image
-                src={item.img}
-                width={40}
-                height={40}
-                alt={item.label}
-                className="h-8 w-8 shrink-0 2md:h-10 2md:w-10"
-              />
+              <Image src={item.img} width={40} height={40} alt={item.label} />
               <div className="number-count">
                 {isInView && <CountUp start={0} end={Number(item.value ?? 0)} delay={1} />}
                 <p className="text-xs text-white leading-tight">{item.label}</p>

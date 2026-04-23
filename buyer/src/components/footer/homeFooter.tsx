@@ -85,18 +85,15 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
     ? propertyMasterData?.find((item) => item.code == "rent")?.id
     : propertyMasterData?.find((item) => item.code == "sale")?.id;
 
-  const shouldFilterByCity = !!selectedCity?.id && !!listingTypeId;
-  const { data: footerProperties = [], isFetching } = useEndUserProperties(
+  const { data: footerProperties = [] } = useEndUserProperties(
     {
       cityId: selectedCity?.id,
       listingTypeIds: listingTypeId ? [listingTypeId] : undefined,
       limit: 100,
       page: 1,
     },
-    { enabled: shouldFilterByCity }
+    { enabled: !!selectedCity?.id && !!listingTypeId }
   );
-
-  const isFilterLoading = shouldFilterByCity && isFetching;
 
   const availablePropertyTypeIds = useMemo(() => {
     const ids = new Set<string>();
@@ -110,14 +107,14 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
   }, [footerProperties]);
 
   const residentialList = useMemo(() => {
-    if (!shouldFilterByCity) return rawResidentialList;
+    if (!selectedCity?.id || availablePropertyTypeIds.size === 0) return rawResidentialList;
     return rawResidentialList.filter(item => availablePropertyTypeIds.has(item.id));
-  }, [rawResidentialList, availablePropertyTypeIds, shouldFilterByCity]);
+  }, [rawResidentialList, availablePropertyTypeIds, selectedCity?.id]);
 
   const commercialList = useMemo(() => {
-    if (!shouldFilterByCity) return rawCommercialList;
+    if (!selectedCity?.id || availablePropertyTypeIds.size === 0) return rawCommercialList;
     return rawCommercialList.filter(item => availablePropertyTypeIds.has(item.id));
-  }, [rawCommercialList, availablePropertyTypeIds, shouldFilterByCity]);
+  }, [rawCommercialList, availablePropertyTypeIds, selectedCity?.id]);
 
   const getPropertyLink = (propertyTypeId: string) => {
     const basePath = selectedCity?.id ? `/projects/${selectedCity.id}` : "/projects";
@@ -128,10 +125,10 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
   };
 
   return (
-    <footer className="w-full bg-text-black overflow-hidden px-4">
+    <footer className="w-full bg-text-black">
       {/* Tabs */}
       <div ref={ref} className="w-full bg-[#121D2B] flex justify-center border-t border-white/5">
-        <div className="max-w-[1440px] mx-auto w-full flex items-stretch">
+        <div className="w-[90%] md:w-[75%] flex items-stretch">
           <button
             type="button"
             onClick={() => handleTab("1")}
@@ -165,7 +162,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
 
       {/* Property Links */}
       <div className="flex justify-center">
-        <div className="max-w-[1440px] mx-auto w-full pt-6">
+        <div className="w-[90%] md:w-[75%] pt-6">
           <p className="text-white text-base font-semibold mb-4">
             Property Type for {isRentTab ? "Rent" : "Buy"}
           </p>
@@ -176,12 +173,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
               animate={isInView ? "visible" : "hidden"}
             >
               <p className="text-white text-base font-semibold">In Residential</p>
-              {isFilterLoading ? (
-                <div className="flex items-center gap-2 text-[13px] text-[#fffc]">
-                  <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-[#fffc] border-t-transparent" />
-                  Loading properties...
-                </div>
-              ) : residentialList.length === 0 ? (
+              {residentialList.length === 0 ? (
                 <p className="text-[#fffc] text-[13px]">No property types available.</p>
               ) : (
                 <ul className="mt-1 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
@@ -205,12 +197,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
               animate={isInView ? "visible" : "hidden"}
             >
               <p className="text-white text-base font-semibold">In Commercial</p>
-              {isFilterLoading ? (
-                <div className="flex items-center gap-2 text-[13px] text-[#fffc]">
-                  <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-[#fffc] border-t-transparent" />
-                  Loading properties...
-                </div>
-              ) : commercialList.length === 0 ? (
+              {commercialList.length === 0 ? (
                 <p className="text-[#fffc] text-[13px]">No property types available.</p>
               ) : (
                 <ul className="mt-1 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
@@ -233,7 +220,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
 
       {/* Main Footer Content */}
       <div className="w-full flex justify-center py-8">
-        <div className="max-w-[1440px] mx-auto w-full">
+        <div className="w-[90%] md:w-[75%]">
           <div className="border-t border-text-gray/60 mb-8" />
 
           <motion.div
@@ -301,11 +288,11 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
               <h3 className="text-white text-base font-semibold mb-3">
                 Company
               </h3>
-              <ul className="md:space-y-3 md:block flex flex-wrap gap-x-3 gap-y-2 text-[13px] text-white/90">
+              <ul className="space-y-3 text-[13px] text-white/90">
                 {[
                   { label: "About Us", href: "/about-us" },
-                  { label: "Careers", href: "/about-us" },
-                  { label: "Services", href: "/about-us" },
+                  // { label: "Careers", href: "/about-us" },
+                  // { label: "Services", href: "/about-us" },
                   { label: "Contact Us", href: "/contact-us" },
                   { label: "Terms & Conditions", href: "/terms-and-conditions" },
                   { label: "Privacy Policy", href: "/about-us" },
@@ -342,12 +329,12 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
           {/* <div className="border-t border-text-gray/60 my-8" /> */}
 
           {/* Gallery Section */}
-          {/* <motion.div
+          <motion.div
             variants={rightVariant}
             className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-10 items-center"
             animate={isInView ? "visible" : "hidden"}
           >
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            {/* <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <Image
                 src="/assets/kma-logo-white.svg"
                 width={100}
@@ -372,9 +359,9 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
                   Nice Gallery
                 </p>
               </div>
-            </div>
+            </div> */}
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+            {/* <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
               {[1, 2, 3, 4, 5].map((i) => (
                 <div
                   key={i}
@@ -398,14 +385,14 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
                   </div>
                 </div>
               ))}
-            </div>
-          </motion.div> */}
+            </div> */}
+          </motion.div>
         </div>
       </div>
 
       {/* Bottom Bar */}
       <div className="w-full flex justify-center">
-        <div className="max-w-[1440px] mx-auto w-full border-t border-text-gray/60 py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-xs text-white">
+        <div className="w-[90%] md:w-[75%] border-t border-text-gray/60 py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-xs text-white">
           <p className="text-center md:text-left">
             Copyright © {currentYear} KMA. All Rights Reserved.
           </p>

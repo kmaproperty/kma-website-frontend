@@ -1,8 +1,8 @@
 "use client";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import Slider, { type Settings } from "react-slick";
-import { useLayoutEffect, useRef, useState } from "react";
+import Slider from "react-slick";
+import { useRef } from "react";
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
 import Link from "next/link";
@@ -67,41 +67,47 @@ type ExploreSectionProps = {
   explorePropertyList?: ExplorePropertyItem[];
 };
 
-/** Aligns with theme: sm/md → 2md/lg → xl → 1xl+ */
-function getExploreSlidesToShow(viewportWidth: number): number {
-  if (viewportWidth <= 640) return 1;
-  if (viewportWidth <= 1024) return 2;
-  if (viewportWidth < 1440) return 3;
-  return 4;
-}
-
 export default function ExploreSection({ explorePropertyList = [] }: ExploreSectionProps) {
-  const sliderRef = useRef<InstanceType<typeof Slider> | null>(null);
+  const sliderRef = useRef<Slider | null>(null);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
-  const list = Array.isArray(explorePropertyList) ? explorePropertyList : [];
-  const [windowWidth, setWindowWidth] = useState<number | null>(null);
+  // Deduplicate by name — merge property counts for same type (e.g. Builder Floor sale + rent)
+  const list = (() => {
+    const raw = Array.isArray(explorePropertyList) ? explorePropertyList : [];
+    const map = new Map<string, ExplorePropertyItem>();
+    for (const item of raw) {
+      const existing = map.get(item.name);
+      if (existing) {
+        existing.propertyCount += item.propertyCount;
+      } else {
+        map.set(item.name, { ...item });
+      }
+    }
+    return Array.from(map.values());
+  })();
 
-  // react-slick ^0.31: `responsive` often does not apply on first paint — derive slidesToShow from width.
-  useLayoutEffect(() => {
-    const update = () => setWindowWidth(window.innerWidth);
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, []);
-
-  const maxAtWidth = windowWidth == null ? 1 : getExploreSlidesToShow(windowWidth);
-  const slidesToShow = list.length > 0 ? Math.min(maxAtWidth, list.length) : 1;
-  const showSliderArrows = windowWidth != null && list.length > slidesToShow;
-
-  const settings: Settings = {
-    dots: false,
-    arrows: false,
-    infinite: list.length > slidesToShow,
-    speed: 600,
-    slidesToShow,
-    slidesToScroll: 1,
-  };
+  const settings = {
+      dots: false,
+      arrows: false,
+      infinite: list.length > 4,
+      speed: 600,
+      slidesToShow: 4,
+      slidesToScroll: 1,
+      responsive: [
+        {
+          breakpoint: 1280,
+          settings: { slidesToShow: 3 },
+        },
+        {
+          breakpoint: 1024,
+          settings: { slidesToShow: 2 },
+        },
+        {
+          breakpoint: 640,
+          settings: { slidesToShow: 1 },
+        },
+      ],
+    };
 
   if (list.length === 0) return null;
 
@@ -113,7 +119,7 @@ export default function ExploreSection({ explorePropertyList = [] }: ExploreSect
         variants={leftVariant}
         animate={isInView ? "visible" : "hidden"}
       >
-        <h2 className="kma_title font-semibold text-black leading-tight">
+        <h2 className="text-xl font-semibold text-black leading-tight">
           Explore by <br /> Property Type
         </h2>
 
@@ -126,46 +132,40 @@ export default function ExploreSection({ explorePropertyList = [] }: ExploreSect
 
         </p>
 
-        {showSliderArrows ? (
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={() => sliderRef.current?.slickPrev?.()}
-              className="bg-blue text-white cursor-pointer w-9 h-9 rounded-full flex justify-center"
-            >
-              <Image
-                src="/assets/explore/left-arrow.svg"
-                alt="left-arrow"
-                width={15}
-                height={15}
-              />
-            </button>
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={() => sliderRef.current?.slickPrev()}
+            className="bg-blue text-white cursor-pointer w-9 h-9 rounded-full flex justify-center"
+          >
+            <Image
+              src="/assets/explore/left-arrow.svg"
+              alt="left-arrow"
+              width={15}
+              height={15}
+            />
+          </button>
 
-            <button
-              type="button"
-              onClick={() => sliderRef.current?.slickNext?.()}
-              className="bg-blue text-white cursor-pointer w-9 h-9 rounded-full flex justify-center"
-            >
-              <Image
-                src="/assets/explore/right-arrow.svg"
-                alt="left-arrow"
-                width={15}
-                height={15}
-              />
-            </button>
-          </div>
-        ) : null}
+          <button
+            type="button"
+            onClick={() => sliderRef.current?.slickNext()}
+            className="bg-blue text-white cursor-pointer w-9 h-9 rounded-full flex justify-center"
+          >
+            <Image
+              src="/assets/explore/right-arrow.svg"
+              alt="left-arrow"
+              width={15}
+              height={15}
+            />
+          </button>
+        </div>
       </motion.div>
 
       <motion.div
         className="flex-1 w-full 2md:min-w-0"
         variants={rightVariant}
       >
-        <Slider
-          key={`explore-${slidesToShow}-${list.length}`}
-          ref={sliderRef}
-          {...settings}
-        >
+        <Slider ref={sliderRef} {...settings}>
           {list.map((item, index) => {
             const bgColor = CARD_BG_COLORS[index % CARD_BG_COLORS.length];
             return (

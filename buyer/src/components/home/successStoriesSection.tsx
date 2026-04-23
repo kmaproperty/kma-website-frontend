@@ -1,15 +1,13 @@
 "use client";
 import Image from "next/image";
-import SectionHeader from "../common/home/secionHeader";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   getUserReviewApiHandler,
   GetUserReviewApiHandlerResponse,
-  type Rating,
+  Rating,
 } from "@/services/homeService";
-import Link from "next/link";
 
 function Star({
   fill = 100,
@@ -54,24 +52,6 @@ function RatingStars({
   );
 }
 
-const leftVariant = {
-  hidden: { x: -300, opacity: 0 },
-  visible: {
-    x: 0,
-    opacity: 1,
-    transition: { duration: 1, ease: "easeInOut" as const },
-  },
-};
-
-const rightVariant = {
-  hidden: { x: "100%", opacity: 0 },
-  visible: {
-    x: 0,
-    opacity: 1,
-    transition: { duration: 1, ease: "easeOut" as const },
-  },
-};
-
 const bottomVariant = {
   hidden: { y: "100%", opacity: 0 },
   visible: {
@@ -90,64 +70,6 @@ const topVariant = {
   },
 };
 
-function SuccessStoryCard({
-  item,
-  profileBaseUrl,
-  isInView,
-}: {
-  item: Rating;
-  profileBaseUrl: string | undefined;
-  isInView: boolean;
-}) {
-  return (
-    <motion.div
-      className="flex h-full min-w-0 flex-col items-start gap-2 rounded-[8px] bg-white p-3 shadow-sm ring-1 ring-slate-200/70 2md:p-4"
-      variants={topVariant}
-      animate={isInView ? "visible" : "hidden"}
-    >
-      <Image
-        src={"/assets/stories/quote.svg"}
-        width={20}
-        height={20}
-        alt="quote"
-        className="shrink-0"
-      />
-      <RatingStars rating={Number(item.rating)} total={5} />
-      <p className="min-h-0 text-sm leading-snug text-text-gray line-clamp-3 2md:line-clamp-2">
-        {item.review}
-      </p>
-      <div className="mt-auto flex w-full min-w-0 items-center gap-2">
-        {item.endUser?.profileImage ? (
-          <Image
-            src={(profileBaseUrl ?? "") + item.endUser.profileImage}
-            width={28}
-            height={28}
-            alt="profile"
-            className="shrink-0 rounded-full object-cover"
-          />
-        ) : (
-          <div
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-300 text-xs font-semibold uppercase text-gray-700 2md:h-[35px] 2md:w-[35px] 2md:text-sm"
-          >
-            {item.name?.charAt(0)}
-          </div>
-        )}
-        <p className="min-w-0 flex-1 truncate font-medium text-sm text-text-black">
-          {item.name}
-        </p>
-        <Image
-          src={"/assets/stories/dot.svg"}
-          width={5}
-          height={5}
-          alt=""
-          className="shrink-0"
-        />
-        <p className="shrink-0 text-sm text-text-gray">India</p>
-      </div>
-    </motion.div>
-  );
-}
-
 export default function SuccessStoriesSection() {
   const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
   const ref = useRef(null);
@@ -163,96 +85,105 @@ export default function SuccessStoriesSection() {
     },
   });
 
+  const totalReviews =
+    reviewData?.statistics?.totalCount ?? reviewData?.reviews?.length ?? 0;
+  const averageRating = Number(reviewData?.statistics?.averageRating ?? 0);
   const reviews = reviewData?.reviews ?? [];
-  const totalReviews = reviews.length;
 
   return (
     <>
-      <div ref={ref} className="my-16 max-w-[1440px] mx-auto w-full z-10">
-        <div className="grid grid-cols-1 2md:grid-cols-[1.2fr_1fr_1fr]">
-          <motion.div
-            className="col-span-1 flex gap-4 flex-col"
-            initial="hidden"
-            variants={leftVariant}
-            animate={isInView ? "visible" : "hidden"}
-          >
-            <div className=" w-[80%]">
-              <SectionHeader
-                isInView={isInView}
-                hideButton={true}
-                heading="Success stories in their own words"
-                subHeading="Read what our satisfied clients have to say about their experiences with our platform."
-              />
-            </div>
-            <Link href="/about-us" className="w-fit text-sm 1xl:text-base animated-button px-8 py-2 border border-blue text-center cursor-pointer">
-              <span className="gap-3 relative flex justify-center">
-                <p className={`text-nowrap`}>View More</p>
-              </span>
-            </Link>
-            <div className="flex gap-3">
-              <div className="flex flex-col gap-1">
-                <p className="text-text-black text-base font-medium">
-                  Trusted by 50K+ customers
-                </p>
+      <div ref={ref} className="w-[92%] 2md:w-[75%] z-10">
+        {/* Header row (matches Figma page header) */}
+        <motion.div
+          className="mb-6 flex items-center justify-between"
+          initial="hidden"
+          variants={topVariant}
+          animate={isInView ? "visible" : "hidden"}
+        >
+          <h1 className="text-white text-2xl 2md:text-3xl font-semibold">
+            Success Stories
+          </h1>
 
-                <div className="flex gap-1 items-center">
-                  <RatingStars
-                    rating={reviewData?.statistics?.averageRating}
-                    total={5}
-                  />
-                  <p className="text-text-black text-xs">
-                    {reviewData?.statistics?.averageRating}/5.0
-                  </p>
-                  <p className="border-l border-border h-full border-1"></p>
-                  <p className="text-text-gray text-xs">
-                    {" "}
-                    {reviewData?.statistics?.totalCount} Reviews
+          <button
+            type="button"
+            className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs text-white border border-white/20"
+          >
+            <span>Mar 2026 - Feb 2026</span>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="opacity-90"
+            >
+              <path
+                d="M7 10l5 5 5-5"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        </motion.div>
+
+        {/* Main card */}
+        <motion.div
+          className="rounded-[12px] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.08)] overflow-hidden"
+          initial="hidden"
+          variants={bottomVariant}
+          animate={isInView ? "visible" : "hidden"}
+        >
+          {/* Stats row */}
+          <div className="grid grid-cols-1 2md:grid-cols-3 border-b border-[#EEF0F3]">
+            <div className="p-6 2md:p-8 border-b 2md:border-b-0 2md:border-r border-[#EEF0F3]">
+              <p className="text-[11px] text-[#6B7280]">Total Reviews</p>
+              <div className="mt-2 flex items-end gap-2">
+                <p className="text-2xl font-semibold text-[#111827]">
+                  {totalReviews >= 1000
+                    ? `${(totalReviews / 1000).toFixed(1)}K`
+                    : totalReviews}
+                </p>
+                <p className="text-[11px] text-[#22C55E] font-medium">
+                  +12%
+                </p>
+              </div>
+              <p className="mt-1 text-[11px] text-[#9CA3AF]">
+                Growth in reviews this year
+              </p>
+            </div>
+
+            <div className="p-6 2md:p-8 border-b 2md:border-b-0 2md:border-r border-[#EEF0F3]">
+              <p className="text-[11px] text-[#6B7280]">Average Rating</p>
+              <div className="mt-2 flex items-center gap-3">
+                <p className="text-2xl font-semibold text-[#111827]">
+                  {averageRating ? averageRating.toFixed(1) : "0.0"}
+                </p>
+                <div className="flex items-center gap-2">
+                  <RatingStars rating={averageRating} total={5} />
+                  <p className="text-[11px] text-[#6B7280]">
+                    Average rating during the period
                   </p>
                 </div>
               </div>
-              <div className="2md:-mt-8">
-                <Image
-                  src={"/assets/stories/arrow.svg"}
-                  width={100}
-                  height={100}
-                  alt="arrow"
-                  className="transform scale-y-[-1] 2md:scale-y-[1]"
-                />
-              </div>
             </div>
-          </motion.div>
-          <div className="col-span-1 min-w-0 pb-12 2md:col-span-2 2md:pb-0">
-            {/* Mobile: single 2×2 grid — avoids right-column mt-4 stagger */}
-            <div className="grid grid-cols-2 gap-3 2md:hidden">
-              {(reviewData?.reviews ?? []).slice(0, 4).map((item) => (
-                <SuccessStoryCard
-                  key={item.id}
-                  item={item}
-                  profileBaseUrl={profileBaseUrl}
-                  isInView={isInView}
-                />
-              ))}
-            </div>
-            {/* Desktop: two columns, slight vertical offset on right */}
-            <div className="hidden items-start gap-4 2md:flex">
-              <div className="flex min-w-0 flex-1 flex-col gap-4">
-                {(reviewData?.reviews ?? []).slice(0, 2).map((item) => (
-                  <SuccessStoryCard
-                    key={item.id}
-                    item={item}
-                    profileBaseUrl={profileBaseUrl}
-                    isInView={isInView}
-                  />
-                ))}
-              </div>
-              <div className="mt-4 flex min-w-0 flex-1 flex-col gap-4">
-                {(reviewData?.reviews ?? []).slice(2, 4).map((item) => (
-                  <SuccessStoryCard
-                    key={item.id}
-                    item={item}
-                    profileBaseUrl={profileBaseUrl}
-                    isInView={isInView}
-                  />
+
+            {/* lightweight "chart" placeholder */}
+            <div className="p-6 2md:p-8">
+              <div className="flex flex-col gap-2">
+                {[80, 60, 45, 35, 25].map((w, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="h-[6px] w-full rounded-full bg-[#EEF0F3] overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-[#1E3A8A]"
+                        style={{ width: `${w}%` }}
+                      />
+                    </div>
+                    <p className="w-8 text-right text-[11px] text-[#6B7280]">
+                      {5 - i}
+                    </p>
+                  </div>
                 ))}
               </div>
             </div>
@@ -269,6 +200,80 @@ export default function SuccessStoriesSection() {
               </div>
 
               <div className="flex flex-col gap-3 2md:flex-row 2md:items-center">
+                {/* <div className="flex items-center gap-2">
+                  <div className="relative">
+                    <input
+                      placeholder=""
+                      className="h-9 w-[240px] max-w-full rounded-[6px] border border-[#EEF0F3] bg-white pl-3 pr-9 text-xs text-[#111827] outline-none"
+                      readOnly
+                    />
+                    <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]">
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M21 21l-4.35-4.35"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                        />
+                        <circle
+                          cx="11"
+                          cy="11"
+                          r="7"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4 text-xs text-[#6B7280]">
+                  <button type="button" className="hover:text-[#111827]">
+                    Filter
+                  </button>
+                  <button type="button" className="hover:text-[#111827]">
+                    Rating
+                  </button>
+                  <button type="button" className="hover:text-[#111827]">
+                    Sort by
+                  </button>
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 hover:text-[#111827]"
+                  >
+                    <span>Recommended</span>
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M7 10l5 5 5-5"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </button>
+                </div> */}
+
+                {/* <button
+                  type="button"
+                  className="h-9 rounded-[6px] bg-blue px-4 text-xs font-medium text-white"
+                >
+                  Write Review
+                </button> */}
+
+
                 {/* show this again */}
               </div>
             </div>
@@ -393,44 +398,8 @@ export default function SuccessStoriesSection() {
               </button>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
-      <motion.div
-        className="absolute bottom-0 left-0"
-        variants={bottomVariant}
-        animate={isInView ? "visible" : "hidden"}
-      >
-        <Image
-          src={"/assets/stories/building.svg"}
-          width={200}
-          height={200}
-          alt="building"
-        />
-      </motion.div>
-      <motion.div
-        className="absolute top-0 right-10"
-        variants={topVariant}
-        animate={isInView ? "visible" : "hidden"}
-      >
-        <Image
-          src={"/assets/stories/top-square.svg"}
-          width={200}
-          height={200}
-          alt="building"
-        />
-      </motion.div>
-      <motion.div
-        className="absolute right-0 bottom-2"
-        variants={rightVariant}
-        animate={isInView ? "visible" : "hidden"}
-      >
-        <Image
-          src={"/assets/stories/bottom-square.svg"}
-          width={140}
-          height={100}
-          alt="building"
-        />
-      </motion.div>
     </>
   );
 }

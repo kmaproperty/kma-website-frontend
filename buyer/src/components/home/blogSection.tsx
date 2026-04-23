@@ -46,12 +46,12 @@ export default function BlogSection() {
 
   return (
     <div ref={ref} className="">
-      <SectionHeader
+      {/* <SectionHeader
         isInView={isInView}
         heading="Latest Blogs"
         subHeading="Explore our featured blog posts on premium properties for sales & rents"
-      />
-      <div className="grid grid-cols-1 2md:grid-cols-2 gap-4 mt-10">
+      /> */}
+      {/* <div className="grid grid-cols-1 2md:grid-cols-2 gap-4 mt-10">
         <motion.div
             className="hidden 2md:block relative bg-white rounded-[8px] border border-border cursor-pointer hover:shadow-md transition-shadow"
             ref={ref}
@@ -171,7 +171,7 @@ export default function BlogSection() {
               </div>
          </motion.div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

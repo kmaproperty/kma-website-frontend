@@ -26,12 +26,11 @@ export default function TopProperties({ topProperties }) {
     () => ({
       vertical: true,
       verticalSwiping: true,
-      slidesToShow: 0,
+      slidesToShow: 1,
       slidesToScroll: 1,
       infinite: false,
       arrows: false,
       speed: 400,
-      adaptiveHeight: true,
       beforeChange: (_: unknown, next: number) => setCurrentSlide(next),
     }),
     []
@@ -40,15 +39,15 @@ export default function TopProperties({ topProperties }) {
   const isFirst = currentSlide === 0;
   const isLast = currentSlide === topProperties.length - 1;
   return (
-    <div className="2md:bg-white/10 bg-[#F0F0F0] 2md:border-0 border border-[#57575733] 2md:shadow-none shadow-[0px_4px_14px_0px_#0000001A] rounded-[8px] bg-clip-padding backdrop-filter flex flex-col gap-2 backdrop-blur-[5px] px-[10px] 2md:px-[12px] pt-[6px] pb-[10px]">
+    <div className="bg-white/10 rounded-[8px] bg-clip-padding backdrop-filter flex flex-col gap-2 backdrop-blur-[5px] px-[10px] 2md:px-[12px] pt-[6px] pb-[10px]">
       <div className="flex justify-start items-center gap-1 2md:gap-2">
-        <div className="2md:text-white text-text-black h-[14px] 2md:h-[20px] border-l border-1"></div>
-        <p className="2md:text-white text-text-black text-[16px] xl:text-lg font-semibold">
+        <div className="text-white h-[14px] 2md:h-[20px] border-l border-1"></div>
+        <p className="text-white text-xs 2md:text-sm xl:text-sm font-semibold">
           Top Properties
         </p>
       </div>
       <div className="flex justify-between gap-2 2md:gap-3">
-        <div className="flex-1 min-w-0 custom_top_properties_slider">
+        <div className="flex-1 min-w-0">
           <Slider ref={sliderRef} {...settings}>
             {topProperties.map((item, index) => {
               const img = item?.images?.length > 0 ? item.images[0]?.fileKey : null;
@@ -57,7 +56,7 @@ export default function TopProperties({ topProperties }) {
               return (
                 <div key={item?.id ?? item?.propertyId ?? index}>
                   <div
-                    className="flex justify-center gap-2 2md:gap-3 cursor-pointer"
+                    className="flex justify-start gap-2 2md:gap-3 cursor-pointer"
                     onClick={() => {
                       const cityId = item?.cityId || item?.city?.id;
                       const propId = item?.id || item?.propertyId;
@@ -83,49 +82,49 @@ export default function TopProperties({ topProperties }) {
                       )}
                     </div>
 
-                    <div className="flex flex-col justify-between items-start min-w-0 flex-1 gap-2">
-                      <p className="text-[16px] xl:text-lg font-semibold 2md:text-white text-text-black truncate w-full">
+                    <div className="flex flex-col justify-between 2md:py-2 items-start min-w-0 flex-1">
+                      <p className="text-xs xl:text-sm font-semibold text-white truncate w-full">
                         {item.propertyName}
                       </p>
-                      <p className="text-xs xl:text-[16px] 2md:text-white text-text-black truncate w-full">
+                      <p className="text-xs xl:text-sm text-white truncate w-full">
                         {item.address}
                       </p>
-                      <p className="text-[16px] xl:text-lg font-semibold text-yellow">
+                      <p className="text-xs xl:text-sm font-semibold text-yellow">
                         ₹
                         {item.listingType == "Sale"
                           ? item.price
                           : item.monthlyRent}{" "}
-                        <span className="2md:text-white text-text-black font-medium">
+                        <span className="text-white font-medium">
                           {item.listingType == "Sale" ? "" : "/ Month"}
                         </span>
                       </p>
 
                       <div className="flex flex-col 2md:flex-row gap-3 2md:items-center">
                         {isResidential && (
-                          <div className="flex gap-2">
+                          <div className="flex gap-1">
                             <Image
                               alt="bed"
                               src="/assets/bed.svg"
                               width={26}
                               height={26}
-                              className="w-[18px] xl:w-[26px] h-[18px] xl:h-[26px]"
+                              className="w-[18px] xl:w-[20px] h-[18px] xl:h-[20px]"
                             />
-                            <p className="2md:text-white text-text-black text-xs xl:text-[16px]">
+                            <p className="text-white text-xs xl:text-sm">
                               {item.bed} BedRoom
                             </p>
                           </div>
                         )}
 
                         {isResidential && (
-                          <div className="flex gap-2">
+                          <div className="flex gap-1">
                             <Image
                               alt="bath"
                               src="/assets/bath.svg"
                               width={26}
                               height={26}
-                              className="w-[18px] xl:w-[26px] h-[18px] xl:h-[26px]"
+                              className="w-[18px] xl:w-[20px] h-[18px] xl:h-[20px]"
                             />
-                            <p className="2md:text-white text-text-black text-xs xl:text-[16px]">
+                            <p className="text-white text-xs xl:text-sm">
                               {item.bath} Bath
                             </p>
                           </div>
@@ -154,7 +153,7 @@ export default function TopProperties({ topProperties }) {
               src="/assets/up-white-arrow.svg"
               width={30}
               height={30}
-              className="w-[25px] h-[20px] 2md:filter-none brightness-[0]"
+              className="w-[25px] h-[20px]"
             />
           </button>
 
@@ -172,7 +171,7 @@ export default function TopProperties({ topProperties }) {
               src="/assets/down-white-arrow.svg"
               width={30}
               height={30}
-              className="w-[25px] h-[20px] 2md:filter-none brightness-[0]"
+              className="w-[25px] h-[20px]"
             />
           </button>
         </div>
