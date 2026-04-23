@@ -481,6 +481,18 @@ export interface SubmitPropertyContactResponse {
   success?: boolean;
   message?: string;
   data?: unknown;
+  contactedPropertyId?: string;
+  // Backend issues tokens when a non-logged-in user completes OTP verification
+  // so we can seamlessly drop them into a signed-in session.
+  accessToken?: string;
+  refreshToken?: string;
+  user?: {
+    id: string;
+    name: string;
+    email: string | null;
+    phone: string;
+    role: string;
+  };
 }
 
 const getCorrelationId = () => {

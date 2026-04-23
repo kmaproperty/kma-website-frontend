@@ -49,6 +49,8 @@ import { buildProjectsRouteLabels } from "@/app/projects/_utils/routeLabels";
 import { useSearchParams } from "next/navigation";
 import AboutusDataSync from "@/components/footer/AboutusDataSync";
 import HomeFooter from "@/components/footer/homeFooter";
+import ProjectCallBackModal from "@/app/projects/_components/ProjectCallBackModal";
+import type { Project } from "@/app/projects/_types";
 
 const placeholderImage = "/assets/property/img-1.png";
 
@@ -618,6 +620,29 @@ export default function ListingDetailsPage() {
   const navigatePostProperty = () => {
     router.push("/user-flow?postProperty=true");
   };
+
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const contactProject = useMemo<Project | null>(() => {
+    if (!propertyDetails?.id) return null;
+    return {
+      id: propertyDetails.id,
+      title: asString((propertyDetails as any)?.propertyName) ?? asString((propertyDetails as any)?.title) ?? "",
+      address: asString((propertyDetails as any)?.address) ?? "",
+      city: asString((propertyDetails as any)?.city) ?? "",
+      isFavorite: false,
+      postedBy: apiChannelPartner ? "channel_partner" : "owner",
+      listingIntent: (propertyDetails as any)?.listingType === "Rent" ? "rent" : "sale",
+      priceValue: 0,
+      priceLabel: "",
+      images: [],
+      agent: {
+        name: specialistName,
+        avatarUrl: specialistImage,
+        badge: apiChannelPartner ? "KMA Expert Pro" : undefined,
+      },
+    };
+  }, [propertyDetails, apiChannelPartner, specialistName, specialistImage]);
+  const openContactModal = () => setIsContactModalOpen(true);
 
   // Show login prompt when guest user has exceeded 3 free views
   if (viewLimitExceeded) {
@@ -1193,13 +1218,6 @@ export default function ListingDetailsPage() {
                                 )}
                               </div>
                             </div>
-                            <button
-                              type="button"
-                              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-blue px-4 py-2.5 text-sm font-semibold text-blue"
-                            >
-                              <PhoneCall className="h-4 w-4" />
-                              View Number
-                            </button>
                           </div>
 
                           <div className="mt-4 rounded-xl border border-[#D4D5D8] bg-background-gray">
@@ -1250,6 +1268,7 @@ export default function ListingDetailsPage() {
 
                           <button
                             type="button"
+                            onClick={() => router.push(channelPartnerDetailsHref)}
                             className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#05085E] px-4 py-3 text-sm font-semibold text-white"
                           >
                             Learn More
@@ -1281,13 +1300,7 @@ export default function ListingDetailsPage() {
                             <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap">
                               <button
                                 type="button"
-                                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-blue bg-white px-4 py-2.5 text-sm font-semibold text-blue sm:w-auto"
-                              >
-                                <PhoneCall className="h-4 w-4" />
-                                View Number
-                              </button>
-                              <button
-                                type="button"
+                                onClick={() => router.push(channelPartnerDetailsHref)}
                                 className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#05085E] px-4 py-2.5 text-sm font-semibold text-white sm:w-auto"
                               >
                                 Learn More
@@ -1763,23 +1776,15 @@ export default function ListingDetailsPage() {
                         <p className="text-xs text-black">{specialistFirm}</p>
                       </div>
                     </div>
-                    {specialistTelHref ? (
-                      <a
-                        href={specialistTelHref}
-                        className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-blue px-4 py-3 text-sm font-semibold text-white"
-                      >
-                        <PhoneCall className="h-4 w-4" />
-                        Contact Now
-                      </a>
-                    ) : (
-                      <button
-                        type="button"
-                        className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-blue px-4 py-3 text-sm font-semibold text-white"
-                      >
-                        <PhoneCall className="h-4 w-4" />
-                        Contact Now
-                      </button>
-                    )}
+                    <button
+                      type="button"
+                      onClick={openContactModal}
+                      disabled={!contactProject}
+                      className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-blue px-4 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
+                    >
+                      <PhoneCall className="h-4 w-4" />
+                      Contact Now
+                    </button>
                   </aside>
                 </div>
               </div>
@@ -1803,27 +1808,26 @@ export default function ListingDetailsPage() {
                   </span>
                 </div>
               </div>
-              {specialistTelHref ? (
-                <a
-                  href={specialistTelHref}
-                  className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-[#05085E] px-5 py-3 text-sm font-semibold text-white shadow-[0_1px_3px_rgba(16,24,40,0.20)]"
-                >
-                  <PhoneCall className="h-4 w-4" />
-                  Contact Now
-                </a>
-              ) : (
-                <button
-                  type="button"
-                  className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-[#05085E] px-5 py-3 text-sm font-semibold text-white shadow-[0_1px_3px_rgba(16,24,40,0.20)]"
-                >
-                  <PhoneCall className="h-4 w-4" />
-                  Contact Now
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={openContactModal}
+                disabled={!contactProject}
+                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-[#05085E] px-5 py-3 text-sm font-semibold text-white shadow-[0_1px_3px_rgba(16,24,40,0.20)] disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                <PhoneCall className="h-4 w-4" />
+                Contact Now
+              </button>
             </div>
           </div>
         </div>
       </MainLayout>
+      {contactProject ? (
+        <ProjectCallBackModal
+          open={isContactModalOpen}
+          onClose={() => setIsContactModalOpen(false)}
+          project={contactProject}
+        />
+      ) : null}
       <AboutusDataSync />
       <HomeFooter />
     </>

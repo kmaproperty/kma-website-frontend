@@ -20,6 +20,7 @@ import {
   sendEndUserPropertyContactOtpAction,
   submitEndUserPropertyContactAction,
 } from "@/api/actions/propertyActions";
+import { setAuthCookies } from "@/lib/helper";
 import type { Project } from "../_types";
 
 interface ProjectCallBackModalProps {
@@ -176,7 +177,19 @@ export default function ProjectCallBackModal({
 
   const { mutate: submitContact, isPending: isSubmitting } = useMutation({
     mutationFn: submitEndUserPropertyContactAction,
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
+      // Backend issues tokens on OTP verification for guests — drop them into
+      // a signed-in session so they don't have to log in again.
+      if (response?.accessToken && response?.refreshToken) {
+        try {
+          await setAuthCookies(response.accessToken, response.refreshToken);
+          if (response.user && typeof window !== "undefined") {
+            localStorage.setItem("user", JSON.stringify(response.user));
+          }
+        } catch {
+          // Non-fatal: keep the success flow even if cookie write fails.
+        }
+      }
       toast.success(response?.message ?? "Request submitted successfully");
       closeModal();
     },
