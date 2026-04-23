@@ -454,17 +454,38 @@ export default function Step3({containerRef}) {
   refetchOnMount: true
 });
 
+const FURNISHING_LOCAL_ICONS: Record<string, string> = {
+  "water purifier": "/assets/water-purifier.png",
+  "fan": "/assets/fan.png",
+  "fridge": "/assets/fridge.png",
+  "exhaust fan": "/assets/external-fan.png",
+  "dining table": "/assets/dining.png",
+  "geyser": "/assets/geyser.png",
+  "stove": "/assets/stove.png",
+  "light": "/assets/light.png",
+  "curtains": "/assets/curtains.png",
+  "modular kitchen": "/assets/kitchen.png",
+  "tv": "/assets/television.png",
+  "chimney": "/assets/chimeny.png",
+  "bed": "/assets/bed.png",
+  "ac": "/assets/air-conditioner.png",
+  "wardrobe": "/assets/wardrobe.png",
+  "sofa": "/assets/sofa.png",
+  "washing machine": "/assets/washing-machine.png",
+  "microwave": "/assets/microwave.png",
+};
 const { data: furnishingList } = useQuery({
   queryKey: ["furnishing"],
   queryFn: async (): Promise<GetFurnishingResponse[]> => {
     return getFurnishingList();
   },
   select: (resposne: GetFurnishingResponse[]) => {
-    let imageBaseUrl = process.env.NEXT_PUBLIC_AWS_URL
-    let updatedData = resposne?.map(item => {
-      return {icon: imageBaseUrl + item.icon, label: item.name}
-    }) ?? []
-    return updatedData
+    // Backend stores placeholder icon identifiers (e.g. "water-purifier-icon")
+    // that don't exist on S3. Map to the local /public/assets icons we ship.
+    return resposne?.map((item) => ({
+      icon: FURNISHING_LOCAL_ICONS[item.name?.toLowerCase()?.trim()] ?? "/assets/sofa.png",
+      label: item.name,
+    })) ?? [];
   },
   staleTime: 0,
   refetchOnMount: true
