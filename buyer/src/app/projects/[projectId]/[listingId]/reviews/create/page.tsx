@@ -15,12 +15,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setPropertyMasterData } from "@/store/homeHeaderSlice";
 
-const galleryImages = [
-  "/assets/property/img-1.png",
-  "/assets/property/img-2.png",
-  "/assets/property/img-3.png",
-  "/assets/property/img-4.png",
-];
+const placeholderImage = "/assets/property/img-1.png";
 
 const awsBaseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
 const toFullAssetUrl = (value?: string | null) => {
@@ -42,12 +37,6 @@ const asNumber = (value: unknown): number | null =>
       : null;
 const formatInr = (value: number) =>
   new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(value);
-
-const ROLE_OPTIONS = [
-  { value: "owner", label: "Owner" },
-  { value: "tenant", label: "Tenant" },
-  { value: "other", label: "Other" },
-];
 
 const FEATURES = [
   {
@@ -129,7 +118,7 @@ export default function CreateReviewPage() {
     });
   }, [dispatch]);
 
-  const [role, setRole] = useState("owner");
+  const role = "owner";
   const [connectivityRating, setConnectivityRating] = useState(0);
   const [neighbourhoodRating, setNeighbourhoodRating] = useState(0);
   const [safetyRating, setSafetyRating] = useState(0);
@@ -143,9 +132,8 @@ export default function CreateReviewPage() {
   const propertyTitle =
     asString(propertyDetails?.propertyName) ??
     asString(propertyDetails?.title) ??
-    "Property name lorem Ipsum";
-  const propertyAddress =
-    asString(propertyDetails?.address) ?? "Madhya Pradesh, India, 455001";
+    "";
+  const propertyAddress = asString(propertyDetails?.address) ?? "";
   const monthlyRent = asNumber(propertyDetails?.monthlyRent);
   const salePrice = asNumber(propertyDetails?.price);
   const priceLabel =
@@ -153,18 +141,17 @@ export default function CreateReviewPage() {
       ? `₹${formatInr(monthlyRent)}/month`
       : salePrice && salePrice > 0
         ? `₹${formatInr(salePrice)}`
-        : "₹85,000/month";
+        : "";
 
   const coverImage = useMemo(() => {
-    const media = [...(propertyDetails?.photos ?? []), ...(propertyDetails?.images ?? [])];
-    const url =
-      media[0] &&
-      typeof media[0] === "object" &&
-      media[0] !== null &&
-      "fileKey" in media[0]
-        ? toFullAssetUrl((media[0] as { fileKey?: string }).fileKey)
-        : "";
-    return url || galleryImages[0];
+    const media = [
+      ...((propertyDetails?.photos ?? []) as Array<{ fileKey?: string | null }>),
+      ...((propertyDetails?.images ?? []) as Array<{ fileKey?: string | null }>),
+    ];
+    const urls = media
+      .map((item) => toFullAssetUrl(asString(item?.fileKey)))
+      .filter((url): url is string => Boolean(url));
+    return urls[0] ?? placeholderImage;
   }, [propertyDetails]);
 
   const listingHref = `/projects/${projectId}/${listingId}`;
@@ -238,53 +225,15 @@ export default function CreateReviewPage() {
                     <div className="relative h-[80px] w-[120px] shrink-0 overflow-hidden rounded-xl border border-[#E5E7EB]">
                       <Image
                         src={coverImage}
-                        alt={propertyTitle}
+                        alt={propertyTitle || "Property cover"}
                         fill
                         className="object-cover rounded-xl"
                       />
-                    </div>
-                    <div className="inline-flex w-fit rounded-md border border-[#D4D5D8] bg-white p-1">
-                      <Link
-                        href={listingHref}
-                        className="min-w-[110px] rounded-md bg-[#05085E] px-3 py-2 text-xs font-semibold text-white sm:min-w-[125px] sm:px-4 sm:py-2.5 sm:text-sm inline-flex items-center justify-center"
-                      >
-                        Listing
-                      </Link>
-                      <Link
-                        href={`/projects/${projectId}`}
-                        className="min-w-[110px] rounded-md px-3 py-2 text-xs font-medium text-text-light-black sm:min-w-[125px] sm:px-4 sm:py-2.5 sm:text-sm inline-flex items-center justify-center"
-                      >
-                        Project
-                      </Link>
-                      <Link
-                        href={reviewsHref}
-                        className="min-w-[110px] rounded-md px-3 py-2 text-xs font-medium text-text-light-black sm:min-w-[125px] sm:px-4 sm:py-2.5 sm:text-sm inline-flex items-center justify-center"
-                      >
-                        Reviews
-                      </Link>
                     </div>
                   </div>
                 </div>
 
                 <form onSubmit={handleSubmit} className="mt-6">
-                  {/* Role (optional in UI but API accepts it) */}
-                  <div className="mb-6">
-                    <label className="block text-sm font-medium text-text-black mb-2">
-                      I am a
-                    </label>
-                    <select
-                      value={role}
-                      onChange={(e) => setRole(e.target.value)}
-                      className="rounded-xl border border-[#D4D5D8] bg-white px-4 py-2.5 text-sm text-text-black focus:border-[#05085E] focus:outline-none focus:ring-1 focus:ring-[#05085E] min-w-[160px]"
-                    >
-                      {ROLE_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
                   {/* Feature ratings – two columns */}
                   <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 mb-8">
                     {FEATURES.map(({ key, icon: Icon, label, description }) => (
