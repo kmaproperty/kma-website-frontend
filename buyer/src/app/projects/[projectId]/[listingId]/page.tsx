@@ -575,16 +575,15 @@ export default function ListingDetailsPage() {
 
   const scrollToSection = (sectionId: ListingSectionId) => {
     const section = sectionRefs.current[sectionId];
-    if (!section) return;
-
-    const navHeight = tabsNavRef.current?.offsetHeight ?? 0;
-    const absoluteTop = section.getBoundingClientRect().top + window.scrollY;
-    const pageTopOffset = navHeight + 96;
-
-    window.scrollTo({
-      top: Math.max(0, absoluteTop - pageTopOffset),
-      behavior: "smooth",
-    });
+    if (!section) {
+      // Fallback: look up by id attribute in case ref isn't wired yet
+      const byId = document.getElementById(sectionId);
+      if (!byId) return;
+      byId.scrollIntoView({ behavior: "smooth", block: "start" });
+      setActiveSectionTab(sectionId);
+      return;
+    }
+    section.scrollIntoView({ behavior: "smooth", block: "start" });
     setActiveSectionTab(sectionId);
   };
 
