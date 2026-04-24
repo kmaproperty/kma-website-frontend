@@ -57,12 +57,14 @@ export default function EndUserLoginOtpCard() {
 
       const safeRedirect =
         redirect && redirect.startsWith("/") && !redirect.startsWith("//") ? redirect : null;
-      if (safeRedirect) {
-        router.replace(safeRedirect);
-        return;
+      const target = safeRedirect ?? "/";
+      // Hard reload so header/session hooks that only read localStorage on mount pick up
+      // the new session immediately.
+      if (typeof window !== "undefined") {
+        window.location.href = target;
+      } else {
+        router.replace(target);
       }
-
-      router.replace("/");
     },
     onError: (error: any) => {
       setOtpError(error?.message ?? "Invalid OTP");
