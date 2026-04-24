@@ -142,13 +142,17 @@ export default function UserHeader() {
             className="w-9 h-9 rounded-full object-cover"
           />
         </div>
-        <button onClick={() => handleRedirectPostProperty()} className="animated-button px-[20px] py-[9px] cursor-pointer">
+        <button
+          onClick={() => handleRedirectPostProperty()}
+          className="bg-white text-black rounded-[999px] px-[20px] py-[9px] cursor-pointer"
+        >
           <span className="flex items-center justify-between gap-[6px] relative z-11">
             <Image
               src="/assets/plus-sign.svg"
               width={14}
               height={14}
               alt="home"
+              className="invert"
             />
             <p className="text-nowrap text-sm">Post Property</p>
           </span>
