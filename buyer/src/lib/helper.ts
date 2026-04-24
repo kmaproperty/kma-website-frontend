@@ -173,6 +173,29 @@ export const clearAuthCookies = async () => {
   }
 };
 
+/**
+ * Full logout: clears cookies (shared across .kmaglobalproperty.com via Domain attr),
+ * clears localStorage so stale user data doesn't linger, then hard-reloads to the
+ * target URL so redux/header hooks pick up the signed-out state immediately.
+ */
+export const performLogout = async (redirectTo = "/") => {
+  try {
+    await clearAuthCookies();
+  } catch (error) {
+    console.error("Failed to clear auth cookies:", error);
+  }
+  try {
+    if (typeof window !== "undefined") {
+      window.localStorage.clear();
+    }
+  } catch (error) {
+    console.error("Failed to clear localStorage:", error);
+  }
+  if (typeof window !== "undefined") {
+    window.location.href = redirectTo;
+  }
+};
+
 export function joinUrl(
   base?: string | null,
   path?: string | null

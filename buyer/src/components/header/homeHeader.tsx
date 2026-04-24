@@ -212,7 +212,10 @@ export default function HomeHeader() {
 const sellerUrl = process.env.NEXT_PUBLIC_SELLER_URL || "http://localhost:3002";
 
 const navigatePostProperty = () => {
-  window.location.href = `${sellerUrl}/user-flow?postProperty=true`;
+  // All buyer users are END_USER by default. The handoff page upgrades the
+  // row to OWNER on the backend (or no-ops for existing Owner/CP) and then
+  // sends them to the seller's post-property screen with a fresh session.
+  router.push("/post-property-handoff");
 }
 
 const navigateDashboard = () => {

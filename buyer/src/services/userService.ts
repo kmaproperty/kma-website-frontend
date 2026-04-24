@@ -126,6 +126,30 @@ export const UpgreadOwnerToChannelPartnerApiHandler = async (paylaod: UpgreadOwn
     }
 }
 
+export interface UpgradeToOwnerResponse {
+    success: boolean;
+    message: string;
+    accessToken: string;
+    refreshToken: string;
+    user: {
+        id: string;
+        name: string | null;
+        email: string | null;
+        phone: string;
+        role: string;
+    };
+}
+
+/** POST /users/upgrade-to-owner — promotes END_USER to OWNER on the same user row. */
+export const upgradeToOwnerApiHandler = async () : Promise<UpgradeToOwnerResponse> => {
+    try {
+        const response = await axiosInstance.post<UpgradeToOwnerResponse>("users/upgrade-to-owner");
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data ?? error;
+    }
+}
+
 export interface UserLogoutResponse {
   message: string;
   success: boolean

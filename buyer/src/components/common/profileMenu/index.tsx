@@ -1,4 +1,4 @@
-import { clearAuthCookies } from "@/lib/helper";
+import { performLogout } from "@/lib/helper";
 import {
   UserLogoutApiHandler,
   UserLogoutResponse,
@@ -21,10 +21,8 @@ export default function ProfileMenu({ anchorEl, open, handleClose }) {
       return await UserLogoutApiHandler();
     },
     onSuccess: async () => {
-      localStorage.clear();
-      await clearAuthCookies();
       queryClient.clear();
-      router.replace("/");
+      await performLogout("/");
     },
     onError: (error: any) => {
       if (Array.isArray(error.message)) {

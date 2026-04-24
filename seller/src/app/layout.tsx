@@ -6,6 +6,7 @@ import StoreProvider from "@/providers/StoreProvider";
 import ToasterProvider from "@/providers/ToastProvider";
 import { Suspense } from "react";
 import TopLoaderProvider from "@/providers/TopLoaderProvider";
+import CookieSessionGuard from "@/components/common/cookieSessionGuard";
 
 const gtmScript = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -53,6 +54,7 @@ export default function RootLayout({
         <Suspense>
         <StoreProvider>
           <QueryProvider>
+          <CookieSessionGuard />
           {children}
           <ToasterProvider />
           <TopLoaderProvider/>
