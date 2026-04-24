@@ -206,22 +206,20 @@ export default function AboutUsComponent({
           <div className="xl:w-[50%] w-full space-y-3 xl:pl-[50px] py-10 px-4 xl:min-h-[579px] flex flex-col justify-center">
             <SectionHeading
               title="Our Story"
-              subtitle="Shaping Gurugram’s Skyline, One Icon at a Time"
+              subtitle="Building Trust in Gurgaon, One Property at a Time"
               type={"left"}
-              description="KMA Property Group was founded to redefine real estate through elegance, trust, and innovation — blending decades of expertise with a deep understanding of today’s luxury market."
+              description="KMA Global Properties was founded with one clear purpose — to fix what was broken in real estate. No more paying to list. No more shared leads. No more doing all the work and still losing a cut to the portal."
             />
             <p className={`text-[#5C727D] text-md leading-7`}>
-              Whether you're investing in a luxury home, renting a penthouse, or
-              managing a commercial property, we ensure your journey is smooth,
-              tech-enabled, and truly exceptional.
+            Whether you're buying your first home, renting in Gurgaon's top societies, or growing your brokerage business — we ensure your journey is transparent, tech-enabled, and fully supported from start to finish.
             </p>
             <div className="pl-4 mt-6 border-l-4 border-[#010048]">
               <p className={`text-[#5C727D] text-md leading-7 font-normal`}>
-                From opulent villas to commercial landmarks, we craft legacy
-                experiences, not just transactions.
+                From the first enquiry to the final handover, we don't just close properties — we build relationships that last.
+
               </p>
               <i className={`text-[#5C727D] text-md leading-7 font-normal`}>
-                "At KMA, we don’t just deal in property — we deal in prestige."
+              "At KMA Global Properties, we don't just work in real estate — we work for the people in it."
               </i>
             </div>
           </div>
@@ -294,13 +292,12 @@ export default function AboutUsComponent({
               <SectionHeading
                 title="Why Choose Us?"
                 lineTop
-                subtitle="The Innovative Creations of KMA"
+                subtitle="What Makes KMA Global Properties Different"
                 type={"left"}
                 color="white"
-                description="MA Property Group is continuously pushing the boundaries of luxury real estate in Gurugram. With a visionary team and a tech-enabled platform, we deliver bespoke property experiences that blend architectural brilliance, modern amenities, and timeless elegance."
+                description="KMA Global Properties is continuously redefining how real estate works in Gurgaon. With a 2500+ broker network, a tech-enabled CRM platform, and a dedicated support system, we deliver a property experience that is transparent, efficient, and built entirely around you."
               />
-              <p className={`text-[#d5d5d5] text-md leading-7`}>We also offer customized real estate solutions for buyers, investors, and developers seeking high-end villas, commercial hubs, or rental properties tailored to their lifestyle.
-              </p>
+              <p className={`text-[#d5d5d5] text-md leading-7`}>We offer complete real estate solutions for buyers, owners, and brokers — whether you're looking for your dream home, listing a property for free, or growing your brokerage business with the right infrastructure and support behind you.              </p>
             </div>
           </div>
         </div>
