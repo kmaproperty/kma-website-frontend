@@ -53,29 +53,32 @@ export default function LoginOtpCard() {
       toast.success(response.message);
       queryClient.clear();
 
-      // If profile is incomplete (user verified OTP but never filled details), send to create-account
+      const safeRedirect =
+        redirect && redirect.startsWith("/") && !redirect.startsWith("//") ? redirect : null;
+      const userRole = response.user?.role;
+
+      // Honor same-site redirect (e.g. Refer & Earn) for any role — new END_USER accounts
+      // do not need a seller-side create-account step to continue on the buyer site.
+      if (safeRedirect && userRole === "END_USER") {
+        router.replace(safeRedirect);
+        return;
+      }
+
+      // Owner / Channel Partner with an incomplete profile still need the seller create-account flow.
       if (response.requiredOtherDetails) {
-        localStorage.setItem("user", JSON.stringify(response.user));
         router.replace("/create-account");
         return;
       }
 
-      const safeRedirect =
-        redirect && redirect.startsWith("/") && !redirect.startsWith("//") ? redirect : null;
       if (safeRedirect) {
         router.replace(safeRedirect);
         return;
       }
 
-      // Role-based redirect
-      const sellerAppUrl = process.env.NEXT_PUBLIC_SELLER_URL || "http://localhost:3002";
-      const userRole = response.user?.role;
-      if (userRole === "END_USER" || userRole === "USER") {
-        router.replace("/");
-      } else if (userRole === "CHANNEL_PARTNER" && !response.kycCompleted) {
-        window.location.href = `${sellerAppUrl}/kyc`;
+      if (userRole === "CHANNEL_PARTNER" && !response.kycCompleted) {
+        router.replace("/kyc");
       } else {
-        window.location.href = `${sellerAppUrl}/user-dashboard`;
+        router.replace("/user-dashboard");
       }
     },
     onError: (error: any) => {

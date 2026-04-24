@@ -35,8 +35,12 @@ const JoinUs = () => {
 
     return (
         <div>
+            <div className="fixed left-0 right-0 z-[60] flex justify-center pointer-events-none">
+                <div className="pointer-events-auto w-full flex justify-center 2md:pt-6">
+                    <HomdeHeader />
+                </div>
+            </div>
             <div className="relative rounded-bl-[100px] rounded-br-[100px] pt-[25px] h-[100vh] max-h-[600px]" style={{ backgroundImage: 'url(assets/join-us-hero.png)', backgroundSize: 'cover', backgroundPosition: 'bottom' }}>
-                <HomdeHeader />
                 <div className="w-[75%] max-w-[600px] mx-auto mt-[150px]">
                     <PageTitle
                         title="Join Us as a Channel Partner"
@@ -56,7 +60,7 @@ const JoinUs = () => {
                 </div>
             </div>
             <div className='w-full pb-[150px] pt-16 px-[50px]'>
-                <div className='max-w-[1444px] mx-auto'>
+                <div className='max-w-[1440px] mx-auto'>
                     <div className='flex gap-10 justify-between items-center'>
                         <div className='space-y-6 w-[55%]'>
                             <SectionHeading title="" subtitle="Join Now" type={'left'} color='' lineTop={true}

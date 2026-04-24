@@ -7,7 +7,7 @@ import DialogContent from "@mui/material/DialogContent";
 import { InputBase } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
 import MobileInput from "@/components/common/mobileInput";
@@ -20,6 +20,7 @@ import {
   sendEndUserPropertyContactOtpAction,
   submitEndUserPropertyContactAction,
 } from "@/api/actions/propertyActions";
+import { setAuthCookies } from "@/lib/helper";
 import type { Project } from "../_types";
 
 interface ProjectCallBackModalProps {
@@ -45,6 +46,7 @@ export default function ProjectCallBackModal({
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const persistedSessionId = useSessionStore((state) => state.sessionId);
+  const queryClient = useQueryClient();
 
   const [step, setStep] = React.useState<ModalStep>("form");
   const [isUserLoggedIn, setIsUserLoggedIn] = React.useState(false);
@@ -176,9 +178,32 @@ export default function ProjectCallBackModal({
 
   const { mutate: submitContact, isPending: isSubmitting } = useMutation({
     mutationFn: submitEndUserPropertyContactAction,
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
+      // Backend issues tokens on OTP verification for guests — drop them into
+      // a signed-in session so they don't have to log in again.
+      let didAutoLogin = false;
+      if (response?.accessToken && response?.refreshToken) {
+        try {
+          await setAuthCookies(response.accessToken, response.refreshToken);
+          if (response.user && typeof window !== "undefined") {
+            localStorage.setItem("user", JSON.stringify(response.user));
+          }
+          didAutoLogin = true;
+        } catch {
+          // Non-fatal: keep the success flow even if cookie write fails.
+        }
+      }
       toast.success(response?.message ?? "Request submitted successfully");
       closeModal();
+      if (didAutoLogin && typeof window !== "undefined") {
+        // Header / favourites / anything that reads the token on mount is a
+        // client component — router.refresh() only re-runs server work, so
+        // a hard reload is the reliable way to surface the new session.
+        queryClient.clear();
+        window.setTimeout(() => {
+          window.location.reload();
+        }, 400);
+      }
     },
     onError: (error: any) => {
       const message = error?.message ?? "Unable to submit request";

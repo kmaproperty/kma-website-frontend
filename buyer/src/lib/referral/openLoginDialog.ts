@@ -1,5 +1,3 @@
-import type { AppRouterInstance } from "nextjs-toploader/app";
-
 /**
  * Opens the same login dialog flow as Refer & Earn (isLogin=true + redirect back).
  */

@@ -2,8 +2,9 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null;
 
 /**
- * Same rules as `getStoredUserRole` in the header store: role only if `user` in localStorage
- * has a non-empty name (incomplete profiles are treated as logged out for UI).
+ * Returns the stored user role if any, regardless of whether the profile has a name yet.
+ * Refer & Earn collects the referrer name on the form itself, so a freshly-OTP-verified
+ * END_USER account is enough to unlock the UI.
  */
 export function getSessionUserRoleFromStorage(): string | null {
   if (typeof window === "undefined") return null;
@@ -12,8 +13,7 @@ export function getSessionUserRoleFromStorage(): string | null {
   try {
     const parsed: unknown = JSON.parse(raw);
     if (!isRecord(parsed)) return null;
-    if (!parsed.name || (typeof parsed.name === "string" && !parsed.name.trim())) return null;
-    if (typeof parsed.role === "string") return parsed.role;
+    if (typeof parsed.role === "string" && parsed.role.trim().length > 0) return parsed.role;
     return null;
   } catch {
     return null;

@@ -1,4 +1,4 @@
-import MainLayout from "@/components/layouts/BuyerMainLayout";
+import MainLayout from "@/components/myList/mainLayout";
 import ProjectsPageClient from "../_components/ProjectsPageClient";
 import { fetchPropertyMasterData } from "@/app/api/home";
 import HomeFooter from "@/components/footer/homeFooter";

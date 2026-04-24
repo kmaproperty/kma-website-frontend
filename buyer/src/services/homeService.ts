@@ -163,6 +163,7 @@ export interface ChannelPartner {
 
     // Some endpoints return rating (used on list/details UI).
     rating?: number | string | null;
+    // List endpoint sends avg rating + count under these names.
     average_rating?: number | string | null;
     total_reviews?: number | null;
 
@@ -289,22 +290,19 @@ export interface User {
 }
 export interface Rating {
     id: string;
-    rating: number | string;
+    rating: string;
     review: string;
     name: string;
-    email?: string;
-    profileImage?: string | null;
     endUser: User | null;
     createdAt: string
 }
 
 export interface GetUserReviewApiHandlerResponse {
-    success: boolean,
+    success: true,
     reviews: Rating[],
     statistics: {
         totalCount: number,
-        averageRating: number,
-        totalEndUsers?: number
+        averageRating: number
     },
     trustedByText: string
 }

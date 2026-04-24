@@ -2,9 +2,9 @@ import React from 'react'
 
 const PageTitle = ({ title, description, breadcrumps, actions }) => {
     return (
-        <div className='flex flex-col items-center max-w-[610px]'>
-            <h1 className="text-[40px] text-center font-semibold text-white">{title}</h1>
-            {description && <p className="text-white text-center text-md mt-4 leading-7 font-light">{description}</p>}
+        <div className='flex flex-col items-center max-w-[610px] px-4'>
+            <h1 className="text-[28px] sm:text-[30px] md:text-[32px] 2md:text-[34px] lg:text-[36px] xl:text-[38px] 1xl:text-[39px] 2xl:text-[40px] text-center font-semibold text-white">{title}</h1>
+            {description && <p className="text-white text-center text-md mt-4 font-light">{description}</p>}
             {/* {actions && (
                 <div className="flex items-center mt-6 mb-3">
                     {actions.map((item, index) => (

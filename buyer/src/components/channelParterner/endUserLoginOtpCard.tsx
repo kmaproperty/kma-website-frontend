@@ -55,7 +55,13 @@ export default function EndUserLoginOtpCard() {
       toast.success(response.message);
       queryClient.clear();
 
-      // Always redirect End User to home after login
+      const safeRedirect =
+        redirect && redirect.startsWith("/") && !redirect.startsWith("//") ? redirect : null;
+      if (safeRedirect) {
+        router.replace(safeRedirect);
+        return;
+      }
+
       router.replace("/");
     },
     onError: (error: any) => {

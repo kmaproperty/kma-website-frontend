@@ -1,3 +1,4 @@
+"use client";
 import * as React from "react";
 import Dialog, { DialogProps } from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
@@ -16,6 +17,7 @@ import { contactUsHomeOtpApiHandler, ContactUsHomeOtpPayload, ContactUsHOmeOtpRe
 import { createURLSearchParam } from "@/lib/helper";
 import { useSelector } from "react-redux";
 import { getAboutusData } from "@/store/homeHeaderSlice";
+import { Mail } from "lucide-react";
 
 interface FormValues {
   firstName: string;
@@ -196,7 +198,7 @@ export default function ContactInformation({isEndUser = false}: {isEndUser?: boo
                 Contact Information
               </h2>
               <p className="text-base mb-6">
-                Say something to start a live chat!
+                Connect with our property experts for quick support.
               </p>
 
               <div className="space-y-6 z-10 relative">
@@ -213,15 +215,10 @@ export default function ContactInformation({isEndUser = false}: {isEndUser?: boo
                 </div>
 
                 <div className="flex items-center gap-4">
-                  <div className="rounded-full border border-white p-2">
-                    <Image
-                      alt="email"
-                      src="/assets/email-white.svg"
-                      width={20}
-                      height={20}
-                    />
+                  <div className="shrink-0 rounded-full border border-white p-2 flex items-center justify-center">
+                    <Mail className="h-5 w-5 text-white" />
                   </div>
-                  <p className="text-sm">{aboutusData?.email || 'info@kmaproperty.com'}</p>
+                  <p className="text-sm min-w-0 flex-1 break-all">{aboutusData?.email || 'info@kmaproperty.com'}</p>
                 </div>
 
                 <div className="flex items-center gap-4">

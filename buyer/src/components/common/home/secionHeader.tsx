@@ -12,7 +12,6 @@ export default function SectionHeader({
   isInView = false,
   listingFilter = "Sale",
   onListingFilterChange,
-  onViewMore,
 }: {
   heading?: string;
   subHeading?: string;
@@ -22,7 +21,6 @@ export default function SectionHeader({
   isInView?: boolean;
   listingFilter?: "Sale" | "Rent";
   onListingFilterChange?: (filter: "Sale" | "Rent") => void;
-  onViewMore?: () => void;
 }) {
   const router = useRouter()
   const smartTransition = {
@@ -43,7 +41,7 @@ export default function SectionHeader({
   };
 
   const naviageChannelPartner = () => {
-    router.push("/join-us");
+    router.push('/join-us')
   }
 
   return (
@@ -57,7 +55,7 @@ export default function SectionHeader({
         <div className="bg-gray-400 h-0.5 w-8 mb-2">
           <div className="w-1/2 h-0.5 bg-gray-900" />
         </div>
-        <h2 className="text-2xl text-black font-semibold">{heading}</h2>
+        <h2 className="kma_title text-black font-semibold">{heading}</h2>
         <h3 className="text-text-gray text-xs">{subHeading}</h3>
       </div>
       <div className="flex gap-3 w-full md:justify-end">
@@ -69,11 +67,7 @@ export default function SectionHeader({
           </button>
         )}
         {!hideButton && (
-          <button
-            type="button"
-            onClick={onViewMore}
-            className="font-medium w-auto text-sm 1xl:text-base animated-button px-9 py-2 border border-blue text-center cursor-pointer"
-          >
+          <button className="font-medium w-auto text-sm 1xl:text-base animated-button px-9 py-2 border border-blue text-center cursor-pointer">
             <span className="gap-3 relative flex justify-center">
               <p className={`text-nowrap`}>View More</p>
             </span>

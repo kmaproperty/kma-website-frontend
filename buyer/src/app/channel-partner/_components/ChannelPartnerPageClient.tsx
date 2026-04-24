@@ -15,7 +15,6 @@ import { joinUrl } from "@/lib/helper";
 import { useSelector } from "react-redux";
 import { getSelectedCity } from "@/store/homeHeaderSlice";
 import ContactUsPopup from "@/components/contactUsPopup";
-import { toast } from "react-toastify";
 
 const PROFILE_BASE = process.env.NEXT_PUBLIC_AWS_URL;
 const DEFAULT_PAGE_SIZE = 12;
@@ -113,10 +112,8 @@ function ChannelPartnerCard({
   const handleOpenDetails = () => onOpenDetails?.(partner);
 
   const profileSrc = joinUrl(PROFILE_BASE, partner.profile_image);
-  const rating = Number(partner.average_rating ?? partner.rating ?? 0);
+  const rating = Number(partner.average_rating ?? partner.rating);
   const ratingText = Number.isFinite(rating) ? rating.toFixed(1) : "0.0";
-  const totalReviews = Number(partner.total_reviews ?? 0);
-  const reviewsText = `${totalReviews} Rating${totalReviews === 1 ? "" : "s"}`;
   const cityList = partner.cities
     ?.split(",")
     .map((c) => c.trim())
@@ -160,7 +157,7 @@ function ChannelPartnerCard({
         <div className="flex items-center gap-1.5 mt-1.5 text-sm text-text-gray">
           <Star fill={Math.min(100, (rating / 5) * 100)} className="h-4 w-4 text-[#F7BB06]" />
           <span className="font-medium text-text-black">{ratingText}</span>
-          <span>{reviewsText}</span>
+          <span>4 Ratings</span>
         </div>
         {cityList.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-3">
@@ -265,23 +262,6 @@ export default function ChannelPartnerPageClient() {
     setPage(1);
   }, []);
 
-  const handleContact = useCallback(async () => {
-    try {
-      const response = await fetch("/api/get-token");
-      const tokenData = await response.json();
-      if (tokenData?.accessToken) {
-        setContactPopupOpen(true);
-        return;
-      }
-    } catch {
-      // Fallback to login redirect when token check fails.
-    }
-
-    toast.info("Please login first to continue.");
-    const redirectTo = `${window.location.pathname}${window.location.search}`;
-    router.push(`/user-flow?isLogin=true&redirect=${encodeURIComponent(redirectTo)}`);
-  }, [router]);
-
   return (
     <div className="w-full flex flex-col mt-[150px]">
       {/* Hero */}
@@ -377,7 +357,7 @@ export default function ChannelPartnerPageClient() {
             <ChannelPartnerCard
               key={partner.id ?? `${partner.name}-${index}`}
               partner={partner}
-              onContact={handleContact}
+              onContact={() => setContactPopupOpen(true)}
               onOpenDetails={handleOpenDetails}
             />
           ))}
@@ -433,32 +413,8 @@ export default function ChannelPartnerPageClient() {
             aria-hidden
             onClick={() => setFilterOpen(false)}
           />
-          <div className="fixed left-1/2 top-[180px] z-50 w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 rounded-2xl bg-[#F5F5F5] shadow-xl max-h-[calc(100vh-220px)] overflow-y-auto p-4">
-            <div className="mb-4 flex items-center justify-between rounded-2xl bg-white p-4 shadow-sm">
-              <h2 className="text-base font-semibold text-text-black">Filters</h2>
-              <button
-                type="button"
-                onClick={() => setFilterOpen(false)}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#D9D9D9] text-text-black hover:bg-[#F5F5F5] transition-colors"
-                aria-label="Close filter panel"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  className="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden
-                >
-                  <path d="M18 6 6 18" />
-                  <path d="m6 6 12 12" />
-                </svg>
-              </button>
-            </div>
-
-            <div className="rounded-2xl bg-white p-4 shadow-sm">
+          <div className="fixed left-1/2 top-[180px] z-50 w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 rounded-2xl bg-[#F5F5F5] shadow-xl max-h-[calc(100vh-220px)] overflow-y-auto">
+            <div className="mt-4 rounded-2xl bg-white p-4 shadow-sm">
               <h3 className="text-sm font-semibold text-text-black mb-3">
                 Cities
               </h3>
@@ -512,20 +468,13 @@ export default function ChannelPartnerPageClient() {
               </div>
             </div>
 
-            <div className="mb-1 flex items-center justify-end gap-2">
+            <div className="mb-4 flex items-center justify-end gap-2">
               <button
                 type="button"
                 onClick={handleClearFilters}
                 className="rounded-lg border border-[#D9D9D9] bg-white px-4 py-2.5 text-sm font-semibold text-text-black hover:bg-[#F5F5F5] transition-colors"
               >
                 Clear Filters
-              </button>
-              <button
-                type="button"
-                onClick={handleApplyFilters}
-                className="rounded-lg bg-[#7C3AED] px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
-              >
-                Apply Filters
               </button>
             </div>
           </div>

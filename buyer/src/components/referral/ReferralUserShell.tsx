@@ -39,9 +39,14 @@ export default function ReferralUserShell({
 
   return (
     <div className="bg-[#F8FAFC] min-h-screen">
+      <div className="fixed left-0 right-0 z-[60] flex justify-center pointer-events-none">
+        <div className="pointer-events-auto w-full flex justify-center">
+          <HomeHeader />
+        </div>
+      </div>
+
       <div className="relative pt-[25px] min-h-[280px] rounded-b-[60px] bg-[#010048]">
-        <HomeHeader />
-        <div className="w-[90%] max-w-[1100px] mx-auto mt-[70px] pb-[100px] text-white">
+        <div className="w-[90%] max-w-[1100px] mx-auto mt-[120px] pb-[100px] text-white">
           <p className="text-sm opacity-90">{breadcrumb}</p>
           <h1 className="text-[26px] md:text-[36px] leading-[1.15] font-semibold mt-2">{title}</h1>
           {description ? <p className="text-sm md:text-base mt-3 max-w-[720px] opacity-95">{description}</p> : null}

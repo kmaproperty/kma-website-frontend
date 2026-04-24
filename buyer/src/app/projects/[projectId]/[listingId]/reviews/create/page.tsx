@@ -7,7 +7,7 @@ import { useParams, useRouter } from "next/navigation";
 import { CarFront, Check, ChevronLeft, MapPin, ShieldCheck, Star, Trees } from "lucide-react";
 import { usePropertyDetails } from "@/api/hooks/usePropertyDetails";
 import { submitPropertyRatingReviewAction } from "@/api/actions/propertyActions";
-import MainLayout from "@/components/layouts/BuyerMainLayout";
+import MainLayout from "@/components/myList/mainLayout";
 import HomeFooter from "@/components/footer/homeFooter";
 import AboutusDataSync from "@/components/footer/AboutusDataSync";
 import { fetchPropertyMasterData } from "@/app/api/home";
@@ -15,12 +15,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setPropertyMasterData } from "@/store/homeHeaderSlice";
 
-const galleryImages = [
-  "/assets/property/img-1.png",
-  "/assets/property/img-2.png",
-  "/assets/property/img-3.png",
-  "/assets/property/img-4.png",
-];
+const placeholderImage = "/assets/property/img-1.png";
 
 const awsBaseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
 const toFullAssetUrl = (value?: string | null) => {
@@ -31,23 +26,6 @@ const toFullAssetUrl = (value?: string | null) => {
 };
 const asString = (value: unknown): string | null =>
   typeof value === "string" && value.trim().length > 0 ? value.trim() : null;
-const asNumber = (value: unknown): number | null =>
-  typeof value === "number" && Number.isFinite(value)
-    ? value
-    : typeof value === "string"
-      ? (() => {
-          const n = Number(value.trim());
-          return Number.isFinite(n) ? n : null;
-        })()
-      : null;
-const formatInr = (value: number) =>
-  new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(value);
-
-const ROLE_OPTIONS = [
-  { value: "owner", label: "Owner" },
-  { value: "tenant", label: "Tenant" },
-  { value: "other", label: "Other" },
-];
 
 const FEATURES = [
   {
@@ -117,7 +95,8 @@ export default function CreateReviewPage() {
   const router = useRouter();
   const projectId = params?.projectId ?? "";
   const listingId = params?.listingId ?? "";
-  const { data: propertyDetails } = usePropertyDetails({ id: listingId });
+  const { data: detailsResponse } = usePropertyDetails({ id: listingId });
+  const propertyDetails = detailsResponse?.property ?? detailsResponse?.data ?? null;
 
   const dispatch = useDispatch();
   const [propertyMasterData, setPropertyMasterData] = useState<unknown[]>([]);
@@ -129,7 +108,7 @@ export default function CreateReviewPage() {
     });
   }, [dispatch]);
 
-  const [role, setRole] = useState("owner");
+  const role = "owner";
   const [connectivityRating, setConnectivityRating] = useState(0);
   const [neighbourhoodRating, setNeighbourhoodRating] = useState(0);
   const [safetyRating, setSafetyRating] = useState(0);
@@ -139,59 +118,37 @@ export default function CreateReviewPage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [successOpen, setSuccessOpen] = useState(false);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const checkAuth = async () => {
-      try {
-        const response = await fetch("/api/get-token");
-        const data = (await response.json()) as { accessToken?: string | null };
-        if (!isMounted) return;
-        setIsUserLoggedIn(Boolean(data?.accessToken));
-      } catch {
-        if (!isMounted) return;
-        setIsUserLoggedIn(false);
-      } finally {
-        if (isMounted) {
-          setIsCheckingAuth(false);
-        }
-      }
-    };
-
-    checkAuth();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   const propertyTitle =
-    asString(propertyDetails?.propertyName) ??
-    asString(propertyDetails?.title) ??
-    "Property name lorem Ipsum";
+    asString((propertyDetails as any)?.propertyName) ??
+    asString((propertyDetails as any)?.title) ??
+    "";
   const propertyAddress =
-    asString(propertyDetails?.address) ?? "Madhya Pradesh, India, 455001";
-  const monthlyRent = asNumber(propertyDetails?.monthlyRent);
-  const salePrice = asNumber(propertyDetails?.price);
-  const priceLabel =
-    monthlyRent && monthlyRent > 0
-      ? `₹${formatInr(monthlyRent)}/month`
-      : salePrice && salePrice > 0
-        ? `₹${formatInr(salePrice)}`
-        : "₹85,000/month";
+    asString((detailsResponse as any)?.location?.address) ??
+    asString((propertyDetails as any)?.address) ??
+    ([
+      asString((detailsResponse as any)?.location?.society),
+      asString((detailsResponse as any)?.location?.locality),
+      asString((detailsResponse as any)?.location?.city),
+      asString((detailsResponse as any)?.location?.state),
+    ]
+      .filter(Boolean)
+      .join(", ") ||
+      "");
 
   const coverImage = useMemo(() => {
-    const media = [...(propertyDetails?.photos ?? []), ...(propertyDetails?.images ?? [])];
-    const url =
-      media[0] &&
-      typeof media[0] === "object" &&
-      media[0] !== null &&
-      "fileKey" in media[0]
-        ? toFullAssetUrl((media[0] as { fileKey?: string }).fileKey)
-        : "";
-    return url || galleryImages[0];
+    const media = [
+      ...(((propertyDetails as any)?.photos ?? []) as Array<{ fileKey?: string | null; url?: string | null }>),
+      ...(((propertyDetails as any)?.images ?? []) as Array<{ fileKey?: string | null; url?: string | null }>),
+    ];
+    const urls = media
+      .map((item) => toFullAssetUrl(asString(item?.fileKey) ?? asString(item?.url)))
+      .filter((url): url is string => Boolean(url));
+    if (urls[0]) return urls[0];
+
+    // Fallback: some endpoints expose a single imageUrl on the listing summary.
+    const single = asString((propertyDetails as any)?.imageUrl);
+    return toFullAssetUrl(single) || placeholderImage;
   }, [propertyDetails]);
 
   const listingHref = `/projects/${projectId}/${listingId}`;
@@ -206,7 +163,7 @@ export default function CreateReviewPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isUserLoggedIn || !canSubmit || submitting || !listingId) return;
+    if (!canSubmit || submitting || !listingId) return;
     setSubmitError(null);
     setSubmitting(true);
     try {
@@ -252,11 +209,8 @@ export default function CreateReviewPage() {
                       <ChevronLeft className="h-6 w-6" />
                     </Link>
                     <div className="min-w-0">
-                      <span className="text-lg font-semibold leading-tight text-text-black">
+                      <p className="text-lg font-semibold leading-tight text-text-black">
                         {propertyTitle}
-                      </span>
-                      <p className="mt-1 text-sm font-semibold leading-none text-text-black">
-                        {priceLabel}
                       </p>
                       <p className="mt-1 text-xs text-text-gray">{propertyAddress}</p>
                     </div>
@@ -265,163 +219,99 @@ export default function CreateReviewPage() {
                     <div className="relative h-[80px] w-[120px] shrink-0 overflow-hidden rounded-xl border border-[#E5E7EB]">
                       <Image
                         src={coverImage}
-                        alt={propertyTitle}
+                        alt={propertyTitle || "Property cover"}
                         fill
                         className="object-cover rounded-xl"
                       />
                     </div>
-                    <div className="inline-flex w-fit rounded-md border border-[#D4D5D8] bg-white p-1">
-                      <Link
-                        href={listingHref}
-                        className="min-w-[110px] rounded-md bg-[#05085E] px-3 py-2 text-xs font-semibold text-white sm:min-w-[125px] sm:px-4 sm:py-2.5 sm:text-sm inline-flex items-center justify-center"
-                      >
-                        Listing
-                      </Link>
-                      <Link
-                        href={`/projects/${projectId}`}
-                        className="min-w-[110px] rounded-md px-3 py-2 text-xs font-medium text-text-light-black sm:min-w-[125px] sm:px-4 sm:py-2.5 sm:text-sm inline-flex items-center justify-center"
-                      >
-                        Project
-                      </Link>
-                      <Link
-                        href={reviewsHref}
-                        className="min-w-[110px] rounded-md px-3 py-2 text-xs font-medium text-text-light-black sm:min-w-[125px] sm:px-4 sm:py-2.5 sm:text-sm inline-flex items-center justify-center"
-                      >
-                        Reviews
-                      </Link>
-                    </div>
                   </div>
                 </div>
 
-                {isCheckingAuth ? (
-                  <div className="mt-6 rounded-xl border border-[#E7E7E9] bg-[#F8F8F9] p-6 text-center text-sm text-text-gray">
-                    Checking login status...
+                <form onSubmit={handleSubmit} className="mt-6">
+                  {/* Feature ratings – two columns */}
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 mb-8">
+                    {FEATURES.map(({ key, icon: Icon, label, description }) => (
+                      <div
+                        key={key}
+                        className="rounded-xl border border-[#E7E7E9] bg-[#F8F8F9] p-4"
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#F0BC00] bg-white text-[#05085E]">
+                            <Icon className="h-5 w-5" />
+                          </span>
+                          <h3 className="text-base font-semibold text-text-black">
+                            {label}
+                          </h3>
+                        </div>
+                        <p className="text-xs text-text-gray mb-3">{description}</p>
+                        <StarRatingInput
+                          value={
+                            key === "connectivity"
+                              ? connectivityRating
+                              : key === "neighbourhood"
+                                ? neighbourhoodRating
+                                : key === "safety"
+                                  ? safetyRating
+                                  : livabilityRating
+                          }
+                          onChange={
+                            key === "connectivity"
+                              ? setConnectivityRating
+                              : key === "neighbourhood"
+                                ? setNeighbourhoodRating
+                                : key === "safety"
+                                  ? setSafetyRating
+                                  : setLivabilityRating
+                          }
+                        />
+                      </div>
+                    ))}
                   </div>
-                ) : !isUserLoggedIn ? (
-                  <div className="mt-6 rounded-xl border border-[#E7E7E9] bg-[#F8F8F9] p-6 text-center">
-                    <p className="text-base font-medium text-text-black">
-                      Please login first to add a review.
-                    </p>
-                    <p className="mt-2 text-sm text-text-gray">
-                      You need to login or sign up before submitting your rating and feedback.
-                    </p>
+
+                  {/* What do you like / dislike */}
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 mb-8">
+                    <div>
+                      <label className="block text-sm font-semibold text-text-black mb-2">
+                        What do you like about the locality?
+                      </label>
+                      <textarea
+                        value={likeText}
+                        onChange={(e) => setLikeText(e.target.value)}
+                        placeholder="We'd love to hear"
+                        rows={4}
+                        className="w-full rounded-xl border border-[#D4D5D8] bg-white px-4 py-3 text-sm text-text-black placeholder:text-text-gray focus:border-[#05085E] focus:outline-none focus:ring-1 focus:ring-[#05085E] resize-y"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-text-black mb-2">
+                        What do you dislike about the locality?
+                      </label>
+                      <textarea
+                        value={dislikeText}
+                        onChange={(e) => setDislikeText(e.target.value)}
+                        placeholder="We'd love to hear"
+                        rows={4}
+                        className="w-full rounded-xl border border-[#D4D5D8] bg-white px-4 py-3 text-sm text-text-black placeholder:text-text-gray focus:border-[#05085E] focus:outline-none focus:ring-1 focus:ring-[#05085E] resize-y"
+                      />
+                    </div>
+                  </div>
+
+                  {submitError && (
+                    <div className="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+                      {submitError}
+                    </div>
+                  )}
+
+                  <div className="flex justify-center">
                     <button
-                      type="button"
-                      onClick={() =>
-                        router.push(
-                          `/user-flow?isLogin=true&redirect=${encodeURIComponent(createHref)}`
-                        )
-                      }
-                      className="mt-5 rounded-xl bg-[#05085E] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#0B127A]"
+                      type="submit"
+                      disabled={!canSubmit || submitting}
+                      className="rounded-xl bg-[#05085E] px-8 py-3 text-sm font-semibold text-white hover:bg-[#0B127A] disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Login / Sign Up
+                      {submitting ? "Submitting…" : "Submit Review"}
                     </button>
                   </div>
-                ) : (
-                  <form onSubmit={handleSubmit} className="mt-6">
-                    {/* Role (optional in UI but API accepts it) */}
-                    <div className="mb-6">
-                      <label className="block text-sm font-medium text-text-black mb-2">
-                        I am a
-                      </label>
-                      <select
-                        value={role}
-                        onChange={(e) => setRole(e.target.value)}
-                        className="rounded-xl border border-[#D4D5D8] bg-white px-4 py-2.5 text-sm text-text-black focus:border-[#05085E] focus:outline-none focus:ring-1 focus:ring-[#05085E] min-w-[160px]"
-                      >
-                        {ROLE_OPTIONS.map((opt) => (
-                          <option key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {/* Feature ratings – two columns */}
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 mb-8">
-                      {FEATURES.map(({ key, icon: Icon, label, description }) => (
-                        <div
-                          key={key}
-                          className="rounded-xl border border-[#E7E7E9] bg-[#F8F8F9] p-4"
-                        >
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#F0BC00] bg-white text-[#05085E]">
-                              <Icon className="h-5 w-5" />
-                            </span>
-                            <h3 className="text-base font-semibold text-text-black">
-                              {label}
-                            </h3>
-                          </div>
-                          <p className="text-xs text-text-gray mb-3">{description}</p>
-                          <StarRatingInput
-                            value={
-                              key === "connectivity"
-                                ? connectivityRating
-                                : key === "neighbourhood"
-                                  ? neighbourhoodRating
-                                  : key === "safety"
-                                    ? safetyRating
-                                    : livabilityRating
-                            }
-                            onChange={
-                              key === "connectivity"
-                                ? setConnectivityRating
-                                : key === "neighbourhood"
-                                  ? setNeighbourhoodRating
-                                  : key === "safety"
-                                    ? setSafetyRating
-                                    : setLivabilityRating
-                            }
-                          />
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* What do you like / dislike */}
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 mb-8">
-                      <div>
-                        <label className="block text-sm font-semibold text-text-black mb-2">
-                          What do you like about the locality?
-                        </label>
-                        <textarea
-                          value={likeText}
-                          onChange={(e) => setLikeText(e.target.value)}
-                          placeholder="We'd love to hear"
-                          rows={4}
-                          className="w-full rounded-xl border border-[#D4D5D8] bg-white px-4 py-3 text-sm text-text-black placeholder:text-text-gray focus:border-[#05085E] focus:outline-none focus:ring-1 focus:ring-[#05085E] resize-y"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-semibold text-text-black mb-2">
-                          What do you dislike about the locality?
-                        </label>
-                        <textarea
-                          value={dislikeText}
-                          onChange={(e) => setDislikeText(e.target.value)}
-                          placeholder="We'd love to hear"
-                          rows={4}
-                          className="w-full rounded-xl border border-[#D4D5D8] bg-white px-4 py-3 text-sm text-text-black placeholder:text-text-gray focus:border-[#05085E] focus:outline-none focus:ring-1 focus:ring-[#05085E] resize-y"
-                        />
-                      </div>
-                    </div>
-
-                    {submitError && (
-                      <div className="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
-                        {submitError}
-                      </div>
-                    )}
-
-                    <div className="flex justify-center">
-                      <button
-                        type="submit"
-                        disabled={!canSubmit || submitting}
-                        className="rounded-xl bg-[#05085E] px-8 py-3 text-sm font-semibold text-white hover:bg-[#0B127A] disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {submitting ? "Submitting…" : "Submit Review"}
-                      </button>
-                    </div>
-                  </form>
-                )}
+                </form>
               </div>
             </div>
           </div>

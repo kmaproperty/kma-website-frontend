@@ -26,12 +26,14 @@ export default function ProfileMenu({ anchorEl, open, handleClose }) {
       queryClient.clear();
       router.replace("/");
     },
-    onError: async () => {
-      // Even if logout API fails (401/token expired), still clear local state and redirect
-      localStorage.clear();
-      await clearAuthCookies();
-      queryClient.clear();
-      router.replace("/");
+    onError: (error: any) => {
+      if (Array.isArray(error.message)) {
+        error.message.map((item: string) => {
+          toast.error(item);
+        });
+      } else {
+        toast.error(error.message);
+      }
     },
   });
 
@@ -49,8 +51,8 @@ export default function ProfileMenu({ anchorEl, open, handleClose }) {
         mt: "20px",
       }}
     >
-      <MenuItem
-        onClick={() => { handleClose(); handleRedirect("/profile"); }}
+      {/* <MenuItem
+        onClick={() => handleRedirect("/profile")}
         className="text-sm! py-3! px-6!"
         sx={{
           "&.MuiMenuItem-root:hover": {
@@ -61,7 +63,7 @@ export default function ProfileMenu({ anchorEl, open, handleClose }) {
         My Profile
       </MenuItem>
 
-      <Divider className="m-0!" />
+      <Divider className="m-0!" /> */}
 
       <MenuItem
         onClick={() => {

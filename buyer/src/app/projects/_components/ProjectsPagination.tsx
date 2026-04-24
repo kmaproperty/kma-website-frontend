@@ -33,13 +33,13 @@ export default function ProjectsPagination({
   return (
     <nav
       aria-label="Projects pagination"
-      className="mt-6 flex items-center gap-2 text-md"
+      className="md:mt-8 mt-5 flex items-center justify-center gap-3"
     >
       <button
         type="button"
         onClick={() => onPageChange(currentPage - 1)}
         disabled={isPrevDisabled}
-        className="inline-flex h-12 min-w-[80px] items-center justify-center rounded border border-border bg-white px-4 text-[#888888] transition disabled:cursor-not-allowed disabled:opacity-70"
+        className="inline-flex md:h-12 h-10 md:min-w-[110px] cursor-pointer min-w-20 items-center justify-center rounded-md border border-[#E6E6E6] bg-white px-6 text-base font-medium text-[#888888] transition hover:bg-background-gray disabled:cursor-not-allowed disabled:opacity-60"
       >
         Prev
       </button>
@@ -52,10 +52,10 @@ export default function ProjectsPagination({
             type="button"
             onClick={() => onPageChange(page)}
             aria-current={isActive ? "page" : undefined}
-            className={`inline-flex h-12 w-12 items-center justify-center rounded border transition ${
+            className={`inline-flex md:h-12 h-10 md:w-12 w-10 cursor-pointer items-center justify-center rounded-md border text-base font-medium transition ${
               isActive
                 ? "border-[#010048] bg-[#010048] text-white"
-                : "border-border bg-white text-[#888888]"
+                : "border-[#E6E6E6] bg-white text-[#888888] hover:bg-background-gray"
             }`}
           >
             {page}
@@ -67,7 +67,7 @@ export default function ProjectsPagination({
         type="button"
         onClick={() => onPageChange(currentPage + 1)}
         disabled={isNextDisabled}
-        className="inline-flex h-12 min-w-[80px] items-center justify-center rounded border border-border bg-white px-4 text-[#010048] transition disabled:cursor-not-allowed disabled:opacity-70"
+        className="inline-flex md:h-12 h-10 md:min-w-[110px] min-w-20 cursor-pointer items-center justify-center rounded-md border border-[#E6E6E6] bg-white px-6 text-base font-medium text-[#010048] transition hover:bg-background-gray disabled:cursor-not-allowed disabled:opacity-60"
       >
         Next
       </button>

@@ -20,19 +20,14 @@ import {
 import { usePropertyDetails } from "@/api/hooks/usePropertyDetails";
 import { usePropertyRatingReviews } from "@/api/hooks/usePropertyRatingReviews";
 import type { PropertyRatingReviewItem } from "@/api/actions/propertyActions";
-import MainLayout from "@/components/layouts/BuyerMainLayout";
+import MainLayout from "@/components/myList/mainLayout";
 import HomeFooter from "@/components/footer/homeFooter";
 import { fetchPropertyMasterData } from "@/app/api/home";
 import { useDispatch } from "react-redux";
 import { setPropertyMasterData } from "@/store/homeHeaderSlice";
 import AboutusDataSync from "@/components/footer/AboutusDataSync";
 
-const galleryImages = [
-  "/assets/property/img-1.png",
-  "/assets/property/img-2.png",
-  "/assets/property/img-3.png",
-  "/assets/property/img-4.png",
-];
+const placeholderImage = "/assets/property/img-1.png";
 
 const SORT_OPTIONS = [
   { value: "recommended", label: "Recommended" },
@@ -171,7 +166,8 @@ export default function ListingReviewsPage() {
   const params = useParams<{ projectId: string; listingId: string }>();
   const projectId = params?.projectId ?? "";
   const listingId = params?.listingId ?? "";
-  const { data: propertyDetails } = usePropertyDetails({ id: listingId });
+  const { data: detailsResponse } = usePropertyDetails({ id: listingId });
+  const propertyDetails = detailsResponse?.property ?? detailsResponse?.data ?? null;
 
   const [searchQ, setSearchQ] = useState("");
   const [searchInput, setSearchInput] = useState("");
@@ -245,26 +241,42 @@ export default function ListingReviewsPage() {
   };
 
   const propertyTitle =
-    asString(propertyDetails?.propertyName) ??
-    asString(propertyDetails?.title) ??
-    "Property name lorem Ipsum";
+    asString((propertyDetails as any)?.propertyName) ??
+    asString((propertyDetails as any)?.title) ??
+    "";
   const propertyAddress =
-    asString(propertyDetails?.address) ?? "Madhya Pradesh, India, 455001";
-  const monthlyRent = asNumber(propertyDetails?.monthlyRent);
-  const salePrice = asNumber(propertyDetails?.price);
+    asString((detailsResponse as any)?.location?.address) ??
+    asString((propertyDetails as any)?.address) ??
+    ([
+      asString((detailsResponse as any)?.location?.society),
+      asString((detailsResponse as any)?.location?.locality),
+      asString((detailsResponse as any)?.location?.city),
+      asString((detailsResponse as any)?.location?.state),
+    ]
+      .filter(Boolean)
+      .join(", ") ||
+      "");
+  const monthlyRent = asNumber((propertyDetails as any)?.monthlyRent);
+  const salePrice = asNumber((propertyDetails as any)?.price);
   const priceLabel =
     monthlyRent && monthlyRent > 0
       ? `₹${formatInr(monthlyRent)}/month`
       : salePrice && salePrice > 0
         ? `₹${formatInr(salePrice)}`
-        : "₹85,000/month";
+        : "";
 
   const coverImage = useMemo(() => {
-    const media = [...(propertyDetails?.photos ?? []), ...(propertyDetails?.images ?? [])];
-    const url = media[0] && typeof media[0] === "object" && media[0] !== null && "fileKey" in media[0]
-      ? toFullAssetUrl((media[0] as { fileKey?: string }).fileKey)
-      : "";
-    return url || galleryImages[0];
+    const media = [
+      ...(((propertyDetails as any)?.photos ?? []) as Array<{ fileKey?: string | null; url?: string | null }>),
+      ...(((propertyDetails as any)?.images ?? []) as Array<{ fileKey?: string | null; url?: string | null }>),
+    ];
+    const urls = media
+      .map((item) => toFullAssetUrl(asString(item?.fileKey) ?? asString(item?.url)))
+      .filter((url): url is string => Boolean(url));
+    if (urls[0]) return urls[0];
+
+    const single = asString((propertyDetails as any)?.imageUrl);
+    return toFullAssetUrl(single) || placeholderImage;
   }, [propertyDetails]);
 
   const listingHref = `/projects/${projectId}/${listingId}`;
@@ -336,13 +348,17 @@ export default function ListingReviewsPage() {
                       <h1 className="text-base font-semibold text-[#374151] sm:text-2xl line-clamp-2">
                         {propertyTitle}
                       </h1>
-                      <p className="mt-2 font-semibold text-md text-[#6B7280]">
-                        {priceLabel}
-                      </p>
-                      <p className="mt-2 text-sm text-[#6B7280] flex items-center">
-                        <MapPin className="h-4 w-4 mr-1 text-[#6B7280]" />
-                        {propertyAddress}
-                      </p>
+                      {priceLabel && (
+                        <p className="mt-2 font-semibold text-md text-[#6B7280]">
+                          {priceLabel}
+                        </p>
+                      )}
+                      {propertyAddress && (
+                        <p className="mt-2 text-sm text-[#6B7280] flex items-center">
+                          <MapPin className="h-4 w-4 mr-1 text-[#6B7280]" />
+                          {propertyAddress}
+                        </p>
+                      )}
                     </div>
                   </div>
 

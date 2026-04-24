@@ -22,7 +22,6 @@ export interface EndUserPropertyDetails {
 export interface GetEndUserPropertyDetailsPayload {
   id: string;
   correlationId?: string;
-  sessionId?: string;
 }
 
 /** Location object returned in property details API response */
@@ -482,6 +481,18 @@ export interface SubmitPropertyContactResponse {
   success?: boolean;
   message?: string;
   data?: unknown;
+  contactedPropertyId?: string;
+  // Backend issues tokens when a non-logged-in user completes OTP verification
+  // so we can seamlessly drop them into a signed-in session.
+  accessToken?: string;
+  refreshToken?: string;
+  user?: {
+    id: string;
+    name: string;
+    email: string | null;
+    phone: string;
+    role: string;
+  };
 }
 
 const getCorrelationId = () => {
@@ -555,18 +566,15 @@ export const getEndUserFiltersAction = async ({
 export const getEndUserPropertyDetailsAction = async ({
   id,
   correlationId,
-  sessionId,
 }: GetEndUserPropertyDetailsPayload): Promise<GetEndUserPropertyDetailsResponse> => {
   try {
-    const headers: Record<string, string> = {
-      "x-correlation-id": correlationId ?? getCorrelationId(),
-    };
-    if (sessionId) {
-      headers["X-Session-Id"] = sessionId;
-    }
     const response = await axiosInstance.get<GetEndUserPropertyDetailsResponse>(
       `end-user/properties/${id}`,
-      { headers }
+      {
+        headers: {
+          "x-correlation-id": correlationId ?? getCorrelationId(),
+        },
+      }
     );
 
     return response.data;

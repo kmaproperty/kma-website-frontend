@@ -1,6 +1,7 @@
 import AboutUsComponent from "@/components/about-us";
 import { fetchPropertyCitiesData, fetchPropertyMasterData } from "../api/home";
 
+
 export default async function AboutUs(){
     let propertyMasterData: any = await fetchPropertyMasterData();
       if (propertyMasterData?.success) {

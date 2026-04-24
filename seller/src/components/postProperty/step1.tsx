@@ -1111,7 +1111,7 @@ export default function Step1({containerRef}) {
     onSuccess: (response: Step1PostPropertyResponse) => {
       let propertyId = response.id
       dispatch(setActiveStep({step: activeStep + 1}))
-      router.push(`/post-property/${propertyId}`)
+      router.push(`/post-property/${propertyId}?continueCreate=true`)
     },
     onError: (error: any) => {
       if(Array.isArray(error.message)){

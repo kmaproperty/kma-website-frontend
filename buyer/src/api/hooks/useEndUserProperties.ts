@@ -6,7 +6,7 @@ import {
   GetEndUserPropertiesPayload,
   GetEndUserPropertiesResponse,
 } from "@/api/actions/propertyActions";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 interface UseEndUserPropertiesOptions {
   enabled?: boolean;
@@ -35,7 +35,10 @@ export const useEndUserProperties = (
       return response?.properties ?? response?.data ?? [];
     },
     enabled: options.enabled ?? true,
-    staleTime: 60_000,
+    staleTime: 2 * 60_000,
+    gcTime: 30 * 60_000,
+    placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false,
   });
 };
 

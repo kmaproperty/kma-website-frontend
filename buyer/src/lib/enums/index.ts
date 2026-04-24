@@ -12,7 +12,6 @@ export const USER_TYPE = {
   CHANNEL_PARTNER: "CHANNEL_PARTNER",
   ADMIN: "ADMIN",
   END_USER: "END_USER",
-  USER: "USER",
 } as const
 
 export const KYC_STATUS = {

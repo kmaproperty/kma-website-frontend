@@ -7,11 +7,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import {
-  BedDouble,
   Heart,
-  Maximize2,
-  MessageCircle,
-  Sofa,
   Trees,
   Video,
   Images,
@@ -43,11 +39,11 @@ function FeaturePill({
   label: string;
 }) {
   return (
-    <div className="flex items-center gap-2.5 px-2 py-1 text-sm font-medium text-text-black">
-      <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-white text-gray-700 shadow-[0_0_0_1px_rgba(0,0,0,0.05)]">
+    <div className="flex min-w-0 items-center gap-2 md:px-1.5 py-1 text-[15px] font-normal text-[#0D1520] xl:px-2 xl:text-sm xl:font-medium">
+      <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-white text-[#0D1520] shadow-[0_0_0_1px_rgba(0,0,0,0.05)] xl:h-10 xl:w-10">
         {icon}
       </span>
-      <span className="whitespace-nowrap">{label}</span>
+      <span className="min-w-0 truncate">{label}</span>
     </div>
   );
 }
@@ -87,9 +83,7 @@ export default function ProjectCard({
   const isLoginParam = searchParams.get("isLogin") === "true";
   const isOtpParam = searchParams.get("isOtp") === "true";
   const flowParam = searchParams.get("flow");
-  const isOtpStep =
-    isOtpParam && (flowParam === "login" || flowParam === "enduser-login");
-  const isFavoriteAuthDialogOpen = isLoginParam || isOtpStep;
+  const isFavoriteAuthDialogOpen = isLoginParam || (isOtpParam && flowParam === "login");
 
   const openFavoriteAuthDialog = () => {
     if (typeof window === "undefined") {
@@ -230,7 +224,7 @@ export default function ProjectCard({
         nextPhone = parsed?.phone ?? "";
         nextCountryCode = parsed?.countryCode ?? "+91";
       }
-    } catch {}
+    } catch { }
 
     setUserContact({
       name: nextName,
@@ -281,14 +275,63 @@ export default function ProjectCard({
     : projectIdParam;
   const detailsHref = activeProjectId
     ? `/projects/${activeProjectId}/${project.id}`
-    : `/projects/all/${project.id}`;
-  const currentListingQuery = searchParams.toString();
-  const detailsHrefWithQuery = currentListingQuery
-    ? `${detailsHref}?${currentListingQuery}`
-    : detailsHref;
+    : `/projects/${project.id}`;
+  const [pricePrimary, priceSuffix] = React.useMemo(() => {
+    const raw = project.priceLabel ?? "";
+    const slashIndex = raw.indexOf("/");
+    if (slashIndex === -1) {
+      return [raw, ""];
+    }
+    return [raw.slice(0, slashIndex).trimEnd(), raw.slice(slashIndex).trimStart()];
+  }, [project.priceLabel]);
+  const featureItems: Array<{ key: string; icon: React.ReactNode; label: string }> = [];
+  if (typeof project.plotAreaSqYd === "number") {
+    featureItems.push({
+      key: "plot",
+      icon: <Image src="/assets/app/area.svg" width={20} height={20} alt="area" className="h-6 w-6" />,
+      label: `${project.plotAreaSqYd} Sq.Yd. (Plot Area)`,
+    });
+  }
+  if (typeof project.bedrooms === "number" && project.bedrooms > 0) {
+    featureItems.push({
+      key: "bed",
+      icon: <Image src="/assets/app/bed.svg" width={20} height={20} alt="area" className="h-6 w-6" />,
+      label: `${project.bedrooms}Bhk`,
+    });
+  }
+  if (project.view) {
+    featureItems.push({
+      key: "view",
+      icon: <Trees className="h-6 w-6" />,
+      label: project.view,
+    });
+  }
+  if (project.furnishing) {
+    featureItems.push({
+      key: "furnishing",
+      icon: <Image src="/assets/app/sofa.svg" width={20} height={20} alt="area" className="h-6 w-6" />,
+      label:
+        project.furnishing === "semi-furnished"
+          ? "Semi-Furnished"
+          : project.furnishing,
+    });
+  }
+  const featureRows = featureItems.reduce<Array<Array<{ key: string; icon: React.ReactNode; label: string }>>>(
+    (rows, item, index) => {
+      if (index % 2 === 0) {
+        rows.push([item]);
+      } else {
+        rows[rows.length - 1].push(item);
+      }
+      return rows;
+    },
+    []
+  );
 
   const shouldSkipCardNavigation = (target: EventTarget | null) => {
-    if (!(target instanceof HTMLElement)) {
+    // Clicks on the heart / chevron icons land on SVG elements (not HTMLElement),
+    // so widen the check to any Element and use closest to walk ancestors.
+    if (!(target instanceof Element)) {
       return false;
     }
 
@@ -304,7 +347,7 @@ export default function ProjectCard({
       return;
     }
 
-    router.push(detailsHrefWithQuery);
+    router.push(detailsHref);
   };
 
   const handleCardKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -316,20 +359,20 @@ export default function ProjectCard({
     }
 
     event.preventDefault();
-    router.push(detailsHrefWithQuery);
+    router.push(detailsHref);
   };
 
   return (
     <div
-      className="group cursor-pointer overflow-hidden rounded-lg bg-[#f5f5f5] shadow-sm transition will-change-transform hover:-translate-y-[1px] hover:shadow-md"
+      className="group relative cursor-pointer overflow-hidden rounded-[14px] border border-[#DADCE2] border-b-2 border-b-black bg-[#F5F5F5] transition will-change-transform md:border-b md:border-b-[#DADCE2] xl:rounded-lg xl:border-0 xl:shadow-sm xl:hover:-translate-y-[1px] xl:hover:shadow-md"
       role="link"
       tabIndex={0}
-      
+
       onKeyDown={handleCardKeyDown}
       aria-label={`Open details for ${project.title}`}
     >
-      <div className="grid grid-cols-1 gap-0 lg:grid-cols-[350px_1fr]"  onClick={(event) => handleCardClick(event)}>
-        <div className="relative h-[240px] w-full lg:h-[318px]">
+      <div className="grid grid-cols-1 gap-0 xl:grid-cols-[350px_1fr]" onClick={(event) => handleCardClick(event)}>
+        <div className="relative h-[240px] w-full lg:h-[300px] xl:h-[318px]">
           <ImageCarousel
             images={project.images}
             alt={project.title}
@@ -346,96 +389,89 @@ export default function ProjectCard({
             onClick={handleFavoriteClick}
             disabled={isFavoriteUpdating || isFavoriteAuthChecking}
             className={cx(
-              "absolute right-3 top-3 rounded-full p-2 backdrop-blur transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/30",
+              "absolute right-3 top-3 rounded-full bg-[#00000066] p-2 backdrop-blur transition hover:bg-[#00000080] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/30",
               isFav ? "text-[#E11D48]" : "text-white",
               (isFavoriteUpdating || isFavoriteAuthChecking) && "cursor-not-allowed opacity-70"
             )}
             aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
-            // style={{
-            //   background: "linear-gradient(180deg, #1894F8 0%, #0B57C7 100%)",
-            //   boxShadow: "0 4px 16px 0 rgba(26,110,254,0.18)",
-            // }}
+          // style={{
+          //   background: "linear-gradient(180deg, #1894F8 0%, #0B57C7 100%)",
+          //   boxShadow: "0 4px 16px 0 rgba(26,110,254,0.18)",
+          // }}
           >
             <Heart className={cx("h-6 w-6", isFav ? "fill-current" : "")} stroke="white" />
           </button>
 
-          <div className="absolute bottom-3 right-3 flex items-center gap-3 rounded-full bg-black/55 px-3 py-1 text-xs font-medium text-white">
-            <span className="inline-flex items-center gap-1">
-              <Images className="h-3.5 w-3.5" />{" "}
-              {project.mediaCounts?.photos ?? project.images.length}
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <Video className="h-3.5 w-3.5" /> {project.mediaCounts?.videos ?? 0}
-            </span>
+          <div className="absolute bottom-3 right-3 ">
+            <div className="flex items-center gap-3">
+              <span className="inline-flex items-center gap-1 rounded-full bg-black/55 px-3 py-1 text-xs font-medium text-white">
+                <Images className="h-3.5 w-3.5" />{" "}
+                {project.mediaCounts?.photos ?? project.images.length}
+              </span>
+              <span className="inline-flex items-center gap-1 rounded-full bg-black/55 px-3 py-1 text-xs font-medium text-white">
+                <Video className="h-3.5 w-3.5" /> {project.mediaCounts?.videos ?? 0}
+              </span>
+            </div>
           </div>
         </div>
 
-        <div className="min-w-0 px-5 pb-3 pt-4 lg:pr-4">
+        <div className="min-w-0 px-3.5 pb-3 pt-3.5 lg:pr-4 xl:px-5 xl:pb-3 xl:pt-4">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <h3 className="line-clamp-1 text-lg font-semibold text-text-black">
+              <h3 className="line-clamp-1 text-lg font-medium leading-tight text-[#0D1520] xl:font-semibold">
                 {project.title}
               </h3>
-              <p className="mt-0.5 line-clamp-1 text-sm text-text-gray">
+              <p className="mt-1 line-clamp-1 text-[15px] text-text-gray xl:mt-0.5 xl:text-sm">
                 {project.address}
               </p>
             </div>
           </div>
           <div className="mt-3">
-              <div className="text-lg font-semibold text-text-black">
-                {project.priceLabel}
-              </div>
+            <div className="text-lg leading-tight text-[#010048]">
+              <span>{pricePrimary}</span>
+              {priceSuffix ? <span className="ml-1 text-[#888888]">{priceSuffix}</span> : null}
             </div>
-
-          <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-2">
-            {typeof project.plotAreaSqYd === "number" && (
-              <>
-                <FeaturePill
-                  icon={<Image src="/assets/app/area.svg" width={20} height={20} alt="area" className="h-6 w-6" />}
-                  label={`${project.plotAreaSqYd} Sq.Yd. (Plot Area)`}
-                />
-                <span className="hidden h-8 w-px bg-border sm:block" />
-              </>
-            )}
-            {typeof project.bedrooms === "number" && project.bedrooms > 0 && (
-              <>
-                <FeaturePill
-                  icon={<Image src="/assets/app/bed.svg" width={20} height={20} alt="area" className="h-6 w-6" />}
-                  label={`${project.bedrooms}Bhk`}
-                />
-                <span className="hidden h-8 w-px bg-border md:block" />
-              </>
-            )}
-            {project.view && (
-              <>
-                <FeaturePill
-                  icon={<Trees className="h-6 w-6" />}
-                  label={project.view}
-                />
-                <span className="hidden h-8 w-px bg-border lg:block" />
-              </>
-            )}
-            {project.furnishing && (
-              <FeaturePill
-                icon={<Image src="/assets/app/sofa.svg" width={20} height={20} alt="area" className="h-6 w-6" />}
-                label={
-                  project.furnishing === "semi-furnished"
-                    ? "Semi-Furnished"
-                    : project.furnishing
-                }
-              />
-            )}
           </div>
 
-          <p className="mt-3 line-clamp-2 text-sm text-text-gray">
+          <div className="mt-3.5 space-y-1.5 xl:mt-4 xl:space-y-0 xl:flex xl:flex-wrap xl:items-center xl:gap-x-2 xl:gap-y-2">
+            <div className="space-y-1.5 xl:hidden">
+              {featureRows.map((row, rowIdx) => (
+                <div key={`row-${rowIdx}`} className="flex items-center">
+                  <div className="min-w-0 flex-1">
+                    <FeaturePill icon={row[0].icon} label={row[0].label} />
+                  </div>
+                  {row[1] ? (
+                    <>
+                      <span className="md:mx-1 mx-2 h-8 w-px bg-border" />
+                      <div className="min-w-0 flex-1">
+                        <FeaturePill icon={row[1].icon} label={row[1].label} />
+                      </div>
+                    </>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+            <div className="hidden xl:flex xl:flex-wrap xl:items-center xl:gap-x-2 xl:gap-y-2">
+              {featureItems.map((item, idx) => (
+                <React.Fragment key={item.key}>
+                  <FeaturePill icon={item.icon} label={item.label} />
+                  {idx < featureItems.length - 1 ? (
+                    <span className="h-8 w-px bg-border" />
+                  ) : null}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+
+          <p className="mt-3 line-clamp-2 text-[15px] font-normal text-[#888888] xl:text-sm">
             A spacious builder floor in a prime location presents a fantastic
             buying opportunity.
           </p>
 
           <div className="mt-3" onClick={handleCardClick}>
             <Link
-              href={detailsHrefWithQuery}
-              className="inline-flex h-8 items-center justify-center rounded-full bg-[#E4E4E8] px-4 text-sm font-medium text-[#262B58] transition hover:bg-[#d9d9df] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/30"
+              href={detailsHref}
+              className="inline-flex h-8 items-center justify-center rounded-full bg-[#E4E4E8] px-4 text-sm font-medium text-[#010048] transition hover:bg-[#d9d9df] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/30"
             >
               Read More
             </Link>
@@ -460,7 +496,7 @@ export default function ProjectCard({
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 border-t border-border bg-[#f5f5f5] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex items-center justify-between gap-3 border-t border-border bg-[#f5f5f5] px-3.5 py-3 xl:px-4">
         <div className="flex items-center gap-3">
           <Image
             src={project.agent?.avatarUrl ?? "/assets/app/call-person.svg"}
@@ -469,25 +505,25 @@ export default function ProjectCard({
             height={36}
             className="h-11 w-11 rounded-full object-cover"
           />
-          <div className="leading-tight">
-            <div className="text-sm font-semibold text-text-black">
+          <div className="min-w-0 leading-tight">
+            <div className="line-clamp-1 text-[15px] font-medium text-text-black xl:text-sm xl:font-semibold">
               {project.agent?.name ?? "KMA Expert"}
             </div>
             {project.agent?.badge ? (
               <div className="mt-1 gap-1 inline-flex items-center rounded-md bg-[#C75C10] px-2.5 py-1 text-[13px] text-white">
                 <Image
-                src='/assets/app/shield.svg'
-                width={20}
-                height={20}
-                alt="Shield"
-                className="w-4 h-4 "
+                  src='/assets/app/shield.svg'
+                  width={20}
+                  height={20}
+                  alt="Shield"
+                  className="w-4 h-4 "
                 />
                 {project.agent.badge}
               </div>
             ) : null}
           </div>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-center gap-3">
           {/* <a
             href="https://wa.me/919056580022"
             target="_blank"
@@ -501,10 +537,10 @@ export default function ProjectCard({
             type="button"
             onClick={handleCallBackClick}
             disabled={isAuthChecking}
-            className="inline-flex h-12 items-center gap-2 rounded-xl bg-white border border-[#4CAF50] bg-transparent px-6 text-sm font-semibold text-[#2F9E44] transition hover:bg-[#E9F7EE] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1B8836]/25"
+            className="cursor-pointer inline-flex h-12 w-12 items-center justify-center rounded-xl border border-[#4CAF50] bg-white text-[#2F9E44] transition hover:bg-[#E9F7EE] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1B8836]/25 md:h-12 md:w-auto md:gap-2 md:px-6 md:text-sm md:font-semibold"
           >
             <PhoneCall className="h-5 w-5" />
-            {isAuthChecking ? <Spinner size={16} /> : "Get a Call Back"}
+            <span className="hidden md:inline">{isAuthChecking ? <Spinner size={16} /> : "Get a Call Back"}</span>
           </button>
         </div>
       </div>
@@ -600,7 +636,7 @@ export default function ProjectCard({
             >
               ✕
             </button>
-            {isOtpStep ? <LoginOtpCard /> : <LoginCard />}
+            {isOtpParam && flowParam === "login" ? <LoginOtpCard /> : <LoginCard />}
           </div>
         </DialogContent>
       </Dialog>

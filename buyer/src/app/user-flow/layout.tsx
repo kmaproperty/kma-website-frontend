@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { ReactNode } from "react";
 
 export const metadata: Metadata = {
-  title: "User Flow | KMA Property",
+  title: "Login | KMA Property",
 };
 
 interface UserFlowLayoutProps {

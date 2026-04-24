@@ -85,15 +85,18 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
     ? propertyMasterData?.find((item) => item.code == "rent")?.id
     : propertyMasterData?.find((item) => item.code == "sale")?.id;
 
-  const { data: footerProperties = [] } = useEndUserProperties(
+  const shouldFilterByCity = !!selectedCity?.id && !!listingTypeId;
+  const { data: footerProperties = [], isPending } = useEndUserProperties(
     {
       cityId: selectedCity?.id,
       listingTypeIds: listingTypeId ? [listingTypeId] : undefined,
       limit: 100,
       page: 1,
     },
-    { enabled: !!selectedCity?.id && !!listingTypeId }
+    { enabled: shouldFilterByCity }
   );
+
+  const isFilterLoading = shouldFilterByCity && isPending && footerProperties.length === 0;
 
   const availablePropertyTypeIds = useMemo(() => {
     const ids = new Set<string>();
@@ -107,14 +110,14 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
   }, [footerProperties]);
 
   const residentialList = useMemo(() => {
-    if (!selectedCity?.id || availablePropertyTypeIds.size === 0) return rawResidentialList;
+    if (!shouldFilterByCity) return rawResidentialList;
     return rawResidentialList.filter(item => availablePropertyTypeIds.has(item.id));
-  }, [rawResidentialList, availablePropertyTypeIds, selectedCity?.id]);
+  }, [rawResidentialList, availablePropertyTypeIds, shouldFilterByCity]);
 
   const commercialList = useMemo(() => {
-    if (!selectedCity?.id || availablePropertyTypeIds.size === 0) return rawCommercialList;
+    if (!shouldFilterByCity) return rawCommercialList;
     return rawCommercialList.filter(item => availablePropertyTypeIds.has(item.id));
-  }, [rawCommercialList, availablePropertyTypeIds, selectedCity?.id]);
+  }, [rawCommercialList, availablePropertyTypeIds, shouldFilterByCity]);
 
   const getPropertyLink = (propertyTypeId: string) => {
     const basePath = selectedCity?.id ? `/projects/${selectedCity.id}` : "/projects";
@@ -173,7 +176,12 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
               animate={isInView ? "visible" : "hidden"}
             >
               <p className="text-white text-base font-semibold">In Residential</p>
-              {residentialList.length === 0 ? (
+              {isFilterLoading ? (
+                <div className="flex items-center gap-2 text-[13px] text-[#fffc]">
+                  <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-[#fffc] border-t-transparent" />
+                  Loading properties...
+                </div>
+              ) : residentialList.length === 0 ? (
                 <p className="text-[#fffc] text-[13px]">No property types available.</p>
               ) : (
                 <ul className="mt-1 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
@@ -197,7 +205,12 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
               animate={isInView ? "visible" : "hidden"}
             >
               <p className="text-white text-base font-semibold">In Commercial</p>
-              {commercialList.length === 0 ? (
+              {isFilterLoading ? (
+                <div className="flex items-center gap-2 text-[13px] text-[#fffc]">
+                  <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-[#fffc] border-t-transparent" />
+                  Loading properties...
+                </div>
+              ) : commercialList.length === 0 ? (
                 <p className="text-[#fffc] text-[13px]">No property types available.</p>
               ) : (
                 <ul className="mt-1 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
@@ -294,7 +307,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
                   // { label: "Careers", href: "/about-us" },
                   // { label: "Services", href: "/about-us" },
                   { label: "Contact Us", href: "/contact-us" },
-                  { label: "Terms & Conditions", href: "/about-us" },
+                  { label: "Terms & Conditions", href: "/terms-and-conditions" },
                   { label: "Privacy Policy", href: "/about-us" },
                 ].map((item) => (
                   <li key={item.label}>
