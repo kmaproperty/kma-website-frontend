@@ -482,7 +482,9 @@ const handleHeaderSubMenuClick = (label: string) => {
                      : <ProfileView userRole={userRole}/>}
                   </Paper>
                 ) : (
-                  <RentSellHeaderView type={type} onClose={resetMenuState} />
+                  <Paper className="rounded-2xl! shadow-xl border border-gray-200 bg-white relative z-[9999] overflow-hidden">
+                    <RentSellHeaderView type={type} onClose={resetMenuState} />
+                  </Paper>
                 ))}
               {cityMenu && (
                 <Paper className="w-auto min-w-[180px]! rounded-2xl! px-2 py-2 shadow-xl border border-gray-200 bg-white relative z-[9999]">
