@@ -151,7 +151,7 @@ export default function FeaturedProperties({ topProperties }) {
             return (
               <motion.div
                 key={item?.id ?? index}
-                className="px-1.5 min-w-[355px] max-w-[320px] h-[500px]"
+                className="px-1.5 h-[500px] w-full min-w-0 sm:min-w-[320px] sm:max-w-[355px]"
                 variants={index == 0 || index == 1 ? topVariant : bottomVariant}
                 animate={isInView ? "visible" : "hidden"}
               >
