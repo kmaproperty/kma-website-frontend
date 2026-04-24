@@ -140,10 +140,29 @@ export interface UpgradeToOwnerResponse {
     };
 }
 
-/** POST /users/upgrade-to-owner — promotes END_USER to OWNER on the same user row. */
-export const upgradeToOwnerApiHandler = async () : Promise<UpgradeToOwnerResponse> => {
+export interface SendUpgradeOtpResponse {
+    success: boolean;
+    message: string;
+    otp?: string;
+}
+
+/** POST /users/upgrade/send-otp — sends an OTP to the caller's phone for the upgrade flow. */
+export const sendUpgradeOtpApiHandler = async () : Promise<SendUpgradeOtpResponse> => {
     try {
-        const response = await axiosInstance.post<UpgradeToOwnerResponse>("users/upgrade-to-owner");
+        const response = await axiosInstance.post<SendUpgradeOtpResponse>("users/upgrade/send-otp");
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data ?? error;
+    }
+}
+
+/** POST /users/upgrade-to-owner — verifies OTP and promotes END_USER to OWNER on the same user row. */
+export const upgradeToOwnerApiHandler = async (otp?: string) : Promise<UpgradeToOwnerResponse> => {
+    try {
+        const response = await axiosInstance.post<UpgradeToOwnerResponse>(
+            "users/upgrade-to-owner",
+            otp ? { otp } : {},
+        );
         return response.data;
     } catch (error: any) {
         throw error.response?.data ?? error;
