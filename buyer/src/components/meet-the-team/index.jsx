@@ -25,32 +25,33 @@ const breadcrumps = [
 
 const foundersDetails = [
   {
-    name: 'Abhishek j',
-    image: '/assets/team/Abhishek j.png',
-    position: 'Co-Founder/Broker Associate',
+    name: 'Karamjeet Dahiya',
+    image: '/assets/team/karmjeet Sir .png',
+    position: 'Founder',
   },
   {
-    name: 'Ananjay j',
-    image: '/assets/team/Ananjay j.png',
-    position: 'Founder of The KMA Group',
+    name: 'Co-Founders',
+    image: "/assets/team/Co founder's.jpg",
+    position: 'Co-Founder',
+    members: ['Anipal Yadav', 'Paramjeet Dahiya'],
   },
 ];
 
 const teamDetails = [
   {
-    name: "Co founder's",
-    image: "/assets/team/Co founder's.jpg",
-    position: 'Broker Associate',
+    name: 'Abhishek Nandal',
+    image: '/assets/team/Abhishek j.png',
+    position: 'Field Team Leader',
   },
   {
-    name: 'karmjeet Sir',
-    image: '/assets/team/karmjeet Sir .png',
-    position: 'Broker Associate',
-  },
-  {
-    name: 'Surender ji',
+    name: 'Surender Sharma',
     image: '/assets/team/Surender ji.jpeg',
-    position: 'Broker Associate',
+    position: 'Pre Sales Team Leader',
+  },
+  {
+    name: 'Ananjay Gupta',
+    image: '/assets/team/Ananjay j.png',
+    position: 'Digital Team Leader',
   },
 ];
 
@@ -76,8 +77,8 @@ const MeetTheTeamPage = ({ propertyMasterData, propertyCitiesData }) => {
       >
         <div className='w-[90%] md:w-[75%] max-w-[600px] mx-auto mt-[140px]'>
           <PageTitle
-            title='Meet our dedicated team'
-            description='Working together to help you find your perfect property.'
+            title='Meet the People Behind KMA'
+            description='A team built on trust, driven by transparency, and committed to you.'
             breadcrumps={breadcrumps}
           />
           <div className='flex gap-3 justify-center mt-5'>
@@ -118,7 +119,7 @@ const MeetTheTeamPage = ({ propertyMasterData, propertyCitiesData }) => {
                 type='left'
                 color=''
                 lineTop={false}
-                description='KMA has a strong and experienced team that works every day to make property buying, selling, and posting simple for everyone. We connect property owners, buyers, and channel partners on one easy platform.'
+                description='KMA Global Properties is a Gurgaon-based real estate platform built on one simple belief — every broker, owner, and buyer deserves a fair and transparent experience. With a network of 2500+ brokers and 200+ societies, we are redefining how real estate works in India.'
               />
             </div>
             <div className='w-full lg:w-[50%]'>
@@ -136,7 +137,7 @@ const MeetTheTeamPage = ({ propertyMasterData, propertyCitiesData }) => {
                 type='left'
                 color=''
                 lineTop={false}
-                description='Our team handles residential and commercial property listings, RERA-approved projects, and builder tie-ups. We guide people step-by-step to post their property, find good options, or grow their real estate business.'
+                description='We handle everything — from free property listings and lead generation to Pre-Sales follow-ups, Field Support, and deal closure. Our Live CRM, VC System, and dedicated support team ensure that 80% of the heavy lifting is done by us, so you don’t have to do it alone.'
               />
             </div>
           </div>
@@ -148,7 +149,7 @@ const MeetTheTeamPage = ({ propertyMasterData, propertyCitiesData }) => {
                 type='left'
                 color=''
                 lineTop={false}
-                description='From small towns to big cities, the KMA team is working to bring the best real estate experience to all. We believe in trust, transparency, and service. Our team is always ready to help you-whether you are an owner or a partner.'
+                description='Because we dont just list properties — we work on them. No paid packages. No shared leads. No hidden charges. Just a system built around your success. Whether you&apos;re a buyer, owner, or broker — KMA Global Properties is the partner that actually shows up.'
               />
             </div>
             <div className='w-full lg:w-[50%]'>
@@ -161,7 +162,7 @@ const MeetTheTeamPage = ({ propertyMasterData, propertyCitiesData }) => {
         <div className='max-w-[800px] mx-auto space-y-6 flex flex-col items-center'>
           <h2 className='text-[28px] leading-9 text-center font-semibold text-white'>Work With Us</h2>
           <p className='text-center text-md leading-6 font-normal text-white'>
-            We are committed to building lasting trust by delivering transparent, tech-enabled, and customer-first real estate experiences across India.
+          We build lasting trust through transparent, tech-driven, and customer-first real estate solutions across Gurgaon.
           </p>
           <Link
             href='/contact-us'
@@ -180,13 +181,22 @@ const MeetTheTeamPage = ({ propertyMasterData, propertyCitiesData }) => {
             <span className='w-5 h-[4px]' style={{ backgroundColor: '#778f9c' }} />
           </span>
         </div>
-        <div className='flex flex-col md:flex-row max-w-[1444px] mx-auto items-center justify-center gap-5 mt-12'>
+        <div className='flex flex-col md:flex-row max-w-[1444px] mx-auto items-stretch justify-center gap-5 mt-12'>
           {foundersDetails.map((founder, index) => (
-            <div key={index} className='w-full md:w-[50%] max-w-[468px] rounded-lg overflow-hidden'>
+            <div key={index} className='w-full md:w-[50%] max-w-[468px] rounded-lg overflow-hidden flex flex-col'>
               <Image src={founder.image} width={500} height={500} className='w-full aspect-square' />
-              <div className='bg-white px-5 py-4 flex items-center justify-center flex-col'>
+              <div className='bg-white px-5 py-4 flex items-center justify-center flex-col flex-1 min-h-[170px]'>
                 <h3 className='text-[28px] font-semibold text-text-black mb-1'>{founder.name}</h3>
                 <i className='text-md font-regular text-[#888]'>{founder.position}</i>
+                {founder.members?.length ? (
+                  <div className='mt-2 text-center'>
+                    {founder.members.map((memberName) => (
+                      <p key={memberName} className='text-base text-text-black'>
+                        {memberName}
+                      </p>
+                    ))}
+                  </div>
+                ) : null}
               </div>
             </div>
           ))}
