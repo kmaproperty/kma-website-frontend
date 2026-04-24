@@ -27,7 +27,7 @@ const SalesEnquiry = () => {
     ]
     return (
         <div className='overflow-x-hidden'>
-            <div className="fixed -top-[25px] left-0 right-0 z-[60] flex justify-center pointer-events-none">
+            <div className="fixed  left-0 right-0 z-[60] flex justify-center pointer-events-none">
                 <div className="pointer-events-auto w-full flex justify-center">
                     <HomdeHeader />
                 </div>
