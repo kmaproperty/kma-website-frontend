@@ -12,7 +12,12 @@ import {
 } from "@/services/userService";
 
 const SELLER_URL = process.env.NEXT_PUBLIC_SELLER_URL ?? "https://seller.kmaglobalproperty.com";
-const SELLER_TARGET = `${SELLER_URL.replace(/\/$/, "")}/post-property`;
+const SELLER_BASE = SELLER_URL.replace(/\/$/, "");
+const SELLER_TARGET = `${SELLER_BASE}/post-property`;
+// Seller's own signup/login entry point. Not-logged-in users who clicked
+// Post Property on the buyer should land here directly instead of being
+// asked to log in as an END_USER on the buyer.
+const SELLER_LOGIN_URL = `${SELLER_BASE}/user-flow?postProperty=true`;
 const OTP_RESEND_SECONDS = 30;
 
 type Step = "sending" | "otp" | "verifying" | "redirecting" | "error";
@@ -110,7 +115,10 @@ export default function PostPropertyHandoffPage() {
     initRef.current = true;
 
     if (!hasSession()) {
-      router.replace("/user-flow?isLogin=true&redirect=/post-property-handoff");
+      // Not logged in → hand off directly to the seller's login/signup page.
+      // The buyer site's login flow is END_USER-only; a brand-new poster
+      // should create their account on the seller side as Owner/CP.
+      window.location.href = SELLER_LOGIN_URL;
       return;
     }
     void requestOtp();
