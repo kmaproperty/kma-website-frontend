@@ -35,11 +35,10 @@ export const useEndUserProperties = (
       return response?.properties ?? response?.data ?? [];
     },
     enabled: options.enabled ?? true,
-    staleTime: 10 * 60_000,
+    staleTime: 2 * 60_000,
     gcTime: 30 * 60_000,
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
   });
 };
 
