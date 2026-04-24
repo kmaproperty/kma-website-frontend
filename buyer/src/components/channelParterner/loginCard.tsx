@@ -11,15 +11,10 @@ import Spinner from "../common/spinner";
 import { mobileNumberValidator } from "@/lib/commonValidator";
 import { createURLSearchParam } from "@/lib/helper";
 import {
-  OtpPayload,
-  sendSignInOtpApiHandler,
-  SendOtpResponse,
   EndUserLoginPayload,
   EndUserSignupResponse,
   sendEndUserLoginOtpApiHandler,
 } from "@/services/authService";
-
-type LoginRole = "END_USER" | "OWNER_CP";
 
 interface MobileState {
   value: string;
@@ -33,7 +28,6 @@ export default function LoginCard() {
   const router = useRouter();
   const redirect = searchParams.get("redirect");
 
-  const [loginRole, setLoginRole] = useState<LoginRole>("END_USER");
   const [mobileInput, setMobileInput] = useState<MobileState>({
     value: "",
     code: "+91",
@@ -44,28 +38,6 @@ export default function LoginCard() {
     const validationMessage = mobileInput.validationMessage ? mobileNumberValidator(value) : "";
     setMobileInput({ value, code, validationMessage });
   };
-
-  const { mutate: sendOwnerCpOtp, isPending: isOwnerCpPending } = useMutation({
-    mutationFn: async (payload: OtpPayload): Promise<SendOtpResponse> => sendSignInOtpApiHandler(payload),
-    onSuccess: (response) => {
-      const params = createURLSearchParam({
-        mobile: mobileInput.value,
-        code: mobileInput.code,
-        isOtp: true,
-        flow: "login",
-        ...(redirect ? { redirect } : {}),
-      });
-      toast.success(response.otp);
-      router.replace(`${pathname}${params}`);
-    },
-    onError: (error: any) => {
-      if (Array.isArray(error?.message)) {
-        error.message.forEach((item: string) => toast.error(item));
-        return;
-      }
-      toast.error(error?.message ?? "Unable to send OTP");
-    },
-  });
 
   const { mutate: sendEndUserOtp, isPending: isEndUserPending } = useMutation({
     mutationFn: async (payload: EndUserLoginPayload): Promise<EndUserSignupResponse> =>
@@ -90,7 +62,7 @@ export default function LoginCard() {
     },
   });
 
-  const isPending = isOwnerCpPending || isEndUserPending;
+  const isPending = isEndUserPending;
 
   const handleContinue = () => {
     const validationMessage = mobileNumberValidator(mobileInput.value);
@@ -98,19 +70,13 @@ export default function LoginCard() {
       setMobileInput((prev) => ({ ...prev, validationMessage }));
       return;
     }
-    if (loginRole === "END_USER") {
-      sendEndUserOtp({ phone: mobileInput.value });
-    } else {
-      sendOwnerCpOtp({ phone: mobileInput.value });
-    }
+    sendEndUserOtp({ phone: mobileInput.value });
   };
 
   const handleCreateAccountRedirect = () => {
     const params = createURLSearchParam({
-      ...(loginRole === "OWNER_CP" ? { postProperty: true } : {}),
       ...(mobileInput.value ? { mobile: mobileInput.value } : {}),
       ...(redirect ? { redirect } : {}),
-      ...(loginRole === "OWNER_CP" ? { postProperty: true } : {}),
     });
     router.replace(`${pathname}${params}`);
   };
@@ -127,33 +93,7 @@ export default function LoginCard() {
         Login to your KMA account to continue.
       </p>
 
-      <p className="text-sm lg:text-base text-text-black font-medium mt-6 mb-2">I am a</p>
-      <div className="flex gap-3 mb-6">
-        <button
-          type="button"
-          onClick={() => { setLoginRole("END_USER"); setMobileInput((p) => ({ ...p, validationMessage: "" })); }}
-          className={`flex-1 py-2.5 px-4 rounded-full text-sm font-medium border transition cursor-pointer ${
-            loginRole === "END_USER"
-              ? "bg-blue text-white border-blue"
-              : "bg-white text-text-black border-border hover:border-blue"
-          }`}
-        >
-          User
-        </button>
-        <button
-          type="button"
-          onClick={() => { setLoginRole("OWNER_CP"); setMobileInput((p) => ({ ...p, validationMessage: "" })); }}
-          className={`flex-1 py-2.5 px-4 rounded-full text-sm font-medium border transition cursor-pointer ${
-            loginRole === "OWNER_CP"
-              ? "bg-blue text-white border-blue"
-              : "bg-white text-text-black border-border hover:border-blue"
-          }`}
-        >
-          Owner / Channel Partner
-        </button>
-      </div>
-
-      <p className="text-sm lg:text-base text-text-black font-medium">Mobile Number</p>
+      <p className="text-sm lg:text-base text-text-black font-medium mt-6 mb-2">Mobile Number</p>
       <p className="text-sm text-text-gray mb-2">We&apos;ll send you a verification code to get started.</p>
       <MobileInput
         placeHolder="Enter your mobile number"
