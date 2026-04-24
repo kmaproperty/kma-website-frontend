@@ -151,7 +151,7 @@ export default function FeaturedProperties({ topProperties }) {
             return (
               <motion.div
                 key={item?.id ?? index}
-                className="px-1.5 w-[320px] h-[500px]"
+                className="px-1.5 min-w-[355px] max-w-[320px] h-[500px]"
                 variants={index == 0 || index == 1 ? topVariant : bottomVariant}
                 animate={isInView ? "visible" : "hidden"}
               >
@@ -346,7 +346,7 @@ export default function FeaturedProperties({ topProperties }) {
         animate={isInView ? "visible" : "hidden"}
       >
         <div className="flex gap-3">
-          {shouldShowArrows ? (
+          {true ? (
             <>
               <button
                 type="button"
