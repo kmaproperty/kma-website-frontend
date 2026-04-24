@@ -30,20 +30,20 @@ export default function AboutUsComponent({
   const { fetchCities } = useHeaderStore();
   const [companyStats, setCompanyStats] = useState([
     {
-      title: "Active Listing",
-      value: "10Lac+",
-    },
-    {
-      title: "Projects across India",
-      value: "15,000",
+      title: "Channel Partners",
+      value: "2500+",
     },
     {
       title: "Happy Customers",
       value: "10,000+",
     },
     {
-      title: "Channel Partners accross India",
-      value: "500+",
+      title: "Societies Covered",
+      value: "250+ ",
+    },
+    {
+      title: " Active Listing",
+      value: "5000+",
     },
   ])
 
@@ -81,7 +81,8 @@ export default function AboutUsComponent({
           <div className="2xl:py-[180px] 1xl:py-[160px] xl:py-[140px] lg:py-[120px] 2md:py-[100px] md:py-[80px] sm:py-[60px] py-[50px]">
             <PageTitle
               title="About Us"
-              description="Discover who we are, what we stand for, and how we make your real estate journey smooth and successful."
+              description="Discover who we are, what we stand for, and why thousands of brokers and buyers across Gurgaon trust KMA Global Properties every single day.
+"
               breadcrumps={breadcrumps}
             />
           </div>
@@ -93,33 +94,33 @@ export default function AboutUsComponent({
           <div className="xl:w-[50%] w-full">
             <SectionHeading
               title="Who We Are"
-              subtitle="About KMA Properties"
+              subtitle="About KMA Global Properties"
               type={"left"}
-              description="KMA Property Group, established on January 1, 2025, is a beacon of excellence in Gurugram’s high-end property market. We specialize in the sale, purchase, and rental of luxury properties, offering personalized experiences to clients who demand sophistication, trust, and lasting value."
+              description="KMA Global Properties, established in 2025, is Gurgaon's most transparent and broker-friendly real estate platform. We specialize in residential rentals, sales, and property investments — delivering a complete end-to-end experience for buyers, owners, and brokers who value trust, clarity, and real results."
             />
             <div className="mt-6 grid w-full grid-cols-1 gap-x-8 gap-y-4 sm:w-fit sm:grid-cols-2">
               <div className="flex items-center gap-2">
                 <CircleCheckBig className="w-5 h-5 text-[#010048]" />
                 <p className={`text-[#5C727D] text-md leading-7 font-normal`}>
-                  Premium Real Estate Services
+                Free Listing & Exclusive Leads
                 </p>
               </div>
               <div className="flex items-center gap-2">
                 <CircleCheckBig className="w-5 h-5 text-[#010048]" />
                 <p className={`text-[#5C727D] text-md leading-7 font-normal`}>
-                  24/7 Expert Assistance
+                Pre-Sales & Field Support
                 </p>
               </div>
               <div className="flex items-center gap-2">
                 <CircleCheckBig className="w-5 h-5 text-[#010048]" />
                 <p className={`text-[#5C727D] text-md leading-7 font-normal`}>
-                  Highly Skilled Professionals
+                2500+ Broker Network 
                 </p>
               </div>
               <div className="flex items-center gap-2">
                 <CircleCheckBig className="w-5 h-5 text-[#010048]" />
                 <p className={`text-[#5C727D] text-md leading-7 font-normal`}>
-                  Bespoke Client Experiences
+                Live CRM & Complete Transparency
                 </p>
               </div>
             </div>
@@ -139,33 +140,46 @@ export default function AboutUsComponent({
             </div>
             <div className="mt-8">
               <h2 className={`text-[28px] leading-11 font-semibold text-[#010048]`}>Founder’s Profile</h2>
-              <div className="mt-5 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-center">
+              <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 <div className="w-full px-3 py-2 border border-gray-200 flex items-center gap-2 rounded-lg sm:w-fit sm:px-5 sm:gap-4">
                   <Image
-                    src="/assets/aboutUs/avatar.png"
-                    alt="About Us"
+                    src="/assets/team/karmjeet Sir .png"
+                    alt="Karamjeet Dahiya"
                     className="h-[52px] w-[52px] object-cover rounded-full sm:h-[60px] sm:w-[60px]"
                     width={60}
                     height={60}
                   />
                   <div className="min-w-0 space-y-1.5">
-                    <h3 className="truncate text-[16px] font-medium text-[#010048]">Dwayne Douglas</h3>
+                    <h3 className="truncate text-[16px] font-medium text-[#010048]">Karamjeet Dahiya</h3>
                     <p className="text-[13px] font-medium text-[#fff] w-full text-center px-3 py-0.5 rounded-sm" style={{ background: "linear-gradient(90deg, #C75C10 0%, #CE9554 100%)" }}>Founder</p>
                   </div>
                 </div>
-                <div className="w-full px-3 py-2 border border-gray-200 flex items-center gap-2 rounded-lg sm:w-fit sm:px-5 sm:gap-4">
+                {/* <div className="w-full px-3 py-2 border border-gray-200 flex items-center gap-2 rounded-lg sm:w-fit sm:px-5 sm:gap-4">
                   <Image
-                    src="/assets/aboutUs/avatar.png"
-                    alt="About Us"
+                    src="/assets/team/founder1.png"
+                    alt="Anipal Yadav"
                     className="h-[52px] w-[52px] object-cover rounded-full sm:h-[60px] sm:w-[60px]"
                     width={60}
                     height={60}
                   />
                   <div className="min-w-0 space-y-1.5">
-                    <h3 className="truncate text-[16px] font-medium text-[#010048]">Dwayne Douglas</h3>
-                    <p className="text-[13px] w-full text-center font-medium text-[#fff] px-3 py-0.5 rounded-sm" style={{ background: "linear-gradient(90deg, #C75C10 0%, #CE9554 100%)" }}>CO-Founder</p>
+                    <h3 className="truncate text-[16px] font-medium text-[#010048]">Anipal Yadav</h3>
+                    <p className="text-[13px] w-full text-center font-medium text-[#fff] px-3 py-0.5 rounded-sm" style={{ background: "linear-gradient(90deg, #C75C10 0%, #CE9554 100%)" }}>Co-Founder</p>
                   </div>
                 </div>
+                <div className="w-full px-3 py-2 border border-gray-200 flex items-center gap-2 rounded-lg sm:w-fit sm:px-5 sm:gap-4">
+                  <Image
+                    src="/assets/team/founder2.png"
+                    alt="Paramjeet Dahiya"
+                    className="h-[52px] w-[52px] object-cover rounded-full sm:h-[60px] sm:w-[60px]"
+                    width={60}
+                    height={60}
+                  />
+                  <div className="min-w-0 space-y-1.5">
+                    <h3 className="truncate text-[16px] font-medium text-[#010048]">Paramjeet Dahiya</h3>
+                    <p className="text-[13px] w-full text-center font-medium text-[#fff] px-3 py-0.5 rounded-sm" style={{ background: "linear-gradient(90deg, #C75C10 0%, #CE9554 100%)" }}>Co-Founder</p>
+                  </div>
+                </div> */}
               </div>
             </div>
           </div>
