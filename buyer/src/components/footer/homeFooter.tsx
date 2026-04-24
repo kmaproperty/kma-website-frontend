@@ -86,7 +86,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
     : propertyMasterData?.find((item) => item.code == "sale")?.id;
 
   const shouldFilterByCity = !!selectedCity?.id && !!listingTypeId;
-  const { data: footerProperties = [], isFetching } = useEndUserProperties(
+  const { data: footerProperties = [], isPending } = useEndUserProperties(
     {
       cityId: selectedCity?.id,
       listingTypeIds: listingTypeId ? [listingTypeId] : undefined,
@@ -96,7 +96,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
     { enabled: shouldFilterByCity }
   );
 
-  const isFilterLoading = shouldFilterByCity && isFetching;
+  const isFilterLoading = shouldFilterByCity && isPending && footerProperties.length === 0;
 
   const availablePropertyTypeIds = useMemo(() => {
     const ids = new Set<string>();
