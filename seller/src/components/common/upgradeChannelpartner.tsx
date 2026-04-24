@@ -12,7 +12,6 @@ export default function UpgradeChannelPartner({open, onClose, onSubmit, isCloseN
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 const dateRef = React.useRef<HTMLInputElement | null>(null)
 
-  const [code, setCode] = React.useState<string>('')
   const [firmName, setFirmName] = React.useState<string>('')
   const [about, setAbout] = React.useState<string>('')
   const [date, setDate] = React.useState(null)
@@ -21,18 +20,12 @@ const dateRef = React.useRef<HTMLInputElement | null>(null)
 
   const handleClose: DialogProps["onClose"] = (event, reason) => {
       if (reason === "backdropClick" || reason === "escapeKeyDown") return;
-      setCode('')
       onClose()
     };
 
     const validate = () => {
         let hasError = false;
         let errors: any = {}
-
-        if(!code){
-            errors.code = 'Channel partner code is required';
-            hasError = true
-        }
 
         if(!firmName){
             errors.firmName = 'Firm name is required';
@@ -53,8 +46,9 @@ const dateRef = React.useRef<HTMLInputElement | null>(null)
             return
         }
         if(onSubmit){
+            // Channel Partner code is auto-generated server-side on upgrade, so
+            // we no longer collect it from the user.
             let payload = {
-              channelPartnerCode: code,
               firmName: firmName,
               businessSince: date,
               aboutYourSelf: about,
@@ -81,7 +75,7 @@ const dateRef = React.useRef<HTMLInputElement | null>(null)
 
   React.useEffect(() => {
     if(open){
-      setCode('')
+      setError({})
     }
   },[open])
 
@@ -105,7 +99,6 @@ const dateRef = React.useRef<HTMLInputElement | null>(null)
             <div className="flex justify-end w-full">
               <Image
                 onClick={() => {
-                  setCode('')
                   setFirmName('')
                   setAbout('')
                   setDate(null)
@@ -119,29 +112,15 @@ const dateRef = React.useRef<HTMLInputElement | null>(null)
               />
             </div>
             <div className="flex flex-col gap-2 w-full md:w-[400px] p-1">
-                <p className="required-label text-base text-text-black">
-                  Channel partner code
+                <p className="text-xl font-semibold text-text-black">
+                  Register as Channel Partner
                 </p>
+                <div className="rounded-lg bg-[#F1F3FF] border border-[#D9DEFF] px-3 py-2 mt-1 mb-2">
+                  <p className="text-xs text-[#5156AA] leading-relaxed">
+                    A unique Channel Partner code will be generated for you automatically once you submit. You&apos;ll see it on your profile after upgrade.
+                  </p>
+                </div>
                 <div>
-                <InputBase
-                placeholder={`Enter channel partner code`}
-                fullWidth
-                value={code}
-                onChange={(event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-                    setCode(event.target.value)
-                    setError((pre) => ({...pre, code: ''}))
-                }}
-                className={dynamicClass(error.code)}
-                inputProps={{
-                    className: "placeholder-gray",
-                }}
-                />
-                {error?.code && (
-                <p className="pt-1 text-red-500 text-xs">
-                    {error?.code}
-                </p>
-                )}
-
                 <p className="required-label text-sm 1xl:text-base text-text-black py-2">
                     Firm Name
                 </p>

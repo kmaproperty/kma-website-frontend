@@ -47,7 +47,12 @@ export default function UserDashboard() {
       },
       onSuccess: (response: UpgreadOwnerToChannelPartnerResponse) => {
         setOpenCodePopup(false)
-        toast.success('Upgraded to Channel Partner successfully')
+        const code = response?.channelPartnerCode;
+        toast.success(
+          code
+            ? `Upgraded to Channel Partner. Your CP code: ${code}`
+            : 'Upgraded to Channel Partner successfully',
+        )
         getUpdatedDashboardDetails()
         window.location.reload();
       },
