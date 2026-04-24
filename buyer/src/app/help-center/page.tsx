@@ -82,9 +82,13 @@ const HelpCenter = () => {
 
     return (
         <div className='bg-[#f5f5f5]'>
+            <div className='fixed left-0 right-0 z-[60] flex justify-center pointer-events-none'>
+                <div className='pointer-events-auto w-full flex justify-center'>
+                    <HomdeHeader />
+                </div>
+            </div>
             <div className="relative min-h-[385px] max-h-[385px] pt-[25px] rounded-br-[40px] rounded-bl-[40px] sm:min-h-[min(100dvh,600px)] sm:max-h-[600px] sm:rounded-br-[72px] sm:rounded-bl-[72px] lg:rounded-br-[100px] lg:rounded-bl-[100px]" style={{ backgroundImage: 'url(assets/app/help-center-herobg.jpg)', backgroundSize: 'cover', backgroundPosition: 'bottom' }}>
-                <HomdeHeader />
-        <div className="mx-auto mt-[70px] w-full max-w-[600px] px-4 sm:mt-28 sm:w-[85%] sm:px-0 md:mt-32 md:w-[75%] xl:mt-[150px] ">
+        <div className="mx-auto mt-[120px] w-full max-w-[600px] px-4 sm:mt-28 sm:w-[85%] sm:px-0 md:mt-32 md:w-[75%] xl:mt-[150px] ">
                     <PageTitle
                         title="Help Center"
                         description="Have Questions? We've All the Answers"

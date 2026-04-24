@@ -35,7 +35,7 @@ export default async function ChannelPartnerDetailPage({
       <HeaderDataSync propertyMasterData={propertyMasterData} />
       <div className="">
       <div className="relative w-full min-h-[calc(100dvh-10dvh)] md:min-h-[calc(100dvh-7dvh)] bg-list-background">
-        <div className="sticky top-0 z-50 w-full flex justify-center 2md:pt-6">
+        <div className="sticky -top-[25px] z-50 w-full flex justify-center 2md:pt-6">
           <HomeHeader />
         </div>
         <div className="absolute top-0 left-0 w-full h-[550px] bg-blue rounded-b-[25px] sm:rounded-b-[60px] lg:rounded-b-[80px] xl:rounded-b-[100px]">
