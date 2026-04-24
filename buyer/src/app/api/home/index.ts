@@ -70,7 +70,7 @@ export const fetchPropertyMasterData = async (): Promise<GetPropertyMasterDataRe
         headers: {
           "Content-Type": "application/json",
         },
-        cache: "force-cache", // or 'no-store' if dynamic
+        next: { revalidate: 300 },
       }
     );
 
