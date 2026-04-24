@@ -79,8 +79,12 @@ export default function UserHeader() {
       }else{
         toast.error('Your free listing used upgread to channel partner to post property.')
       }
+    }else{
+      // END_USER (or unknown role) — go through the handoff which upgrades
+      // the row to OWNER on the backend and drops the user on seller/post-property.
+      router.push('/post-property-handoff')
     }
-    
+
   }
 
   return (
