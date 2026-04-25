@@ -11,6 +11,7 @@ interface FormData {
   firmName: string;
   about: string;
   profilePreview: string;
+  userType: string;
   profilePhoto: File | null;
 }
 
@@ -24,6 +25,7 @@ const initialState: FormData = {
   about: '',
   profilePreview: '',
   profilePhoto: null,
+  userType: 'OWNER'
 };
 
 const createAccountSlice = createSlice({

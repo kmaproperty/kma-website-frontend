@@ -19,6 +19,8 @@ import { useRouter } from 'nextjs-toploader/app';
 import { clearAuthCookies, createURLSearchParam } from "@/lib/helper";
 import { useMediaQuery, useTheme } from "@mui/material";
 import { toast } from "react-toastify";
+import { setFormField } from "@/store/createAccountSlice";
+import { useDispatch } from "react-redux";
 
 interface OptionType {
   value: UserType;
@@ -60,7 +62,8 @@ const propertyType: PropertyoptionType[] = [
 ];
 
 export default function SignUp() {
-  const router = useRouter()
+  const router = useRouter();
+  const dispatch = useDispatch();
   const searchParams = useSearchParams()
   const pathname = usePathname()
   const theme = useTheme();
@@ -80,6 +83,7 @@ export default function SignUp() {
 
   const handlePartnerChange = (value: UserType) => {
     setSelectedPartnerType(value);
+    dispatch(setFormField({ key: "userType", value }));
     setMobileInput({...mobileInput, value: ''})
     setPropertyIntent(LIST_TYPE.SELL);
   };
@@ -146,6 +150,7 @@ export default function SignUp() {
     }
     if(owner){
       setSelectedPartnerType(owner as UserType)
+      dispatch(setFormField({ key: "userType", value: "OWNER" }));
     }
     if(owner == USER_TYPE.OWNER){
       setPropertyIntent(intent as ListType)
@@ -182,12 +187,11 @@ export default function SignUp() {
             {selectedPartnerType == USER_TYPE.OWNER ? (
               <>
                 <p className="text-base lg:text-lg 1xl:text-xl font-semibold text-text-black mb-1">
-                  Sell or Rent Your Property –{" "}
-                  <span className="text-accent">Absolutely FREE!</span>
+                  Post Your Property - {" "}
+                  <span className="text-accent">Zero Listing Fee!</span>
                 </p>
                 <p className="text-sm 1xl:text-base text-text-gray">
-                  No Agent Needed. List your home directly and connect with
-                  genuine buyers or tenants in minutes.
+                  No more spam calls or fake leads. List directly and let our team handle 80% of the work, from pre-sales to field support.
                 </p>
 
                 <p className="text-sm lg:text-base 2xl:text-lg font-semibold text-text-black mt-6">
@@ -210,14 +214,13 @@ export default function SignUp() {
             ) : (
               <>
                 <p className="text-base lg:text-lg 1xl:text-xl font-semibold text-text-black mb-1">
-                  Grow Your Real Estate Business –{" "}
+                  Grow Your Business - {" "}
                   <span className="text-accent">
-                    List Properties Online FREE!
+                    Post Properties for Free!
                   </span>
                 </p>
                 <p className="text-sm 1xl:text-base text-text-gray">
-                  Reach More Clients. Post multiple listings and get direct
-                  inquiries from potential buyers & tenants.
+                  Join 3000+ partners. Post your luxury listings and get filtered inquiries directly on your personalized CRM.
                 </p>
               </>
             )}
@@ -232,7 +235,7 @@ export default function SignUp() {
 
             <MobileInput placeHolder={fullScreen ? 'Enter mobile number' : 'Enter your mobile number'} required={true} validationMessage={mobileInput.validationMessage} value={mobileInput.value} countryCode={mobileInput.code} onChange={handleMobileInputChange}/>
 
-            <div className="flex justify-start flex-col md:flex-row gap-4 items-center mt-8">
+            <div className="flex flex-col justify-start  gap-4 items-start mt-8">
               <button
                 disabled={isPending}
                 onClick={handleContinue}
@@ -247,7 +250,7 @@ export default function SignUp() {
                 </span>
               </button>
               <p className="text-sm 1xl:text-base text-text-gray">
-                Already have an account?{" "}
+                Already part of the network? {" "}
                 <span onClick={handleRedirectToLogin} className="text-sm lg:text-sm 2xl:text-lg font-semibold underline text-text-black cursor-pointer">
                   Login Here
                 </span>

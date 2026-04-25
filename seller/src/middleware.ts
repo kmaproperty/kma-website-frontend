@@ -61,12 +61,12 @@ export default function middleware(req: NextRequest) {
       }
       return NextResponse.redirect(new URL("/user-dashboard", req.url));
     }
-    return NextResponse.redirect(new URL("/user-flow", req.url));
+    return NextResponse.redirect(new URL("/user-flow?isLogin=true", req.url));
   }
 
   // All other routes require authentication
   if (!accessToken && !event) {
-    return NextResponse.redirect(new URL("/user-flow", req.url));
+    return NextResponse.redirect(new URL("/user-flow?isLogin=true", req.url));
   }
 
   // Block END_USER from accessing any seller page
