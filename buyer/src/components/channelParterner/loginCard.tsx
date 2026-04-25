@@ -127,20 +127,8 @@ export default function LoginCard() {
     </div>
   );
 
-  if (pathname === "/user-flow") {
-    return (
-      <div className="min-h-screen bg-[#f8fafc]">
-        <div className="sticky top-0 z-50 w-full flex justify-center bg-blue pt-4 pb-2 shadow-sm">
-          <HomeHeader />
-        </div>
-        <div className="w-full px-4 py-10 flex justify-center">
-          <div className="w-full max-w-[560px]">{card}</div>
-        </div>
-        <AboutusDataSync />
-        <HomeFooter />
-      </div>
-    );
-  }
-
+  // /user-flow page is already wrapped in MainLayout (which renders HomeHeader
+  // and CopyRightFooter). Returning the bare card avoids the duplicate header
+  // + footer that used to appear on this page.
   return card;
 }
