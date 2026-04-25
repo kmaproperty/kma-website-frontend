@@ -318,6 +318,31 @@ export const getUserReviewApiHandler = async () : Promise<GetUserReviewApiHandle
     }
 }
 
+export interface SubmitEndUserReviewPayload {
+    rating: number;
+    review: string;
+}
+
+export interface SubmitEndUserReviewResponse {
+    success: boolean;
+    message: string;
+    ratingReviewId: string;
+}
+
+export const submitEndUserReviewApiHandler = async (
+    payload: SubmitEndUserReviewPayload
+): Promise<SubmitEndUserReviewResponse> => {
+    try {
+        const response = await axiosInstance.post<SubmitEndUserReviewResponse>(
+            "end-user/rating-review",
+            payload
+        );
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data ?? error;
+    }
+}
+
 export interface PropertyType {
     id: string;
     name: string;

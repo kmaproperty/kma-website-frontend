@@ -1,3 +1,7 @@
+import AboutusDataSync from "@/components/footer/AboutusDataSync";
+import HomeFooter from "@/components/footer/homeFooter";
+import HomeHeader from "@/components/header/homeHeader";
+
 const termsAndConditionsItems = [
   {
     title: "1. Welcome to KMA Global Properties",
@@ -68,28 +72,37 @@ const termsAndConditionsItems = [
 
 export default function TermsAndConditionsPage() {
   return (
-    <main className="bg-[#f8fafc] py-10 px-4 md:py-14">
-      <div className="max-w-5xl mx-auto bg-white rounded-xl border border-[#e5e7eb] p-6 md:p-10">
-        <h1 className="text-[#010048] text-2xl md:text-3xl font-semibold uppercase">
-          Terms & Conditions
-        </h1>
-
-        <p className="mt-4 text-[#44525a] text-sm md:text-base leading-relaxed">
-          Welcome to KMA Global Properties. Please review the terms below carefully before
-          using our website and services.
-        </p>
-
-        <div className="mt-6 space-y-6">
-          {termsAndConditionsItems.map((item) => (
-            <section key={item.title}>
-              <h2 className="text-[#010048] text-base md:text-lg font-medium">{item.title}</h2>
-              <p className="mt-2 text-[#44525a] text-sm md:text-base leading-relaxed">
-                {item.description}
-              </p>
-            </section>
-          ))}
-        </div>
+    <>
+      <div className="sticky top-0 z-50 w-full flex justify-center bg-blue pt-4 pb-2 shadow-sm">
+        <HomeHeader />
       </div>
-    </main>
+
+      <main className="bg-[#f8fafc] py-10 px-4 md:py-14">
+        <div className="max-w-5xl mx-auto bg-white rounded-xl border border-[#e5e7eb] p-6 md:p-10">
+          <h1 className="text-[#010048] text-2xl md:text-3xl font-semibold uppercase">
+            Terms & Conditions
+          </h1>
+
+          <p className="mt-4 text-[#44525a] text-sm md:text-base leading-relaxed">
+            Welcome to KMA Global Properties. Please review the terms below carefully before
+            using our website and services.
+          </p>
+
+          <div className="mt-6 space-y-6">
+            {termsAndConditionsItems.map((item) => (
+              <section key={item.title}>
+                <h2 className="text-[#010048] text-base md:text-lg font-medium">{item.title}</h2>
+                <p className="mt-2 text-[#44525a] text-sm md:text-base leading-relaxed">
+                  {item.description}
+                </p>
+              </section>
+            ))}
+          </div>
+        </div>
+      </main>
+
+      <AboutusDataSync />
+      <HomeFooter />
+    </>
   );
 }

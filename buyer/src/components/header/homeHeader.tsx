@@ -380,16 +380,16 @@ const handleHeaderSubMenuClick = (label: string) => {
               </p>
             </span>
           </button>}
-          {isSeller && <button onClick={navigateDashboard} className={`${isScrolled ? "bg-white text-black" : "animated-button"} px-[10px] sm:px-[20px] py-[6px] sm:py-[9px] rounded-[50px] cursor-pointer transition-colors duration-300`}>
-            <span className={`flex items-center justify-between gap-[6px] relative z-10 ${isScrolled ? "text-black" : "text-white"}`}>
+          {isSeller && <button onClick={navigateDashboard} className={`${isScrolled ? "bg-transparent border border-white" : "animated-button"} px-[10px] sm:px-[20px] py-[6px] sm:py-[9px] rounded-[50px] cursor-pointer transition-colors duration-300`}>
+            <span className="flex items-center justify-between gap-[6px] relative z-10 text-white">
               <Image
                 src="/assets/home-white.svg"
                 width={14}
                 height={14}
                 alt="home"
-                className={`w-3.5 h-3.5 ${isScrolled ? "brightness-0" : ""}`}
+                className="w-3.5 h-3.5"
               />
-              <p className={`whitespace-nowrap text-[10px] sm:text-xs xl:text-sm ${isScrolled ? "text-black" : "text-white"}`}>
+              <p className="whitespace-nowrap text-[10px] sm:text-xs xl:text-sm text-white">
                 Seller Dashboard
               </p>
             </span>

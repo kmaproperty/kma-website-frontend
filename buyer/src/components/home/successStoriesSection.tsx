@@ -1,13 +1,21 @@
 "use client";
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useRef, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getUserReviewApiHandler,
   GetUserReviewApiHandlerResponse,
   Rating,
+  submitEndUserReviewApiHandler,
 } from "@/services/homeService";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import LoginCard from "@/components/channelParterner/loginCard";
+import LoginOtpCard from "@/components/channelParterner/loginOtpCard";
+import { closeReferralLoginDialog, openReferralLoginDialog } from "@/lib/referral/openLoginDialog";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "react-toastify";
 
 function Star({
   fill = 100,
@@ -71,9 +79,21 @@ const topVariant = {
 };
 
 export default function SuccessStoriesSection() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
   const profileBaseUrl = process.env.NEXT_PUBLIC_AWS_URL;
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
+  const [isWriteReviewOpen, setIsWriteReviewOpen] = useState(false);
+  const [rating, setRating] = useState(5);
+  const [review, setReview] = useState("");
+  const [isAuthChecking, setIsAuthChecking] = useState(false);
+  const isLoginParam = searchParams.get("isLogin") === "true";
+  const isOtpParam = searchParams.get("isOtp") === "true";
+  const flowParam = searchParams.get("flow");
+  const isOtpStep = isOtpParam && (flowParam === "login" || flowParam === "enduser-login");
+  const isLoginDialogOpen = isLoginParam || isOtpStep;
 
   const { data: reviewData } = useQuery({
     queryKey: ["review"],
@@ -89,6 +109,61 @@ export default function SuccessStoriesSection() {
     reviewData?.statistics?.totalCount ?? reviewData?.reviews?.length ?? 0;
   const averageRating = Number(reviewData?.statistics?.averageRating ?? 0);
   const reviews = reviewData?.reviews ?? [];
+  const { mutate: submitReview, isPending: isSubmittingReview } = useMutation({
+    mutationFn: submitEndUserReviewApiHandler,
+    onSuccess: (response) => {
+      toast.success(response?.message ?? "Review submitted successfully");
+      setIsWriteReviewOpen(false);
+      setReview("");
+      setRating(5);
+      queryClient.invalidateQueries({ queryKey: ["review"] });
+    },
+    onError: (error: unknown) => {
+      const maybeMessage =
+        typeof error === "object" && error !== null && "message" in error
+          ? (error as { message?: string | string[] }).message
+          : undefined;
+      const message = Array.isArray(maybeMessage)
+        ? maybeMessage.join(", ")
+        : maybeMessage ?? "Unable to submit review";
+      toast.error(message);
+    },
+  });
+
+  const handleWriteReviewClick = async () => {
+    if (isAuthChecking || isSubmittingReview) return;
+
+    setIsAuthChecking(true);
+    try {
+      const response = await fetch("/api/get-token");
+      const data = (await response.json()) as { accessToken?: string | null };
+      const isUserLoggedIn = Boolean(data?.accessToken);
+
+      if (!isUserLoggedIn) {
+        openReferralLoginDialog(router);
+        return;
+      }
+
+      setIsWriteReviewOpen(true);
+    } catch {
+      openReferralLoginDialog(router);
+    } finally {
+      setIsAuthChecking(false);
+    }
+  };
+
+  const handleSubmitReview = () => {
+    const cleanedReview = review.trim();
+    if (!cleanedReview) {
+      toast.error("Please enter your review");
+      return;
+    }
+
+    submitReview({
+      rating,
+      review: cleanedReview,
+    });
+  };
 
   return (
     <>
@@ -266,12 +341,14 @@ export default function SuccessStoriesSection() {
                   </button>
                 </div> */}
 
-                {/* <button
+                <button
                   type="button"
                   className="h-9 rounded-[6px] bg-blue px-4 text-xs font-medium text-white"
+                  onClick={handleWriteReviewClick}
+                  disabled={isAuthChecking}
                 >
-                  Write Review
-                </button> */}
+                  {isAuthChecking ? "Checking..." : "Write Review"}
+                </button>
 
 
                 {/* show this again */}
@@ -400,6 +477,102 @@ export default function SuccessStoriesSection() {
           </div>
         </motion.div>
       </div>
+      <Dialog
+        open={isWriteReviewOpen}
+        onClose={() => setIsWriteReviewOpen(false)}
+        slotProps={{
+          paper: {
+            sx: {
+              borderRadius: "0.75rem",
+            },
+          },
+        }}
+      >
+        <DialogContent sx={{ padding: 0 }}>
+          <div className="w-full rounded-xl bg-white p-5 sm:w-[460px]">
+            <div className="mb-4 flex items-start justify-between gap-3">
+              <h3 className="text-[24px] font-semibold text-[#1E2236]">Write a Review</h3>
+              <button
+                type="button"
+                onClick={() => setIsWriteReviewOpen(false)}
+                className="rounded-full p-1 text-[#1E2236] transition hover:bg-black/5"
+                aria-label="Close review dialog"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="mb-3">
+              <label htmlFor="review-rating" className="mb-1 block text-xs font-medium text-[#4B5563]">
+                Rating
+              </label>
+              <select
+                id="review-rating"
+                value={rating}
+                onChange={(event) => setRating(Number(event.target.value))}
+                className="h-10 w-full rounded-md border border-[#D1D5DB] px-3 text-sm outline-none focus:border-blue"
+                disabled={isSubmittingReview}
+              >
+                {[5, 4, 3, 2, 1].map((value) => (
+                  <option key={value} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="review-text" className="mb-1 block text-xs font-medium text-[#4B5563]">
+                Review
+              </label>
+              <textarea
+                id="review-text"
+                value={review}
+                onChange={(event) => setReview(event.target.value)}
+                placeholder="Write your experience with KMA..."
+                rows={4}
+                maxLength={500}
+                className="w-full resize-none rounded-md border border-[#D1D5DB] p-3 text-sm outline-none focus:border-blue"
+                disabled={isSubmittingReview}
+              />
+            </div>
+
+            <button
+              type="button"
+              onClick={handleSubmitReview}
+              disabled={isSubmittingReview}
+              className="inline-flex h-10 w-full items-center justify-center rounded-full bg-blue px-6 text-sm font-semibold text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {isSubmittingReview ? "Submitting..." : "Submit Review"}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={isLoginDialogOpen}
+        onClose={() => closeReferralLoginDialog(router)}
+        slotProps={{
+          paper: {
+            sx: {
+              borderRadius: "0.75rem",
+            },
+          },
+        }}
+      >
+        <DialogContent sx={{ padding: 0 }}>
+          <div className="relative w-full rounded-xl bg-white sm:w-[460px]">
+            <button
+              type="button"
+              onClick={() => closeReferralLoginDialog(router)}
+              className="absolute right-4 top-4 z-10 rounded-full p-1 text-[#1E2236] transition hover:bg-black/5"
+              aria-label="Close login dialog"
+            >
+              ✕
+            </button>
+            {isOtpStep ? <LoginOtpCard /> : <LoginCard />}
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

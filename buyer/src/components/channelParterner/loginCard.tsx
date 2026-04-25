@@ -6,6 +6,9 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "nextjs-toploader/app";
 import { toast } from "react-toastify";
 
+import AboutusDataSync from "../footer/AboutusDataSync";
+import HomeFooter from "../footer/homeFooter";
+import HomeHeader from "../header/homeHeader";
 import MobileInput from "../common/mobileInput";
 import Spinner from "../common/spinner";
 import { mobileNumberValidator } from "@/lib/commonValidator";
@@ -78,10 +81,10 @@ export default function LoginCard() {
       ...(mobileInput.value ? { mobile: mobileInput.value } : {}),
       ...(redirect ? { redirect } : {}),
     });
-    router.replace(`${pathname}${params}`);
+    router.replace(`/user-flow`);
   };
 
-  return (
+  const card = (
     <div
       className="bg-white w-full md:min-w-[420px] h-auto rounded-[16px] p-6 md:p-8"
       style={{ boxShadow: "0px 4px 20px 0px #0000000D", flexGrow: 11 }}
@@ -123,4 +126,21 @@ export default function LoginCard() {
       </div>
     </div>
   );
+
+  if (pathname === "/user-flow") {
+    return (
+      <div className="min-h-screen bg-[#f8fafc]">
+        <div className="sticky top-0 z-50 w-full flex justify-center bg-blue pt-4 pb-2 shadow-sm">
+          <HomeHeader />
+        </div>
+        <div className="w-full px-4 py-10 flex justify-center">
+          <div className="w-full max-w-[560px]">{card}</div>
+        </div>
+        <AboutusDataSync />
+        <HomeFooter />
+      </div>
+    );
+  }
+
+  return card;
 }
