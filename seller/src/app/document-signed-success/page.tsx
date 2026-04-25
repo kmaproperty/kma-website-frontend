@@ -6,6 +6,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
+const AUTO_REDIRECT_SECONDS = 3;
+
 export default function DocumentSigned() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -13,6 +15,7 @@ export default function DocumentSigned() {
   const [message, setMessage] = useState('');
   const [canRetry, setCanRetry] = useState(false);
   const [navigate, setNavigate] = useState(false)
+  const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
 
   useEffect(() => {
     if (!event) return;
@@ -22,16 +25,17 @@ export default function DocumentSigned() {
         setMessage('Document signed successfully');
         toast.success('Document signed successfully');
         setNavigate(true)
+        setSecondsLeft(AUTO_REDIRECT_SECONDS)
         break;
       case 'decline':
         setMessage('Document was declined');
         setCanRetry(true);
         break;
-      case 'view': 
+      case 'view':
         setMessage('Document viewed');
         setCanRetry(true);
         break;
-    case 'cancel': 
+    case 'cancel':
         setMessage('Document sign canceled');
         setCanRetry(true);
         break;
@@ -40,6 +44,16 @@ export default function DocumentSigned() {
         setCanRetry(true);
     }
   }, [event]);
+
+  useEffect(() => {
+    if (secondsLeft === null) return;
+    if (secondsLeft <= 0) {
+      router.replace('/user-dashboard');
+      return;
+    }
+    const timeout = window.setTimeout(() => setSecondsLeft((s) => (s === null ? null : s - 1)), 1000);
+    return () => window.clearTimeout(timeout);
+  }, [secondsLeft, router]);
    const {
     mutate: handleSignChannelPartnerAgreement,
     isPending
@@ -70,13 +84,16 @@ export default function DocumentSigned() {
   }
 
   const handleRedirect = () => {
-    router.replace('/post-property')
+    router.replace('/user-dashboard')
   }
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100 px-4">
       <div className="bg-white p-6 rounded-lg shadow-md text-center max-w-sm w-full">
-        <p className="text-lg font-semibold text-text-black mb-4">{message}</p>
+        <p className="text-lg font-semibold text-text-black mb-2">{message}</p>
+        {navigate && secondsLeft !== null && secondsLeft > 0 && (
+          <p className="text-text-gray text-xs mb-4">Redirecting to dashboard in {secondsLeft}s...</p>
+        )}
 
         {canRetry && (
           <button
@@ -99,7 +116,7 @@ export default function DocumentSigned() {
             >
                 <span className="gap-3 relative">
                 <p className="text-nowrap">
-                   Post property
+                   Go to Dashboard
                 </p>
                 </span>
             </button>
