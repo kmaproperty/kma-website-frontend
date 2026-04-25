@@ -58,15 +58,23 @@ const ContactUs = async () => {
     ]
     return (
         <div>
-            <div className="relative overflow-hidden rounded-b-[20px] sm:rounded-br-[30px] non_home_page_slider">
-                <BannerSlider bannerHeight={'h-full'} backgroundImages={sliderImage} overlayClass='about-us-gradient-overlay' />
-                <div className="relative flex flex-col items-center top-0 w-[100%] ">
+            <div className='fixed left-0 right-0 z-[60] flex justify-center pointer-events-none'>
+                <div className='pointer-events-auto w-full flex justify-center'>
                     <HomdeHeader />
-                    <div className="2xl:py-[180px] 1xl:py-[160px] xl:py-[140px] lg:py-[120px] 2md:py-[100px] md:py-[80px] sm:py-[60px] py-[50px]">
+                </div>
+            </div>
+            <div className="relative overflow-hidden rounded-b-[20px] sm:rounded-br-[30px] non_home_page_slider min-h-[330px] sm:min-h-[380px] md:min-h-[430px]">
+
+                {/* <img src="/assets/contact-hero-bg.png" alt="Contact Us Hero Background"  /> */}
+           
+                <BannerSlider bannerHeight={'h-full'} backgroundImages={sliderImage} overlayClass='about-us-gradient-overlay' />
+                <div className="absolute inset-0 z-10 flex flex-col items-center top-0 w-[100%] ">
+                    <div className="2xl:py-[160px] 1xl:py-[145px] xl:py-[130px] lg:py-[115px] 2md:py-[95px] md:py-[75px] sm:py-[60px] py-[50px]">
                         <PageTitle
                             title="Let’s Connect"
                             description="Let our team of real estate specialists assist you with bespoke solutions for buying, selling, or renting luxury properties in Gurugram."
                             breadcrumps={breadcrumps}
+                            actions={[]}
                         />
                     </div>
                 </div>
