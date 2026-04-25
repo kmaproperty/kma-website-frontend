@@ -29,9 +29,11 @@ function getStoredUserRole(): string | null {
   try {
     const parsed: unknown = JSON.parse(raw);
     if (!isRecord(parsed)) return null;
-    // If user has no name, profile is incomplete — treat as not logged in for header
-    if (!parsed.name || (typeof parsed.name === "string" && !parsed.name.trim())) return null;
-    if (typeof parsed.role === "string") return parsed.role;
+    // Role alone signals logged-in. Cross-domain hydrated users may not have
+    // a name in localStorage until /create-account is finished.
+    if (typeof parsed.role === "string" && parsed.role.trim().length > 0) {
+      return parsed.role;
+    }
     return null;
   } catch {
     return null;

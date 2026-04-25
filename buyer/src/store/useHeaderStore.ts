@@ -29,9 +29,12 @@ function getStoredUserRole(): string | null {
   try {
     const parsed: unknown = JSON.parse(raw);
     if (!isRecord(parsed)) return null;
-    // If user has no name, profile is incomplete — treat as not logged in for header
-    if (!parsed.name || (typeof parsed.name === "string" && !parsed.name.trim())) return null;
-    if (typeof parsed.role === "string") return parsed.role;
+    // Role is the only signal we need for the header. A freshly cross-domain
+    // hydrated user from the shared cookie may have an empty name until the
+    // /create-account step is finished — they're still logged in.
+    if (typeof parsed.role === "string" && parsed.role.trim().length > 0) {
+      return parsed.role;
+    }
     return null;
   } catch {
     return null;
