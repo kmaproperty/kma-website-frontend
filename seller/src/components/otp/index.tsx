@@ -85,12 +85,17 @@ export default function Otp() {
       validateOtpApiHandler(payload),
     onSuccess: async (res) => {
       await setAuthCookies(res.accessToken, res.refreshToken)
-      // localStorage.setItem("accessToken", res.accessToken);
-      // localStorage.setItem("refreshToken", res.refreshToken);
       localStorage.setItem("user", JSON.stringify(res.user));
       setOtp('')
       toast.success(res.message)
       queryClient.clear();
+      // Force profile completion before letting Owner/CP into the dashboard.
+      // Otherwise users land on dashboard with empty name and the greeting
+      // shows "Hi, (Owner)" with a blank.
+      if (res.requiredOtherDetails) {
+        router.replace('/create-account')
+        return
+      }
       router.replace('/user-dashboard')
     },
     onError: (err: any) => {
