@@ -48,7 +48,7 @@ export const fetchPropertyMedia = async (
     }
     const response = await fetch(
       `${baseUrl}/end-user/properties/${propertyId}/media`,
-      { method: "GET", headers, cache: "no-store" }
+      { method: "GET", headers, next: { revalidate: 120 } }
     );
     if (!response.ok) return null;
     const result: PropertyMediaResponse = await response.json();
@@ -102,7 +102,7 @@ export const fetchPropertyCitiesData = async (): Promise<CitiesResponse> => {
         headers: {
           "Content-Type": "application/json",
         },
-        cache: "force-cache", // or 'no-store' if dynamic
+        next: { revalidate: 300 },
       }
     );
 
