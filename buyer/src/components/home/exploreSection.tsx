@@ -27,6 +27,59 @@ type ExplorePropertyItem = {
   images?: { fileKey: string; url: string; view: string; isCoverImage: boolean }[];
 };
 
+const EXPLORE_ICONS = {
+  villas: "/assets/explore/villas.svg",
+  office: "/assets/explore/office.svg",
+  apartment: "/assets/explore/apratment.svg",
+  home: "/assets/explore/home.svg",
+} as const;
+
+const hasAnyKeyword = (value: string, keywords: string[]) =>
+  keywords.some((keyword) => value.includes(keyword));
+
+const getExploreIcon = (item: ExplorePropertyItem): string => {
+  const normalizedName = item.name.toLowerCase().trim();
+  const normalizedCode = item.code.toLowerCase().trim();
+  const searchSpace = `${normalizedName} ${normalizedCode}`;
+
+  if (hasAnyKeyword(searchSpace, ["villa"])) return EXPLORE_ICONS.villas;
+
+  if (
+    hasAnyKeyword(searchSpace, [
+      "office",
+      "retail",
+      "shop",
+      "showroom",
+      "warehouse",
+      "com-",
+    ])
+  ) {
+    return EXPLORE_ICONS.office;
+  }
+
+  if (
+    hasAnyKeyword(searchSpace, [
+      "flat",
+      "apartment",
+      "studio",
+      "penthouse",
+      "duplex",
+      "builder-floor",
+      "builder floor",
+    ])
+  ) {
+    return EXPLORE_ICONS.apartment;
+  }
+
+  if (hasAnyKeyword(searchSpace, ["house", "home"])) return EXPLORE_ICONS.home;
+
+  if (hasAnyKeyword(searchSpace, ["plot"])) {
+    return normalizedCode.startsWith("com-") ? EXPLORE_ICONS.office : EXPLORE_ICONS.home;
+  }
+
+  return EXPLORE_ICONS.home;
+};
+
 const leftVariant = {
   hidden: { x: "-100%", opacity: 0 },
   visible: {
@@ -182,12 +235,12 @@ export default function ExploreSection({ explorePropertyList = [] }: ExploreSect
                   <div
                     className={`h-[180px] rounded-xl ${bgColor} flex flex-col items-center justify-center overflow-hidden relative`}
                   >
-                    <div className="relative w-20 h-20 rounded-lg overflow-hidden mb-3 flex-shrink-0">
+                    <div className="relative w-20 h-20 mb-3 flex-shrink-0">
                       <Image
-                        src={item.imageUrl}
+                        src={getExploreIcon(item)}
                         alt={item.name}
                         fill
-                        className="object-cover"
+                        className="object-contain"
                         sizes="80px"
                       />
                     </div>
