@@ -74,10 +74,12 @@ export default function AboutUsComponent({
   return (
     <div className="overflow-x-hidden">
       <HeaderDataSync propertyMasterData={propertyMasterData} propertyCitiesData={propertyCitiesData} />
+      <div className="sticky -top-[25px] z-50 w-full flex justify-center 2md:pt-6">
+        <HomeHeader />
+      </div>
       <div className="relative overflow-hidden overflow-hidden rounded-b-[20px] sm:rounded-br-[30px] non_home_page_slider">
         <BannerSlider bannerHeight={'h-full'} backgroundImages={sliderImage} overlayClass='about-us-gradient-overlay' />
         <div className="relative flex flex-col items-center top-0 w-[100%] ">
-          <HomeHeader />
           <div className="2xl:py-[180px] 1xl:py-[160px] xl:py-[140px] lg:py-[120px] 2md:py-[100px] md:py-[80px] sm:py-[60px] py-[50px]">
             <PageTitle
               title="About Us"

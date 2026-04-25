@@ -54,7 +54,11 @@ export default function EndUserSignupOtpCard() {
       localStorage.setItem("user", JSON.stringify(response.user));
       toast.success(response.message);
       queryClient.clear();
-      router.replace("/");
+      if (typeof window !== "undefined") {
+        window.location.href = "/";
+      } else {
+        router.replace("/");
+      }
     },
     onError: (error: any) => {
       setOtpError(error?.message ?? "Invalid OTP");

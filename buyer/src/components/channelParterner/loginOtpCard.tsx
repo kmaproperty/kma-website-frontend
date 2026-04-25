@@ -57,28 +57,38 @@ export default function LoginOtpCard() {
         redirect && redirect.startsWith("/") && !redirect.startsWith("//") ? redirect : null;
       const userRole = response.user?.role;
 
+      // Hard reload so header/session hooks that only read localStorage on mount pick up
+      // the new session immediately instead of waiting for the next full refresh.
+      const hardNavigate = (url: string) => {
+        if (typeof window !== "undefined") {
+          window.location.href = url;
+        } else {
+          router.replace(url);
+        }
+      };
+
       // Honor same-site redirect (e.g. Refer & Earn) for any role — new END_USER accounts
       // do not need a seller-side create-account step to continue on the buyer site.
       if (safeRedirect && userRole === "END_USER") {
-        router.replace(safeRedirect);
+        hardNavigate(safeRedirect);
         return;
       }
 
       // Owner / Channel Partner with an incomplete profile still need the seller create-account flow.
       if (response.requiredOtherDetails) {
-        router.replace("/create-account");
+        hardNavigate("/create-account");
         return;
       }
 
       if (safeRedirect) {
-        router.replace(safeRedirect);
+        hardNavigate(safeRedirect);
         return;
       }
 
       if (userRole === "CHANNEL_PARTNER" && !response.kycCompleted) {
-        router.replace("/kyc");
+        hardNavigate("/kyc");
       } else {
-        router.replace("/user-dashboard");
+        hardNavigate("/user-dashboard");
       }
     },
     onError: (error: any) => {
