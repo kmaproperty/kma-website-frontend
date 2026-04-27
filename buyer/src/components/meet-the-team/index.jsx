@@ -30,10 +30,10 @@ const foundersDetails = [
     position: 'Founder',
   },
   {
-    name: 'Co-Founders',
+    name: `Anipal Yadav, Paramjeet Dahiya`,
     image: "/assets/team/Co founder's.jpg",
     position: 'Co-Founder',
-    members: ['Anipal Yadav', 'Paramjeet Dahiya'],
+    members: [],
   },
 ];
 

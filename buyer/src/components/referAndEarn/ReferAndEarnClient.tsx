@@ -66,6 +66,7 @@ const referralSteps = [
 ];
 
 const propertyTypes: PropertyTypeOption[] = ["Buy", "Sell", "Rent"];
+const AUTO_OPEN_FORM_AFTER_LOGIN_KEY = "kma_referral_auto_open_form_after_login";
 
 export default function ReferAndEarnClient() {
   const router = useRouter();
@@ -103,17 +104,32 @@ export default function ReferAndEarnClient() {
     };
   }, [profileResponse?.user?.name, profileResponse?.user?.phone, partnerIdFromUrl]);
 
+  const openFormWithPrefill = () => {
+    const saved = getReferrerProfile();
+    setFormValue({
+      ...initialForm(),
+      ...prefilledBase,
+      referrerName: prefilledBase.referrerName || saved?.name || "",
+      referrerPhone: prefilledBase.referrerPhone || saved?.phone || "",
+    });
+    setStep("form");
+  };
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !isLoggedIn || step !== "landing") return;
+    if (window.sessionStorage.getItem(AUTO_OPEN_FORM_AFTER_LOGIN_KEY) !== "1") return;
+
+    window.sessionStorage.removeItem(AUTO_OPEN_FORM_AFTER_LOGIN_KEY);
+    openFormWithPrefill();
+  }, [isLoggedIn, step, prefilledBase]);
+
   const handleReferNow = () => {
     if (isLoggedIn) {
-      const saved = getReferrerProfile();
-      setFormValue({
-        ...initialForm(),
-        ...prefilledBase,
-        referrerName: prefilledBase.referrerName || saved?.name || "",
-        referrerPhone: prefilledBase.referrerPhone || saved?.phone || "",
-      });
-      setStep("form");
+      openFormWithPrefill();
       return;
+    }
+    if (typeof window !== "undefined") {
+      window.sessionStorage.setItem(AUTO_OPEN_FORM_AFTER_LOGIN_KEY, "1");
     }
     openReferralLoginDialog(router);
   };
@@ -176,14 +192,7 @@ export default function ReferAndEarnClient() {
   };
 
   const openFormAgain = () => {
-    const saved = getReferrerProfile();
-    setFormValue({
-      ...initialForm(),
-      ...prefilledBase,
-      referrerName: prefilledBase.referrerName || saved?.name || "",
-      referrerPhone: prefilledBase.referrerPhone || saved?.phone || "",
-    });
-    setStep("form");
+    openFormWithPrefill();
   };
 
   return (
