@@ -190,7 +190,7 @@ export default function ReferAndEarnClient() {
     <ReferralUserShell
       title="Refer and Earn"
       description="Help friends discover the right property with KMA and earn rewards. 1 coin = ₹1000."
-      breadcrumb="Home / Refer and Earn"
+      breadcrumb=""
     >
       <div className="space-y-6">
         {step !== "success" && (
