@@ -74,18 +74,20 @@ export default function AboutUsComponent({
   return (
     <div className="overflow-x-hidden">
       <HeaderDataSync propertyMasterData={propertyMasterData} propertyCitiesData={propertyCitiesData} />
-      <div className="sticky -top-[25px] z-50 w-full flex justify-center 2md:pt-6">
-        <HomeHeader />
+      <div className="fixed left-0 right-0 z-[60] flex justify-center pointer-events-none">
+        <div className="pointer-events-auto w-full flex justify-center">
+          <HomeHeader />
+        </div>
       </div>
-      <div className="relative overflow-hidden overflow-hidden rounded-b-[20px] sm:rounded-br-[30px] non_home_page_slider">
+      <div className="relative overflow-hidden rounded-b-[20px] sm:rounded-br-[30px] non_home_page_slider min-h-[330px] sm:min-h-[380px] md:min-h-[430px]">
         <BannerSlider bannerHeight={'h-full'} backgroundImages={sliderImage} overlayClass='about-us-gradient-overlay' />
-        <div className="relative flex flex-col items-center top-0 w-[100%] ">
-          <div className="2xl:py-[180px] 1xl:py-[160px] xl:py-[140px] lg:py-[120px] 2md:py-[100px] md:py-[80px] sm:py-[60px] py-[50px]">
+        <div className="absolute inset-0 z-10 flex flex-col items-center top-0 w-[100%] ">
+          <div className="2xl:py-[160px] 1xl:py-[145px] xl:py-[130px] lg:py-[115px] 2md:py-[95px] md:py-[75px] sm:py-[60px] py-[50px]">
             <PageTitle
               title="About Us"
-              description="Discover who we are, what we stand for, and why thousands of brokers and buyers across Gurgaon trust KMA Global Properties every single day.
-"
+              description="Discover who we are, what we stand for, and why thousands of brokers and buyers across Gurgaon trust KMA Global Properties every single day."
               breadcrumps={breadcrumps}
+              actions={[]}
             />
           </div>
         </div>
@@ -98,6 +100,8 @@ export default function AboutUsComponent({
               title="Who We Are"
               subtitle="About KMA Global Properties"
               type={"left"}
+              color=""
+              lineTop={false}
               description="KMA Global Properties, established in 2025, is Gurgaon's most transparent and broker-friendly real estate platform. We specialize in residential rentals, sales, and property investments — delivering a complete end-to-end experience for buyers, owners, and brokers who value trust, clarity, and real results."
             />
             <div className="mt-6 grid w-full grid-cols-1 gap-x-8 gap-y-4 sm:w-fit sm:grid-cols-2">
@@ -210,6 +214,8 @@ export default function AboutUsComponent({
               title="Our Story"
               subtitle="Building Trust in Gurgaon, One Property at a Time"
               type={"left"}
+              color=""
+              lineTop={false}
               description="KMA Global Properties was founded with one clear purpose — to fix what was broken in real estate. No more paying to list. No more shared leads. No more doing all the work and still losing a cut to the portal."
             />
             <p className={`text-[#5C727D] text-md leading-7`}>
