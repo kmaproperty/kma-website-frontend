@@ -150,7 +150,7 @@ export default function AboutUsComponent({
                 <div className="w-full px-3 py-2 border border-gray-200 flex items-center gap-2 rounded-lg sm:w-fit sm:px-5 sm:gap-4">
                   <Image
                     src="/assets/team/karmjeet Sir .png"
-                    alt="Karamjeet Dahiya"
+                    alt="Karmjeet Dahiya"
                     className="h-[52px] w-[52px] object-cover rounded-full sm:h-[60px] sm:w-[60px]"
                     width={60}
                     height={60}
