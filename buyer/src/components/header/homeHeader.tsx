@@ -312,6 +312,7 @@ const handleHeaderSubMenuClick = (label: string) => {
           {headerMenuList.map((item) => {
             const hasDropdown = item.value !== "refer_and_earn";
             const isActive = hoveredMenu === item.value;
+            const isReferAndEarn = item.value === "refer_and_earn";
             return (
               <p
                 onMouseEnter={(event) => {
@@ -342,11 +343,18 @@ const handleHeaderSubMenuClick = (label: string) => {
                   }
                 }}
                 key={item.value}
-                className={`hidden 2md:block mt-2 text-gray-100 break-word text-xs xl:text-sm nowrap w-max border-b-2 transition-colors duration-200 cursor-pointer px-1.5 pb-1 hover:border-blue ${
+                className={`hidden 2md:block mt-2 break-word text-xs xl:text-sm nowrap w-max border-b-2 transition-colors duration-200 cursor-pointer px-1.5 pb-1 hover:border-blue ${
+                  isReferAndEarn ? "text-[#FDE68A] animate-pulse font-semibold" : "text-gray-100"
+                } ${
                   isActive ? "border-blue" : "border-transparent"
                 }`}
               >
                 {item.label}
+                {isReferAndEarn && (
+                  <span className="ml-1 inline-flex items-center rounded-full bg-[#FDE68A] text-[#1E3A8A] px-1.5 py-0.5 text-[9px] font-bold align-middle">
+                    NEW
+                  </span>
+                )}
               </p>
             );
           })}
