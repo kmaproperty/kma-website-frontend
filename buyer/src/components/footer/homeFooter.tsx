@@ -304,7 +304,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
               <ul className="space-y-3 text-[13px] text-white/90">
                 {[
                   { label: "About Us", href: "/about-us" },
-                  // { label: "Careers", href: "/about-us" },
+                  { label: "Careers", href: "/careers" },
                   // { label: "Services", href: "/about-us" },
                   { label: "Contact Us", href: "/contact-us" },
                   { label: "Terms & Conditions", href: "/terms-and-conditions" },
