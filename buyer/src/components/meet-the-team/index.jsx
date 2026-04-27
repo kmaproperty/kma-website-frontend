@@ -25,7 +25,7 @@ const breadcrumps = [
 
 const foundersDetails = [
   {
-    name: 'Karamjeet Dahiya',
+    name: 'Karmjeet Dahiya',
     image: '/assets/team/karmjeet Sir .png',
     position: 'Founder',
   },
