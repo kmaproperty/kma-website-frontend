@@ -21,6 +21,7 @@ export function useRecentlySearched({
   enabled = true,
 }: UseRecentlySearchedParams = {}) {
   const sessionId = useSessionStore((state) => state.sessionId);
+  const hasHydrated = useSessionStore((state) => state._hasHydrated);
 
   const query = useQuery<GetRecentlySearchedResponse>({
     queryKey: [RECENTLY_SEARCHED_QUERY_KEY, page, limit, sortBy, sessionId ?? null],
@@ -31,7 +32,7 @@ export function useRecentlySearched({
         sortBy,
         xSessionId: sessionId ?? undefined,
       }),
-    enabled,
+    enabled: enabled && hasHydrated,
     staleTime: 60_000,
   });
 

@@ -97,6 +97,7 @@ export default function ProfileView({ userRole }: ProfileViewProps) {
   const queryClient = useQueryClient();
   const isLoggedIn = Boolean(userRole);
   const sessionId = useSessionStore((state) => state.sessionId);
+  const hasHydrated = useSessionStore((state) => state._hasHydrated);
 
   // On buyer domain, treat everyone as end-user for profile data + menu.
   // Seller-specific features only on seller domain.
@@ -154,6 +155,10 @@ export default function ProfileView({ userRole }: ProfileViewProps) {
   const { data: activityCounts } = useQuery({
     queryKey: ["end-user-activity-counts", isLoggedIn, sessionId ?? null],
     queryFn: () => getActivityCountsApiHandler(isLoggedIn ? undefined : sessionId ?? undefined),
+    // Logged-in users go straight (auth header in axios). Anonymous users
+    // must wait for the persisted sessionId to rehydrate, otherwise the
+    // first call returns 0 counts and the dropdown is stuck on stale data.
+    enabled: isLoggedIn || hasHydrated,
     staleTime: 60 * 1000,
   });
 
