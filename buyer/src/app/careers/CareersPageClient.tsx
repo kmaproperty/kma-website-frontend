@@ -96,7 +96,7 @@ const SCROLL_HERO_CARDS = [...HERO_CARDS, ...HERO_CARDS];
 const JOBS = [
   {
     company: "Wilson Engineering Solutions",
-    title: "Nuclear Outage Worker",
+    title: "Senior Frontend Developer",
     logoIcon: Flower2,
     logoIconColor: "text-[#ff7a45]",
     address: "120 Center st #300",
