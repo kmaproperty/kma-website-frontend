@@ -1,8 +1,20 @@
 import React from 'react'
 
-const PageTitle = ({ title, description, breadcrumps, actions }) => {
+const PageTitle = ({
+    title,
+    description,
+    breadcrumps,
+    actions,
+    innerClassName = 'max-w-[610px]',
+}: {
+    title: string
+    description?: string
+    breadcrumps?: Array<{ name: string; link?: string; icon?: React.ReactNode }>
+    actions?: unknown
+    innerClassName?: string
+}) => {
     return (
-        <div className='flex flex-col items-center max-w-[610px] px-4'>
+        <div className={`flex flex-col items-center px-4 ${innerClassName}`}>
             <h1 className="text-[28px] sm:text-[30px] md:text-[32px] 2md:text-[34px] lg:text-[36px] xl:text-[38px] 1xl:text-[39px] 2xl:text-[40px] text-center font-semibold text-white">{title}</h1>
             {description && <p className="text-white text-center text-md mt-4 font-light">{description}</p>}
             {/* {actions && (
