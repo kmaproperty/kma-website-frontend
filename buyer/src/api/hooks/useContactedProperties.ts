@@ -23,6 +23,7 @@ export function useContactedProperties({
   enabled = true,
 }: UseContactedPropertiesParams = {}) {
   const sessionId = useSessionStore((state) => state.sessionId);
+  const hasHydrated = useSessionStore((state) => state._hasHydrated);
 
   const query = useQuery<GetContactedPropertiesResponse>({
     queryKey: [CONTACTED_PROPERTIES_QUERY_KEY, page, limit, listingType ?? null, sort ?? null, sessionId ?? null],
@@ -34,7 +35,7 @@ export function useContactedProperties({
         sort,
         xSessionId: sessionId ?? undefined,
       }),
-    enabled,
+    enabled: enabled && hasHydrated,
     staleTime: 60_000,
   });
 
