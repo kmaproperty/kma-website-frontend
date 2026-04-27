@@ -328,13 +328,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
                 KMA Location
               </h3>
               <div className="overflow-hidden rounded-xl border border-white/10">
-                <iframe
-                  src={`https://www.google.com/maps?q=${latitude},${longitude}&output=embed`}
-                  width="100%"
-                  height="170"
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                ></iframe>
+              <iframe className='w-full h-full' src="https://www.google.com/maps/embed?pb=!1m13!1m8!1m3!1d448830.65552007704!2d77.000389!3d28.494917!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMjjCsDI5JzQxLjciTiA3N8KwMDAnMDEuNCJF!5e0!3m2!1sen!2sus!4v1767879656314!5m2!1sen!2sus" width="400" height="300" style={{ border: 0 }} loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
               </div>
             </div>
           </motion.div>
