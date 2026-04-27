@@ -73,8 +73,8 @@ const termsAndConditionsItems = [
 export default function TermsAndConditionsPage() {
   return (
     <>
-      <div className="sticky top-0 z-50 w-full flex justify-center bg-blue pt-4 pb-2 shadow-sm">
-        <HomeHeader />
+      <div className="sticky top-0 z-50 w-full flex justify-center pb-2">
+        <HomeHeader showColor={true} />
       </div>
 
       <main className="bg-[#f8fafc] py-10 px-4 md:py-14">

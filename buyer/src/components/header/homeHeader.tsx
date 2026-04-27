@@ -24,7 +24,12 @@ import { clearAuthCookies } from "@/lib/helper";
 
 const baseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
 
-export default function HomeHeader() {
+type HomeHeaderProps = {
+  showColor?: boolean;
+  show2color?: boolean;
+};
+
+export default function HomeHeader({ showColor = false, show2color = false }: HomeHeaderProps) {
   const router = useRouter();
   const {
     selectedCity,
@@ -78,6 +83,7 @@ export default function HomeHeader() {
   const headerBarRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isBlueTheme = showColor || show2color || isScrolled;
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
@@ -254,7 +260,7 @@ const handleHeaderSubMenuClick = (label: string) => {
         ref={headerBarRef}
         className={[
           "rounded-[200px] h-[50px] 2md:h-[63px] px-3 lg:px-7 pt-[4px] flex justify-between items-center border border-1 transition-colors duration-300",
-          isScrolled
+          isBlueTheme
             ? "bg-blue shadow-xl border-[#FFFFFF1F]"
             : "bg-white/10 bg-clip-padding backdrop-filter backdrop-blur-[20px] border-[#FFFFFF33]",
         ].join(" ")}
@@ -374,7 +380,7 @@ const handleHeaderSubMenuClick = (label: string) => {
           </div>
         </div>
         <div className="flex items-center justify-start gap-[7px] shrink-0">
-          {!isSeller && <button onClick={navigatePostProperty} className={`${isScrolled ? "bg-transparent border border-white" : "animated-button"} px-[10px] sm:px-[20px] py-[6px] sm:py-[9px] rounded-[50px] cursor-pointer transition-colors duration-300`}>
+          {!isSeller && <button onClick={navigatePostProperty} className={`${isBlueTheme ? "bg-transparent border border-white" : "animated-button"} px-[10px] sm:px-[20px] py-[6px] sm:py-[9px] rounded-[50px] cursor-pointer transition-colors duration-300`}>
             <span className="flex items-center justify-between gap-[6px] relative z-10 text-white">
               <Image
                 src="/assets/home-white.svg"
@@ -388,7 +394,7 @@ const handleHeaderSubMenuClick = (label: string) => {
               </p>
             </span>
           </button>}
-          {isSeller && <button onClick={navigateDashboard} className={`${isScrolled ? "bg-transparent border border-white" : "animated-button"} px-[10px] sm:px-[20px] py-[6px] sm:py-[9px] rounded-[50px] cursor-pointer transition-colors duration-300`}>
+          {isSeller && <button onClick={navigateDashboard} className={`${isBlueTheme ? "bg-transparent border border-white" : "animated-button"} px-[10px] sm:px-[20px] py-[6px] sm:py-[9px] rounded-[50px] cursor-pointer transition-colors duration-300`}>
             <span className="flex items-center justify-between gap-[6px] relative z-10 text-white">
               <Image
                 src="/assets/home-white.svg"
