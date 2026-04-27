@@ -36,7 +36,7 @@ export default function RentSellHeaderView({ type, onClose }: { type: string; on
 
   // Fetch properties for this city + listing type to know which property types have results
   const listingTypeId = (Array.isArray(propertyMasterData) ? propertyMasterData : [])?.find((item: { code: string }) => item.code == type)?.id;
-  const { data: properties = [] } = useEndUserProperties(
+  const { data: properties = [], isLoading, isFetching } = useEndUserProperties(
     {
       cityId: selectedCity?.id,
       listingTypeIds: listingTypeId ? [listingTypeId] : undefined,
@@ -92,7 +92,9 @@ export default function RentSellHeaderView({ type, onClose }: { type: string; on
           </p>
             <div className="2md:columns-2 2md:h-[180px] [column-fill:auto]">
               {
-                visiblePropertyList.length > 0 ? visiblePropertyList.map(item => {
+                (isLoading || isFetching) ? (
+                  <p className="text-sm text-text-gray">Loading properties...</p>
+                ) : visiblePropertyList.length > 0 ? visiblePropertyList.map(item => {
                   return(
                     <p
                       key={item.id}

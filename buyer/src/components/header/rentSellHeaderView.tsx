@@ -37,7 +37,7 @@ export default function RentSellHeaderView({ type, onClose }: { type: string; on
   // Fetch properties for this city + listing type to know which property types have results
   const listingTypeId = (Array.isArray(propertyMasterData) ? propertyMasterData : [])?.find((item: { code: string }) => item.code == type)?.id;
   const shouldFilterByCity = !!selectedCity?.id && !!listingTypeId;
-  const { data: properties = [], isPending } = useEndUserProperties(
+  const { data: properties = [], isFetching } = useEndUserProperties(
     {
       cityId: selectedCity?.id,
       listingTypeIds: listingTypeId ? [listingTypeId] : undefined,
@@ -60,7 +60,7 @@ export default function RentSellHeaderView({ type, onClose }: { type: string; on
     return ids;
   }, [properties]);
 
-  const isFilterLoading = shouldFilterByCity && isPending && properties.length === 0;
+  const isFilterLoading = shouldFilterByCity && isFetching;
 
   // Filter property types to only show ones with properties (only once query has resolved)
   const visiblePropertyList = useMemo(() => {

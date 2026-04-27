@@ -12,10 +12,15 @@ import {
 } from "@/services/userService";
 
 const SELLER_URL = process.env.NEXT_PUBLIC_SELLER_URL ?? "https://seller.kmaglobalproperty.com";
-const SELLER_TARGET = `${SELLER_URL.replace(/\/$/, "")}/post-property`;
+const SELLER_BASE = SELLER_URL.replace(/\/$/, "");
+const SELLER_TARGET = `${SELLER_BASE}/post-property`;
+// Seller's own signup/login entry point. Not-logged-in users who clicked
+// Post Property on the buyer should land here directly instead of being
+// asked to log in as an END_USER on the buyer.
+const SELLER_LOGIN_URL = `${SELLER_BASE}/user-flow?postProperty=true`;
 const OTP_RESEND_SECONDS = 30;
 
-type Step = "sending" | "otp" | "verifying" | "redirecting" | "error";
+type Step = "checking" | "sending" | "otp" | "verifying" | "redirecting" | "error";
 
 /**
  * Bridge page between buyer and seller for the "Post Property" CTA.
@@ -31,7 +36,7 @@ type Step = "sending" | "otp" | "verifying" | "redirecting" | "error";
 export default function PostPropertyHandoffPage() {
   const router = useRouter();
   const initRef = useRef(false);
-  const [step, setStep] = useState<Step>("sending");
+  const [step, setStep] = useState<Step>("checking");
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState<string | null>(null);
   const [phoneMasked, setPhoneMasked] = useState<string>("");
@@ -110,7 +115,10 @@ export default function PostPropertyHandoffPage() {
     initRef.current = true;
 
     if (!hasSession()) {
-      router.replace("/user-flow?isLogin=true&redirect=/post-property-handoff");
+      // Not logged in → hand off directly to the seller's login/signup page.
+      // The buyer site's login flow is END_USER-only; a brand-new poster
+      // should create their account on the seller side as Owner/CP.
+      window.location.href = SELLER_LOGIN_URL;
       return;
     }
     void requestOtp();
@@ -168,6 +176,12 @@ export default function PostPropertyHandoffPage() {
         </div>
       </div>
     );
+  }
+
+  if (step === "checking") {
+    // Blank while we figure out whether to stay here or bounce to seller;
+    // avoids flashing a misleading "Sending OTP" header to logged-out users.
+    return <div className="min-h-screen bg-[#F8FAFC]" />;
   }
 
   if (step === "sending" || step === "redirecting") {

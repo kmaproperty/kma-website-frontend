@@ -36,7 +36,7 @@ const JoinUs = () => {
     return (
         <div>
             <div className="fixed left-0 right-0 z-[60] flex justify-center pointer-events-none">
-                <div className="pointer-events-auto w-full flex justify-center 2md:pt-6">
+                <div className="pointer-events-auto w-full flex justify-center">
                     <HomdeHeader />
                 </div>
             </div>

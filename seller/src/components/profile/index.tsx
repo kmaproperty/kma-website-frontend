@@ -120,7 +120,8 @@ export default function UserProfile() {
                   />
                   Edit Profile
                 </p>
-                {kycDetails?.kyc_status == "approved" && (
+                {userProfile?.role == USER_TYPE.CHANNEL_PARTNER &&
+                  kycDetails?.kyc_status == "approved" && (
                   <p
                     onClick={() => {
                       setOpenBankDetaislUpdate(true);

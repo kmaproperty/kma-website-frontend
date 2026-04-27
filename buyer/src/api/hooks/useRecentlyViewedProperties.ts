@@ -23,6 +23,10 @@ export function useRecentlyViewedProperties({
   enabled = true,
 }: UseRecentlyViewedPropertiesParams = {}) {
   const sessionId = useSessionStore((state) => state.sessionId);
+  // Wait for the persisted session to rehydrate from localStorage before
+  // firing. Otherwise the first call goes out with sessionId=null and the
+  // backend returns an empty list, leaving the UI stuck at "0 of 0".
+  const hasHydrated = useSessionStore((state) => state._hasHydrated);
 
   const query = useQuery<GetRecentlyViewedResponse>({
     queryKey: [RECENTLY_VIEWED_QUERY_KEY, page, limit, listingType ?? null, sort ?? null, sessionId ?? null],
@@ -34,7 +38,7 @@ export function useRecentlyViewedProperties({
         sort,
         xSessionId: sessionId ?? undefined,
       }),
-    enabled,
+    enabled: enabled && hasHydrated,
     staleTime: 60_000,
   });
 

@@ -19,8 +19,13 @@ const RenderSliderBody = ({
   bannerHeight?: string;
   priority?: boolean;
 }) => {
+  const resolvedBannerHeight =
+    bannerHeight && bannerHeight.trim().length > 0
+      ? `min-h-[320px] sm:min-h-[420px] ${bannerHeight}`
+      : "min-h-[320px] sm:min-h-[420px]";
+
   return (
-    <div className={`relative w-[100%] ${bannerHeight}`}>
+    <div className={`relative w-[100%] ${resolvedBannerHeight}`}>
       <div className="absolute inset-0 gradient-mask">
         <Image
           alt={sliderItem.alt ?? "banner"}

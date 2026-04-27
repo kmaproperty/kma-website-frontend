@@ -12,6 +12,9 @@ import { useContactedProperties } from "@/api/hooks/useContactedProperties";
 import { useFavoriteProperties } from "@/api/hooks/useFavoriteProperties";
 import type { RecentSearchItem } from "@/api/actions/propertyActions";
 import { mapApiPropertyToProject } from "@/app/projects/_utils/mapApiPropertyToProject";
+import { getActivityCountsApiHandler } from "@/services/userService";
+import { useSessionStore } from "@/store/useSessionStore";
+import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "nextjs-toploader/app";
@@ -300,21 +303,29 @@ const PAGE_SIZE = 12;
 const RECENT_SEARCH_PAGE_SIZE = 10;
 
 const ACTIVITY_TAB_KEYS: ActivitySection[] = ["recentSearch", "saved", "contacted", "recentlyViewed"];
+const DEFAULT_ACTIVITY_TAB: ActivitySection = "recentlyViewed";
+
+const getActivitySectionFromQuery = (tab: string | null): ActivitySection => {
+  if (tab && ACTIVITY_TAB_KEYS.includes(tab as ActivitySection)) {
+    return tab as ActivitySection;
+  }
+  return DEFAULT_ACTIVITY_TAB;
+};
 
 export default function RecentlyViewedPageClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [activeSection, setActiveSection] = useState<ActivitySection>("recentlyViewed");
+  const sessionId = useSessionStore((state) => state.sessionId);
+  const [activeSection, setActiveSection] = useState<ActivitySection>(() =>
+    getActivitySectionFromQuery(searchParams.get("tab"))
+  );
   const [activeIntent, setActiveIntent] = useState<"buy" | "rent" | "commercial">("buy");
   const [sortBy, setSortBy] = useState<SortType>("latest");
   const [searchSortBy, setSearchSortBy] = useState<"recent" | "relevance">("recent");
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    const tab = searchParams.get("tab");
-    if (tab && ACTIVITY_TAB_KEYS.includes(tab as ActivitySection)) {
-      setActiveSection(tab as ActivitySection);
-    }
+    setActiveSection(getActivitySectionFromQuery(searchParams.get("tab")));
   }, [searchParams]);
 
   const selectActivityTab = (key: ActivitySection) => {
@@ -379,6 +390,12 @@ export default function RecentlyViewedPageClient() {
     listingType: listingTypeApi,
     sort: sortApi,
     enabled: activeSection === "saved",
+  });
+
+  const { data: activityCounts } = useQuery({
+    queryKey: ["end-user-activity-counts", sessionId ?? null],
+    queryFn: () => getActivityCountsApiHandler(sessionId ?? undefined),
+    staleTime: 60 * 1000,
   });
 
   const recentlyViewedAsActivityProjects = useMemo<ActivityProject[]>(() => {
@@ -482,16 +499,16 @@ export default function RecentlyViewedPageClient() {
         ...tab,
         count:
           tab.key === "recentlyViewed"
-            ? String(recentlyViewedTotal)
+            ? (activityCounts?.recentlyViewed ?? recentlyViewedTotal)
             : tab.key === "recentSearch"
-              ? String(recentlySearchedTotal)
+              ? (activityCounts?.recentlySearch ?? recentlySearchedTotal)
               : tab.key === "contacted"
-                ? String(contactedTotal)
+                ? (activityCounts?.contactedProperties ?? contactedTotal)
                 : tab.key === "saved"
-                  ? String(favoritesTotal)
-                  : "0",
+                  ? (activityCounts?.savedProperties ?? favoritesTotal)
+                  : 0,
       })),
-    [recentlyViewedTotal, recentlySearchedTotal, contactedTotal, favoritesTotal]
+    [activityCounts, recentlyViewedTotal, recentlySearchedTotal, contactedTotal, favoritesTotal]
   );
 
   useEffect(() => {

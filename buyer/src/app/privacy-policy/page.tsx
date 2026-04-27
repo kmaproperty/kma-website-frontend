@@ -1,3 +1,7 @@
+import AboutusDataSync from "@/components/footer/AboutusDataSync";
+import HomeFooter from "@/components/footer/homeFooter";
+import HomeHeader from "@/components/header/homeHeader";
+
 const privacyPolicySections = [
   {
     title: "1. Information We Collect",
@@ -92,71 +96,80 @@ const privacyPolicySections = [
 
 export default function PrivacyPolicyPage() {
   return (
-    <main className="bg-[#f8fafc] py-10 px-4 md:py-14">
-      <div className="max-w-5xl mx-auto bg-white rounded-xl border border-[#e5e7eb] p-6 md:p-10">
-        <h1 className="text-[#010048] text-2xl md:text-3xl font-semibold uppercase">
-          Privacy Policy
-        </h1>
+    <>
+      <div className="sticky top-0 z-50 w-full flex justify-center pb-2">
+        <HomeHeader  showColor={true}/>
+      </div>
 
-        <p className="mt-4 text-[#44525a] text-sm md:text-base leading-relaxed">
-          KMA Global Properties Pvt. Ltd. operates the website kmaglobalproperties.in and is
-          committed to protecting the privacy and confidentiality of all personal information
-          shared with us.
-        </p>
-        <p className="mt-2 text-[#44525a] text-sm md:text-base leading-relaxed">
-          This Privacy Policy outlines how we collect, use, process, and safeguard your personal
-          data.
-        </p>
+      <main className="bg-[#f8fafc] py-10 px-4 md:py-14">
+        <div className="max-w-5xl mx-auto bg-white rounded-xl border border-[#e5e7eb] p-6 md:p-10">
+          <h1 className="text-[#010048] text-2xl md:text-3xl font-semibold uppercase">
+            Privacy Policy
+          </h1>
 
-        <div className="mt-6 space-y-6">
-          {privacyPolicySections.map((section) => (
-            <section key={section.title}>
-              <h2 className="text-[#010048] text-base md:text-lg font-medium">{section.title}</h2>
-
-              {section.paragraphs?.map((paragraph) => (
-                <p
-                  key={paragraph}
-                  className="mt-2 text-[#44525a] text-sm md:text-base leading-relaxed"
-                >
-                  {paragraph}
-                </p>
-              ))}
-
-              {section.points?.length ? (
-                <ul className="mt-2 list-disc pl-6 space-y-1 text-[#44525a] text-sm md:text-base leading-relaxed">
-                  {section.points.map((point) => (
-                    <li key={point}>{point}</li>
-                  ))}
-                </ul>
-              ) : null}
-
-              {section.footer ? (
-                <p className="mt-2 text-[#44525a] text-sm md:text-base leading-relaxed">
-                  {section.footer}
-                </p>
-              ) : null}
-            </section>
-          ))}
-        </div>
-
-        <section className="mt-8">
-          <h2 className="text-[#010048] text-base md:text-lg font-medium">11. Contact Information</h2>
+          <p className="mt-4 text-[#44525a] text-sm md:text-base leading-relaxed">
+            KMA Global Properties Pvt. Ltd. operates the website kmaglobalproperties.in and is
+            committed to protecting the privacy and confidentiality of all personal information
+            shared with us.
+          </p>
           <p className="mt-2 text-[#44525a] text-sm md:text-base leading-relaxed">
-            If you have any questions or requests related to this Privacy Policy, you can contact
-            us at:
+            This Privacy Policy outlines how we collect, use, process, and safeguard your personal
+            data.
           </p>
 
-          <div className="mt-3 text-[#44525a] text-sm md:text-base leading-relaxed space-y-1">
-            <p>KMA Global Properties Pvt. Ltd.</p>
-            <p>Plot No. 3A, Sector 106</p>
-            <p>Dwarka Expressway, Gurugram, Haryana</p>
-            <p>India</p>
-            <p>Email: md.karmjeet@kmaglobalproperty.com</p>
-            <p>Phone: +91-9056580022</p>
-            <p>Website: www.kmaglobalproperty.com</p>
+          <div className="mt-6 space-y-6">
+            {privacyPolicySections.map((section) => (
+              <section key={section.title}>
+                <h2 className="text-[#010048] text-base md:text-lg font-medium">{section.title}</h2>
+
+                {section.paragraphs?.map((paragraph) => (
+                  <p
+                    key={paragraph}
+                    className="mt-2 text-[#44525a] text-sm md:text-base leading-relaxed"
+                  >
+                    {paragraph}
+                  </p>
+                ))}
+
+                {section.points?.length ? (
+                  <ul className="mt-2 list-disc pl-6 space-y-1 text-[#44525a] text-sm md:text-base leading-relaxed">
+                    {section.points.map((point) => (
+                      <li key={point}>{point}</li>
+                    ))}
+                  </ul>
+                ) : null}
+
+                {section.footer ? (
+                  <p className="mt-2 text-[#44525a] text-sm md:text-base leading-relaxed">
+                    {section.footer}
+                  </p>
+                ) : null}
+              </section>
+            ))}
           </div>
-        </section>
-      </div>
-    </main>
+
+          <section className="mt-8">
+            <h2 className="text-[#010048] text-base md:text-lg font-medium">11. Contact Information</h2>
+            <p className="mt-2 text-[#44525a] text-sm md:text-base leading-relaxed">
+              If you have any questions or requests related to this Privacy Policy, you can contact
+              us at:
+            </p>
+
+            <div className="mt-3 text-[#44525a] text-sm md:text-base leading-relaxed space-y-1">
+              <p>KMA Global Properties Pvt. Ltd.</p>
+              <p>Plot No. 3A, Sector 106</p>
+              <p>Dwarka Expressway, Gurugram, Haryana</p>
+              <p>India</p>
+              <p>Email: md.karmjeet@kmaglobalproperty.com</p>
+              <p>Phone: +91-9056580022</p>
+              <p>Website: www.kmaglobalproperty.com</p>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <AboutusDataSync />
+      <HomeFooter />
+    </>
   );
 }

@@ -106,13 +106,14 @@ export const UserDashboardDetailsApiHandler = async () : Promise<UserDashboardDe
 }
 
 export interface UpgreadOwnerToChannelPartnerPayload {
-  channelPartnerCode: string;
   firmName: string;
   businessSince: string;
   aboutYourSelf: string;
 }
 export interface UpgreadOwnerToChannelPartnerResponse {
-  message: string
+  message: string;
+  channelPartnerCode?: string;
+  success?: boolean;
 }
 
 export const UpgreadOwnerToChannelPartnerApiHandler = async (paylaod: UpgreadOwnerToChannelPartnerPayload) : Promise<UpgreadOwnerToChannelPartnerResponse> => {

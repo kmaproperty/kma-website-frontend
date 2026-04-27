@@ -1,5 +1,5 @@
 /** 1 coin = ₹10 (matches existing Refer & Earn copy) */
-export const RUPEE_PER_COIN = 10;
+export const RUPEE_PER_COIN = 1000;
 
 /** Shown on confirmation until deal-specific rules exist */
 export const EXPECTED_COINS_ON_DEAL_CLOSE = 500;

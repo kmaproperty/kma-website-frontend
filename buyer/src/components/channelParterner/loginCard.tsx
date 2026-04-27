@@ -6,6 +6,9 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "nextjs-toploader/app";
 import { toast } from "react-toastify";
 
+import AboutusDataSync from "../footer/AboutusDataSync";
+import HomeFooter from "../footer/homeFooter";
+import HomeHeader from "../header/homeHeader";
 import MobileInput from "../common/mobileInput";
 import Spinner from "../common/spinner";
 import { mobileNumberValidator } from "@/lib/commonValidator";
@@ -78,10 +81,10 @@ export default function LoginCard() {
       ...(mobileInput.value ? { mobile: mobileInput.value } : {}),
       ...(redirect ? { redirect } : {}),
     });
-    router.replace(`${pathname}${params}`);
+    router.replace(`/user-flow`);
   };
 
-  return (
+  const card = (
     <div
       className="bg-white w-full md:min-w-[420px] h-auto rounded-[16px] p-6 md:p-8"
       style={{ boxShadow: "0px 4px 20px 0px #0000000D", flexGrow: 11 }}
@@ -123,4 +126,9 @@ export default function LoginCard() {
       </div>
     </div>
   );
+
+  // /user-flow page is already wrapped in MainLayout (which renders HomeHeader
+  // and CopyRightFooter). Returning the bare card avoids the duplicate header
+  // + footer that used to appear on this page.
+  return card;
 }

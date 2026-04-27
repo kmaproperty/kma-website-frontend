@@ -43,7 +43,9 @@ const initialForm = (): ReferralForm => ({
 
 const termsAndConditions: string[] = [
   "Each successful referral gives you reward coins.",
-  `1 coin = ₹${RUPEE_PER_COIN}.`,
+  "1 coin = ₹1000.",
+  "1 rent referral gives you 5 coins = ₹5000 fixed.",
+  "1 Sale referral Deal successful given you 50% applicable GST and TDS will be Deducted as per prevailing Goverment regulation before payout.",
   "Referral details must be genuine and reachable.",
   "KMA team verification is required before reward settlement.",
 ];
@@ -64,6 +66,7 @@ const referralSteps = [
 ];
 
 const propertyTypes: PropertyTypeOption[] = ["Buy", "Sell", "Rent"];
+const AUTO_OPEN_FORM_AFTER_LOGIN_KEY = "kma_referral_auto_open_form_after_login";
 
 export default function ReferAndEarnClient() {
   const router = useRouter();
@@ -101,17 +104,32 @@ export default function ReferAndEarnClient() {
     };
   }, [profileResponse?.user?.name, profileResponse?.user?.phone, partnerIdFromUrl]);
 
+  const openFormWithPrefill = () => {
+    const saved = getReferrerProfile();
+    setFormValue({
+      ...initialForm(),
+      ...prefilledBase,
+      referrerName: prefilledBase.referrerName || saved?.name || "",
+      referrerPhone: prefilledBase.referrerPhone || saved?.phone || "",
+    });
+    setStep("form");
+  };
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !isLoggedIn || step !== "landing") return;
+    if (window.sessionStorage.getItem(AUTO_OPEN_FORM_AFTER_LOGIN_KEY) !== "1") return;
+
+    window.sessionStorage.removeItem(AUTO_OPEN_FORM_AFTER_LOGIN_KEY);
+    openFormWithPrefill();
+  }, [isLoggedIn, step, prefilledBase]);
+
   const handleReferNow = () => {
     if (isLoggedIn) {
-      const saved = getReferrerProfile();
-      setFormValue({
-        ...initialForm(),
-        ...prefilledBase,
-        referrerName: prefilledBase.referrerName || saved?.name || "",
-        referrerPhone: prefilledBase.referrerPhone || saved?.phone || "",
-      });
-      setStep("form");
+      openFormWithPrefill();
       return;
+    }
+    if (typeof window !== "undefined") {
+      window.sessionStorage.setItem(AUTO_OPEN_FORM_AFTER_LOGIN_KEY, "1");
     }
     openReferralLoginDialog(router);
   };
@@ -160,9 +178,9 @@ export default function ReferAndEarnClient() {
         channelPartnerId: cpId,
         viaPartner,
       });
-      setSubmittedUniqueId(uniqueId);
-      setStep("success");
       toast.success("Referral submitted successfully");
+      setSubmittedUniqueId(uniqueId);
+      router.push(`/refer-and-earn/my-referrals?submittedId=${encodeURIComponent(uniqueId)}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -174,28 +192,21 @@ export default function ReferAndEarnClient() {
   };
 
   const openFormAgain = () => {
-    const saved = getReferrerProfile();
-    setFormValue({
-      ...initialForm(),
-      ...prefilledBase,
-      referrerName: prefilledBase.referrerName || saved?.name || "",
-      referrerPhone: prefilledBase.referrerPhone || saved?.phone || "",
-    });
-    setStep("form");
+    openFormWithPrefill();
   };
 
   return (
     <ReferralUserShell
       title="Refer and Earn"
-      description={`Help friends discover the right property with KMA and earn rewards. 1 coin = ₹${RUPEE_PER_COIN}.`}
-      breadcrumb="Home / Refer and Earn"
+      description="Help friends discover the right property with KMA and earn rewards. 1 coin = ₹1000."
+      breadcrumb=""
     >
       <div className="space-y-6">
         {step !== "success" && (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 -mt-2 mb-2">
             <div className="rounded-xl border border-[#EAECF0] bg-white px-4 py-4 shadow-sm">
               <p className="text-xs uppercase tracking-wide text-[#667085]">Reward rate</p>
-              <p className="text-2xl font-semibold text-[#0F172A] mt-1">1 coin = ₹{RUPEE_PER_COIN}</p>
+              <p className="text-2xl font-semibold text-[#0F172A] mt-1">1 coin = ₹1000</p>
             </div>
             <div className="rounded-xl border border-[#EAECF0] bg-white px-4 py-4 shadow-sm">
               <p className="text-xs uppercase tracking-wide text-[#667085]">Steps</p>
@@ -222,7 +233,7 @@ export default function ReferAndEarnClient() {
               <button
                 type="button"
                 onClick={handleReferNow}
-                className="mt-6 animated-button px-10 py-3 border border-blue text-center cursor-pointer"
+                className="mt-6 animated-button animate-pulse px-10 py-3 border border-blue text-center cursor-pointer"
               >
                 <span className="relative">Give a referral</span>
               </button>

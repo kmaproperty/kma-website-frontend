@@ -47,7 +47,12 @@ export default function UserDashboard() {
       },
       onSuccess: (response: UpgreadOwnerToChannelPartnerResponse) => {
         setOpenCodePopup(false)
-        toast.success('Upgraded to Channel Partner successfully')
+        const code = response?.channelPartnerCode;
+        toast.success(
+          code
+            ? `Upgraded to Channel Partner. Your CP code: ${code}`
+            : 'Upgraded to Channel Partner successfully',
+        )
         getUpdatedDashboardDetails()
         window.location.reload();
       },
@@ -99,7 +104,7 @@ export default function UserDashboard() {
 
               <div className="flex flex-col gap-1">
                 <p className="font-semibold text-lg text-text-black">
-                  Hi, {userDashboardDetails?.name}  {'(' + (userType[userDashboardDetails?.role] ?? '') + ')'}
+                  Hi, {userDashboardDetails?.name?.trim() || 'there'}  {'(' + (userType[userDashboardDetails?.role] ?? '') + ')'}
                   {userDashboardDetails?.role == USER_TYPE.CHANNEL_PARTNER && <span className="ml-3 px-4 py-1 text-sm sm:text-base rounded-md font-normal text-white bg-gradient-to-r from-[#A43918] to-[#CE8B2D]">
                     KMA Expert <span className="font-semibold">Pro</span>
                   </span>}

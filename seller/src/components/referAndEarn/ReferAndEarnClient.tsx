@@ -43,7 +43,9 @@ const initialForm = (): ReferralForm => ({
 
 const termsAndConditions: string[] = [
   "Each successful referral gives you reward coins.",
-  `1 coin = ₹${RUPEE_PER_COIN}.`,
+  "1 coin = ₹1000.",
+  "1 rent referral gives you 5 coins = ₹5000 fixed.",
+  "1 Sale referral Deal successful given you 50% applicable GST and TDS will be Deducted as per prevailing Goverment regulation before payout.",
   "Referral details must be genuine and reachable.",
   "KMA team verification is required before reward settlement.",
 ];
@@ -160,9 +162,9 @@ export default function ReferAndEarnClient() {
         channelPartnerId: cpId,
         viaPartner,
       });
-      setSubmittedUniqueId(uniqueId);
-      setStep("success");
       toast.success("Referral submitted successfully");
+      setSubmittedUniqueId(uniqueId);
+      router.push(`/refer-and-earn/my-referrals?submittedId=${encodeURIComponent(uniqueId)}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -187,7 +189,7 @@ export default function ReferAndEarnClient() {
   return (
     <ReferralUserShell
       title="Refer and Earn"
-      description={`Help friends discover the right property with KMA and earn rewards. 1 coin = ₹${RUPEE_PER_COIN}.`}
+      description="Help friends discover the right property with KMA and earn rewards. 1 coin = ₹1000."
       breadcrumb="Home / Refer and Earn"
     >
       <div className="space-y-6">
@@ -195,7 +197,7 @@ export default function ReferAndEarnClient() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 -mt-2 mb-2">
             <div className="rounded-xl border border-[#EAECF0] bg-white px-4 py-4 shadow-sm">
               <p className="text-xs uppercase tracking-wide text-[#667085]">Reward rate</p>
-              <p className="text-2xl font-semibold text-[#0F172A] mt-1">1 coin = ₹{RUPEE_PER_COIN}</p>
+              <p className="text-2xl font-semibold text-[#0F172A] mt-1">1 coin = ₹1000</p>
             </div>
             <div className="rounded-xl border border-[#EAECF0] bg-white px-4 py-4 shadow-sm">
               <p className="text-xs uppercase tracking-wide text-[#667085]">Steps</p>
@@ -222,7 +224,7 @@ export default function ReferAndEarnClient() {
               <button
                 type="button"
                 onClick={handleReferNow}
-                className="mt-6 animated-button px-10 py-3 border border-blue text-center cursor-pointer"
+                className="mt-6 animated-button animate-pulse px-10 py-3 border border-blue text-center cursor-pointer"
               >
                 <span className="relative">Give a referral</span>
               </button>

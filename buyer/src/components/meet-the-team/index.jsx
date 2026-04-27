@@ -25,15 +25,15 @@ const breadcrumps = [
 
 const foundersDetails = [
   {
-    name: 'Karamjeet Dahiya',
+    name: 'Karmjeet Dahiya',
     image: '/assets/team/karmjeet Sir .png',
     position: 'Founder',
   },
   {
-    name: 'Co-Founders',
+    name: `Anipal Yadav, Paramjeet Dahiya`,
     image: "/assets/team/Co founder's.jpg",
     position: 'Co-Founder',
-    members: ['Anipal Yadav', 'Paramjeet Dahiya'],
+    members: [],
   },
 ];
 
