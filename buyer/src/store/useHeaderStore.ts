@@ -13,11 +13,18 @@ import {
   getUserRole,
   setCityData,
   setCityLoader,
+  setPropertyMasterData,
   setSelectedCity,
   setUserRole,
 } from "./homeHeaderSlice";
-import { getCityListApiHandler } from "@/services/homeService";
-import type { CitiesResponse } from "@/services/homeService";
+import {
+  getCityListApiHandler,
+  getPropertyMasterDataApiHandler,
+} from "@/services/homeService";
+import type {
+  CitiesResponse,
+  GetPropertyMasterDataResponse,
+} from "@/services/homeService";
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null;
@@ -90,6 +97,30 @@ export function useHeaderStore(syncUserRole = false) {
       fetchCities({});
     }
   }, [cityData, fetchCities]);
+
+  // Same lazy-fetch for propertyMasterData. Pages that don't run HeaderDataSync
+  // (refer-and-earn, profile, contact-us, careers, etc.) used to render the
+  // Rent/Buy header dropdown with empty categories, so the user saw "No
+  // properties available" everywhere outside the home page tree.
+  const hasFetchedPropertyMasterRef = useRef(false);
+  useEffect(() => {
+    const isEmpty =
+      !propertyMasterData ||
+      (Array.isArray(propertyMasterData) && propertyMasterData.length === 0);
+    if (isEmpty && !hasFetchedPropertyMasterRef.current) {
+      hasFetchedPropertyMasterRef.current = true;
+      getPropertyMasterDataApiHandler()
+        .then((response: GetPropertyMasterDataResponse) => {
+          if (response?.success && Array.isArray(response.data)) {
+            dispatch(setPropertyMasterData(response.data));
+          }
+        })
+        .catch(() => {
+          // Allow retry on next mount if the request blew up.
+          hasFetchedPropertyMasterRef.current = false;
+        });
+    }
+  }, [propertyMasterData, dispatch]);
 
   const fetchCitiesStable = useCallback(
     (payload: { search?: string; latitude?: string; longitude?: string } = {}) => {
