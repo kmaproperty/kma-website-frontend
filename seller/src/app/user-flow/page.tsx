@@ -52,12 +52,7 @@ export default async function UserFlowPage({ searchParams }: UserFlowPageProps) 
     <MainLayout>
       <ContentLayout
         cardContent={cardContent}
-        infoContent={
-          <InfoSection
-            titlePrefix={isPostPropertyView ? "Upload Your Property in 3 Easy Steps" : isLoginView ? "Welcome Back" : "New To KMA?"}
-            title={isPostPropertyView ? "" : isLoginView ? "Login To Your Account" : "Create An Account"}
-          />
-        }
+        params={params}
       />
     </MainLayout>
   );
