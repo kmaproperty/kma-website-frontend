@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const API_URL = process.env.BACKEND_URL || "http://15.207.193.17:3000";
+const API_URL = process.env.BACKEND_URL || "http://localhost:3000";
 
 const nextConfig: NextConfig = {
   /* config options here */
