@@ -335,6 +335,7 @@ export default function ChannelPartnerDetailsClient({
   const [reviewText, setReviewText] = useState("");
   const [likedOptions, setLikedOptions] = useState<string[]>([]);
   const [reviewPage, setReviewPage] = useState(1);
+  const [propertyPage, setPropertyPage] = useState(1);
 
   type PartnerReview = {
     id: string;
@@ -366,6 +367,7 @@ export default function ChannelPartnerDetailsClient({
   }, [reviewsData]);
 
   const REVIEWS_PER_PAGE = 3;
+  const PROPERTIES_PER_PAGE = 8;
 
   const pagedReviews = useMemo(() => {
     const start = (reviewPage - 1) * REVIEWS_PER_PAGE;
@@ -375,6 +377,10 @@ export default function ChannelPartnerDetailsClient({
   const totalReviewPages = useMemo(() => {
     return Math.max(1, Math.ceil(reviews.length / REVIEWS_PER_PAGE));
   }, [reviews.length]);
+
+  useEffect(() => {
+    setPropertyPage(1);
+  }, [propertyTab]);
 
   const likedOptionsForRating = useMemo(() => {
     const positiveLeft = [
@@ -573,6 +579,22 @@ export default function ChannelPartnerDetailsClient({
   const rentProperties = partner.active_properties?.rent ?? [];
   // Commercial is currently not shown in the tab UI (kept for future use).
   const commercialProperties = partner.active_properties?.commercial ?? [];
+  void commercialProperties;
+
+  const activeProperties =
+    propertyTab === "sale" ? saleProperties : propertyTab === "rent" ? rentProperties : [];
+  const totalPropertyPages = Math.max(
+    1,
+    Math.ceil(activeProperties.length / PROPERTIES_PER_PAGE)
+  );
+  const pagedProperties = activeProperties.slice(
+    (propertyPage - 1) * PROPERTIES_PER_PAGE,
+    propertyPage * PROPERTIES_PER_PAGE
+  );
+  const propertyPaginationNumbers = Array.from(
+    { length: totalPropertyPages },
+    (_, index) => index + 1
+  );
 
   return (
     <div className="w-full flex flex-col">
@@ -828,7 +850,7 @@ export default function ChannelPartnerDetailsClient({
               <>
                 {propertyTab === "sale" && saleProperties.length > 0 ? (
                   <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {saleProperties.slice(0, 8).map((p) => (
+                    {pagedProperties.map((p) => (
                       <PropertyCard
                         key={p.id}
                         property={p}
@@ -841,7 +863,7 @@ export default function ChannelPartnerDetailsClient({
 
                 {propertyTab === "rent" && rentProperties.length > 0 ? (
                   <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {rentProperties.slice(0, 8).map((p) => (
+                    {pagedProperties.map((p) => (
                       <PropertyCard
                         key={p.id}
                         property={p}
@@ -862,6 +884,51 @@ export default function ChannelPartnerDetailsClient({
                   <p className="mt-5 text-sm text-text-gray">
                     No properties available for rent.
                   </p>
+                ) : null}
+
+                {activeProperties.length > PROPERTIES_PER_PAGE ? (
+                  <div className="mt-6 flex justify-end">
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setPropertyPage((page) => Math.max(1, page - 1))
+                        }
+                        disabled={propertyPage === 1}
+                        className="px-3 py-1 text-xs font-semibold text-text-gray disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Prev
+                      </button>
+
+                      {propertyPaginationNumbers.map((page) => (
+                        <button
+                          key={page}
+                          type="button"
+                          onClick={() => setPropertyPage(page)}
+                          className={`w-7 h-7 rounded ${
+                            propertyPage === page
+                              ? "bg-[#0B1B54] text-white"
+                              : "border border-[#EEF0F4] text-text-black hover:bg-[#F5F5F5]"
+                          } text-xs font-semibold`}
+                        >
+                          {page}
+                        </button>
+                      ))}
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setPropertyPage((page) =>
+                            Math.min(totalPropertyPages, page + 1)
+                          )
+                        }
+                        disabled={propertyPage >= totalPropertyPages}
+                        className="px-3 py-1 text-xs font-semibold text-text-gray disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
                 ) : null}
 
                 {/* Keep CTA available without cluttering tab header */}
