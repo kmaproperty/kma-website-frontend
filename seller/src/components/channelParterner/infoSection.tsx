@@ -60,13 +60,13 @@ const cardInfo = {
 
 function Card({ src, title, subTitle }: { [key: string]: string | any }) {
   return (
-    <div className="flex flex-col flex-grow py-5 px-4 items-center justify-start">
-      <Image alt={title} src={src} width={100} height={100} className="w-[60px] h-[60px] mb-3" />
+    <div className="flex flex-col flex-grow py-4 sm:py-5 px-3 sm:px-4 items-center justify-start">
+      <Image alt={title} src={src} width={100} height={100} className="w-12 h-12 sm:w-14 sm:h-14 md:w-[60px] md:h-[60px] mb-3" />
       <div>
-        <p className="text-center text-text-black font-semibold text-sm md:text-lg mb-2">
+        <p className="text-center text-text-black font-semibold text-[clamp(1rem,1.3vw,1.6rem)] leading-tight mb-1.5 sm:mb-2">
           {title}
         </p>
-        <p className="text-center text-text-gray font-normal text-xs md:text-sm leading-5">
+        <p className="text-center text-text-gray font-normal text-[clamp(0.78rem,0.9vw,1rem)] leading-[1.45]">
           {subTitle}
         </p>
       </div>
@@ -85,13 +85,17 @@ export default function InfoSection({ titlePrefix, title, subHeading, params }: 
   const formData = useSelector((state: RootState) => state.form);
   const isOtp = params?.isOtp === "true";
   return (
-    <div className="flex justify-center items-start flex-col mt-8 md:mt-[7rem]">
-      <p className="text-white font-normal text-base md:text-lg mb-2">{titlePrefix}</p>
-      <h2 className="text-white font-semibold text-[2rem] leading-[2.2rem] mb-2">{title}</h2>
-      <p className="text-white font-normal text-base md:text-lg mb-12">{subHeading}</p>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 w-full">
+    <div className="flex justify-center items-start flex-col mt-0 md:mt-2 lg:mt-4">
+      <p className="text-white font-normal text-[clamp(0.9rem,1.1vw,1.15rem)] mb-2">{titlePrefix}</p>
+      <h2 className="text-white font-semibold text-[clamp(2rem,3.2vw,3rem)] leading-[1.2] mb-2 max-w-[22ch]">
+        {title}
+      </h2>
+      <p className="text-white font-normal text-[clamp(0.95rem,1.2vw,1.25rem)] mb-5 md:mb-7 max-w-[62ch]">
+        {subHeading}
+      </p>
+      <div className="mt-1 grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] gap-3 sm:gap-4 w-full">
         {cardInfo[isOtp ? (formData.userType === "OWNER" ? "ownerOtp" : 'channelPartner') : formData.userType === "OWNER" ? "owner" : 'channelPartner'].map((info) => (
-          <div key={info.title} className="bg-white rounded-[10px] shadow-md flex flex-col h-full">
+          <div key={info.title} className="bg-white rounded-[10px] shadow-md flex flex-col h-full min-h-[200px] sm:min-h-[220px]">
             <Card {...info} />
           </div>
         ))}
