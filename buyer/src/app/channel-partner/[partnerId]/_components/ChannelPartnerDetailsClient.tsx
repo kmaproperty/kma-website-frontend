@@ -172,7 +172,7 @@ function PropertyCard({
         )}
 
         {/* Image controls (visual-only to match the design) */}
-        <button
+        {/* <button
           type="button"
           aria-label="Previous image"
           className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/30 text-white flex items-center justify-center"
@@ -185,10 +185,10 @@ function PropertyCard({
           className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/30 text-white flex items-center justify-center"
         >
           <ChevronRight className="h-4 w-4" />
-        </button>
+        </button> */}
 
         {/* Like button */}
-        <button
+        {/* <button
           type="button"
           aria-label="Like property"
           className="absolute top-3 right-3 w-9 h-9 rounded-full bg-black/20 backdrop-blur flex items-center justify-center"
@@ -199,11 +199,11 @@ function PropertyCard({
             width={18}
             height={18}
           />
-        </button>
+        </button> */}
 
         {/* Badge */}
         {badgeLabel ? (
-          <span className="absolute top-3 right-12 bg-[#7C3AED] text-white text-[10px] font-semibold px-2.5 py-1 rounded-lg">
+          <span className="absolute top-3 right-5 bg-[#7C3AED] text-white text-[10px] font-semibold px-2.5 py-1 rounded-lg">
             {badgeLabel}
           </span>
         ) : null}
