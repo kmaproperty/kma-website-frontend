@@ -79,11 +79,13 @@ export default function AggrementVerification({event}: {event?: string}) {
 
     switch (event) {
       case "signing_complete":
-        setMessage("Document signed successfully!");
+        setMessage("Document signed successfully! Redirecting to dashboard...");
         toast.success("Document signed successfully!");
         axiosInstance.post("/users/docusign/sync-status").then(() => {
           setStatus("Completed");
           setIsSignDone(true);
+          // KYC is now fully complete — send user to their dashboard.
+          setTimeout(() => router.push("/user-dashboard"), 1500);
         }).catch(() => {});
         break;
       case "decline":
@@ -102,7 +104,7 @@ export default function AggrementVerification({event}: {event?: string}) {
         setMessage("Document signing not completed");
         setCanRetry(true);
     }
-  }, [event]);
+  }, [event, router]);
 
   const handleCancel = () => {
     router.push('/user-dashboard')
