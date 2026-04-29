@@ -5,7 +5,7 @@ import React from "react";
 
 export default function PriceRangeMenu({filterType, selectedMinBudget, setSelectedMinBudget, selectedMaxBudget, setSelectedMaxBudget}) {
 
-  const priceOptions = filterType == 'sale' ? PRICE_OPTIONS_THOUSAND_LAKH : PRICE_OPTIONS
+  const priceOptions = filterType == 'sale' ? PRICE_OPTIONS : PRICE_OPTIONS_THOUSAND_LAKH
   
   return (
     <div>
