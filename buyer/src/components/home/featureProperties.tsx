@@ -359,7 +359,7 @@ export default function FeaturedProperties({ topProperties }) {
               return (
                 <motion.div
                   key={item?.id ?? index}
-                  className="px-1.5 h-[500px] w-full min-w-0"
+                  className={`px-1.5 h-[500px] min-w-0 ${slidesCount === 1 ? "mx-auto w-full max-w-[355px]" : "w-full"}`}
                   variants={index == 0 || index == 1 ? topVariant : bottomVariant}
                   animate={isInView ? "visible" : "hidden"}
                 >
