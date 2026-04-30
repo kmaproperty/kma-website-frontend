@@ -89,6 +89,8 @@ export default function SuccessStoriesSection() {
   const [rating, setRating] = useState(5);
   const [review, setReview] = useState("");
   const [isAuthChecking, setIsAuthChecking] = useState(false);
+  const [reviewPage, setReviewPage] = useState(1);
+  const reviewsPerPage = 4;
   const isLoginParam = searchParams.get("isLogin") === "true";
   const isOtpParam = searchParams.get("isOtp") === "true";
   const flowParam = searchParams.get("flow");
@@ -355,12 +357,15 @@ export default function SuccessStoriesSection() {
               </div>
             </div>
 
-            {/* Review list */}
+            {/* Review list — pagedReviews keeps server data in sync; placeholders only show when there's no data */}
             <div className="mt-6 rounded-[8px] border border-[#EEF0F3]">
-              {(reviews.length
-                ? (reviews as (Rating | null)[])
-                : (Array.from({ length: 4 }).map(() => null) as (Rating | null)[])
-              ).map((item: Rating | null, idx: number) => {
+              {(() => {
+                const allReviews = reviews.length
+                  ? (reviews as (Rating | null)[])
+                  : (Array.from({ length: 4 }).map(() => null) as (Rating | null)[]);
+                const start = (reviewPage - 1) * reviewsPerPage;
+                return allReviews.slice(start, start + reviewsPerPage);
+              })().map((item: Rating | null, idx: number) => {
                 const name = item?.name ?? "Meera";
                 const rating = Number(item?.rating ?? 4.2);
                 const review =
@@ -442,38 +447,46 @@ export default function SuccessStoriesSection() {
             </div>
 
             {/* Pagination */}
-            <div className="mt-5 flex items-center justify-end gap-2 text-xs text-[#6B7280]">
-              <button
-                type="button"
-                className="h-7 rounded-[4px] px-3 border border-[#EEF0F3] bg-white"
-              >
-                Prev
-              </button>
-              <button
-                type="button"
-                className="h-7 w-7 rounded-[4px] border border-[#1E3A8A] bg-[#1E3A8A] text-white"
-              >
-                1
-              </button>
-              <button
-                type="button"
-                className="h-7 w-7 rounded-[4px] border border-[#EEF0F3] bg-white"
-              >
-                2
-              </button>
-              <button
-                type="button"
-                className="h-7 w-7 rounded-[4px] border border-[#EEF0F3] bg-white"
-              >
-                3
-              </button>
-              <button
-                type="button"
-                className="h-7 rounded-[4px] px-3 border border-[#EEF0F3] bg-white"
-              >
-                Next
-              </button>
-            </div>
+            {reviews.length > reviewsPerPage && (() => {
+              const totalPages = Math.max(1, Math.ceil(reviews.length / reviewsPerPage));
+              // Show up to 3 page numbers, sliding around the current page
+              const start = Math.max(1, Math.min(reviewPage - 1, totalPages - 2));
+              const pageNumbers = Array.from({ length: Math.min(3, totalPages) }, (_, i) => start + i).filter((p) => p <= totalPages);
+              return (
+                <div className="mt-5 flex items-center justify-end gap-2 text-xs text-[#6B7280]">
+                  <button
+                    type="button"
+                    onClick={() => setReviewPage((p) => Math.max(1, p - 1))}
+                    disabled={reviewPage === 1}
+                    className="h-7 rounded-[4px] px-3 border border-[#EEF0F3] bg-white disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Prev
+                  </button>
+                  {pageNumbers.map((p) => (
+                    <button
+                      key={p}
+                      type="button"
+                      onClick={() => setReviewPage(p)}
+                      className={`h-7 w-7 rounded-[4px] border ${
+                        reviewPage === p
+                          ? "border-[#1E3A8A] bg-[#1E3A8A] text-white"
+                          : "border-[#EEF0F3] bg-white"
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setReviewPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={reviewPage >= totalPages}
+                    className="h-7 rounded-[4px] px-3 border border-[#EEF0F3] bg-white disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Next
+                  </button>
+                </div>
+              );
+            })()}
           </div>
         </motion.div>
       </div>

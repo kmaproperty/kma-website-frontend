@@ -33,12 +33,14 @@ function Star({
 }) {
   const id = useId();
   const gradientId = `star-${id.replace(/:/g, "")}`;
+  // Unfilled portion is solid neutral gray, NOT a faded version of the active
+  // color — otherwise a 1-star review looks indistinguishable from 5-star.
   return (
     <svg viewBox="0 0 24 24" className={className} aria-hidden>
       <defs>
         <linearGradient id={gradientId}>
           <stop offset={`${fill}%`} stopColor="currentColor" />
-          <stop offset={`${fill}%`} stopColor="currentColor" opacity={0.3} />
+          <stop offset={`${fill}%`} stopColor="#E5E7EB" />
         </linearGradient>
       </defs>
       <path
@@ -1031,7 +1033,7 @@ export default function ChannelPartnerDetailsClient({
                           {Array.from({ length: 5 }).map((_, i) => (
                             <Star
                               key={i}
-                              fill={i + 1 <= r.rating ? 100 : 30}
+                              fill={i + 1 <= r.rating ? 100 : 0}
                               className="h-4 w-4 text-[#F7BB06]"
                             />
                           ))}

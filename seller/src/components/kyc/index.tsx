@@ -13,7 +13,6 @@ import AggrementVerification from "./aggrementVerification";
 import { useRouter } from "nextjs-toploader/app";
 import { useQuery } from "@tanstack/react-query";
 import { getKycStatusApiHandler, KycStatusResponse } from "@/services/kycService";
-import KycSuccess from "./kycSuccess";
 import { USER_TYPE } from "@/lib/enums";
 
 export default function UserKyc({tabName, event}) {
@@ -80,8 +79,15 @@ export default function UserKyc({tabName, event}) {
   useEffect(() => {
     if(kycDetails){
       setIsKycComplete(kycDetails?.kyc_completed)
+      // KYC already done — don't let the user sit on /kyc, send them to dashboard.
+      // Skip while DocuSign just signed (event=signing_complete) so the
+      // agreement screen has its own moment to show "signed successfully" before
+      // redirecting.
+      if (kycDetails.kyc_completed && event !== "signing_complete") {
+        router.replace("/user-dashboard")
+      }
     }
-  },[kycDetails])
+  },[kycDetails, event, router])
 
   useEffect(() => {
     if(tabName){
@@ -120,13 +126,15 @@ export default function UserKyc({tabName, event}) {
 
         <div className="w-full flex flex-col py-4 items-center gap-6">
             {!isKycComplete && <p className="text-blue text-xl font-semibold">{renderTitle()}</p>}
-            {!isKycComplete ? <>
+            {!isKycComplete && <>
             {activeStep == 'Photo Upload' && <UploadPhoto/>}
             {activeStep == 'Aadhar Verification' && <AadharVerification/>}
             {activeStep == 'Bank Details' && <BankDetails/>}
             {activeStep == 'Agreement Signature' && <AggrementVerification event={event}/>}
-            </> :
-            <KycSuccess/>}
+            </>}
+            {isKycComplete && event === "signing_complete" && (
+              <p className="text-green-600 text-xl font-semibold">Document signed successfully! Redirecting to dashboard...</p>
+            )}
         </div>
     </div>
   );
