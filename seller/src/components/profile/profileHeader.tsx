@@ -4,7 +4,7 @@ import UserHeader from "@/components/header/userHeader";
 
 export default function ProfileHeader() {
   return (
-    <div className="sticky top-0 z-50 w-full flex justify-center 2md:pt-6">
+    <div className="sticky top-0 z-50 w-full flex justify-center bg-blue">
       <UserHeader />
     </div>
   );
