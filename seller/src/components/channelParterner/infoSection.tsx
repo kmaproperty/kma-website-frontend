@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useSelector } from "react-redux";
 
 const cardInfo = {
-  channelPartner : [
+  channelPartnerRegister: [
     {
       src: "/assets/home-color.png",
       title: "No Listing Packages",
@@ -20,6 +20,23 @@ const cardInfo = {
       src: "/assets/upload-color.png",
       title: "End-to-End Assistance",
       subTitle: "From digital MOU to field support, our team assists you at every step to ensure smoother closures.",
+    },
+  ],
+  channelPartnerLogin: [
+    {
+      src: "/assets/home-color.png",
+      title: "Live CRM Tracking",
+      subTitle: "Access your personal dashboard to track lead status, field updates, and property performance in real-time.",
+    },
+    {
+      src: "/assets/partnerAccess.png",
+      title: "Direct Partner Leads",
+      subTitle: "Continue managing your exclusive inquiries filtered through our WhatsApp API and pre-sales support.",
+    },
+    {
+      src: "/assets/upload-color.png",
+      title: "Field & Sales Support",
+      subTitle: "Stay connected with our field team for site visits and closures. We are here to help you close faster.",
     },
   ],
   owner: [
@@ -84,6 +101,16 @@ interface InfoSectionProps {
 export default function InfoSection({ titlePrefix, title, subHeading, params }: InfoSectionProps) {
   const formData = useSelector((state: RootState) => state.form);
   const isOtp = params?.isOtp === "true";
+  const isLogin = params?.isLogin === "true";
+  const flow = params?.flow;
+  const isCpLoginView = formData.userType === "CHANNEL_PARTNER" && (isLogin || (isOtp && flow === "login"));
+
+  const cardKey = isCpLoginView
+    ? "channelPartnerLogin"
+    : isOtp
+      ? (formData.userType === "OWNER" ? "ownerOtp" : "channelPartnerRegister")
+      : (formData.userType === "OWNER" ? "owner" : "channelPartnerRegister");
+
   return (
     <div className="flex justify-center items-start flex-col mt-0 md:mt-2 lg:mt-4">
       <p className="text-white font-normal text-[clamp(0.9rem,1.1vw,1.15rem)] mb-2">{titlePrefix}</p>
@@ -94,7 +121,7 @@ export default function InfoSection({ titlePrefix, title, subHeading, params }: 
         {subHeading}
       </p>
       <div className="mt-1 grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] gap-3 sm:gap-4 w-full">
-        {cardInfo[isOtp ? (formData.userType === "OWNER" ? "ownerOtp" : 'channelPartner') : formData.userType === "OWNER" ? "owner" : 'channelPartner'].map((info) => (
+        {cardInfo[cardKey].map((info) => (
           <div key={info.title} className="bg-white rounded-[10px] shadow-md flex flex-col h-full min-h-[200px] sm:min-h-[220px]">
             <Card {...info} />
           </div>
