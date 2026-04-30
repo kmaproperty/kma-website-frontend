@@ -1,6 +1,7 @@
 "use client"
 import { submitContactForm } from '@/services/contactService';
 import { getEndUserStates, getEndUserStateCities, type EndUserStateCityRow } from '@/services/homeService';
+import { ChevronDown } from 'lucide-react';
 import React from 'react'
 import { toast } from 'react-toastify';
 
@@ -130,42 +131,48 @@ const JoinUsForm = () => {
           <input type="text" value={formValue.firstName} onChange={handleChange} name="firstName" placeholder='Last Name' className='w-full border border-[#D9D9D9] rounded-full px-5 py-3' />
         </div>
         <div className='flex gap-4'>
-          <select
-            name="state"
-            value={formValue.state}
-            onChange={handleChange}
-            disabled={statesLoading}
-            className='w-full border border-[#D9D9D9] rounded-full px-5 py-3 bg-white disabled:bg-[#F5F5F5] disabled:cursor-not-allowed'
-          >
-            <option value="">
-              {statesLoading ? 'Loading states...' : 'Select State'}
-            </option>
-            {states.map((state) => (
-              <option key={state} value={state}>
-                {state}
+          <div className='relative w-full'>
+            <select
+              name="state"
+              value={formValue.state}
+              onChange={handleChange}
+              disabled={statesLoading}
+              className='w-full appearance-none border border-[#D9D9D9] rounded-full pl-5 pr-12 py-3 bg-white text-[#0D1520] disabled:bg-[#F5F5F5] disabled:text-[#9AA0AE] disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[#E6E8FF] focus:border-[#AEB4FF]'
+            >
+              <option value="">
+                {statesLoading ? 'Loading states...' : 'Select State'}
               </option>
-            ))}
-          </select>
-          <select
-            name="city"
-            value={formValue.city}
-            onChange={handleChange}
-            disabled={!formValue.state || citiesLoading}
-            className='w-full border border-[#D9D9D9] rounded-full px-5 py-3 bg-white disabled:bg-[#F5F5F5] disabled:cursor-not-allowed'
-          >
-            <option value="">
-              {!formValue.state
-                ? 'Select state first'
-                : citiesLoading
-                  ? 'Loading cities...'
-                  : 'Select City'}
-            </option>
-            {cities.map((city) => (
-              <option key={city.id} value={city.id}>
-                {city.name}
+              {states.map((state) => (
+                <option key={state} value={state}>
+                  {state}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className='pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6F7685]' />
+          </div>
+          <div className='relative w-full'>
+            <select
+              name="city"
+              value={formValue.city}
+              onChange={handleChange}
+              disabled={!formValue.state || citiesLoading}
+              className='w-full appearance-none border border-[#D9D9D9] rounded-full pl-5 pr-12 py-3 bg-white text-[#0D1520] disabled:bg-[#F5F5F5] disabled:text-[#9AA0AE] disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[#E6E8FF] focus:border-[#AEB4FF]'
+            >
+              <option value="">
+                {!formValue.state
+                  ? 'Select state first'
+                  : citiesLoading
+                    ? 'Loading cities...'
+                    : 'Select City'}
               </option>
-            ))}
-          </select>
+              {cities.map((city) => (
+                <option key={city.id} value={city.id}>
+                  {city.name}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className='pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6F7685]' />
+          </div>
         </div>
         <div className='flex gap-4'>
             <input type="email" name="email" value={formValue.email} onChange={handleChange} placeholder='Email address' className='w-full border border-[#D9D9D9] rounded-full px-5 py-3' />
