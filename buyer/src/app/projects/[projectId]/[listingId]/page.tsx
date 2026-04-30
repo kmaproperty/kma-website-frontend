@@ -1569,18 +1569,19 @@ export default function ListingDetailsPage() {
                                   </div>
                                 </div>
 
-                                <div className="mt-4 flex items-center gap-1 text-[#F5A524]">
-                                  {Array.from({ length: 5 }).map((_, idx) => (
-                                    <Star
-                                      key={`${review.id}-star-${idx}`}
-                                      className="h-5 w-5"
-                                      fill={idx < review.rating ? "#F5A524" : "none"}
-                                      stroke="#F5A524"
-                                      style={{
-                                        color: idx < review.rating ? "#F5A524" : "#E5E7EB", // Tailwind slate-200
-                                      }}
-                                    />
-                                  ))}
+                                <div className="mt-4 flex items-center gap-1">
+                                  {Array.from({ length: 5 }).map((_, idx) => {
+                                    const filled = idx < Math.round(review.rating);
+                                    return (
+                                      <Star
+                                        key={`${review.id}-star-${idx}`}
+                                        className="h-5 w-5"
+                                        fill={filled ? "#F5A524" : "#E5E7EB"}
+                                        stroke={filled ? "#F5A524" : "#E5E7EB"}
+                                      />
+                                    );
+                                  })}
+                                  <span className="ml-1 text-xs text-text-gray">{review.rating?.toFixed(1) ?? "0.0"}</span>
                                 </div>
 
                                 <p className="mt-4 min-h-[78px] text-sm leading-[26px] text-text-gray">

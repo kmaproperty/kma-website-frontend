@@ -964,7 +964,7 @@ export default function ChannelPartnerDetailsClient({
                           {Array.from({ length: 5 }).map((_, i) => (
                             <Star
                               key={i}
-                              fill={i + 1 <= r.rating ? 100 : 30}
+                              fill={i + 1 <= r.rating ? 100 : 0}
                               className="h-4 w-4 text-[#F7BB06]"
                             />
                           ))}
