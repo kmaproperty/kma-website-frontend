@@ -18,16 +18,22 @@ export default function ContentLayout({
   const isPostProperty = params?.postProperty === "true";
   const isLoginView = isLogin || (isOtp && flow === "login");
   const isPostPropertyView = isPostProperty && !isOtp;
+  const isOwner = formData.userType === "OWNER";
 
-  const postPropertyTitle = formData.userType === "OWNER" ? 'List Your Property in 3 Simple Steps' : 'Scale Your Business with Gurgaon’s Smartest Network'
-  const postPropertySubHeading = (formData.userType === "OWNER" && !isOtp) ? 'Quick, verified, and 100% free. Experience the new way of closing deals in Gurgaon with our 80/20 support model.' : ''
+  const postPropertyTitle = isOwner
+    ? "List Your Property in 3 Simple Steps"
+    : "Scale Your Business with Gurgaon's Smartest Network";
+  const postPropertySubHeading = isOwner && !isOtp
+    ? "Quick, verified, and 100% free. Experience the new way of closing deals in Gurgaon with our 80/20 support model."
+    : "";
+  const loginTitle = isOwner ? "Login To Your Account" : "Welcome Back to KMA Network";
 
   return (
     <div className="w-full grid grid-cols-1 lg:flex lg:flex-wrap justify-between items-start gap-6 md:gap-8 lg:gap-10">
       <div className="w-full" style={{ flex: "2.6 1" }}>
         <InfoSection
             titlePrefix={isPostPropertyView ? "Create An Account" : isLoginView ? "Welcome Back" : isOtp ? "" : "New To KMA?"}
-            title={isPostPropertyView ? postPropertyTitle : isLoginView ? "Login To Your Account" : isOtp ? "Join Gurgaon's Smartest Property Network" : "Create An Account"}
+            title={isPostPropertyView ? postPropertyTitle : isLoginView ? loginTitle : isOtp ? "Join Gurgaon's Smartest Property Network" : "Create An Account"}
             subHeading={postPropertySubHeading}
             params={params}
           />

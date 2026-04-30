@@ -411,13 +411,13 @@ export default function CreateAccount({ step }: { step: number }) {
         </div>
         <div className="relative -top-[35px] px-2 flex flex-col gap-6  md:gap-8 w-full">
           <p className="text-sm 1xl:text-base  text-text-gray">
-            Create your free account and get started
+            Join a community of over 3000+ real estate professionals and owners.
           </p>
           <div className="flex flex-col gap-3">
             {step == 1 && (
               <>
                 <p className="required-label text-sm 1xl:text-base text-text-black">
-                  Full Name
+                  Full Name*
                 </p>
                 <div>
                   <InputBase
@@ -437,7 +437,7 @@ export default function CreateAccount({ step }: { step: number }) {
                   )}
                 </div>
                 <p className="required-label text-sm 1xl:text-base text-text-black">
-                  Email Address
+                  Email Address*
                 </p>
                 <div>
                   <InputBase
@@ -489,8 +489,8 @@ export default function CreateAccount({ step }: { step: number }) {
                   </>
                 )}
                 <div>
-                  <p className="text-sm 1xl:text-base text-text-black">
-                      Profile Photo
+                  <p className="required-label text-sm 1xl:text-base text-text-black">
+                      Profile Photo*
                   </p>
                   <div className="pt-2">
                     <ImageUpload
@@ -499,8 +499,8 @@ export default function CreateAccount({ step }: { step: number }) {
                       }}
                       type='photo'
                       accept={"image/jpeg, image/jpg, image/png"}
-                      label="Drag and drop file here"
-                      subLabel="Max. size 20 MB • Formats: PNG, JPG, JPEG"
+                      label="Drag and drop your photo here"
+                      subLabel="Professional photos help in building better trust with clients."
                     />
                   </div>
                   {formData.profilePreview && <div className="mt-2">
@@ -551,7 +551,7 @@ export default function CreateAccount({ step }: { step: number }) {
                       )}
                     </div>
                     <p className="required-label text-sm 1xl:text-base text-text-black">
-                      In Bussiness Since
+                      In Business Since
                     </p>
                     <div onClick={() => {dateRef.current?.showPicker()}}>
                       <InputBase
@@ -576,7 +576,7 @@ export default function CreateAccount({ step }: { step: number }) {
                       )}
                     </div>
                     <p className="required-label text-sm 1xl:text-base text-text-black">
-                      Firm Name
+                      Business Name
                     </p>
                     <div>
                       <InputBase
@@ -618,11 +618,11 @@ export default function CreateAccount({ step }: { step: number }) {
                 )}
                 {userData?.role == USER_TYPE.CHANNEL_PARTNER && step == 1 && (
                   <p className="text-sm 1xl:text-base text-text-gray">
-                    Channel partner code{" "}
+                    Don&apos;t have a code?{" "}
                     <span onClick={handleRedirectCode} className="text-sm 1xl:text-base font-semibold underline text-text-black cursor-pointer">
                       Click Here
                     </span>{" "}
-                    to get help from our support team.
+                    to get assistance from our partner support team.
                   </p>
                 )}
               </>
