@@ -8,9 +8,11 @@ import { toast } from "react-toastify";
 import {
   getChannelPartnerDetailsApiHandler,
   getChannelPartnerReviews,
+  getMyChannelPartnerReview,
   submitChannelPartnerReview,
   type ChannelPartner,
   type GetCPReviewsResponse,
+  type GetMyCPReviewResponse,
 } from "@/services/homeService";
 import { joinUrl } from "@/lib/helper";
 import ContactUsPopup from "@/components/contactUsPopup";
@@ -331,6 +333,7 @@ export default function ChannelPartnerDetailsClient({
   const [reviewModalMode, setReviewModalMode] = useState<
     "form" | "success"
   >("form");
+  const [submittedAsUpdate, setSubmittedAsUpdate] = useState(false);
   const [reviewName, setReviewName] = useState("");
   const [reviewRole, setReviewRole] = useState("");
   const [reviewRating, setReviewRating] = useState(5);
@@ -361,11 +364,21 @@ export default function ChannelPartnerDetailsClient({
       id: r.id,
       name: r.reviewerName || "User",
       role: "",
-      rating: r.overallRating,
-      reviewText: r.review,
+      rating: Number(r.rating) || 0,
+      reviewText: r.review ?? "",
       createdAt: r.createdAt?.slice(0, 10) ?? "",
     }));
   }, [reviewsData]);
+
+  const { data: myReviewData, refetch: refetchMyReview } = useQuery<GetMyCPReviewResponse>({
+    queryKey: ["my-channel-partner-review", partnerId],
+    queryFn: () => getMyChannelPartnerReview(partnerId),
+    enabled: Boolean(partnerId),
+    retry: false,
+  });
+
+  const myReview = myReviewData?.review ?? null;
+  const isUpdate = Boolean(myReview);
 
   const REVIEWS_PER_PAGE = 3;
 
@@ -426,8 +439,13 @@ export default function ChannelPartnerDetailsClient({
     setLikedOptions([]);
     setReviewName("");
     setReviewRole("");
-    setReviewRating(5);
-    setReviewText("");
+    if (myReview) {
+      setReviewRating(Number(myReview.rating) || 5);
+      setReviewText(myReview.review ?? "");
+    } else {
+      setReviewRating(5);
+      setReviewText("");
+    }
     setReviewModalOpen(true);
   };
 
@@ -446,12 +464,11 @@ export default function ChannelPartnerDetailsClient({
       submitChannelPartnerReview(partnerId, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["channel-partner-reviews", partnerId] });
+      refetchMyReview();
       setReviewModalMode("success");
       setLikedOptions([]);
       setReviewName("");
       setReviewRole("");
-      setReviewRating(5);
-      setReviewText("");
       setReviewPage(1);
     },
     onError: (error: any) => {
@@ -477,6 +494,7 @@ export default function ChannelPartnerDetailsClient({
       return;
     }
 
+    setSubmittedAsUpdate(isUpdate);
     submitReviewMutation({ rating: reviewRating, review: text });
   };
 
@@ -945,7 +963,7 @@ export default function ChannelPartnerDetailsClient({
                     onClick={openReviewModal}
                     className="px-4 py-2 rounded-lg border border-[#D9D9D9] text-text-black font-semibold text-sm hover:bg-[#F5F5F5]"
                   >
-                    Add a Review
+                    {isUpdate ? "Update Review" : "Add a Review"}
                   </button>
                 </div>
 
@@ -1135,7 +1153,7 @@ export default function ChannelPartnerDetailsClient({
                               className="px-6 py-2 rounded-full bg-[#0B1B54] text-white font-semibold text-sm hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                               disabled={!reviewText.trim() || isSubmittingReview}
                             >
-                              {isSubmittingReview ? "Submitting..." : "Submit"}
+                              {isSubmittingReview ? (isUpdate ? "Updating..." : "Submitting...") : (isUpdate ? "Update" : "Submit")}
                             </button>
                           </div>
                         </div>
@@ -1148,7 +1166,7 @@ export default function ChannelPartnerDetailsClient({
                             />
                           </div>
                           <p className="mt-4 text-sm font-semibold text-text-black">
-                            Thank you for your review!
+                            {submittedAsUpdate ? "Review updated successfully!" : "Thank you for your review!"}
                           </p>
                           <button
                             type="button"
