@@ -14,7 +14,7 @@ export default function MainLayout({ children }:{children:React.ReactNode}) {
             <InfoSection/>
           </div> */}
         </div>
-        <div className="sticky top-0 z-50 w-full flex justify-center bg-blue">
+        <div className="sticky top-0 z-50 w-full flex justify-center">
         <PostPropertyFlowHeader />
         </div>
         <div className="flex justify-center pt-[10rem] md:pt-[10rem] pb-[2rem]  relative z-1 w-full">
