@@ -639,6 +639,31 @@ export const submitChannelPartnerReview = async (
     }
 };
 
+export interface MyCPReview {
+    id: string;
+    rating: number;
+    review: string | null;
+    createdAt: string;
+}
+
+export interface GetMyCPReviewResponse {
+    success: boolean;
+    review: MyCPReview | null;
+}
+
+export const getMyChannelPartnerReview = async (
+    cpId: string
+): Promise<GetMyCPReviewResponse> => {
+    try {
+        const response = await axiosInstance.get<GetMyCPReviewResponse>(
+            `end-user/channel-partners/${cpId}/review/me`
+        );
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data ?? error;
+    }
+};
+
 export interface EndUserStateCityRow {
     id: string;
     name: string;
