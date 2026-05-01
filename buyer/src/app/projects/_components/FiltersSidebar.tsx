@@ -131,14 +131,17 @@ export default function FiltersSidebar({
   const tab = useProjectsStore((s) => s.tab);
   const setTab = useProjectsStore((s) => s.setTab);
   const filters = useProjectsStore((s) => s.filters);
+  const listingIntent = useProjectsStore((s) => s.listingIntent);
   const resetFilters = useProjectsStore((s) => s.resetFilters);
   const setFilters = useProjectsStore((s) => s.setFilters);
   const setCategoryId = useProjectsStore((s) => s.setCategoryId);
-  const togglePropertyTypeId = useProjectsStore((s) => s.togglePropertyTypeId);
-  const toggleBhkTypeId = useProjectsStore((s) => s.toggleBhkTypeId);
+  const togglePropertyTypeIdGroup = useProjectsStore((s) => s.togglePropertyTypeIdGroup);
+  const toggleBhkTypeIdGroup = useProjectsStore((s) => s.toggleBhkTypeIdGroup);
   const setFurnishingTypeId = useProjectsStore((s) => s.setFurnishingTypeId);
   const togglePossession = useProjectsStore((s) => s.togglePossession);
   const toggleAmenityId = useProjectsStore((s) => s.toggleAmenityId);
+
+  const isRent = listingIntent === "rent";
 
   const [isPending, startTransition] = useTransition();
 
@@ -160,18 +163,13 @@ export default function FiltersSidebar({
   };
 
   const categories = filtersData?.categories ?? [];
-  const propertyTypes = filtersData?.propertyTypes ?? [];
-  const rawBhkTypes =
-    propertyTypeId != null
-      ? (filtersDataWithBhk?.bhkTypes ?? [])
-      : (filtersData?.bhkTypes ?? []);
 
-  // Backend sometimes returns the same label (e.g. "1 BHK") under multiple ids
-  // tied to different property types. Collapse them so the UI shows each label
-  // once and toggling it flips every id in the group.
-  const bhkTypes = (() => {
+  // Backend sometimes returns the same label (e.g. "Villa", "1 BHK") under
+  // multiple ids tied to different property/listing types. Collapse to one
+  // label whose toggle flips every id in the group.
+  const collapseByName = <T extends { id: string; name: string }>(list: T[]) => {
     const byName = new Map<string, { name: string; ids: string[] }>();
-    for (const b of rawBhkTypes) {
+    for (const b of list) {
       const label = (b?.name ?? "").trim();
       if (!label) continue;
       const existing = byName.get(label);
@@ -182,7 +180,14 @@ export default function FiltersSidebar({
       }
     }
     return Array.from(byName.values());
-  })();
+  };
+
+  const propertyTypes = collapseByName(filtersData?.propertyTypes ?? []);
+  const rawBhkTypes =
+    propertyTypeId != null
+      ? (filtersDataWithBhk?.bhkTypes ?? [])
+      : (filtersData?.bhkTypes ?? []);
+  const bhkTypes = collapseByName(rawBhkTypes);
   const furnishingList = filtersData?.furnishing ?? [];
   const amenitiesList = filtersData?.amenities ?? [];
 
@@ -238,16 +243,37 @@ export default function FiltersSidebar({
       </div>
 
       <div className="divide-y divide-[#00000012]">
-        <Section title="Budget" hint="₹ Crore" compact={compact}>
+        <Section
+          title="Budget"
+          hint={isRent ? "₹ / month" : "₹ Crore"}
+          compact={compact}
+        >
           <div className="grid grid-cols-2 gap-3.5">
             <SelectField
               value={filters.minBudget ?? ""}
               onChange={(e) => setBudget("minBudget", e.target.value)}
             >
               <option value="">Min</option>
-              {[0.5, 1, 1.4, 2, 5, 10].map((v) => (
-                <option key={v} value={v}>
-                  ₹ {v} Cr
+              {(isRent
+                ? [
+                    { value: 5_000, label: "₹ 5K" },
+                    { value: 10_000, label: "₹ 10K" },
+                    { value: 15_000, label: "₹ 15K" },
+                    { value: 25_000, label: "₹ 25K" },
+                    { value: 50_000, label: "₹ 50K" },
+                    { value: 100_000, label: "₹ 1L" },
+                  ]
+                : [
+                    { value: 5_000_000, label: "₹ 0.5 Cr" },
+                    { value: 10_000_000, label: "₹ 1 Cr" },
+                    { value: 14_000_000, label: "₹ 1.4 Cr" },
+                    { value: 20_000_000, label: "₹ 2 Cr" },
+                    { value: 50_000_000, label: "₹ 5 Cr" },
+                    { value: 100_000_000, label: "₹ 10 Cr" },
+                  ]
+              ).map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
                 </option>
               ))}
             </SelectField>
@@ -256,9 +282,25 @@ export default function FiltersSidebar({
               onChange={(e) => setBudget("maxBudget", e.target.value)}
             >
               <option value="">Max</option>
-              {[1, 2, 5, 10, 20].map((v) => (
-                <option key={v} value={v}>
-                  ₹ {v} Cr
+              {(isRent
+                ? [
+                    { value: 10_000, label: "₹ 10K" },
+                    { value: 25_000, label: "₹ 25K" },
+                    { value: 50_000, label: "₹ 50K" },
+                    { value: 100_000, label: "₹ 1L" },
+                    { value: 200_000, label: "₹ 2L" },
+                    { value: 500_000, label: "₹ 5L" },
+                  ]
+                : [
+                    { value: 10_000_000, label: "₹ 1 Cr" },
+                    { value: 20_000_000, label: "₹ 2 Cr" },
+                    { value: 50_000_000, label: "₹ 5 Cr" },
+                    { value: 100_000_000, label: "₹ 10 Cr" },
+                    { value: 200_000_000, label: "₹ 20 Cr" },
+                  ]
+              ).map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
                 </option>
               ))}
             </SelectField>
@@ -364,15 +406,20 @@ export default function FiltersSidebar({
 
         <Section title="Property Type" compact={compact}>
           <div className="flex flex-wrap gap-1">
-            {propertyTypes.map((p) => (
-              <CheckboxRow
-                key={p.id}
-                checked={filters.propertyTypeIds.includes(p.id)}
-                label={p.name}
-                onChange={() => startTransition(() => togglePropertyTypeId(p.id))}
-                compact
-              />
-            ))}
+            {propertyTypes.map((p) => {
+              const isChecked = p.ids.some((id) => filters.propertyTypeIds.includes(id));
+              return (
+                <CheckboxRow
+                  key={p.name}
+                  checked={isChecked}
+                  label={p.name}
+                  onChange={() =>
+                    startTransition(() => togglePropertyTypeIdGroup(p.ids))
+                  }
+                  compact
+                />
+              );
+            })}
           </div>
         </Section>
 
@@ -386,17 +433,7 @@ export default function FiltersSidebar({
                   checked={isChecked}
                   label={b.name}
                   onChange={() =>
-                    startTransition(() => {
-                      if (isChecked) {
-                        b.ids.forEach((id) => {
-                          if (filters.bhkTypeIds.includes(id)) toggleBhkTypeId(id);
-                        });
-                      } else {
-                        b.ids.forEach((id) => {
-                          if (!filters.bhkTypeIds.includes(id)) toggleBhkTypeId(id);
-                        });
-                      }
-                    })
+                    startTransition(() => toggleBhkTypeIdGroup(b.ids))
                   }
                   compact
                 />

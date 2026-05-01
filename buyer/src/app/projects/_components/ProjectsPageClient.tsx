@@ -193,6 +193,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
   const sort = useProjectsStore((s) => s.sort);
   const filters = useProjectsStore((s) => s.filters);
   const setFilters = useProjectsStore((s) => s.setFilters);
+  const setListingIntentInStore = useProjectsStore((s) => s.setListingIntent);
   const [currentPage, setCurrentPage] = useState(1);
   const [nearMeCoords, setNearMeCoords] = useState<{
     latitude: number;
@@ -255,10 +256,10 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
     if (search) patch.searchText = search;
 
     const minPrice = searchParams.get('minPrice');
-    if (minPrice) patch.minBudget = Number(minPrice) / 10_000_000 || null;
+    if (minPrice) patch.minBudget = Number(minPrice) || null;
 
     const maxPrice = searchParams.get('maxPrice');
-    if (maxPrice) patch.maxBudget = Number(maxPrice) / 10_000_000 || null;
+    if (maxPrice) patch.maxBudget = Number(maxPrice) || null;
 
     const constructionStatuses = searchParams.get('constructionStatuses');
     if (constructionStatuses) {
@@ -279,6 +280,27 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
       setFilters(patch);
     }
   }, [searchParams, setFilters]);
+
+  // Resolve listingTypeId UUID → "rent" | "sale" code via the master data so
+  // the sidebar can swap budget options. Falls back to the URL param name when
+  // the master data hasn't loaded yet.
+  useEffect(() => {
+    const masterData = Array.isArray(propertyMasterData) ? (propertyMasterData as Array<{ id: string; code?: string }>) : [];
+    if (listingTypeId) {
+      const match = masterData.find((lt) => lt.id === listingTypeId);
+      const code = (match?.code ?? "").toLowerCase();
+      if (code === "rent" || code === "sale") {
+        setListingIntentInStore(code);
+        return;
+      }
+    }
+    const raw = (searchParams.get("listingType") ?? "").toLowerCase();
+    if (raw === "rent" || raw === "sale") {
+      setListingIntentInStore(raw);
+    } else if (!listingTypeId) {
+      setListingIntentInStore(null);
+    }
+  }, [listingTypeId, propertyMasterData, searchParams, setListingIntentInStore]);
 
   const deferredFilters = useDeferredValue(filters);
   const deferredSort = useDeferredValue(sort);
@@ -302,11 +324,11 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
             : "CHANNEL_PARTNER",
       minPrice:
         deferredFilters.minBudget != null
-          ? Math.round(deferredFilters.minBudget * 10_000_000)
+          ? Math.round(deferredFilters.minBudget)
           : undefined,
       maxPrice:
         deferredFilters.maxBudget != null
-          ? Math.round(deferredFilters.maxBudget * 10_000_000)
+          ? Math.round(deferredFilters.maxBudget)
           : undefined,
       categoryIds:
         deferredFilters.categoryId != null
