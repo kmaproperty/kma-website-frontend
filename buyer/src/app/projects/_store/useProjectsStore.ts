@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import type {
+  ListingIntent,
   PossessionStatus,
   PostedByTab,
   ProjectsFilters,
@@ -26,15 +27,20 @@ interface ProjectsState {
   sort: SortOption;
   filters: ProjectsFilters;
   favorites: Record<string, boolean>;
+  /** Resolved listing intent (rent | sale). Drives budget UI in the sidebar. */
+  listingIntent: ListingIntent | null;
 
   setTab: (tab: PostedByTab) => void;
   setSort: (sort: SortOption) => void;
   setFilters: (patch: Partial<ProjectsFilters>) => void;
   resetFilters: () => void;
+  setListingIntent: (intent: ListingIntent | null) => void;
 
   setCategoryId: (id: string | null) => void;
   togglePropertyTypeId: (id: string) => void;
+  togglePropertyTypeIdGroup: (ids: string[]) => void;
   toggleBhkTypeId: (id: string) => void;
+  toggleBhkTypeIdGroup: (ids: string[]) => void;
   setFurnishingTypeId: (id: string | null) => void;
   toggleAmenityId: (id: string) => void;
   togglePossession: (value: PossessionStatus) => void;
@@ -42,6 +48,7 @@ interface ProjectsState {
   toggleFavorite: (projectId: string) => void;
   setFavorite: (projectId: string, isFavorite: boolean) => void;
   removeChip: (chipId: string) => void;
+  removeChipGroup: (chipId: string, ids: string[]) => void;
 }
 
 export const useProjectsStore = create<ProjectsState>((set, get) => ({
@@ -49,12 +56,14 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
   sort: "price_low_high",
   filters: DEFAULT_FILTERS,
   favorites: {},
+  listingIntent: null,
 
   setTab: (tab) => set({ tab }),
   setSort: (sort) => set({ sort }),
   setFilters: (patch) =>
     set((s) => ({ filters: { ...s.filters, ...patch } })),
   resetFilters: () => set({ filters: DEFAULT_FILTERS }),
+  setListingIntent: (intent) => set({ listingIntent: intent }),
 
   setCategoryId: (id) =>
     set((s) => ({
@@ -80,6 +89,21 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
       };
     }),
 
+  togglePropertyTypeIdGroup: (ids) =>
+    set((s) => {
+      const allSelected = ids.every((id) => s.filters.propertyTypeIds.includes(id));
+      const next = allSelected
+        ? s.filters.propertyTypeIds.filter((x) => !ids.includes(x))
+        : [...new Set([...s.filters.propertyTypeIds, ...ids])];
+      return {
+        filters: {
+          ...s.filters,
+          propertyTypeIds: next,
+          bhkTypeIds: allSelected ? s.filters.bhkTypeIds : [],
+        },
+      };
+    }),
+
   toggleBhkTypeId: (id) =>
     set((s) => {
       const exists = s.filters.bhkTypeIds.includes(id);
@@ -89,6 +113,20 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
           bhkTypeIds: exists
             ? s.filters.bhkTypeIds.filter((x) => x !== id)
             : [...s.filters.bhkTypeIds, id],
+        },
+      };
+    }),
+
+  toggleBhkTypeIdGroup: (ids) =>
+    set((s) => {
+      const allSelected = ids.every((id) => s.filters.bhkTypeIds.includes(id));
+      const next = allSelected
+        ? s.filters.bhkTypeIds.filter((x) => !ids.includes(x))
+        : [...new Set([...s.filters.bhkTypeIds, ...ids])];
+      return {
+        filters: {
+          ...s.filters,
+          bhkTypeIds: next,
         },
       };
     }),
@@ -178,6 +216,27 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
     }
     if (chipId === "chip:budget") {
       set({ filters: { ...filters, minBudget: null, maxBudget: null } });
+    }
+  },
+
+  removeChipGroup: (chipId, ids) => {
+    const { filters } = get();
+    if (chipId.startsWith("chip:propertyType:")) {
+      set({
+        filters: {
+          ...filters,
+          propertyTypeIds: filters.propertyTypeIds.filter((x) => !ids.includes(x)),
+        },
+      });
+      return;
+    }
+    if (chipId.startsWith("chip:bhk:")) {
+      set({
+        filters: {
+          ...filters,
+          bhkTypeIds: filters.bhkTypeIds.filter((x) => !ids.includes(x)),
+        },
+      });
     }
   },
 }));
