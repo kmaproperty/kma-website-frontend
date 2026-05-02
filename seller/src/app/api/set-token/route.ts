@@ -47,6 +47,11 @@ export async function POST(req: Request) {
  * Reads accessToken/refreshToken from query params, sets the same cookies
  * the POST variant sets, then 302 redirects to the requested path. The
  * redirect path is restricted to same-origin paths to avoid open redirects.
+ *
+ * On Amplify the request hits the app on localhost behind a reverse proxy,
+ * so `new URL(req.url).origin` is `http://localhost:3000`. Use the
+ * x-forwarded-host / host headers (and x-forwarded-proto) to recover the
+ * real public origin for the redirect.
  */
 export async function GET(req: Request) {
   const url = new URL(req.url);
@@ -61,7 +66,11 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Missing tokens" }, { status: 400 });
   }
 
-  const target = new URL(safeRedirect, url.origin);
+  const forwardedHost = req.headers.get("x-forwarded-host");
+  const host = forwardedHost ?? req.headers.get("host") ?? url.host;
+  const proto = req.headers.get("x-forwarded-proto") ?? (host.includes("localhost") ? "http" : "https");
+  const target = `${proto}://${host}${safeRedirect}`;
+
   const response = NextResponse.redirect(target, 302);
   attachAuthCookies(response, accessToken, refreshToken);
   return response;
