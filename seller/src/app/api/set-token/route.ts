@@ -12,16 +12,27 @@ function decodeJwtPayload(token: string): Record<string, unknown> | null {
   } catch { return null; }
 }
 
-function buildCookie(name: string, value: string, maxAge: number, httpOnly = true): string {
-  let cookie = `${name}=${value}; Path=/; Max-Age=${maxAge}; Secure; SameSite=Lax`;
+function buildCookie(
+  name: string,
+  value: string,
+  maxAge: number,
+  httpOnly = true,
+  sameSite: "Lax" | "None" = "Lax",
+): string {
+  let cookie = `${name}=${value}; Path=/; Max-Age=${maxAge}; Secure; SameSite=${sameSite}`;
   if (httpOnly) cookie += "; HttpOnly";
   if (COOKIE_DOMAIN) cookie += `; Domain=${COOKIE_DOMAIN}`;
   return cookie;
 }
 
-function attachAuthCookies(response: NextResponse, accessToken: string, refreshToken: string) {
-  response.headers.append("Set-Cookie", buildCookie("accessToken", accessToken, 60 * 60));
-  response.headers.append("Set-Cookie", buildCookie("refreshToken", refreshToken, 60 * 60 * 24 * 7));
+function attachAuthCookies(
+  response: NextResponse,
+  accessToken: string,
+  refreshToken: string,
+  sameSite: "Lax" | "None" = "Lax",
+) {
+  response.headers.append("Set-Cookie", buildCookie("accessToken", accessToken, 60 * 60, true, sameSite));
+  response.headers.append("Set-Cookie", buildCookie("refreshToken", refreshToken, 60 * 60 * 24 * 7, true, sameSite));
 
   // JS-readable kma_user cookie so buyer/seller header can detect logged-in user
   const payload = decodeJwtPayload(accessToken);
@@ -30,7 +41,7 @@ function attachAuthCookies(response: NextResponse, accessToken: string, refreshT
       role: payload.role,
       name: payload.name || "",
     }));
-    response.headers.append("Set-Cookie", buildCookie("kma_user", userObj, 60 * 60, false));
+    response.headers.append("Set-Cookie", buildCookie("kma_user", userObj, 60 * 60, false, sameSite));
   }
 }
 
@@ -71,7 +82,14 @@ export async function GET(req: Request) {
   const proto = req.headers.get("x-forwarded-proto") ?? (host.includes("localhost") ? "http" : "https");
   const target = `${proto}://${host}${safeRedirect}`;
 
+  // Embed=1 means the caller is loading us inside a cross-site iframe
+  // (e.g. the admin panel). SameSite=None+Secure cookies are required for
+  // the browser to send them on the post-redirect request inside the
+  // iframe. Lax cookies would simply not be attached.
+  const embed = url.searchParams.get("embed") === "1";
+  const sameSite = embed ? "None" : "Lax";
+
   const response = NextResponse.redirect(target, 302);
-  attachAuthCookies(response, accessToken, refreshToken);
+  attachAuthCookies(response, accessToken, refreshToken, sameSite);
   return response;
 }
