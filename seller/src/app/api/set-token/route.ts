@@ -19,14 +19,11 @@ function buildCookie(name: string, value: string, maxAge: number, httpOnly = tru
   return cookie;
 }
 
-export async function POST(req: Request) {
-  const { accessToken, refreshToken } = await req.json();
-
-  const response = NextResponse.json({ message: "Tokens set" });
+function attachAuthCookies(response: NextResponse, accessToken: string, refreshToken: string) {
   response.headers.append("Set-Cookie", buildCookie("accessToken", accessToken, 60 * 60));
   response.headers.append("Set-Cookie", buildCookie("refreshToken", refreshToken, 60 * 60 * 24 * 7));
 
-  // Set JS-readable kma_user cookie so buyer app header can detect logged-in user
+  // JS-readable kma_user cookie so buyer/seller header can detect logged-in user
   const payload = decodeJwtPayload(accessToken);
   if (payload?.role) {
     const userObj = encodeURIComponent(JSON.stringify({
@@ -35,6 +32,37 @@ export async function POST(req: Request) {
     }));
     response.headers.append("Set-Cookie", buildCookie("kma_user", userObj, 60 * 60, false));
   }
+}
 
+export async function POST(req: Request) {
+  const { accessToken, refreshToken } = await req.json();
+
+  const response = NextResponse.json({ message: "Tokens set" });
+  attachAuthCookies(response, accessToken, refreshToken);
+  return response;
+}
+
+/**
+ * GET variant for cross-domain handoff (e.g. admin panel → seller app).
+ * Reads accessToken/refreshToken from query params, sets the same cookies
+ * the POST variant sets, then 302 redirects to the requested path. The
+ * redirect path is restricted to same-origin paths to avoid open redirects.
+ */
+export async function GET(req: Request) {
+  const url = new URL(req.url);
+  const accessToken = url.searchParams.get("at") ?? "";
+  const refreshToken = url.searchParams.get("rt") ?? "";
+  const requested = url.searchParams.get("redirect") ?? "/user-dashboard";
+  const safeRedirect = requested.startsWith("/") && !requested.startsWith("//")
+    ? requested
+    : "/user-dashboard";
+
+  if (!accessToken || !refreshToken) {
+    return NextResponse.json({ error: "Missing tokens" }, { status: 400 });
+  }
+
+  const target = new URL(safeRedirect, url.origin);
+  const response = NextResponse.redirect(target, 302);
+  attachAuthCookies(response, accessToken, refreshToken);
   return response;
 }
