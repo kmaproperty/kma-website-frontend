@@ -1,9 +1,20 @@
 import { transectionType } from "@/lib/constants";
 import { Checkbox } from "@mui/material";
 
-export default function TransactionByMenu({transactionBy, setTransactionBy, setSelectedPropertyType}){
-
-  return(
+export default function TransactionByMenu({
+  transactionBy,
+  setTransactionBy,
+  setSelectedPropertyType,
+  setSelectedMinBudget,
+  setSelectedMaxBudget,
+}: {
+  transactionBy: { name: string; value: string };
+  setTransactionBy: (item: { name: string; value: string }) => void;
+  setSelectedPropertyType: (v: unknown[]) => void;
+  setSelectedMinBudget?: (v: null) => void;
+  setSelectedMaxBudget?: (v: null) => void;
+}) {
+  return (
         <div>
         <div className="space-y-3">
           {transectionType?.map((item) => (
@@ -11,6 +22,10 @@ export default function TransactionByMenu({transactionBy, setTransactionBy, setS
               onClick={() => {
                 setTransactionBy(item)
                 setSelectedPropertyType([])
+                if (item.value !== transactionBy?.value) {
+                  setSelectedMinBudget?.(null)
+                  setSelectedMaxBudget?.(null)
+                }
               }}
               key={item.value}
               className="flex items-center gap-3 cursor-pointer"
