@@ -7,19 +7,19 @@ import { useSearchParams } from "next/navigation";
 const cardInfo = {
   endUser: [
     {
-      src: "/assets/home-color.png",
-      title: "Zero Brokerage",
-      subTitle: "Connect directly with property owners.",
+      src: "/assets/propertyDetails.png",
+      title: "Basic Property Details",
+      subTitle: "Tell us what you're listing—Flat, Villa, or Plot. It only takes a minute to start.",
     },
     {
       src: "/assets/location-color.png",
-      title: "Verified Listings",
-      subTitle: "Explore genuine, up-to-date properties you can trust.",
+      title: "Location & Pricing",
+      subTitle: "Set your price and pinpoint the location. Transparency leads to faster closures.",
     },
     {
-      src: "/assets/upload-color.png",
-      title: "Instant Contact",
-      subTitle: "Reach owners or tenants in minutes for faster deals.",
+      src: "/assets/propertyLive.png",
+      title: "Verify & Go Live",
+      subTitle: "Complete a quick digital MOU to get verified leads directly on your WhatsApp and CRM.",
     },
   ],
   channelPartnerRegister: [
