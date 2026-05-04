@@ -50,6 +50,7 @@ export default function ReferralUserShell({
           <p className="text-sm opacity-90">{breadcrumb}</p>
           <h1 className="text-[26px] md:text-[36px] leading-[1.15] font-semibold mt-2">{title}</h1>
           {description ? <p className="text-sm md:text-base mt-3 max-w-[720px] opacity-95">{description}</p> : null}
+          <p>Referral reward lene ke liye deal se pehle referral submit karna zaroori hai. Deal ke baad claim accept nahi hoga</p>
           {showSubNav ? <ReferralSubNav /> : null}
         </div>
       </div>
