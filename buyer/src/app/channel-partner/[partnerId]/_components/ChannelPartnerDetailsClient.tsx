@@ -21,7 +21,10 @@ import {
   ChevronLeft,
   ChevronRight,
   CheckCircle2,
+  ImageIcon,
   MapPin,
+  Phone,
+  PhoneCall,
 } from "lucide-react";
 
 const PROFILE_BASE = process.env.NEXT_PUBLIC_AWS_URL;
@@ -136,10 +139,12 @@ function PropertyCard({
   property,
   partnerProfileSrc,
   partnerRating,
+  partnerName,
 }: {
   property: ChannelPartnerActiveProperty;
   partnerProfileSrc: string | null;
   partnerRating: number;
+  partnerName?: string;
 }) {
   const priceLabel = getPriceLabel(property);
   const title = property.propertyName ?? "Property";
@@ -151,6 +156,11 @@ function PropertyCard({
     "";
   const badgeLabel = property.propertyType ?? property.category ?? "";
   const imageUrl = property.imageUrl ?? null;
+  const imageCount =
+    (property as { imageCount?: number | null }).imageCount ??
+    (property as { images?: unknown[] | null }).images?.length ??
+    (property as { imageUrls?: string[] | null }).imageUrls?.length ??
+    (imageUrl ? 1 : 0);
 
   const beds = parseBedrooms(property.bhkType);
   const sqft = parseSqFt(property.units?.[0]?.size);
@@ -160,6 +170,114 @@ function PropertyCard({
 
   return (
     <div className="bg-white rounded-2xl border border-[#EEF0F4] shadow-[0_6px_24px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col hover:shadow-[0_10px_40px_rgba(0,0,0,0.09)] transition">
+      <div className="sm:hidden">
+        <div className="p-3 flex gap-3">
+          <div className="relative w-[110px] h-[92px] rounded-lg overflow-hidden bg-[#F2F2F2] shrink-0">
+            {imageUrl ? (
+              <Image
+                src={imageUrl}
+                alt={title}
+                fill
+                className="object-cover"
+                sizes="110px"
+              />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center text-text-gray text-xs">
+                No Image
+              </div>
+            )}
+            {imageCount > 1 ? (
+              <div className="absolute bottom-2 right-2 inline-flex items-center gap-1 rounded-[12px] bg-black/55 px-2 py-1 text-white">
+                <ImageIcon className="h-3.5 w-3.5" />
+                <span className="text-[11px] font-medium leading-none">{imageCount}</span>
+              </div>
+            ) : null}
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <div className="flex items-start justify-between gap-2">
+              <div className="text-[18px] font-bold leading-none text-[#010048]">
+                {priceLabel.includes("/month") ? priceLabel.replace("/month", "") : priceLabel}
+              </div>
+              <button
+                type="button"
+                aria-label="Like property"
+                className="w-7 h-7 rounded-full border border-[#D9D9D9] bg-white flex items-center justify-center shrink-0"
+              >
+                <Image
+                  src="/assets/property/heart.svg"
+                  alt="Like"
+                  width={14}
+                  height={14}
+                />
+              </button>
+            </div>
+
+            <h3 className="mt-1 text-[13px] font-semibold text-[#1B1F2A] line-clamp-2">
+              {title}
+            </h3>
+            {location ? (
+              <p className="mt-0.5 text-[12px] text-[#7A7A7A] line-clamp-1">
+                {stripHtml(location)}
+              </p>
+            ) : null}
+            <p className="mt-1 text-[12px] text-[#1B1F2A]">
+              {property.bhkType ?? "-"} Apartment
+            </p>
+          </div>
+        </div>
+
+        <div className="border-t border-[#E5E7EB] bg-[#F6F7F8] px-3 py-2 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="relative w-10 h-10 rounded-full bg-white border border-[#E5E7EB] overflow-hidden shrink-0">
+              {partnerProfileSrc ? (
+                <Image
+                  src={partnerProfileSrc}
+                  alt="Partner"
+                  fill
+                  className="object-cover"
+                  sizes="40px"
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center text-xs font-semibold text-text-black uppercase">
+                  {(partnerName ?? "P").charAt(0)}
+                </div>
+              )}
+            </div>
+            <div className="min-w-0">
+              <p className="text-[12px] font-medium text-[#1B1F2A] truncate">{partnerName ?? "Channel Partner"}</p>
+              <span
+                className="mt-0.5 inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold text-white backdrop-blur-[10px]"
+                style={{
+                  background:
+                    "linear-gradient(90deg, rgba(244, 139, 34, 0.8) 0%, rgba(197, 124, 50, 0.8) 100%)",
+                }}
+              >
+                KMA Expert Pro
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              className="w-9 h-9 rounded-xl border border-[#66BB6A] text-[#2E7D32] bg-white flex items-center justify-center"
+              aria-label="Call now"
+            >
+              <Phone className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              className="w-9 h-9 rounded-xl border border-[#66BB6A] text-[#2E7D32] bg-white flex items-center justify-center"
+              aria-label="Call agent"
+            >
+              <PhoneCall className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="hidden sm:block">
       <div className="relative w-full aspect-[4/3] bg-[#F2F2F2]">
         {imageUrl ? (
           <Image
@@ -176,7 +294,7 @@ function PropertyCard({
         )}
 
         {/* Image controls (visual-only to match the design) */}
-        {/* <button
+        <button
           type="button"
           aria-label="Previous image"
           className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/30 text-white flex items-center justify-center"
@@ -189,10 +307,10 @@ function PropertyCard({
           className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/30 text-white flex items-center justify-center"
         >
           <ChevronRight className="h-4 w-4" />
-        </button> */}
+        </button>
 
         {/* Like button */}
-        {/* <button
+        <button
           type="button"
           aria-label="Like property"
           className="absolute top-3 right-3 w-9 h-9 rounded-full bg-black/20 backdrop-blur flex items-center justify-center"
@@ -203,11 +321,11 @@ function PropertyCard({
             width={18}
             height={18}
           />
-        </button> */}
+        </button>
 
         {/* Badge */}
         {badgeLabel ? (
-          <span className="absolute top-3 right-5 bg-[#7C3AED] text-white text-[10px] font-semibold px-2.5 py-1 rounded-lg">
+          <span className="absolute top-3 right-12 bg-[#7C3AED] text-white text-[10px] font-semibold px-2.5 py-1 rounded-lg">
             {badgeLabel}
           </span>
         ) : null}
@@ -315,6 +433,7 @@ function PropertyCard({
           </div>
         </div>
       </div>
+      </div>
     </div>
   );
 }
@@ -340,7 +459,7 @@ export default function ChannelPartnerDetailsClient({
   const [reviewText, setReviewText] = useState("");
   const [likedOptions, setLikedOptions] = useState<string[]>([]);
   const [reviewPage, setReviewPage] = useState(1);
-  const [propertyPage, setPropertyPage] = useState(1);
+  const [isAboutExpanded, setIsAboutExpanded] = useState(false);
 
   type PartnerReview = {
     id: string;
@@ -382,7 +501,6 @@ export default function ChannelPartnerDetailsClient({
   const isUpdate = Boolean(myReview);
 
   const REVIEWS_PER_PAGE = 3;
-  const PROPERTIES_PER_PAGE = 8;
 
   const pagedReviews = useMemo(() => {
     const start = (reviewPage - 1) * REVIEWS_PER_PAGE;
@@ -392,10 +510,6 @@ export default function ChannelPartnerDetailsClient({
   const totalReviewPages = useMemo(() => {
     return Math.max(1, Math.ceil(reviews.length / REVIEWS_PER_PAGE));
   }, [reviews.length]);
-
-  useEffect(() => {
-    setPropertyPage(1);
-  }, [propertyTab]);
 
   const likedOptionsForRating = useMemo(() => {
     const positiveLeft = [
@@ -599,30 +713,25 @@ export default function ChannelPartnerDetailsClient({
   const rentProperties = partner.active_properties?.rent ?? [];
   // Commercial is currently not shown in the tab UI (kept for future use).
   const commercialProperties = partner.active_properties?.commercial ?? [];
-  void commercialProperties;
-
-  const activeProperties =
-    propertyTab === "sale" ? saleProperties : propertyTab === "rent" ? rentProperties : [];
-  const totalPropertyPages = Math.max(
-    1,
-    Math.ceil(activeProperties.length / PROPERTIES_PER_PAGE)
-  );
-  const pagedProperties = activeProperties.slice(
-    (propertyPage - 1) * PROPERTIES_PER_PAGE,
-    propertyPage * PROPERTIES_PER_PAGE
-  );
-  const propertyPaginationNumbers = Array.from(
-    { length: totalPropertyPages },
-    (_, index) => index + 1
-  );
+  const aboutDescription = partner.about?.trim()
+    ? partner.about
+    : partner.firm_name
+      ? `${partner.firm_name} is a verified channel partner supporting buyers and sellers across multiple locations.`
+      : "This partner is a verified channel partner supporting buyers and sellers across multiple locations.";
+  const MOBILE_ABOUT_MAX = 140;
+  const isAboutLong = aboutDescription.length > MOBILE_ABOUT_MAX;
+  const mobileAboutText =
+    isAboutExpanded || !isAboutLong
+      ? aboutDescription
+      : `${aboutDescription.slice(0, MOBILE_ABOUT_MAX).trim()}...`;
 
   return (
-    <div className="w-full flex flex-col">
+    <div className="w-full flex flex-col pb-24 lg:pb-0">
       {/* Hero */}
-      <div className="">
-        <div className=" flex flex-col items-center">
-            <div className="w-full rounded-2xl">
-            <div className="flex flex-col items-center text-center gap-4">
+      <div className="hidden lg:block px-4 md:px-6">
+        <div className="flex flex-col items-center">
+          <div className="w-full max-w-[1240px] rounded-2xl">
+            <div className="flex flex-col items-center text-center gap-2">
               <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-[#F2F2F2] overflow-hidden">
                 {profileSrc ? (
                   <Image
@@ -637,20 +746,26 @@ export default function ChannelPartnerDetailsClient({
                     {partner.name?.charAt(0) ?? "?"}
                   </div>
                 )}
-                <span className="absolute bottom-2 right-2 bg-[#7C3AED] text-white text-[10px] font-semibold px-2.5 py-1 rounded-lg">
-                  KMA Expert Pro
-                </span>
               </div>
 
               <div className="min-w-0">
-                <h1 className="text-white text-2xl sm:text-3xl font-bold leading-tight truncate">
+                <h1 className="text-white text-[30px] sm:text-3xl font-bold leading-tight truncate">
                   {partner.name ?? "Channel Partner"}
                 </h1>
-                <p className="mt-1 text-white text-sm sm:text-base">
+                <p className="mt-0.5 text-white text-sm sm:text-base">
                   {partner.firm_name ?? "Channel Partner"}
                 </p>
+                <div
+                  className="mt-1.5 inline-flex items-center rounded-md border border-white/40 px-2.5 py-1 text-[10px] font-semibold text-white backdrop-blur-[10px]"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, rgba(244, 139, 34, 0.8) 0%, rgba(197, 124, 50, 0.8) 100%)",
+                  }}
+                >
+                  KMA Expert Pro
+                </div>
 
-                <div className="flex items-center gap-2 mt-3 justify-center text-sm">
+                <div className="flex items-center gap-2 mt-2 justify-center text-sm">
                   <Star
                     fill={Math.min(100, (rating / 5) * 100)}
                     className="h-4 w-4 text-[#F7BB06]"
@@ -665,7 +780,7 @@ export default function ChannelPartnerDetailsClient({
               <button
                 type="button"
                 onClick={() => setContactPopupOpen(true)}
-                className="w-full sm:w-auto px-5 py-2.5 rounded-full border border-white text-white font-semibold text-sm hover:bg-black transition-opacity flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-5 py-2 rounded-full border border-white text-white font-semibold text-sm hover:bg-black/20 transition-opacity flex items-center justify-center gap-2"
               >
                 <Image
                   src="/assets/call-ring-white.svg"
@@ -678,47 +793,44 @@ export default function ChannelPartnerDetailsClient({
             </div>
 
             {/* Stats Row */}
-            <div className="mt-5 grid grid-cols-2  rounded-xl  sm:grid-cols-3 lg:grid-cols-5 gap-3 bg-white">
-              <div className="rounded-xl  p-3">
-                <p className="text-xs text-text-gray">Years Experience</p>
-                <p className="mt-1 text-lg font-bold text-text-black">
-                  {expYears}
-                </p>
-              </div>
-              <div className="rounded-xl  p-3">
-                <p className="text-xs text-text-gray">Properties for Sale</p>
-                <p className="mt-1 text-lg font-bold text-text-black">
-                  {formatCountPlus(
-                    partner.active_properties?.buy?.length ?? 0,
-                    99
-                  )}
-                </p>
-              </div>
-              <div className="rounded-xl  p-3">
-                <p className="text-xs text-text-gray">Properties for Rent</p>
-                <p className="mt-1 text-lg font-bold text-text-black">
-                  {formatCountPlus(
-                    partner.active_properties?.rent?.length ?? 0,
-                    99
-                  )}
-                </p>
-              </div>
-              <div className="rounded-xl  p-3">
-                <p className="text-xs text-text-gray">Team Size</p>
-                <p className="mt-1 text-lg font-bold text-text-black">
-                  {partner.statistics?.team_size ?? "-"}
-                </p>
-              </div>
-              <div className="rounded-xl  p-3">
-                <p className="text-xs text-text-gray">Areas of Operation</p>
-                <p className="mt-1 text-lg font-bold text-text-black">
-                  {formatCountPlus(
-                    partner.statistics?.areas_of_operation ??
-                      areasOfOperation.length ??
-                      0,
-                    19
-                  )}
-                </p>
+            <div className="mt-4 w-full overflow-x-auto rounded-xl bg-white shadow-[0_8px_28px_rgba(16,24,40,0.08)]">
+              <div className="grid min-w-[900px] grid-cols-5 px-5 sm:px-8 py-3.5 sm:py-4">
+                <div className="py-1 pr-2">
+                  <div className="flex items-center gap-3">
+                    <p className="text-[34px] font-semibold leading-none text-[#02035A]">{expYears}</p>
+                    <p className="text-[13px] leading-4 text-text-gray">Years Experience</p>
+                  </div>
+                </div>
+                <div className="border-l border-[#EAECF0] py-1 px-4">
+                  <div className="flex items-center gap-3">
+                    <p className="text-[34px] font-semibold leading-none text-[#02035A]">
+                      {formatCountPlus(partner.active_properties?.buy?.length ?? 0, 99)}
+                    </p>
+                    <p className="text-[13px] leading-4 text-text-gray">Properties for Sale</p>
+                  </div>
+                </div>
+                <div className="border-l border-[#EAECF0] py-1 px-4">
+                  <div className="flex items-center gap-3">
+                    <p className="text-[34px] font-semibold leading-none text-[#02035A]">
+                      {formatCountPlus(partner.active_properties?.rent?.length ?? 0, 99)}
+                    </p>
+                    <p className="text-[13px] leading-4 text-text-gray">Properties for Rent</p>
+                  </div>
+                </div>
+                <div className="border-l border-[#EAECF0] py-1 px-4">
+                  <div className="flex items-center gap-3">
+                    <p className="text-[34px] font-semibold leading-none text-[#02035A]">{partner.statistics?.team_size ?? "-"}</p>
+                    <p className="text-[13px] leading-4 text-text-gray">Team Size</p>
+                  </div>
+                </div>
+                <div className="border-l border-[#EAECF0] py-1 pl-4 pr-2">
+                  <div className="flex items-center gap-3">
+                    <p className="text-[34px] font-semibold leading-none text-[#02035A]">
+                      {formatCountPlus(partner.statistics?.areas_of_operation ?? areasOfOperation.length ?? 0, 19)}
+                    </p>
+                    <p className="text-[13px] leading-4 text-text-gray">Areas of Operation</p>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -726,12 +838,34 @@ export default function ChannelPartnerDetailsClient({
         </div>
       </div>
 
-      <div className="">
-        <div className="w-full">
+      <div className="px-4 md:px-6 lg:hidden">
+        <div className="w-full max-w-[1240px] mx-auto pb-4 sm:pb-5">
+          <div className="flex items-start gap-3 sm:gap-4">
+            <button
+              type="button"
+              onClick={handleBack}
+              aria-label="Back to channel partners"
+              className="w-11 h-11 shrink-0 rounded-[8px] border border-[#D0D0D0] bg-[#F1F2F4] flex items-center justify-center"
+            >
+              <ChevronLeft className="w-6 h-6 text-[#1B1F2A]" />
+            </button>
+            <p className="pt-2 text-[16px] leading-6 text-[#8A8A8A]">
+              Home / Channel Partners/{" "}
+              <span className="font-semibold text-[#010048] underline">
+                {partner.name ?? "Channel Partner"}
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="px-4 md:px-6">
+        <div className="w-full max-w-[1240px] mx-auto">
           {/* About */}
-          <section className="  sm:p-7">
-            <div className="flex flex-col lg:flex-row gap-5 lg:gap-10">
-              <div className="lg:flex-1 min-w-0">
+          <section className="pt-0 pb-6 sm:pb-8 lg:pt-3">
+            <div className="bg-transparent p-0 rounded-none border-0 shadow-none lg:rounded-2xl lg:border lg:border-[#EEF0F4] lg:bg-white lg:p-5 lg:sm:p-7 lg:shadow-[0_10px_40px_rgba(15,23,42,0.06)]">
+            <div className="flex flex-col gap-7 lg:xl:flex-row lg:xl:items-start lg:xl:gap-12">
+              <div className="min-w-0 xl:w-[58%]">
                 <div className="flex items-start gap-4">
                   <div className="relative w-12 h-12 rounded-full bg-[#F2F2F2] overflow-hidden flex-shrink-0">
                     {profileSrc ? (
@@ -750,28 +884,51 @@ export default function ChannelPartnerDetailsClient({
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <h2 className="text-lg sm:text-xl font-bold text-text-black truncate">
-                      {partner.name ?? "Channel Partner"}
-                    </h2>
+                    <div className="flex items-start justify-between gap-3">
+                      <h2 className="min-w-0 text-lg sm:text-xl font-bold text-text-black truncate">
+                        {partner.name ?? "Channel Partner"}
+                      </h2>
+                      <div className="hidden sm:flex shrink-0 items-center gap-2">
+                        <div className="inline-flex items-center gap-1 rounded-[3px] bg-[#02035A] px-2.5 py-1 text-white">
+                          <Star fill={100} className="h-3.5 w-3.5 text-white" />
+                          <span className="text-xs font-semibold leading-none">{ratingText}</span>
+                        </div>
+                        <span className="text-xs text-text-gray whitespace-nowrap">{ratingCount} Ratings</span>
+                      </div>
+                    </div>
                     <p className="mt-1 text-sm text-text-gray truncate">
                       {partner.firm_name ?? ""}
                     </p>
 
-                    <div className="mt-2 inline-flex items-center rounded-md border border-[#D9D9FF] bg-[#F7F7FF] px-2.5 py-1 text-[10px] font-semibold text-[#7C3AED]">
+                    <div
+                      className="mt-2 inline-flex items-center rounded-md border border-[#D9D9FF] px-2.5 py-1 text-[10px] font-semibold text-white backdrop-blur-[10px]"
+                      style={{
+                        background:
+                          "linear-gradient(90deg, rgba(244, 139, 34, 0.8) 0%, rgba(197, 124, 50, 0.8) 100%)",
+                      }}
+                    >
                       KMA Expert Pro
                     </div>
                   </div>
                 </div>
 
-                <p className="mt-4 text-sm text-text-gray leading-relaxed">
-                  {partner.about?.trim()
-                    ? partner.about
-                    : partner.firm_name
-                      ? `${partner.firm_name} is a verified channel partner supporting buyers and sellers across multiple locations.`
-                      : "This partner is a verified channel partner supporting buyers and sellers across multiple locations."}
+                <p className="mt-4 text-sm text-text-gray leading-relaxed sm:hidden">
+                  {mobileAboutText}
+                  {isAboutLong ? (
+                    <button
+                      type="button"
+                      onClick={() => setIsAboutExpanded((prev) => !prev)}
+                      className="ml-1 inline font-semibold text-[#010048] underline"
+                    >
+                      {isAboutExpanded ? "Read Less" : "Read More"}
+                    </button>
+                  ) : null}
+                </p>
+                <p className="mt-4 text-sm text-text-gray leading-relaxed hidden sm:block">
+                  {aboutDescription}
                 </p>
 
-                <div className="mt-4 border-t border-slate-200 pt-4">
+                <div className="mt-5 border-t border-slate-200 pt-4">
                   <div className="flex items-start gap-2 text-xs text-text-gray">
                     <MapPin className="h-4 w-4 text-[#7C3AED] mt-0.5" />
                     <span className="text-text-black font-medium">
@@ -790,26 +947,16 @@ export default function ChannelPartnerDetailsClient({
                 </div>
               </div>
 
-              <div className="lg:w-[420px] xl:w-[440px]">
-                <div className="flex items-center gap-2 mb-3">
-                  <Star
-                    fill={Math.min(100, (rating / 5) * 100)}
-                    className="h-4 w-4 text-[#F7BB06]"
-                  />
-                  <span className="text-sm font-bold text-text-black">
-                    {ratingText}
-                  </span>
-                  <span className="text-xs text-text-gray">{ratingCount} Ratings</span>
-                </div>
+              <div className="xl:w-[42%] xl:pl-2 xl:pt-0.5">
                 <h3 className="text-sm font-semibold text-text-black mb-3">
                   Areas of Operation
                 </h3>
                 {areasOfOperation.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2.5">
                     {areasOfOperation.map((city) => (
                       <span
                         key={city}
-                        className="px-3 py-1 text-xs font-medium bg-[#F7F7FF] border border-[#D9D9FF] text-[#7C3AED] rounded-lg"
+                        className="px-3 py-1 text-xs font-medium bg-[#E8E8FF] border border-[#D9D9FF] text-[#010048B2] rounded-[12px]"
                       >
                         {city}
                       </span>
@@ -820,19 +967,50 @@ export default function ChannelPartnerDetailsClient({
                     No areas available.
                   </p>
                 )}
+
+                <div className="mt-6 lg:hidden rounded-[10px] border border-[#D0D0D0] bg-transparent px-4 py-4 sm:px-6 sm:py-6">
+                  <h3 className="text-[16px] sm:text-[18px] font-semibold leading-[1.2] text-[#1B1F2A]">Listing Snapshot</h3>
+                  <div className="mt-4 sm:mt-6 grid grid-cols-2 gap-y-5 sm:gap-y-7">
+                    <div className="text-center">
+                      <p className="text-[32px] sm:text-[40px] font-semibold leading-none text-[#02035A]">{expYears}</p>
+                      <p className="mt-1.5 sm:mt-2 text-[12px] sm:text-[13px] leading-4 sm:leading-5 text-[#1B1F2A]">Years of Experience</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-[32px] sm:text-[40px] font-semibold leading-none text-[#02035A]">
+                        {partner.statistics?.team_size ?? "-"}
+                      </p>
+                      <p className="mt-1.5 sm:mt-2 text-[12px] sm:text-[13px] leading-4 sm:leading-5 text-[#1B1F2A]">Team Size</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-[32px] sm:text-[40px] font-semibold leading-none text-[#02035A]">
+                        {formatCountPlus(partner.active_properties?.rent?.length ?? 0, 99)}
+                      </p>
+                      <p className="mt-1.5 sm:mt-2 text-[12px] sm:text-[13px] leading-4 sm:leading-5 text-[#1B1F2A]">Properties for Rent</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-[32px] sm:text-[40px] font-semibold leading-none text-[#02035A]">
+                        {formatCountPlus(partner.active_properties?.buy?.length ?? 0, 99)}
+                      </p>
+                      <p className="mt-1.5 sm:mt-2 text-[12px] sm:text-[13px] leading-4 sm:leading-5 text-[#1B1F2A]">Properties for Sale</p>
+                    </div>
+                  </div>
+                </div>
               </div>
+            </div>
             </div>
           </section>
 
           {/* Properties */}
-          <section className="mt-6">
+          <section className="mt-6 sm:mt-8">
             {/* Tabs */}
-            <div className="border-b border-slate-200">
-              <div className="flex gap-8 sm:gap-12">
+            <div
+              className="border-b border-slate-200 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+            >
+              <div className="flex gap-6 sm:gap-8 min-w-max">
                 <button
                   type="button"
                   onClick={() => setPropertyTab("sale")}
-                  className={`pb-4 text-sm font-semibold whitespace-nowrap border-b-2 ${
+                  className={`pb-3 text-sm font-semibold whitespace-nowrap border-b-2 ${
                     propertyTab === "sale"
                       ? "text-text-black border-blue"
                       : "text-text-gray border-transparent hover:text-text-black"
@@ -843,7 +1021,7 @@ export default function ChannelPartnerDetailsClient({
                 <button
                   type="button"
                   onClick={() => setPropertyTab("rent")}
-                  className={`pb-4 text-sm font-semibold whitespace-nowrap border-b-2 ${
+                  className={`pb-3 text-sm font-semibold whitespace-nowrap border-b-2 ${
                     propertyTab === "rent"
                       ? "text-text-black border-blue"
                       : "text-text-gray border-transparent hover:text-text-black"
@@ -854,7 +1032,7 @@ export default function ChannelPartnerDetailsClient({
                 <button
                   type="button"
                   onClick={() => setPropertyTab("rating")}
-                  className={`pb-4 text-sm font-semibold whitespace-nowrap border-b-2 ${
+                  className={`pb-3 text-sm font-semibold whitespace-nowrap border-b-2 ${
                     propertyTab === "rating"
                       ? "text-text-black border-blue"
                       : "text-text-gray border-transparent hover:text-text-black"
@@ -869,86 +1047,43 @@ export default function ChannelPartnerDetailsClient({
             {propertyTab !== "rating" ? (
               <>
                 {propertyTab === "sale" && saleProperties.length > 0 ? (
-                  <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {pagedProperties.map((p) => (
+                  <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
+                    {saleProperties.slice(0, 8).map((p) => (
                       <PropertyCard
                         key={p.id}
                         property={p}
                         partnerProfileSrc={profileSrc}
                         partnerRating={rating}
+                        partnerName={partner.name ?? "Channel Partner"}
                       />
                     ))}
                   </div>
                 ) : null}
 
                 {propertyTab === "rent" && rentProperties.length > 0 ? (
-                  <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {pagedProperties.map((p) => (
+                  <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
+                    {rentProperties.slice(0, 8).map((p) => (
                       <PropertyCard
                         key={p.id}
                         property={p}
                         partnerProfileSrc={profileSrc}
                         partnerRating={rating}
+                        partnerName={partner.name ?? "Channel Partner"}
                       />
                     ))}
                   </div>
                 ) : null}
 
                 {propertyTab === "sale" && saleProperties.length === 0 ? (
-                  <p className="mt-5 text-sm text-text-gray">
+                  <p className="mt-4 text-sm text-text-gray">
                     No properties available for sale.
                   </p>
                 ) : null}
 
                 {propertyTab === "rent" && rentProperties.length === 0 ? (
-                  <p className="mt-5 text-sm text-text-gray">
+                  <p className="mt-4 text-sm text-text-gray">
                     No properties available for rent.
                   </p>
-                ) : null}
-
-                {activeProperties.length > PROPERTIES_PER_PAGE ? (
-                  <div className="mt-6 flex justify-end">
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setPropertyPage((page) => Math.max(1, page - 1))
-                        }
-                        disabled={propertyPage === 1}
-                        className="px-3 py-1 text-xs font-semibold text-text-gray disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        Prev
-                      </button>
-
-                      {propertyPaginationNumbers.map((page) => (
-                        <button
-                          key={page}
-                          type="button"
-                          onClick={() => setPropertyPage(page)}
-                          className={`w-7 h-7 rounded ${
-                            propertyPage === page
-                              ? "bg-[#0B1B54] text-white"
-                              : "border border-[#EEF0F4] text-text-black hover:bg-[#F5F5F5]"
-                          } text-xs font-semibold`}
-                        >
-                          {page}
-                        </button>
-                      ))}
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setPropertyPage((page) =>
-                            Math.min(totalPropertyPages, page + 1)
-                          )
-                        }
-                        disabled={propertyPage >= totalPropertyPages}
-                        className="px-3 py-1 text-xs font-semibold text-text-gray disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        Next
-                      </button>
-                    </div>
-                  </div>
                 ) : null}
 
                 {/* Keep CTA available without cluttering tab header */}
@@ -1250,6 +1385,53 @@ export default function ChannelPartnerDetailsClient({
               </div>
             )}
           </section>
+        </div>
+      </div>
+
+      <div className="fixed inset-x-0 bottom-3 z-40 px-3 sm:px-4 lg:hidden">
+        <div className="mx-auto w-full max-w-[760px] rounded-[999px] border border-[#CCCCCC] bg-[#ECEDEF] px-3 py-2.5 shadow-[0px_0px_24px_0px_#00000040]">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-2.5">
+              <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full bg-[#F2F2F2]">
+                {profileSrc ? (
+                  <Image
+                    src={profileSrc}
+                    alt={`${partner.name ?? "Partner"} profile`}
+                    fill
+                    className="object-cover"
+                    sizes="56px"
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center text-lg font-semibold text-text-black uppercase">
+                    {(partner.name ?? "P").charAt(0)}
+                  </div>
+                )}
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-[14px] font-semibold text-[#1B1F2A]">
+                  {partner.name ?? "Channel Partner"}
+                </p>
+                <span
+                  className="mt-1 inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold text-white backdrop-blur-[10px]"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, rgba(244, 139, 34, 0.8) 0%, rgba(197, 124, 50, 0.8) 100%)",
+                  }}
+                >
+                  KMA Expert Pro
+                </span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setContactPopupOpen(true)}
+              className="shrink-0 rounded-full bg-[#01005C] px-5 py-3 text-[12px] font-semibold text-white flex items-center gap-2"
+            >
+              <PhoneCall className="h-4 w-4" />
+              Contact Now
+            </button>
+          </div>
         </div>
       </div>
 

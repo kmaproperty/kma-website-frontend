@@ -32,18 +32,23 @@ const SalesEnquiry = () => {
                     <HomdeHeader />
                 </div>
             </div>
-            <div className="relative pt-[25px] h-[100vh] max-h-[600px]" style={{ backgroundImage: 'url(assets/app/sales-enquiry-bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'bottom' }}>
-                <div className="w-[90%] md:w-[75%] max-w-[600px] mx-auto mt-[150px]">
+            <div
+                className="relative min-h-[385px] max-h-[385px] rounded-bl-[40px] rounded-br-[40px] pt-[25px] sm:min-h-[min(100dvh,560px)] sm:max-h-[560px] sm:rounded-bl-[72px] sm:rounded-br-[72px] md:min-h-[500px] md:max-h-[500px] lg:min-h-[min(100dvh,600px)] lg:max-h-[600px] lg:rounded-bl-[100px] lg:rounded-br-[100px]"
+                style={{ backgroundImage: 'url(assets/app/sales-enquiry-bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'bottom' }}
+            >
+                <div className="mx-auto mt-[120px] w-full max-w-full px-4 sm:mt-28 sm:px-6 md:mt-32 lg:px-10 xl:mt-[150px]">
                     <PageTitle
                         title="Contact KMA"
                         description="Want to sell, list, or promote your property? Our experts are here to make the process simple."
                         breadcrumps={breadcrumps}
+                        actions={null}
+                        innerClassName="w-full max-w-full"
                     />
 
                 </div>
             </div>
-            <div className='relative flex flex-col lg:flex-row items-start lg:items-center justify-between w-[90%] md:w-[75%] mx-auto max-w-[1020px] bg-white rounded-lg shadow-lg px-4 md:px-6 py-4 gap-6 lg:gap-8' style={{ transform: 'translateY(-50%)' }}>
-                <div className='flex items-start md:items-center gap-3 min-w-0'>
+            <div className='relative hidden md:flex md:flex-row items-center justify-between w-[90%] md:w-[75%] mx-auto max-w-[1020px] bg-white rounded-lg shadow-lg px-4 md:px-6 py-4 gap-4 md:gap-6 lg:gap-8' style={{ transform: 'translateY(-50%)' }}>
+                <div className='flex items-center gap-3 min-w-0 flex-1'>
                     <Image
                         src={'/assets/app/call-person.svg'}
                         width={60}
@@ -55,7 +60,7 @@ const SalesEnquiry = () => {
                         <p className='text-md font-normal text-[#888888] mb-0'>Get expert support from listing to successful closure</p>
                     </div>
                 </div>
-                <Link href="?isContactInformation=true" scroll={false} className="animated-button px-6 py-3.5 cursor-pointer w-full lg:w-auto">
+                <Link href="?isContactInformation=true" scroll={false} className="animated-button flex items-center px-6 py-3.5 cursor-pointer w-auto shrink-0">
                     <span className="flex items-center justify-between gap-[10px] relative z-11">
                         <PhoneIncoming className='w-5 h-5 text-white' />
                         <p className="text-nowrap text-xs lg:text-sm">Request a Callback</p>
@@ -89,6 +94,24 @@ const SalesEnquiry = () => {
                     <ContactTable />
                 </div>
             </div> */}
+            <div className='w-full px-4 pb-[48px] md:hidden'>
+                <div className='max-w-[360px] mx-auto rounded-[18px] bg-[#f7f8fc] px-4 py-5 text-center'>
+                    <Image
+                        src={'/assets/app/call-person.svg'}
+                        width={60}
+                        height={60}
+                        className='w-[56px] h-[56px] rounded-full mx-auto'
+                    />
+                    <h3 className='mt-3 text-[22px] leading-[1.1] font-semibold text-[#0D1520]'>Confused about how to post or promote your property/project?</h3>
+                    <p className='mt-2 text-[12px] leading-5 font-normal text-[#8A8FA0]'>Our KMA Partner Specialist will guide you step-by-step.</p>
+                    <Link href="?isContactInformation=true" scroll={false} className="animated-button flex items-center px-5 py-2.5 cursor-pointer w-fit mx-auto mt-4">
+                        <span className="flex items-center justify-between gap-[8px] relative z-11">
+                            <PhoneIncoming className='w-4 h-4 text-white' />
+                            <p className="text-[11px] leading-4 whitespace-nowrap">Request a Callback</p>
+                        </span>
+                    </Link>
+                </div>
+            </div>
             <div className='py-[100px] px-4 sm:px-6 md:px-[50px] bg-[#f5f5f5]'>
                 <div className='max-w-[1440px] mx-auto flex flex-col lg:flex-row gap-10 justify-between'>
                     <div className='w-full lg:w-[50%] max-w-[720px]'>
