@@ -10,7 +10,7 @@ export default function CreateAccountPage() {
         cardContent={<CreateAccount step={1} />}
         infoContent={
           <InfoSection
-            titlePrefix="Upload Your Property in 3 Easy Steps"
+            titlePrefix="Experience a Better Way to List & Sell"
             title=""
           />
         }

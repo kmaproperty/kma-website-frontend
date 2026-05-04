@@ -10,7 +10,7 @@ export default function AdditionalDetailsPage() {
         cardContent={<CreateAccount step={2} />}
         infoContent={
           <InfoSection
-            titlePrefix="Upload Your Property in 3 Easy Steps"
+            titlePrefix="Complete Your Partner Profile"
             title=""
           />
         }

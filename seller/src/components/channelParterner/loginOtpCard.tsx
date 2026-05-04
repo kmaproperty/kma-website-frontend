@@ -133,11 +133,12 @@ export default function LoginOtpCard() {
     >
       <p className="text-text-black font-semibold text-3xl leading-[2.3rem] mb-2">Verify Your Mobile Number</p>
       <p className="text-sm md:text-base text-text-gray">
-        We&apos;ve sent a 4-digit OTP to your mobile number{" "}
+        We&apos;ve sent a 4-digit OTP to your number{" "}
         <span className="text-blue font-medium">
           {code}
           {mobileNumber ? `-${mobileNumber}` : ""}
         </span>
+        . Verify to access your all the features.
       </p>
       <p className="text-sm md:text-base text-text-gray mb-6">
         Not your number?{" "}

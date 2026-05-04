@@ -90,7 +90,7 @@ export default function LoginCard() {
         Welcome Back!
       </p>
       <p className="text-sm md:text-base text-text-gray pb-4 border-b border-border">
-        Login to your KMA account to continue.
+        Enter your registered mobile number to access your account.
       </p>
 
       <p className="text-sm lg:text-base text-text-black font-medium mt-6">Mobile Number</p>

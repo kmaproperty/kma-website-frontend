@@ -214,7 +214,7 @@ export default function SignUp() {
             ) : (
               <>
                 <p className="text-base lg:text-lg 1xl:text-xl font-semibold text-text-black mb-1">
-                  Grow Your Business - {" "}
+                  Grow Your Business — {" "}
                   <span className="text-accent">
                     Post Properties for Free!
                   </span>

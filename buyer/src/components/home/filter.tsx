@@ -727,13 +727,13 @@ export default function Filter() {
                       }}
                     >
                       <div className="bg-white overflow-hidden p-2 rounded-[10px] shadow-xl">
-                        {popperType == 'budget' && <PriceRangeMenu filterType={filterType} selectedMinBudget={selectedMinBudget} setSelectedMinBudget={setSelectedMinBudget} selectedMaxBudget={selectedMaxBudget} setSelectedMaxBudget={setSelectedMaxBudget}/>}
+                        {popperType == 'budget' && <PriceRangeMenu filterType={filterType} transactionBy={transactionBy} selectedMinBudget={selectedMinBudget} setSelectedMinBudget={setSelectedMinBudget} selectedMaxBudget={selectedMaxBudget} setSelectedMaxBudget={setSelectedMaxBudget}/>}
                         {popperType == 'propertytype' && <PropertyTypeMenu isCommercial={filterType == 'commercial'} propertyMasterData={propertyMasterData} filterType={filterType == 'projects' ? 'rent' : filterType == 'commercial' ? transactionBy?.value : filterType} selectedPropertyType={selectedPropertyType} setSelectedPropertyType={setSelectedPropertyType}/>}
                         {popperType == 'possessionstatus' && <PossessionStatusMenu selectedPossessionStatus={selectedPossessionStatus} setSelectedPossessionStatus={setSelectedPossessionStatus}/>}
                         {popperType == 'furnishType' && <FurnishTypeMenu selectedFurnishType={selectedFurnishType} setSelectedFurnishType={setSelectedFurnishType}/>}
                         {popperType == 'projectstatus' && <ProjectStatusMenu selectedProjectStatus={selectedProjectStatus} setSelectedProjectStatus={setSelectedProjectStatus}/>}
                         {popperType == 'postedby' && <PostedByMenu selectedPostedBy={selectedPostedBy} setSelectedPostedBy={setSelectedPostedBy}/>}
-                        {popperType == 'transactiontype' && <TransactionByMenu transactionBy={transactionBy} setTransactionBy={setTransactionBy} setSelectedPropertyType={setSelectedPropertyType}/>}
+                        {popperType == 'transactiontype' && <TransactionByMenu transactionBy={transactionBy} setTransactionBy={setTransactionBy} setSelectedPropertyType={setSelectedPropertyType} setSelectedMinBudget={setSelectedMinBudget} setSelectedMaxBudget={setSelectedMaxBudget}/>}
                       </div>
                     </ClickAwayListener>
         </Popper>

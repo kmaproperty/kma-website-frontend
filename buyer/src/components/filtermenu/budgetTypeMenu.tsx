@@ -3,19 +3,41 @@ import React from "react";
 
 
 
-export default function PriceRangeMenu({filterType, selectedMinBudget, setSelectedMinBudget, selectedMaxBudget, setSelectedMaxBudget}) {
+type TransactionBy = { name: string; value: string } | null | undefined;
 
-  const priceOptions = filterType == 'sale' ? PRICE_OPTIONS : PRICE_OPTIONS_THOUSAND_LAKH
+export default function PriceRangeMenu({
+  filterType,
+  transactionBy,
+  selectedMinBudget,
+  setSelectedMinBudget,
+  selectedMaxBudget,
+  setSelectedMaxBudget,
+}: {
+  filterType: string;
+  transactionBy?: TransactionBy;
+  selectedMinBudget: { label: string; value: number } | null;
+  setSelectedMinBudget: (v: { label: string; value: number } | null) => void;
+  selectedMaxBudget: { label: string; value: number } | null;
+  setSelectedMaxBudget: (v: { label: string; value: number } | null) => void;
+}) {
+  const useLakhScale =
+    filterType === "sale" ||
+    filterType === "plot_land" ||
+    (filterType === "commercial" && transactionBy?.value === "sale");
+
+  const priceOptions = useLakhScale
+    ? PRICE_OPTIONS
+    : PRICE_OPTIONS_THOUSAND_LAKH;
   
   return (
     <div>
       {/* Selected Range */}
       <div className="flex gap-3 mb-4">
         <div className="flex-1 border border-gray-300 rounded-xl px-4 py-2 text-sm">
-          {selectedMinBudget ? '₹' + selectedMinBudget?.label : 'Min'}
+          {selectedMinBudget ? `₹ ${selectedMinBudget.label}` : "Min"}
         </div>
         <div className="flex-1 border border-gray-300 rounded-xl px-4 py-2 text-sm">
-          {selectedMaxBudget ? '₹' + selectedMaxBudget?.label : 'Max'}
+          {selectedMaxBudget ? `₹ ${selectedMaxBudget.label}` : "Max"}
         </div>
       </div>
 
