@@ -188,6 +188,7 @@ export interface step4_docusign_agreement {
 
 export interface KycStatusResponse {
  success: string;
+ role?: string;
  step1_live_photo: step1_live_photo,
  step2_aadhaar: step2_aadhaar,
  step3_bank_details: step3_bank_details,
