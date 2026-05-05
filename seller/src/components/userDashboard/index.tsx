@@ -61,6 +61,15 @@ export default function UserDashboard() {
             ? `Upgraded to Channel Partner. Your CP code: ${code}`
             : 'Upgraded to Channel Partner successfully',
         )
+        try {
+          const raw = localStorage.getItem("user");
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            parsed.role = USER_TYPE.CHANNEL_PARTNER;
+            if (code) parsed.channelPartnerCode = code;
+            localStorage.setItem("user", JSON.stringify(parsed));
+          }
+        } catch {}
         getUpdatedDashboardDetails()
         window.location.reload();
       },

@@ -16,34 +16,9 @@ import { getKycStatusApiHandler, KycStatusResponse } from "@/services/kycService
 import { USER_TYPE } from "@/lib/enums";
 
 export default function UserKyc({tabName, event}) {
-  const isOwner = useMemo(() => {
-    if (typeof window === "undefined") return false;
-    try {
-      const raw = localStorage.getItem("user");
-      if (!raw) return false;
-      const parsed = JSON.parse(raw);
-      return parsed?.role === USER_TYPE.OWNER;
-    } catch {
-      return false;
-    }
-  }, []);
-
-  const defaultTab = isOwner ? 'Agreement Signature' : 'Photo Upload';
-  const [activeStep, setActiveStep] = useState(tabName ? tabName : defaultTab);
   const router = useRouter()
 
   const [isKycComplete, setIsKycComplete] = useState(false)
-
-  const kycList = isOwner
-    ? [{ icon: AgreementIcon, name: "Agreement Signature" }]
-    : [
-        { icon: PhotoIcon, name: "Photo Upload" },
-        { icon: AadharIcon, name: "Aadhar Verification" },
-        { icon: BankIcon, name: "Bank Details" },
-        { icon: AgreementIcon, name: "Agreement Signature" },
-      ];
-
-
 
   const { data: kycDetails, refetch: refreshKyc, isLoading: detailsLoader } = useQuery({
     queryKey: ["kyc"],
@@ -56,6 +31,35 @@ export default function UserKyc({tabName, event}) {
     staleTime: 0,
     refetchOnMount: true,
   });
+
+  // Role drives which KYC steps render. Prefer the server-authoritative role
+  // from the KYC status response so an owner-just-upgraded-to-CP isn't stuck
+  // on a stale localStorage role. Fall back to localStorage only until the
+  // first server response lands.
+  const isOwner = useMemo(() => {
+    if (kycDetails?.role) return kycDetails.role === USER_TYPE.OWNER;
+    if (typeof window === "undefined") return false;
+    try {
+      const raw = localStorage.getItem("user");
+      if (!raw) return false;
+      const parsed = JSON.parse(raw);
+      return parsed?.role === USER_TYPE.OWNER;
+    } catch {
+      return false;
+    }
+  }, [kycDetails?.role]);
+
+  const defaultTab = isOwner ? 'Agreement Signature' : 'Photo Upload';
+  const [activeStep, setActiveStep] = useState(tabName ? tabName : defaultTab);
+
+  const kycList = isOwner
+    ? [{ icon: AgreementIcon, name: "Agreement Signature" }]
+    : [
+        { icon: PhotoIcon, name: "Photo Upload" },
+        { icon: AadharIcon, name: "Aadhar Verification" },
+        { icon: BankIcon, name: "Bank Details" },
+        { icon: AgreementIcon, name: "Agreement Signature" },
+      ];
 
   const handleActiveTab = (tabName, index) => {
     if( index> kycDetails?.kyc_steps_completed){
