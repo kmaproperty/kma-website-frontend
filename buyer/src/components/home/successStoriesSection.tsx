@@ -1,9 +1,10 @@
 "use client";
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  getMyKmaReviewApiHandler,
   getUserReviewApiHandler,
   GetUserReviewApiHandlerResponse,
   Rating,
@@ -60,6 +61,25 @@ function RatingStars({
   );
 }
 
+function formatRelativeDate(iso?: string) {
+  if (!iso) return "";
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+  const diffMs = Date.now() - date.getTime();
+  const diffMin = Math.round(diffMs / 60000);
+  if (diffMin < 1) return "just now";
+  if (diffMin < 60) return `${diffMin} min ago`;
+  const diffHr = Math.round(diffMin / 60);
+  if (diffHr < 24) return `${diffHr} hr ago`;
+  const diffDay = Math.round(diffHr / 24);
+  if (diffDay < 30) return `${diffDay} day${diffDay === 1 ? "" : "s"} ago`;
+  return date.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
 const bottomVariant = {
   hidden: { y: "100%", opacity: 0 },
   visible: {
@@ -88,6 +108,7 @@ export default function SuccessStoriesSection() {
   const [isWriteReviewOpen, setIsWriteReviewOpen] = useState(false);
   const [rating, setRating] = useState(5);
   const [review, setReview] = useState("");
+  const [hasExistingReview, setHasExistingReview] = useState(false);
   const [isAuthChecking, setIsAuthChecking] = useState(false);
   const [reviewPage, setReviewPage] = useState(1);
   const reviewsPerPage = 4;
@@ -111,6 +132,12 @@ export default function SuccessStoriesSection() {
     reviewData?.statistics?.totalCount ?? reviewData?.reviews?.length ?? 0;
   const averageRating = Number(reviewData?.statistics?.averageRating ?? 0);
   const reviews = reviewData?.reviews ?? [];
+  const ratingDistribution = reviewData?.statistics?.ratingDistribution ?? {};
+  const distributionMax = Math.max(
+    1,
+    ...[1, 2, 3, 4, 5].map((star) => Number(ratingDistribution[star] ?? 0)),
+  );
+
   const { mutate: submitReview, isPending: isSubmittingReview } = useMutation({
     mutationFn: submitEndUserReviewApiHandler,
     onSuccess: (response) => {
@@ -118,7 +145,9 @@ export default function SuccessStoriesSection() {
       setIsWriteReviewOpen(false);
       setReview("");
       setRating(5);
+      setHasExistingReview(true);
       queryClient.invalidateQueries({ queryKey: ["review"] });
+      queryClient.invalidateQueries({ queryKey: ["my-kma-review"] });
     },
     onError: (error: unknown) => {
       const maybeMessage =
@@ -146,6 +175,26 @@ export default function SuccessStoriesSection() {
         return;
       }
 
+      try {
+        const existing = await queryClient.fetchQuery({
+          queryKey: ["my-kma-review"],
+          queryFn: getMyKmaReviewApiHandler,
+        });
+        if (existing?.review) {
+          setRating(Number(existing.review.rating) || 5);
+          setReview(existing.review.review ?? "");
+          setHasExistingReview(true);
+        } else {
+          setRating(5);
+          setReview("");
+          setHasExistingReview(false);
+        }
+      } catch {
+        setRating(5);
+        setReview("");
+        setHasExistingReview(false);
+      }
+
       setIsWriteReviewOpen(true);
     } catch {
       openReferralLoginDialog(router);
@@ -153,6 +202,12 @@ export default function SuccessStoriesSection() {
       setIsAuthChecking(false);
     }
   };
+
+  useEffect(() => {
+    if (!isWriteReviewOpen) return;
+    // Reset paginated reviews when dialog closes so the user lands on a sensible page next time.
+    setReviewPage(1);
+  }, [isWriteReviewOpen]);
 
   const handleSubmitReview = () => {
     const cleanedReview = review.trim();
@@ -166,6 +221,10 @@ export default function SuccessStoriesSection() {
       review: cleanedReview,
     });
   };
+
+  const totalPages = Math.max(1, Math.ceil(reviews.length / reviewsPerPage));
+  const pageStart = (reviewPage - 1) * reviewsPerPage;
+  const pagedReviews = reviews.slice(pageStart, pageStart + reviewsPerPage);
 
   return (
     <>
@@ -181,28 +240,9 @@ export default function SuccessStoriesSection() {
             Success Stories
           </h1>
 
-          <button
-            type="button"
-            className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs text-white border border-white/20"
-          >
-            <span>Mar 2026 - Feb 2026</span>
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="opacity-90"
-            >
-              <path
-                d="M7 10l5 5 5-5"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
+          <div className="rounded-full bg-white/10 px-4 py-2 text-xs text-white border border-white/20">
+            All time
+          </div>
         </motion.div>
 
         {/* Main card */}
@@ -222,12 +262,9 @@ export default function SuccessStoriesSection() {
                     ? `${(totalReviews / 1000).toFixed(1)}K`
                     : totalReviews}
                 </p>
-                <p className="text-[11px] text-[#22C55E] font-medium">
-                  +12%
-                </p>
               </div>
               <p className="mt-1 text-[11px] text-[#9CA3AF]">
-                Growth in reviews this year
+                Approved reviews shown publicly
               </p>
             </div>
 
@@ -240,28 +277,32 @@ export default function SuccessStoriesSection() {
                 <div className="flex items-center gap-2">
                   <RatingStars rating={averageRating} total={5} />
                   <p className="text-[11px] text-[#6B7280]">
-                    Average rating during the period
+                    Across {totalReviews} review{totalReviews === 1 ? "" : "s"}
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* lightweight "chart" placeholder */}
+            {/* Rating distribution bars (server-driven) */}
             <div className="p-6 2md:p-8">
               <div className="flex flex-col gap-2">
-                {[80, 60, 45, 35, 25].map((w, i) => (
-                  <div key={i} className="flex items-center gap-3">
-                    <div className="h-[6px] w-full rounded-full bg-[#EEF0F3] overflow-hidden">
-                      <div
-                        className="h-full rounded-full bg-[#1E3A8A]"
-                        style={{ width: `${w}%` }}
-                      />
+                {[5, 4, 3, 2, 1].map((star) => {
+                  const count = Number(ratingDistribution[star] ?? 0);
+                  const pct = Math.round((count / distributionMax) * 100);
+                  return (
+                    <div key={star} className="flex items-center gap-3">
+                      <div className="h-[6px] w-full rounded-full bg-[#EEF0F3] overflow-hidden">
+                        <div
+                          className="h-full rounded-full bg-[#1E3A8A]"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                      <p className="w-8 text-right text-[11px] text-[#6B7280]">
+                        {star}
+                      </p>
                     </div>
-                    <p className="w-8 text-right text-[11px] text-[#6B7280]">
-                      {5 - i}
-                    </p>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -273,76 +314,9 @@ export default function SuccessStoriesSection() {
                 <p className="text-sm font-semibold text-[#111827]">
                   All Reviews ({totalReviews})
                 </p>
-                <p className="mt-1 text-[11px] text-[#9CA3AF]">0.20</p>
               </div>
 
               <div className="flex flex-col gap-3 2md:flex-row 2md:items-center">
-                {/* <div className="flex items-center gap-2">
-                  <div className="relative">
-                    <input
-                      placeholder=""
-                      className="h-9 w-[240px] max-w-full rounded-[6px] border border-[#EEF0F3] bg-white pl-3 pr-9 text-xs text-[#111827] outline-none"
-                      readOnly
-                    />
-                    <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]">
-                      <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M21 21l-4.35-4.35"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                        />
-                        <circle
-                          cx="11"
-                          cy="11"
-                          r="7"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-4 text-xs text-[#6B7280]">
-                  <button type="button" className="hover:text-[#111827]">
-                    Filter
-                  </button>
-                  <button type="button" className="hover:text-[#111827]">
-                    Rating
-                  </button>
-                  <button type="button" className="hover:text-[#111827]">
-                    Sort by
-                  </button>
-                  <button
-                    type="button"
-                    className="flex items-center gap-2 hover:text-[#111827]"
-                  >
-                    <span>Recommended</span>
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </button>
-                </div> */}
-
                 <button
                   type="button"
                   className="h-9 rounded-[6px] bg-blue px-4 text-xs font-medium text-white"
@@ -351,105 +325,106 @@ export default function SuccessStoriesSection() {
                 >
                   {isAuthChecking ? "Checking..." : "Write Review"}
                 </button>
-
-
-                {/* show this again */}
               </div>
             </div>
 
-            {/* Review list — pagedReviews keeps server data in sync; placeholders only show when there's no data */}
-            <div className="mt-6 rounded-[8px] border border-[#EEF0F3]">
-              {(() => {
-                const allReviews = reviews.length
-                  ? (reviews as (Rating | null)[])
-                  : (Array.from({ length: 4 }).map(() => null) as (Rating | null)[]);
-                const start = (reviewPage - 1) * reviewsPerPage;
-                return allReviews.slice(start, start + reviewsPerPage);
-              })().map((item: Rating | null, idx: number) => {
-                const name = item?.name ?? "Meera";
-                const rating = Number(item?.rating ?? 4.2);
-                const review =
-                  item?.review ??
-                  "This society has been a great and harmonious place. The security, amenities, and maintenance are consistently reliable...";
-                const profileImage =
-                  item?.endUser?.profileImage && profileBaseUrl
-                    ? profileBaseUrl + item.endUser?.profileImage
-                    : null;
+            {/* Review list — only rendered when there is real server data */}
+            {pagedReviews.length === 0 ? (
+              <div className="mt-6 rounded-[8px] border border-[#EEF0F3] py-10 text-center text-sm text-[#6B7280]">
+                No reviews yet — be the first to share your experience.
+              </div>
+            ) : (
+              <div className="mt-6 rounded-[8px] border border-[#EEF0F3]">
+                {pagedReviews.map((item: Rating, idx: number) => {
+                  const name = item?.name?.trim() || "Anonymous";
+                  const reviewRating = Number(item?.rating ?? 0);
+                  const reviewText = item?.review ?? "";
+                  const profileImage =
+                    item?.endUser?.profileImage && profileBaseUrl
+                      ? profileBaseUrl + item.endUser?.profileImage
+                      : null;
+                  const dateLabel = formatRelativeDate(item?.createdAt);
 
-                return (
-                  <div
-                    key={item?.id ?? idx}
-                    className="px-5 py-5 2md:px-6 2md:py-6 border-b last:border-b-0 border-[#EEF0F3]"
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex gap-3">
-                        {profileImage ? (
-                          <Image
-                            src={profileImage}
-                            width={36}
-                            height={36}
-                            alt="profile"
-                            className="rounded-full object-cover h-9 w-9"
-                          />
-                        ) : (
-                          <div className="h-9 w-9 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold text-gray-700 uppercase">
-                            {name?.charAt(0)}
-                          </div>
-                        )}
+                  return (
+                    <div
+                      key={item?.id ?? `${pageStart}-${idx}`}
+                      className="px-5 py-5 2md:px-6 2md:py-6 border-b last:border-b-0 border-[#EEF0F3]"
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex gap-3">
+                          {profileImage ? (
+                            <Image
+                              src={profileImage}
+                              width={36}
+                              height={36}
+                              alt="profile"
+                              className="rounded-full object-cover h-9 w-9"
+                            />
+                          ) : (
+                            <div className="h-9 w-9 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold text-gray-700 uppercase">
+                              {name.charAt(0)}
+                            </div>
+                          )}
 
-                        <div className="min-w-0">
-                          <p className="text-sm font-semibold text-[#111827]">
-                            {name}
-                          </p>
-                          <div className="mt-1 flex items-center gap-2">
-                            <RatingStars rating={rating} total={5} />
-                            <p className="text-[11px] text-[#6B7280]">
-                              {rating.toFixed(1)}
+                          <div className="min-w-0">
+                            <p className="text-sm font-semibold text-[#111827]">
+                              {name}
                             </p>
+                            <div className="mt-1 flex items-center gap-2">
+                              <RatingStars rating={reviewRating} total={5} />
+                              <p className="text-[11px] text-[#6B7280]">
+                                {reviewRating.toFixed(1)}
+                              </p>
+                              {dateLabel && (
+                                <p className="text-[11px] text-[#9CA3AF]">
+                                  · {dateLabel}
+                                </p>
+                              )}
+                            </div>
                           </div>
                         </div>
+
+                        <button
+                          type="button"
+                          className="flex items-center gap-2 text-xs text-[#6B7280]"
+                        >
+                          <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M7 10v10h10V10"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinejoin="round"
+                            />
+                            <path
+                              d="M9 10l3-6 3 6"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                          Helpful
+                        </button>
                       </div>
 
-                      <button
-                        type="button"
-                        className="flex items-center gap-2 text-xs text-[#6B7280]"
-                      >
-                        <svg
-                          width="14"
-                          height="14"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M7 10v10h10V10"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinejoin="round"
-                          />
-                          <path
-                            d="M9 10l3-6 3 6"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                        Helpful
-                      </button>
+                      {reviewText && (
+                        <p className="mt-4 text-xs leading-5 text-[#6B7280]">
+                          {reviewText}
+                        </p>
+                      )}
                     </div>
-
-                    <p className="mt-4 text-xs leading-5 text-[#6B7280]">
-                      {review}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            )}
 
             {/* Pagination */}
             {reviews.length > reviewsPerPage && (() => {
-              const totalPages = Math.max(1, Math.ceil(reviews.length / reviewsPerPage));
-              // Show up to 3 page numbers, sliding around the current page
               const start = Math.max(1, Math.min(reviewPage - 1, totalPages - 2));
               const pageNumbers = Array.from({ length: Math.min(3, totalPages) }, (_, i) => start + i).filter((p) => p <= totalPages);
               return (
@@ -504,7 +479,9 @@ export default function SuccessStoriesSection() {
         <DialogContent sx={{ padding: 0 }}>
           <div className="w-full rounded-xl bg-white p-5 sm:w-[460px]">
             <div className="mb-4 flex items-start justify-between gap-3">
-              <h3 className="text-[24px] font-semibold text-[#1E2236]">Write a Review</h3>
+              <h3 className="text-[24px] font-semibold text-[#1E2236]">
+                {hasExistingReview ? "Update your review" : "Write a Review"}
+              </h3>
               <button
                 type="button"
                 onClick={() => setIsWriteReviewOpen(false)}
@@ -556,7 +533,11 @@ export default function SuccessStoriesSection() {
               disabled={isSubmittingReview}
               className="inline-flex h-10 w-full items-center justify-center rounded-full bg-blue px-6 text-sm font-semibold text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-70"
             >
-              {isSubmittingReview ? "Submitting..." : "Submit Review"}
+              {isSubmittingReview
+                ? "Submitting..."
+                : hasExistingReview
+                  ? "Update Review"
+                  : "Submit Review"}
             </button>
           </div>
         </DialogContent>

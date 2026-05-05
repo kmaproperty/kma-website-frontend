@@ -302,7 +302,9 @@ export interface GetUserReviewApiHandlerResponse {
     reviews: Rating[],
     statistics: {
         totalCount: number,
-        averageRating: number
+        averageRating: number,
+        totalEndUsers?: number,
+        ratingDistribution?: Record<string, number>
     },
     trustedByText: string
 }
@@ -336,6 +338,31 @@ export const submitEndUserReviewApiHandler = async (
         const response = await axiosInstance.post<SubmitEndUserReviewResponse>(
             "end-user/rating-review",
             payload
+        );
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data ?? error;
+    }
+}
+
+export interface MyKmaReview {
+    id: string;
+    rating: number;
+    review: string | null;
+    isApproved: boolean;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface GetMyKmaReviewResponse {
+    success: boolean;
+    review: MyKmaReview | null;
+}
+
+export const getMyKmaReviewApiHandler = async (): Promise<GetMyKmaReviewResponse> => {
+    try {
+        const response = await axiosInstance.get<GetMyKmaReviewResponse>(
+            "end-user/my-rating-review",
         );
         return response.data;
     } catch (error: any) {
