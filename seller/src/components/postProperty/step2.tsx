@@ -372,14 +372,14 @@ export default function Step2({containerRef}) {
       }
 
       if(fieldName == FIELD_NAME.MAINTENANCE_CHARGE){
-        if(isResidential && (isRent || isSell) && ['res-rent-flat', 'res-rent-villa', 'res-rent-house', 'res-rent-duplex', 'res-rent-builder-floor', 'res-rent-penthouse', 'res-rent-studio', 'res-rent-farmhouse', 'res-sale-flat', 'res-sale-villa', 'res-sale-house', 'res-sale-duplex', 'res-sale-builder-floor', 'res-sale-penthouse', 'res-sale-studio', 'res-sale-farmhouse', 'res-sale-plot', 'res-sale-agri-land'].includes(basicStaticDetail.propertyType?.code ?? '')){
+        if(isResidential && isRent && ['res-rent-flat', 'res-rent-villa', 'res-rent-house', 'res-rent-duplex', 'res-rent-builder-floor', 'res-rent-penthouse', 'res-rent-studio', 'res-rent-farmhouse'].includes(basicStaticDetail.propertyType?.code ?? '')){
           return true
         }
         return false
       }
 
       if(fieldName == FIELD_NAME.MAINTENANCE_CHARGE_VALUE){
-        if(isResidential && (isRent || isSell) && ['res-rent-flat', 'res-rent-villa', 'res-rent-house', 'res-rent-duplex', 'res-rent-builder-floor', 'res-rent-penthouse', 'res-rent-studio', 'res-rent-farmhouse', 'res-sale-flat', 'res-sale-villa', 'res-sale-house', 'res-sale-duplex', 'res-sale-builder-floor', 'res-sale-penthouse', 'res-sale-studio', 'res-sale-farmhouse', 'res-sale-plot', 'res-sale-agri-land'].includes(basicStaticDetail.propertyType?.code ?? '') && dynamicFieldDetails.maintenanceCharges == 'separate'){
+        if(isResidential && isRent && ['res-rent-flat', 'res-rent-villa', 'res-rent-house', 'res-rent-duplex', 'res-rent-builder-floor', 'res-rent-penthouse', 'res-rent-studio', 'res-rent-farmhouse'].includes(basicStaticDetail.propertyType?.code ?? '') && dynamicFieldDetails.maintenanceCharges == 'separate'){
           return true
         }
         return false
@@ -521,16 +521,10 @@ export default function Step2({containerRef}) {
       }
 
       if(fieldName == FIELD_NAME.COMMERCIAL_MAINTENANCE_CHARGE){
-        if((isSell || isRent) && ['com-sale-office', 'com-sale-retail-shop', 'com-sale-showroom', 'com-sale-warehouse', 'com-sale-plot'].includes(basicStaticDetail.propertyType?.code ?? '')){
-          return true
-        }
         return false
       }
 
       if(fieldName == FIELD_NAME.COMMERCIAL_MAINTENANCE_CHARGE_VALUE){
-        if((isSell || isRent) && ['com-sale-office', 'com-sale-retail-shop', 'com-sale-showroom', 'com-sale-warehouse', 'com-sale-plot'].includes(basicStaticDetail.propertyType?.code ?? '') && dynamicFieldDetails.maintenanceCharges == 'separate'){
-          return true
-        }
         return false
       }
 
