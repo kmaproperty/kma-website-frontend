@@ -38,7 +38,7 @@ export default function LoginOtpCard() {
   const { mutate: resendOtp } = useMutation({
     mutationFn: (payload: OtpPayload): Promise<SendOtpResponse> => resendOtpApiHandler(payload),
     onSuccess: (response) => {
-      toast.success(response.otp);
+      toast.success(response.message ?? "OTP sent successfully");
     },
     onError: (error: any) => {
       toast.error(error?.message ?? "Unable to resend OTP");

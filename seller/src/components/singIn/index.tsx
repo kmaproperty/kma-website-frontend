@@ -53,7 +53,7 @@ export default function SignIn() {
           // ownerType: selectedPartnerType,
           // ...(selectedPartnerType == USER_TYPE.OWNER ? {propertyIntent: propertyIntent,} : '')
         })
-        toast.success(response.otp)
+        toast.success(response.message ?? "OTP sent successfully")
         setMobileInput({value: '', validationMessage: '', code: '+91'})
         router.replace(`${pathname}${params}`);
       },

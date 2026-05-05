@@ -94,7 +94,7 @@ export default function PostPropertyHandoffPage() {
         return;
       }
       if (response.otp) {
-        toast.success(`Dev OTP: ${response.otp}`);
+        toast.success(response.message ?? "OTP sent successfully");
       }
       setPhoneMasked(maskPhone(readStoredPhone()));
       setStep("otp");

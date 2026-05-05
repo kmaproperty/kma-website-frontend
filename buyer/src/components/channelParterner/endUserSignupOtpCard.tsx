@@ -39,7 +39,7 @@ export default function EndUserSignupOtpCard() {
     mutationFn: (payload: EndUserSignupPayload): Promise<EndUserSignupResponse> =>
       sendEndUserSignupOtpApiHandler(payload),
     onSuccess: (response) => {
-      toast.success(response.otp ?? response.message);
+      toast.success(response.message ?? "OTP sent successfully");
     },
     onError: (error: any) => {
       toast.error(error?.message ?? "Unable to resend OTP");
