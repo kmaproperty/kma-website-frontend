@@ -49,7 +49,7 @@ export default function LoginCard() {
         flow: "login",
         ...(redirect ? { redirect } : {}),
       });
-      toast.success(response.otp);
+      toast.success(response.message ?? "OTP sent successfully");
       router.replace(`${pathname}${params}`);
     },
     onError: (error: any) => {

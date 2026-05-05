@@ -63,7 +63,7 @@ export default function SignUpCard() {
         isOtp: true,
         flow: "enduser-signup",
       });
-      toast.success(response.otp);
+      toast.success(response.message ?? "OTP sent successfully");
       router.replace(`${pathname}${params}`);
     },
     onError: (error: any) => {

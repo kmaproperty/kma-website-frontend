@@ -113,7 +113,7 @@ export default function SignUp() {
         isOtp: true,
         flow: "signup",
       })
-      toast.success(response.otp)
+      toast.success(response.message ?? "OTP sent successfully")
       router.push(`/user-flow${params}`)
     },
     onError: (error: any) => {

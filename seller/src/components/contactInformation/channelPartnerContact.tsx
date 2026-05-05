@@ -112,7 +112,7 @@ export default function ChannelPartnerContact({ open, onClose }) {
           mutationFn: (payload: ContactUsHomeOtpPayload): Promise<ContactUsHOmeOtpResponse> =>
             contactUsHomeOtpApiHandler(payload),
           onSuccess: async (res) => {
-            toast.success(res.otp)
+            toast.success(res.message ?? "OTP sent successfully")
           },
           onError: (err: any) => {
             console.error("OTP Verify Error:", err);
