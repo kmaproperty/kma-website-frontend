@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import UpgradeChannelPartner from "../common/upgradeChannelpartner";
 import { AboutusResponse, getAboutUsDataAPiHanlder } from "@/services/homeService";
+import { docuSingStatusApiHanlder, DocusignResponse } from "@/services/kycService";
 
 export default function UserDashboard() {
   const router = useRouter()
@@ -36,6 +37,13 @@ export default function UserDashboard() {
       select: (response: AboutusResponse) => {
         return response?.configuration
       }
+    });
+
+    const { data: agreementStatus, refetch: refetchAgreementStatus } = useQuery({
+      queryKey: ["docusign-agreement-status"],
+      queryFn: async (): Promise<DocusignResponse> => docuSingStatusApiHanlder(),
+      enabled: userDashboardDetails?.role === USER_TYPE.OWNER,
+      staleTime: 0,
     });
 
   const {
@@ -302,7 +310,13 @@ export default function UserDashboard() {
                 </span>
               </li>
             </ul>
-            <button onClick={() => {
+            <button onClick={async () => {
+              const latest = await refetchAgreementStatus()
+              if (!latest?.data?.docusign_agreement_signed) {
+                toast.info('Please sign the channel partner agreement first')
+                router.push('/kyc?tabName=Agreement%20Signature')
+                return
+              }
               setOpenCodePopup(true)
             }} className="w-full sm:w-fit text-sm sm:text-base animated-button px-5 sm:px-12 py-3 border border-blue text-center cursor-pointer">
               <span className="gap-3 relative flex justify-center">
