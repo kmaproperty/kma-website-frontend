@@ -54,9 +54,13 @@ export default function FeaturedProperties({ topProperties }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
+  const [listingFilter, setListingFilter] = useState<"Sale" | "Rent">("Sale");
   const [visibleSlides, setVisibleSlides] = useState(4);
 
-  const filteredProperties = topProperties ?? [];
+  const filteredProperties = (topProperties ?? []).filter((item: any) => {
+    if (!item?.listingType) return true;
+    return item.listingType === listingFilter;
+  });
 
   const toggleFavorite = async (e: React.MouseEvent, propertyId: string) => {
     e.stopPropagation();
@@ -124,6 +128,8 @@ export default function FeaturedProperties({ topProperties }) {
         sectionName="featureProperties"
         heading="Featured Properties"
         subHeading="Discover exclusive listings of premium properties available for purchase."
+        listingFilter={listingFilter}
+        onListingFilterChange={setListingFilter}
       />
 
       <div className="flex-1 w-full  2md:min-w-0 -mx-2 feature-property">
@@ -175,16 +181,19 @@ export default function FeaturedProperties({ topProperties }) {
                       </span>
 
                       {/* Avatar */}
-                      <div className="absolute -bottom-5 left-4 rounded-full bg-white p-1 shadow-sm ring-1 ring-slate-200">
+                      <button
+                        type="button"
+                        className="absolute -bottom-5 left-4 rounded-full bg-white p-1 shadow-sm ring-1 ring-slate-200"
+                        aria-label="View agent"
+                      >
                         <Image
-                          src={item?.owner?.profileImage || "/assets/property/profile.png"}
+                          src={"/assets/property/profile.png"}
                           width={28}
                           height={28}
-                          alt={item?.owner?.name ?? "Agent"}
-                          className="rounded-full h-8 w-8 object-cover"
-                          onError={(e) => { (e.target as HTMLImageElement).src = "/assets/property/profile.png"; }}
+                          alt="profile"
+                          className="rounded-full h-8 w-8"
                         />
-                      </div>
+                      </button>
                     </div>
 
                     {/* CONTENT */}
@@ -254,24 +263,18 @@ export default function FeaturedProperties({ topProperties }) {
 
                       {/* Meta */}
                       <div className="mt-1 border-t border-slate-200 pt-3 text-xs">
-                        {item?.createdAt && (
-                          <div className="flex items-center gap-2">
-                            <span className="text-text-gray">Listed on :</span>
-                            <span className="text-text-black">
-                              {new Date(item.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
-                            </span>
-                          </div>
-                        )}
-                        {item?.listingType && (
-                          <div className="mt-1 flex items-center gap-2">
-                            <span className="text-text-gray">Type:</span>
-                            <span className="text-text-black">{item.listingType}</span>
-                          </div>
-                        )}
+                        <div className="flex items-center gap-2">
+                          <span className="text-text-gray">Listed on :</span>
+                          <span className="text-text-black">25 May 2025</span>
+                        </div>
                         {item?.constructionStatus ? (
                           <div className="mt-1 flex items-center gap-2">
-                            <span className="text-text-gray">Possession:</span>
-                            <span className="text-text-black">{item.constructionStatus}</span>
+                            <span className="text-text-gray">
+                              Possession status:
+                            </span>
+                            <span className="text-text-black">
+                              {item.constructionStatus}
+                            </span>
                           </div>
                         ) : null}
                       </div>
@@ -279,17 +282,52 @@ export default function FeaturedProperties({ topProperties }) {
                       {/* Amenities */}
                       <div className="mt-2 border-t border-slate-200 pt-3">
                         <div className="flex flex-wrap gap-3">
-                          {item?.bhkType && (
-                            <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-2.5 py-1.5 text-xs text-text-black border border-slate-200">
-                              <Image src={"/assets/property/bad.svg"} width={16} height={16} alt="bhk" />
-                              <span className="whitespace-nowrap">{item.bhkType}</span>
+                          {![
+                            "Office",
+                            "Plot",
+                            "Retail Shop",
+                            "Warehouse",
+                            "Showroom",
+                            "Agricultural Land",
+                          ].includes(item?.propertyType) ? (
+                            <>
+                              <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-2.5 py-1.5 text-xs text-text-black border border-slate-200">
+                                <Image
+                                  src={"/assets/property/bad.svg"}
+                                  width={16}
+                                  height={16}
+                                  alt="bed"
+                                />
+                                <span className="whitespace-nowrap">
+                                  {item?.bed} Bed
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-2.5 py-1.5 text-xs text-text-black border border-slate-200">
+                                <Image
+                                  src={"/assets/property/bathroom.svg"}
+                                  width={16}
+                                  height={16}
+                                  alt="bath"
+                                />
+                                <span className="whitespace-nowrap">
+                                  {item?.bath} Bath
+                                </span>
+                              </div>
+                            </>
+                          ) : null}
+
+                          {/* {size ? (
+                            <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-2.5 py-1.5 text-xs text-text-black border border-slate-200 max-w-full">
+                              <Image
+                                src={"/assets/property/major-white.svg"}
+                                width={16}
+                                height={16}
+                                alt="size"
+                                className="invert"
+                              />
+                              <span className="truncate">{size}</span>
                             </div>
-                          )}
-                          {item?.furnishType && (
-                            <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-2.5 py-1.5 text-xs text-text-black border border-slate-200">
-                              <span className="whitespace-nowrap">{item.furnishType}</span>
-                            </div>
-                          )}
+                          ) : null} */}
                         </div>
                       </div>
                     </div>
