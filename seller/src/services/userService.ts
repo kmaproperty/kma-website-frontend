@@ -66,6 +66,8 @@ interface kycstatus {
 export interface UserDashboardDetailsResponse {
   name: string;
   role: UserType;
+  profileImage?: string | null;
+  channelPartnerCode?: string | null;
   plan: "FREE" | "PRO" | "ENTERPRISE";
   kycStatus: kycstatus,
   freeListings: {
