@@ -12,7 +12,6 @@ import {
 import type { user } from "@/services/userService";
 import {
   getFileUploadUrlApiHandler,
-  GetFileUploadUrlResponse,
   uploadFileToS3ApiHandler,
 } from "@/services/masterService";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -25,11 +24,12 @@ import MyReviewsScreen from "./myReviewsScreen";
 import ImageUpload from "../common/upload";
 import { useCitySearch } from "@/api/hooks/useCitySearch";
 import AsyncSelect from "react-select/async";
+import type { SingleValue } from "react-select";
 
 type ProfileTab = "activity" | "reviews" | "edit";
 
 const inputClassName =
-  "h-[42px] w-full rounded-full border border-border bg-white px-4 text-sm text-text-black outline-none placeholder:text-text-gray/80 focus:border-blue";
+  "h-[38px] sm:h-[42px] w-full rounded-full border border-border bg-white px-3 sm:px-4 text-[13px] sm:text-sm text-text-black outline-none placeholder:text-text-gray/80 focus:border-blue";
 
 const baseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
 
@@ -154,14 +154,14 @@ function EditProfileContent({ user, onSuccess }: EditProfileContentProps) {
   const displayImageSrc = profilePreviewUrl ?? getProfileImageUrl(user.profileImage);
 
   return (
-    <div className="rounded-xl bg-white p-4 sm:p-5">
-      <h2 className="text-[30px] font-semibold leading-none text-text-black">Edit Profile</h2>
+    <div className="rounded-xl bg-white p-3 sm:p-5">
+      <h2 className="text-[24px] sm:text-[30px] font-semibold leading-none text-text-black">Edit Profile</h2>
 
-      <div className="mt-6 flex flex-col gap-8">
+      <div className="mt-4 sm:mt-6 flex flex-col gap-6 sm:gap-8">
         <div>
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
-            <div className="flex shrink-0 flex-col items-center gap-3">
-              <div className="relative flex h-[78px] w-[78px] overflow-hidden rounded-full bg-light-purple text-xl font-semibold text-blue">
+          <div className="flex flex-col gap-4 sm:gap-5 sm:flex-row sm:items-start">
+            <div className="flex shrink-0 flex-col items-center gap-2.5 sm:gap-3">
+              <div className="relative flex h-[64px] w-[64px] sm:h-[78px] sm:w-[78px] overflow-hidden rounded-full bg-light-purple text-lg sm:text-xl font-semibold text-blue">
                 <Image
                   src={displayImageSrc}
                   width={78}
@@ -171,7 +171,7 @@ function EditProfileContent({ user, onSuccess }: EditProfileContentProps) {
                   unoptimized={!!profilePreviewUrl}
                 />
               </div>
-              <div className="w-full max-w-[200px]">
+              <div className="w-full max-w-[190px] sm:max-w-[200px]">
                 <ImageUpload
                   onUpload={handleProfilePhotoSelect}
                   type="photo"
@@ -181,9 +181,9 @@ function EditProfileContent({ user, onSuccess }: EditProfileContentProps) {
                 />
               </div>
             </div>
-            <div className="w-full max-w-[520px] flex-1 space-y-4">
+            <div className="w-full max-w-[520px] flex-1 space-y-3 sm:space-y-4">
               <div>
-                <label className="mb-1 block text-sm font-medium text-text-black">Name</label>
+                <label className="mb-1 block text-[13px] sm:text-sm font-medium text-text-black">Name</label>
                 <input
                   className={inputClassName}
                   placeholder="Enter your full name"
@@ -192,7 +192,7 @@ function EditProfileContent({ user, onSuccess }: EditProfileContentProps) {
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium text-text-black">Email</label>
+                <label className="mb-1 block text-[13px] sm:text-sm font-medium text-text-black">Email</label>
                 <input
                   className={inputClassName}
                   placeholder="Enter your email address"
@@ -202,13 +202,13 @@ function EditProfileContent({ user, onSuccess }: EditProfileContentProps) {
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium text-text-black">City</label>
+                <label className="mb-1 block text-[13px] sm:text-sm font-medium text-text-black">City</label>
                 <AsyncSelect
                   cacheOptions
                   defaultOptions
                   loadOptions={loadCities}
                   value={cityOption}
-                  onChange={(opt: any) => {
+                  onChange={(opt: SingleValue<{ label: string; value: string }>) => {
                     setCityOption(opt);
                     setCity(opt?.label || "");
                   }}
@@ -230,21 +230,21 @@ function EditProfileContent({ user, onSuccess }: EditProfileContentProps) {
             </div>
           </div>
 
-          <div className="mt-4 flex justify-start sm:justify-end sm:pr-[40px]">
+          <div className="mt-3 sm:mt-4 flex justify-start sm:justify-end sm:pr-[40px]">
             <button
               type="button"
               onClick={handleSave}
               disabled={isPending}
-              className="animated-button px-8 py-2.5 text-sm disabled:opacity-70"
+              className="animated-button px-6 sm:px-8 py-2 sm:py-2.5 text-[13px] sm:text-sm disabled:opacity-70"
             >
               <span className="relative">{isPending ? "Saving..." : "Save changes"}</span>
             </button>
           </div>
         </div>
 
-        <div className="border-t border-border pt-6">
-          <h3 className="text-[30px] font-semibold leading-none text-text-black">Mobile Number</h3>
-          <p className="mt-2 text-sm text-text-gray">{user.phone?.startsWith('+') ? user.phone : `+91 ${user.phone}`}</p>
+        <div className="border-t border-border pt-5 sm:pt-6">
+          <h3 className="text-[24px] sm:text-[30px] font-semibold leading-none text-text-black">Mobile Number</h3>
+          <p className="mt-2 text-[13px] sm:text-sm text-text-gray">{user.phone?.startsWith('+') ? user.phone : `+91 ${user.phone}`}</p>
           <p className="mt-1 text-xs text-text-gray">Contact support to change your mobile number.</p>
         </div>
       </div>
@@ -306,10 +306,10 @@ export default function EditProfileScreen() {
   };
 
   return (
-    <section className="w-full rounded-2xl bg-[#F5F5F5] p-3 sm:p-5 lg:p-6 shadow-[0_8px_30px_rgba(17,24,39,0.08)]">
-      <div className="flex flex-col gap-5 lg:flex-row">
-        <aside className="w-full min-w-0 shrink-0 rounded-2xl bg-[#EFEFEF] p-4 lg:w-[240px]">
-          <div className="flex flex-col items-center border-b border-border pb-5">
+    <section className="w-full rounded-2xl bg-[#F5F5F5] p-2 shadow-[0_8px_30px_rgba(17,24,39,0.08)] sm:p-5 lg:p-6">
+      <div className="flex min-w-0 flex-col gap-4 sm:gap-5 lg:flex-row lg:gap-5">
+        <aside className="w-full min-w-0 shrink-0 rounded-2xl bg-[#EFEFEF] p-3 sm:p-4 lg:w-[240px]">
+          <div className="flex flex-col items-center border-b border-border px-1 pb-4 sm:pb-5">
             {tokenPending || (isLoggedIn && profileLoading) ? (
               <div className="flex h-[78px] w-[78px] animate-pulse items-center justify-center rounded-full bg-white shadow-sm" />
             ) : (
@@ -331,42 +331,36 @@ export default function EditProfileScreen() {
                 )}
               </div>
             )}
-            <p className="mt-3 text-sm font-medium text-text-black">
+            <p className="mt-3 max-w-full text-center text-[15px] font-medium leading-snug text-text-black sm:text-sm">
               {tokenPending || (isLoggedIn && profileLoading) ? "..." : !isLoggedIn ? "Guest" : user?.name ?? "User"}
             </p>
-            <p className="mt-1 text-xs text-text-gray">
+            <p className="mt-1 max-w-full break-words text-center text-xs text-text-gray">
               {isLoggedIn && user?.phone ? (user.phone.startsWith("+") ? user.phone : `+91 ${user.phone}`) : ""}
             </p>
           </div>
 
-          <div className="pt-4">
+          <div className="pt-3 sm:pt-4">
             <button
               onClick={() => setActiveTab("activity")}
-              className={`relative flex w-full items-center justify-between rounded-lg px-2 py-2.5 text-left text-sm transition ${
+              className={`flex w-full items-center justify-between rounded-lg border-l-[3px] py-2.5 pl-2.5 pr-2 text-left text-sm transition ${
                 activeTab === "activity"
-                  ? "bg-white font-medium text-blue shadow-[0_1px_2px_rgba(15,23,42,0.08)]"
-                  : "text-text-black hover:bg-white/70"
+                  ? "border-blue bg-white font-medium text-blue shadow-[0_1px_2px_rgba(15,23,42,0.08)]"
+                  : "border-transparent text-text-black hover:bg-white/70"
               }`}
             >
-              {activeTab === "activity" ? (
-                <span className="absolute -left-4 top-2.5 h-5 w-[2.5px] rounded-r-sm bg-blue" />
-              ) : null}
               <span>My Activity</span>
-              <Image src="/assets/right-arrow-blue.svg" width={12} height={12} alt="open activity" />
+              <Image src="/assets/right-arrow-blue.svg" width={12} height={12} alt="" className="shrink-0" />
             </button>
 
             <button
               onClick={() => setActiveTab("reviews")}
-              className={`relative mt-1 flex w-full items-center gap-2 rounded-lg px-2 py-2.5 text-left text-sm transition ${
+              className={`mt-1 flex w-full items-center gap-2 rounded-lg border-l-[3px] py-2.5 pl-2.5 pr-2 text-left text-sm transition ${
                 activeTab === "reviews"
-                  ? "bg-white font-medium text-blue shadow-[0_1px_2px_rgba(15,23,42,0.08)]"
-                  : "text-text-black hover:bg-white/70"
+                  ? "border-blue bg-white font-medium text-blue shadow-[0_1px_2px_rgba(15,23,42,0.08)]"
+                  : "border-transparent text-text-black hover:bg-white/70"
               }`}
             >
-              {activeTab === "reviews" ? (
-                <span className="absolute -left-4 top-2.5 h-5 w-[2.5px] rounded-r-sm bg-blue" />
-              ) : null}
-              <Image src="/assets/review-blue.svg" width={14} height={14} alt="reviews" />
+              <Image src="/assets/review-blue.svg" width={14} height={14} alt="" className="shrink-0" />
               <span>My Reviews</span>
             </button>
 
@@ -374,16 +368,13 @@ export default function EditProfileScreen() {
               <div className="mt-3 border-t border-border pt-3">
                 <button
                   onClick={() => setActiveTab("edit")}
-                  className={`relative flex w-full items-center gap-2 rounded-lg px-2 py-2.5 text-left text-sm transition ${
+                  className={`flex w-full items-center gap-2 rounded-lg border-l-[3px] py-2.5 pl-2.5 pr-2 text-left text-sm transition ${
                     activeTab === "edit"
-                      ? "bg-white font-medium text-blue shadow-[0_1px_2px_rgba(15,23,42,0.08)]"
-                      : "text-text-black hover:bg-white/70"
+                      ? "border-blue bg-white font-medium text-blue shadow-[0_1px_2px_rgba(15,23,42,0.08)]"
+                      : "border-transparent text-text-black hover:bg-white/70"
                   }`}
                 >
-                  {activeTab === "edit" ? (
-                    <span className="absolute -left-4 top-2.5 h-5 w-[2.5px] rounded-r-sm bg-blue" />
-                  ) : null}
-                  <Image src="/assets/edit-pen-blue.svg" width={14} height={14} alt="edit profile" />
+                  <Image src="/assets/edit-pen-blue.svg" width={14} height={14} alt="" className="shrink-0" />
                   <span>Edit Profile</span>
                 </button>
               </div>
@@ -395,14 +386,14 @@ export default function EditProfileScreen() {
               type="button"
               onClick={() => handleLogoutApi()}
               disabled={isPending}
-              className="mt-7 flex h-[42px] w-full items-center justify-center rounded-lg border border-border bg-white text-sm font-medium text-text-black transition hover:bg-[#F9FAFB] disabled:opacity-70"
+              className="mt-6 flex h-[42px] w-full items-center justify-center rounded-lg border border-border bg-white text-sm font-medium text-text-black transition hover:bg-[#F9FAFB] disabled:opacity-70 sm:mt-7"
             >
               {isPending ? "Logging out..." : "Logout"}
             </button>
           )}
         </aside>
 
-        <div className="min-w-0 flex-1">{renderContent()}</div>
+        <div className="min-w-0 flex-1 overflow-x-hidden">{renderContent()}</div>
       </div>
     </section>
   );

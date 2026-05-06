@@ -250,8 +250,8 @@ export default function MyActivityScreen() {
   const showSortFilter = activeSection === "recentlyViewed" || activeSection === "contacted" || activeSection === "saved" || activeSection === "recentSearch";
 
   return (
-    <div className="rounded-2xl bg-white p-4 sm:p-4.5 lg:p-5">
-      <h2 className="text-[28px] font-semibold leading-none text-text-black">My Activity</h2>
+    <div className="rounded-2xl bg-white p-2.5 sm:p-4.5 lg:p-5">
+      <h2 className="text-[24px] sm:text-[28px] font-semibold leading-none text-text-black">My Activity</h2>
 
       <div className="mt-5 flex flex-wrap items-center gap-2">
         {activityTabsWithCount.map((tab) => {
