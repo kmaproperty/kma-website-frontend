@@ -3,8 +3,9 @@
 import HomdeHeader from "@/components/header/homeHeader";
 import HomeFooter from "@/components/footer/homeFooter";
 import AboutusDataSync from "@/components/footer/AboutusDataSync";
-import PageTitle from "@/components/common/PageTitle";
+import CareersBanner from "@/components/careers/CareersBanner";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import {
   House,
@@ -96,7 +97,7 @@ const SCROLL_HERO_CARDS = [...HERO_CARDS, ...HERO_CARDS];
 const JOBS = [
   {
     company: "Wilson Engineering Solutions",
-    title: "Nuclear Outage Worker",
+    title: "Senior Frontend Developer",
     logoIcon: Flower2,
     logoIconColor: "text-[#ff7a45]",
     address: "120 Center st #300",
@@ -187,55 +188,17 @@ export default function CareersPageClient() {
         </div>
       </div>
 
-      {/* Banner — same layout & PageTitle typography as Help Center */}
-      <div
-        className="relative min-h-[385px] max-h-[385px] rounded-bl-[40px] rounded-br-[40px] pt-[25px] sm:min-h-[min(100dvh,560px)] sm:max-h-[560px] sm:rounded-bl-[72px] sm:rounded-br-[72px] md:min-h-[500px] md:max-h-[500px] lg:min-h-[min(100dvh,600px)] lg:max-h-[600px] lg:rounded-bl-[100px] lg:rounded-br-[100px]"
-        style={{
-          backgroundImage: "url(assets/app/help-center-herobg.jpg)",
-          backgroundSize: "cover",
-          backgroundPosition: "bottom",
+      <CareersBanner
+        title="Unlock Your Future: Find Your Perfect Job Today!"
+        description="Search roles, explore categories, and take the next step in your career with us."
+        breadcrumps={careersBreadcrumps}
+        backgroundImage="/assets/app/help-center-herobg.jpg"
+        showSearch
+        onSearchClick={() => {
+          setMobileOpenDropdown("");
+          setIsMobileFilterOpen(true);
         }}
-      >
-        <div className="mx-auto mt-[120px] w-full max-w-full px-4 sm:mt-28 sm:px-6 md:mt-32 lg:px-10 xl:mt-[150px]">
-          <PageTitle
-            title="Unlock Your Future: Find Your Perfect Job Today!"
-            description="Search roles, explore categories, and take the next step in your career with us."
-            breadcrumps={careersBreadcrumps}
-            actions={null}
-            innerClassName="w-full max-w-full"
-          />
-        </div>
-
-        {/* Mobile + tablet search trigger stays inside banner */}
-        <div className="absolute inset-x-0 bottom-4 px-4 sm:bottom-5 sm:px-6 md:bottom-6 md:px-8 lg:hidden">
-          <div className="mx-auto w-full max-w-[56rem]">
-            <div className="flex h-14 w-full items-center gap-2 rounded-full border border-[#D9D9D9] bg-white px-3">
-              <button
-                type="button"
-                onClick={() => {
-                  setMobileOpenDropdown("");
-                  setIsMobileFilterOpen(true);
-                }}
-                className="flex min-w-0 flex-1 items-center gap-3 px-2 text-left text-[15px] font-normal text-[#9aa3b2]"
-              >
-                <Search className="h-5 w-5 shrink-0 text-[#6b7280]" aria-hidden />
-                <span>Search your job</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setMobileOpenDropdown("");
-                  setIsMobileFilterOpen(true);
-                }}
-                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#010048] text-white"
-                aria-label="Open filters"
-              >
-                <Search className="h-4 w-4" aria-hidden />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      />
 
       {/* ① Filter — boxed & centered ② Popular + gallery — full-width, no outer card (Figma) */}
       <div className="relative z-10 flex flex-col gap-3 translate-y-0 sm:gap-4 md:gap-5 lg:-translate-y-12 xl:-translate-y-16">
@@ -887,12 +850,13 @@ export default function CareersPageClient() {
 
                     {/* Apply button */}
                     <div className="lg:shrink-0">
-                      <button
-                        className="w-full lg:w-auto bg-[#1e1b7a] hover:bg-[#29259c] text-white font-semibold rounded-full px-8 py-3 text-sm transition"
+                      <Link
+                        href="/careers/detail"
+                        className="inline-flex w-full lg:w-auto items-center justify-center bg-[#1e1b7a] hover:bg-[#29259c] text-white font-semibold rounded-full px-8 py-3 text-sm transition"
                         data-testid={`apply-job-${i}`}
                       >
                         Apply Now
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 </div>
