@@ -175,19 +175,16 @@ export default function FeaturedProperties({ topProperties }) {
                       </span>
 
                       {/* Avatar */}
-                      <button
-                        type="button"
-                        className="absolute -bottom-5 left-4 rounded-full bg-white p-1 shadow-sm ring-1 ring-slate-200"
-                        aria-label="View agent"
-                      >
+                      <div className="absolute -bottom-5 left-4 rounded-full bg-white p-1 shadow-sm ring-1 ring-slate-200">
                         <Image
-                          src={"/assets/property/profile.png"}
+                          src={item?.owner?.profileImage || "/assets/property/profile.png"}
                           width={28}
                           height={28}
-                          alt="profile"
-                          className="rounded-full h-8 w-8"
+                          alt={item?.owner?.name ?? "Agent"}
+                          className="rounded-full h-8 w-8 object-cover"
+                          onError={(e) => { (e.target as HTMLImageElement).src = "/assets/property/profile.png"; }}
                         />
-                      </button>
+                      </div>
                     </div>
 
                     {/* CONTENT */}
