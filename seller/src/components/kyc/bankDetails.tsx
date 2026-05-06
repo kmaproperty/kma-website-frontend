@@ -180,7 +180,7 @@ export default function BankDetails({ isPopup = false, onClose }: { isPopup?: bo
       {errors.ifscCode && <p className="pt-1 text-red-500 text-xs">{errors.ifscCode}</p>}
 
       {!verified && (
-        <div className="flex flex-wrap justify-center gap-2 mt-6">
+        <div className="flex flex-wrap justify-start gap-2 mt-6">
           <button
             onClick={handleCancel}
             type="button"
@@ -225,7 +225,7 @@ export default function BankDetails({ isPopup = false, onClose }: { isPopup?: bo
             )}
           </div>
 
-          <div className="flex flex-wrap justify-center gap-2 mt-6">
+          <div className="flex flex-wrap justify-start gap-2 mt-6">
             <button
               type="button"
               onClick={() => setVerified(null)}
