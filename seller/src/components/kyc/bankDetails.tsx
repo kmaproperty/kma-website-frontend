@@ -147,7 +147,7 @@ export default function BankDetails({ isPopup = false, onClose }: { isPopup?: bo
 
   return (
     <div className={isPopup ? "" : "w-[50%]"}>
-      <p className="required-label text-sm 1xl:text-base text-text-black py-2">Account number</p>
+      <p className="required-label text-sm 1xl:text-base text-text-black py-2 text-center">Account number</p>
       <InputBase
         placeholder="Enter 9-18 digit account number"
         fullWidth
@@ -163,7 +163,7 @@ export default function BankDetails({ isPopup = false, onClose }: { isPopup?: bo
       />
       {errors.accountNumber && <p className="pt-1 text-red-500 text-xs">{errors.accountNumber}</p>}
 
-      <p className="required-label text-sm 1xl:text-base text-text-black py-2">IFSC code</p>
+      <p className="required-label text-sm 1xl:text-base text-text-black py-2 text-center">IFSC code</p>
       <InputBase
         placeholder="e.g. SBIN0032224"
         fullWidth
@@ -180,7 +180,7 @@ export default function BankDetails({ isPopup = false, onClose }: { isPopup?: bo
       {errors.ifscCode && <p className="pt-1 text-red-500 text-xs">{errors.ifscCode}</p>}
 
       {!verified && (
-        <div className="flex flex-wrap justify-start gap-2 mt-6">
+        <div className="flex flex-wrap justify-center gap-2 mt-6">
           <button
             onClick={handleCancel}
             type="button"
@@ -225,7 +225,7 @@ export default function BankDetails({ isPopup = false, onClose }: { isPopup?: bo
             )}
           </div>
 
-          <div className="flex flex-wrap justify-start gap-2 mt-6">
+          <div className="flex flex-wrap justify-center gap-2 mt-6">
             <button
               type="button"
               onClick={() => setVerified(null)}
