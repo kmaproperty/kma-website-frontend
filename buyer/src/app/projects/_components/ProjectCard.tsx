@@ -617,7 +617,7 @@ export default function ProjectCard({
                 Call +91 90561 70022
               </a>
               <a
-                href="https://wa.me/919056170022"
+                href="https://wa.me/919289977646"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-full bg-[#25D366] px-4 text-sm font-semibold text-white transition hover:opacity-95"
