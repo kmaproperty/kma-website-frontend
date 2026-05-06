@@ -256,11 +256,18 @@ export default function FiltersSidebar({
               <option value="">Min</option>
               {(isRent
                 ? [
+                    { value: 50, label: "₹ 50" },
+                    { value: 100, label: "₹ 100" },
+                    { value: 500, label: "₹ 500" },
+                    { value: 1_000, label: "₹ 1K" },
+                    { value: 2_000, label: "₹ 2K" },
                     { value: 5_000, label: "₹ 5K" },
                     { value: 10_000, label: "₹ 10K" },
                     { value: 15_000, label: "₹ 15K" },
+                    { value: 20_000, label: "₹ 20K" },
                     { value: 25_000, label: "₹ 25K" },
                     { value: 50_000, label: "₹ 50K" },
+                    { value: 75_000, label: "₹ 75K" },
                     { value: 100_000, label: "₹ 1L" },
                   ]
                 : [
@@ -284,12 +291,18 @@ export default function FiltersSidebar({
               <option value="">Max</option>
               {(isRent
                 ? [
+                    { value: 500, label: "₹ 500" },
+                    { value: 1_000, label: "₹ 1K" },
+                    { value: 5_000, label: "₹ 5K" },
                     { value: 10_000, label: "₹ 10K" },
+                    { value: 15_000, label: "₹ 15K" },
                     { value: 25_000, label: "₹ 25K" },
                     { value: 50_000, label: "₹ 50K" },
+                    { value: 75_000, label: "₹ 75K" },
                     { value: 100_000, label: "₹ 1L" },
                     { value: 200_000, label: "₹ 2L" },
                     { value: 500_000, label: "₹ 5L" },
+                    { value: 1_000_000, label: "₹ 10L" },
                   ]
                 : [
                     { value: 10_000_000, label: "₹ 1 Cr" },
