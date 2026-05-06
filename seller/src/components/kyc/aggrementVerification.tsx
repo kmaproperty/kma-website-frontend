@@ -4,7 +4,7 @@ import {
 } from "@/services/userService";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "nextjs-toploader/app";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import Spinner from "../common/spinner";
 import { DocusignResponse, docuSingStatusApiHanlder } from "@/services/kycService";
@@ -16,6 +16,7 @@ export default function AggrementVerification({event}: {event?: string}) {
   const [status, setStatus] = useState('Pending')
   const [isSignDone, setIsSignDone] = useState(false)
   const [canRetry, setCanRetry] = useState(false);
+  const signingHandledRef = useRef(false);
 
   const { mutate: handleSignChannelPartnerAgreement, isPending } = useMutation({
     mutationFn: async (
@@ -79,14 +80,16 @@ export default function AggrementVerification({event}: {event?: string}) {
 
     switch (event) {
       case "signing_complete":
+        // Guard: run once only — router identity can change and re-trigger this effect
+        if (signingHandledRef.current) return;
+        signingHandledRef.current = true;
         setMessage("Document signed successfully! Redirecting to dashboard...");
         toast.success("Document signed successfully!");
-        axiosInstance.post("/users/docusign/sync-status").then(() => {
-          setStatus("Completed");
-          setIsSignDone(true);
-          // KYC is now fully complete — send user to their dashboard.
-          setTimeout(() => router.push("/user-dashboard"), 1500);
-        }).catch(() => {});
+        setStatus("Completed");
+        setIsSignDone(true);
+        // Sync status in background — redirect happens regardless of outcome
+        axiosInstance.post("/users/docusign/sync-status").catch(() => {});
+        setTimeout(() => router.push("/user-dashboard"), 1500);
         break;
       case "decline":
         setMessage("Document was declined");

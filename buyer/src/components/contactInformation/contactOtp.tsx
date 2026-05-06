@@ -45,7 +45,7 @@ export default function ContactOtp({open,mobileNumber, onClose, name, email}) {
     mutationFn: (payload: ContactUsHomeOtpPayload): Promise<ContactUsHOmeOtpResponse> =>
       contactUsHomeOtpApiHandler(payload),
     onSuccess: async (res) => {
-      toast.success(res.otp)
+      toast.success(res.message ?? "OTP sent successfully")
     },
     onError: (err: any) => {
       console.error("OTP Verify Error:", err);

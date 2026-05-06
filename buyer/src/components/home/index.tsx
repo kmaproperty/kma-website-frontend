@@ -141,11 +141,31 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
     () => [
       {
         imagePath: "/assets/backgroundSlider/background_slider_1.jpg",
-        alt: "Background Image 1",
+        alt: "Modern luxury home at twilight",
       },
       {
         imagePath: "/assets/backgroundSlider/background_slider_2.png",
-        alt: "Background Image 2",
+        alt: "Premium villa exterior",
+      },
+      {
+        imagePath: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1920&q=80",
+        alt: "Contemporary residential architecture",
+      },
+      {
+        imagePath: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=80",
+        alt: "Modern villa with pool",
+      },
+      {
+        imagePath: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1920&q=80",
+        alt: "Luxury home exterior",
+      },
+      {
+        imagePath: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1920&q=80",
+        alt: "Premium property at sunset",
+      },
+      {
+        imagePath: "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=1920&q=80",
+        alt: "Modern apartment interior",
       },
     ],
     []

@@ -2,6 +2,8 @@
 import Image from "next/image";
 import DynamicSelect, { OptionType } from "../common/select";
 import { USER_DASHBOARD_PROPERTY_FILTER, USER_TYPE, userType } from "@/lib/enums";
+
+const baseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { UpgreadOwnerToChannelPartnerApiHandler, UpgreadOwnerToChannelPartnerPayload, UpgreadOwnerToChannelPartnerResponse, UserDashboardDetailsApiHandler, UserDashboardDetailsResponse } from "@/services/userService";
 import { useState } from "react";
@@ -9,6 +11,7 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import UpgradeChannelPartner from "../common/upgradeChannelpartner";
 import { AboutusResponse, getAboutUsDataAPiHanlder } from "@/services/homeService";
+import { docuSingStatusApiHanlder, DocusignResponse } from "@/services/kycService";
 
 export default function UserDashboard() {
   const router = useRouter()
@@ -38,6 +41,13 @@ export default function UserDashboard() {
       }
     });
 
+    const { data: agreementStatus, refetch: refetchAgreementStatus } = useQuery({
+      queryKey: ["docusign-agreement-status"],
+      queryFn: async (): Promise<DocusignResponse> => docuSingStatusApiHanlder(),
+      enabled: userDashboardDetails?.role === USER_TYPE.OWNER,
+      staleTime: 0,
+    });
+
   const {
       mutate: handleUpgradUser,
       isPending,
@@ -53,6 +63,15 @@ export default function UserDashboard() {
             ? `Upgraded to Channel Partner. Your CP code: ${code}`
             : 'Upgraded to Channel Partner successfully',
         )
+        try {
+          const raw = localStorage.getItem("user");
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            parsed.role = USER_TYPE.CHANNEL_PARTNER;
+            if (code) parsed.channelPartnerCode = code;
+            localStorage.setItem("user", JSON.stringify(parsed));
+          }
+        } catch {}
         getUpdatedDashboardDetails()
         window.location.reload();
       },
@@ -95,9 +114,15 @@ export default function UserDashboard() {
           <div className="flex flex-1 rounded-xl flex-col lg:flex-row justify-between lg:items-center bg-[#F2F2F2] p-3 gap-2">
             <div className="flex gap-3">
               <Image
-                src="/assets/profile.png"
-                height={40}
-                width={40}
+                src={
+                  userDashboardDetails?.profileImage
+                    ? /^https?:\/\//.test(userDashboardDetails.profileImage)
+                      ? userDashboardDetails.profileImage
+                      : `${baseUrl}${userDashboardDetails.profileImage}`
+                    : "/assets/profile.png"
+                }
+                height={55}
+                width={55}
                 className="w-[55px] h-[55px] rounded-[50%] object-cover"
                 alt="profile"
               />
@@ -302,7 +327,13 @@ export default function UserDashboard() {
                 </span>
               </li>
             </ul>
-            <button onClick={() => {
+            <button onClick={async () => {
+              const latest = await refetchAgreementStatus()
+              if (!latest?.data?.docusign_agreement_signed) {
+                toast.info('Please sign the channel partner agreement first')
+                router.push('/kyc?tabName=Agreement%20Signature')
+                return
+              }
               setOpenCodePopup(true)
             }} className="w-full sm:w-fit text-sm sm:text-base animated-button px-5 sm:px-12 py-3 border border-blue text-center cursor-pointer">
               <span className="gap-3 relative flex justify-center">
@@ -378,7 +409,17 @@ export default function UserDashboard() {
                 </div>
             </div>
             <div>
-                <p className="text-base text-text-black ">Unlimited Quota: 🔓 No limits!</p>
+                <p className="text-base text-text-black">Unlimited Quota: 🔓 No limits!</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-text-gray">Your CP Code:</p>
+              {userDashboardDetails?.channelPartnerCode ? (
+                <span className="font-semibold text-sm bg-[#0A0A4A] text-white px-3 py-1 rounded-md tracking-widest select-all">
+                  {userDashboardDetails.channelPartnerCode}
+                </span>
+              ) : (
+                <span className="text-sm text-text-gray italic">Not assigned</span>
+              )}
             </div>
           </div>
         </div>}

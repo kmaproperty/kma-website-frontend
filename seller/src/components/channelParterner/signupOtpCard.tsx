@@ -63,7 +63,7 @@ export default function SignupOtpCard() {
       return await resendOtpApiHandler(payload);
     },
     onSuccess: (response: SendOtpResponse) => {
-      toast.success(`${response.message} ${response.otp}`);
+      toast.success(response.message ?? "OTP sent successfully");
     },
     onError: (error: any) => {
       if (Array.isArray(error.message)) {

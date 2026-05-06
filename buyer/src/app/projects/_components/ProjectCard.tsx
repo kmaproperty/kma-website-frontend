@@ -607,6 +607,27 @@ export default function ProjectCard({
             >
               {isSubmittingContactRequest ? <Spinner size={18} /> : "Contact Now"}
             </button>
+
+            {/* KMA support: direct call + WhatsApp shortcut */}
+            <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+              <a
+                href="tel:+919056170022"
+                className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-full border border-[#0A0A63] px-4 text-sm font-semibold text-[#0A0A63] transition hover:bg-[#0A0A63] hover:text-white"
+              >
+                Call +91 90561 70022
+              </a>
+              <a
+                href="https://wa.me/919289977646"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-full bg-[#25D366] px-4 text-sm font-semibold text-white transition hover:opacity-95"
+              >
+                <svg viewBox="0 0 32 32" className="h-4 w-4 fill-current" aria-hidden="true">
+                  <path d="M16 .5C7.44.5.5 7.44.5 16c0 2.82.74 5.55 2.16 7.96L.5 31.5l7.74-2.13A15.5 15.5 0 0 0 16 31.5C24.56 31.5 31.5 24.56 31.5 16S24.56.5 16 .5Zm0 28.06c-2.45 0-4.85-.66-6.95-1.91l-.5-.3-4.6 1.27 1.23-4.49-.32-.52a12.55 12.55 0 1 1 11.14 5.95Zm6.86-9.4c-.38-.19-2.23-1.1-2.57-1.23-.34-.13-.59-.19-.84.19-.25.38-.96 1.23-1.18 1.49-.22.25-.43.28-.81.09-.38-.19-1.6-.59-3.04-1.88-1.12-1-1.88-2.24-2.1-2.62-.22-.38-.02-.59.17-.78.17-.17.38-.43.57-.65.19-.22.25-.38.38-.62.13-.25.06-.46-.03-.65-.09-.19-.84-2.03-1.16-2.78-.31-.74-.62-.64-.84-.65l-.72-.01c-.25 0-.65.09-.99.46-.34.38-1.31 1.28-1.31 3.13s1.34 3.62 1.53 3.87c.19.25 2.64 4.04 6.4 5.66 2.24.97 3.12 1.05 4.23.88.68-.1 2.23-.91 2.55-1.79.31-.88.31-1.63.22-1.79-.09-.16-.34-.25-.72-.43Z"/>
+                </svg>
+                WhatsApp
+              </a>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
