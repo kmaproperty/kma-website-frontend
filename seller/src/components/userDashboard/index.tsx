@@ -2,6 +2,8 @@
 import Image from "next/image";
 import DynamicSelect, { OptionType } from "../common/select";
 import { USER_DASHBOARD_PROPERTY_FILTER, USER_TYPE, userType } from "@/lib/enums";
+
+const baseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { UpgreadOwnerToChannelPartnerApiHandler, UpgreadOwnerToChannelPartnerPayload, UpgreadOwnerToChannelPartnerResponse, UserDashboardDetailsApiHandler, UserDashboardDetailsResponse } from "@/services/userService";
 import { useState } from "react";
@@ -112,9 +114,15 @@ export default function UserDashboard() {
           <div className="flex flex-1 rounded-xl flex-col lg:flex-row justify-between lg:items-center bg-[#F2F2F2] p-3 gap-2">
             <div className="flex gap-3">
               <Image
-                src={userDashboardDetails?.profileImage || "/assets/profile.png"}
-                height={40}
-                width={40}
+                src={
+                  userDashboardDetails?.profileImage
+                    ? /^https?:\/\//.test(userDashboardDetails.profileImage)
+                      ? userDashboardDetails.profileImage
+                      : `${baseUrl}${userDashboardDetails.profileImage}`
+                    : "/assets/profile.png"
+                }
+                height={55}
+                width={55}
                 className="w-[55px] h-[55px] rounded-[50%] object-cover"
                 alt="profile"
               />
@@ -403,14 +411,16 @@ export default function UserDashboard() {
             <div>
                 <p className="text-base text-text-black">Unlimited Quota: 🔓 No limits!</p>
             </div>
-            {userDashboardDetails?.channelPartnerCode && (
-              <div className="flex items-center gap-2">
-                <p className="text-sm text-text-gray">Your CP Code:</p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-text-gray">Your CP Code:</p>
+              {userDashboardDetails?.channelPartnerCode ? (
                 <span className="font-semibold text-sm bg-[#0A0A4A] text-white px-3 py-1 rounded-md tracking-widest select-all">
                   {userDashboardDetails.channelPartnerCode}
                 </span>
-              </div>
-            )}
+              ) : (
+                <span className="text-sm text-text-gray italic">Not assigned</span>
+              )}
+            </div>
           </div>
         </div>}
 
