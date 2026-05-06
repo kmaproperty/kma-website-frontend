@@ -290,20 +290,6 @@ export default function FeaturedProperties({ topProperties }) {
                               <span className="whitespace-nowrap">{item.furnishType}</span>
                             </div>
                           )}
-                          {false && (
-
-                          {/* {size ? (
-                            <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-2.5 py-1.5 text-xs text-text-black border border-slate-200 max-w-full">
-                              <Image
-                                src={"/assets/property/major-white.svg"}
-                                width={16}
-                                height={16}
-                                alt="size"
-                                className="invert"
-                              />
-                              <span className="truncate">{size}</span>
-                            </div>
-                          )} */}
                         </div>
                       </div>
                     </div>
