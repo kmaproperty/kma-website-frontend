@@ -112,7 +112,7 @@ export default function UserDashboard() {
           <div className="flex flex-1 rounded-xl flex-col lg:flex-row justify-between lg:items-center bg-[#F2F2F2] p-3 gap-2">
             <div className="flex gap-3">
               <Image
-                src="/assets/profile.png"
+                src={userDashboardDetails?.profileImage || "/assets/profile.png"}
                 height={40}
                 width={40}
                 className="w-[55px] h-[55px] rounded-[50%] object-cover"
@@ -401,8 +401,16 @@ export default function UserDashboard() {
                 </div>
             </div>
             <div>
-                <p className="text-base text-text-black ">Unlimited Quota: 🔓 No limits!</p>
+                <p className="text-base text-text-black">Unlimited Quota: 🔓 No limits!</p>
             </div>
+            {userDashboardDetails?.channelPartnerCode && (
+              <div className="flex items-center gap-2">
+                <p className="text-sm text-text-gray">Your CP Code:</p>
+                <span className="font-semibold text-sm bg-[#0A0A4A] text-white px-3 py-1 rounded-md tracking-widest select-all">
+                  {userDashboardDetails.channelPartnerCode}
+                </span>
+              </div>
+            )}
           </div>
         </div>}
 
