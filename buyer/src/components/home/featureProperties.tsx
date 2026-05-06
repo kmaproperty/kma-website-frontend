@@ -105,13 +105,14 @@ export default function FeaturedProperties({ topProperties }) {
   }, []);
 
   const settings = {
-    slidesToShow: Math.min(4, slidesCount),
+    slidesToShow: Math.min(4, Math.max(1, slidesCount)),
     slidesToScroll: 1,
     infinite: false,
     arrows: false,
+    swipeToSlide: true,
     responsive: [
-      { breakpoint: 1280, settings: { slidesToShow: 3 } },
-      { breakpoint: 1024, settings: { slidesToShow: 2 } },
+      { breakpoint: 1280, settings: { slidesToShow: Math.min(3, Math.max(1, slidesCount)) } },
+      { breakpoint: 1024, settings: { slidesToShow: Math.min(2, Math.max(1, slidesCount)) } },
       { breakpoint: 640, settings: { slidesToShow: 1 } },
     ],
   };
@@ -145,7 +146,7 @@ export default function FeaturedProperties({ topProperties }) {
             return (
               <motion.div
                 key={item?.id ?? index}
-                className="px-1.5 h-[500px] w-full min-w-0 sm:min-w-[320px] sm:max-w-[355px]"
+                className="px-1.5 h-[500px] w-full min-w-0"
                 variants={index == 0 || index == 1 ? topVariant : bottomVariant}
                 animate={isInView ? "visible" : "hidden"}
               >
