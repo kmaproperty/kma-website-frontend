@@ -188,15 +188,11 @@ export default function ProjectCallBackModal({
     },
   });
 
-  // ── Step: Login (phone entry for guests) ─────────────────────────────────
+  // ── Step: Login (phone only for guests) ──────────────────────────────────
   const handleSendOtp = () => {
     const mobileError = mobileNumberValidator(formData.mobile);
     if (mobileError) {
       setErrors((p) => ({ ...p, mobile: mobileError }));
-      return;
-    }
-    if (!formData.name.trim()) {
-      setErrors((p) => ({ ...p, name: "Full name is required" }));
       return;
     }
     setErrors({});
@@ -205,6 +201,10 @@ export default function ProjectCallBackModal({
 
   // ── Step: OTP ─────────────────────────────────────────────────────────────
   const handleVerifyAndContinue = (otpValue: string) => {
+    if (!formData.name.trim()) {
+      setErrors((p) => ({ ...p, name: "Full name is required" }));
+      return;
+    }
     if (otpValue.length !== 4) {
       setOtpError("Enter a valid 4-digit OTP");
       return;
@@ -212,7 +212,7 @@ export default function ProjectCallBackModal({
     setOtpError("");
     submitContact({
       propertyId: project.id,
-      name: formData.name.trim() || "User",
+      name: formData.name.trim(),
       email: formData.email.trim() || undefined,
       phone: formData.mobile,
       countryCode: formData.countryCode,
@@ -301,12 +301,12 @@ export default function ProjectCallBackModal({
     >
       <DialogContent sx={{ padding: 0 }}>
 
-        {/* ── STEP: LOGIN (phone entry for guests) ── */}
+        {/* ── STEP: LOGIN (phone only — feels like real login) ── */}
         {step === "login" && (
           <div className="w-full rounded-xl bg-[#EFEFEF] p-4 sm:w-[520px]">
             <div className="mb-4 flex items-start justify-between gap-3">
               <h3 className="text-[24px] font-semibold text-[#1E2236]">
-                Login / Register to Continue
+                Login / Register
               </h3>
               <CloseBtn />
             </div>
@@ -314,42 +314,22 @@ export default function ProjectCallBackModal({
             <AgentBadge />
 
             <p className="mb-4 text-sm text-[#7A7A7A]">
-              Enter your details to connect with the channel partner.
+              Enter your mobile number to continue. We&apos;ll send you an OTP.
             </p>
 
-            <div className="space-y-4">
-              <div>
-                <p className="required-label pb-2 text-sm text-text-black">Full Name</p>
-                <InputBase
-                  fullWidth
-                  value={formData.name}
-                  onChange={(e) => {
-                    setFormData((p) => ({ ...p, name: e.target.value }));
-                    setErrors((p) => ({ ...p, name: "" }));
-                  }}
-                  placeholder="Enter your full name"
-                  className={`box-border h-[44px] rounded-full border px-4 py-2 text-sm ${
-                    errors.name ? "border-red-500" : "border-border focus-within:border-blue"
-                  }`}
-                  inputProps={{ className: "placeholder-gray" }}
-                />
-                {errors.name && <p className="pt-1 text-xs text-red-500">{errors.name}</p>}
-              </div>
-
-              <div>
-                <p className="required-label pb-2 text-sm text-text-black">Mobile Number</p>
-                <MobileInput
-                  placeHolder="Enter your mobile number"
-                  required
-                  validationMessage={errors.mobile}
-                  value={formData.mobile}
-                  countryCode={formData.countryCode}
-                  onChange={(value, code) => {
-                    setFormData((p) => ({ ...p, mobile: value, countryCode: code }));
-                    setErrors((p) => ({ ...p, mobile: "" }));
-                  }}
-                />
-              </div>
+            <div>
+              <p className="required-label pb-2 text-sm text-text-black">Mobile Number</p>
+              <MobileInput
+                placeHolder="Enter your mobile number"
+                required
+                validationMessage={errors.mobile}
+                value={formData.mobile}
+                countryCode={formData.countryCode}
+                onChange={(value, code) => {
+                  setFormData((p) => ({ ...p, mobile: value, countryCode: code }));
+                  setErrors((p) => ({ ...p, mobile: "" }));
+                }}
+              />
             </div>
 
             <button
@@ -375,8 +355,27 @@ export default function ProjectCallBackModal({
         {step === "otp" && (
           <div className="w-full rounded-xl bg-[#EFEFEF] p-4 sm:w-[520px]">
             <div className="mb-4 flex items-start justify-between gap-3">
-              <h3 className="text-[24px] font-semibold text-[#1E2236]">Verify Mobile Number</h3>
+              <h3 className="text-[24px] font-semibold text-[#1E2236]">Verify &amp; Continue</h3>
               <CloseBtn />
+            </div>
+
+            {/* Name field — collected here so login step is phone-only */}
+            <div className="mb-4">
+              <p className="required-label pb-2 text-sm text-text-black">Full Name</p>
+              <InputBase
+                fullWidth
+                value={formData.name}
+                onChange={(e) => {
+                  setFormData((p) => ({ ...p, name: e.target.value }));
+                  setErrors((p) => ({ ...p, name: "" }));
+                }}
+                placeholder="Enter your full name"
+                className={`box-border h-[44px] rounded-full border px-4 py-2 text-sm ${
+                  errors.name ? "border-red-500" : "border-border focus-within:border-blue"
+                }`}
+                inputProps={{ className: "placeholder-gray" }}
+              />
+              {errors.name && <p className="pt-1 text-xs text-red-500">{errors.name}</p>}
             </div>
 
             <div className="rounded-lg bg-[#E3E3E3] p-4">
@@ -416,11 +415,17 @@ export default function ProjectCallBackModal({
 
               <button
                 type="button"
-                onClick={() => handleVerifyAndContinue(otp)}
+                onClick={() => {
+                  if (!formData.name.trim()) {
+                    setErrors((p) => ({ ...p, name: "Full name is required" }));
+                    return;
+                  }
+                  handleVerifyAndContinue(otp);
+                }}
                 disabled={isSubmitting}
                 className="inline-flex h-11 items-center justify-center rounded-full bg-[#0A0A63] px-6 text-sm font-semibold text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-70"
               >
-                {isSubmitting ? <Spinner size={18} /> : "Verify & Continue"}
+                {isSubmitting ? <Spinner size={18} /> : "Verify & Login"}
               </button>
             </div>
           </div>
