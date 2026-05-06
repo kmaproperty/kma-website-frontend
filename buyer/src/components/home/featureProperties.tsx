@@ -55,8 +55,11 @@ export default function FeaturedProperties({ topProperties }) {
   const isInView = useInView(ref, { once: true });
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
   const [visibleSlides, setVisibleSlides] = useState(4);
+  const [listingFilter, setListingFilter] = useState<"Sale" | "Rent">("Sale");
 
-  const filteredProperties = topProperties ?? [];
+  const filteredProperties = (topProperties ?? []).filter(
+    (p) => (p?.listingType ?? "").toLowerCase() === listingFilter.toLowerCase()
+  );
 
   const toggleFavorite = async (e: React.MouseEvent, propertyId: string) => {
     e.stopPropagation();
@@ -125,10 +128,19 @@ export default function FeaturedProperties({ topProperties }) {
         sectionName="featureProperties"
         heading="Featured Properties"
         subHeading="Discover exclusive listings of premium properties available for purchase."
+        listingFilter={listingFilter}
+        onListingFilterChange={setListingFilter}
       />
 
       <div className="flex-1 w-full  2md:min-w-0 -mx-2 feature-property">
-        <Slider ref={sliderRef} {...settings} className="mt-10">
+        {filteredProperties.length === 0 ? (
+          <div className="mt-10 flex h-[300px] items-center justify-center rounded-[10px] border border-dashed border-slate-200 bg-white">
+            <p className="text-text-gray text-sm">
+              No {listingFilter === "Sale" ? "sale" : "rental"} properties available right now.
+            </p>
+          </div>
+        ) : (
+        <Slider ref={sliderRef} key={listingFilter} {...settings} className="mt-10">
           {filteredProperties.map((item, index) => {
             const img = item?.imageUrl || (item?.images?.length > 0 ? item.images[0]?.url : null);
             const size = item?.units?.length > 0 ? item.units[0]?.size : null;
@@ -300,6 +312,7 @@ export default function FeaturedProperties({ topProperties }) {
             );
           })}
         </Slider>
+        )}
       </div>
 
       {/* ---------- CONTROLS ---------- */}
