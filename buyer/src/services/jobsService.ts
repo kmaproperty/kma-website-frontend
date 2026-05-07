@@ -10,6 +10,13 @@ export interface CareerJob {
   id: string;
   title: string;
   companyName?: string;
+  description?: string;
+  responsibilities?: string;
+  requirements?: string;
+  benefits?: string;
+  experienceLabel?: string;
+  skillsText?: string;
+  skills?: string[] | string;
   location?: string;
   city?: string;
   state?: string;
@@ -110,5 +117,36 @@ export const fetchCareerJobById = async (id: string): Promise<CareerJob | null> 
     } catch {
       return null;
     }
+  }
+};
+
+export interface SubmitCareerJobApplicationPayload {
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  resumeUrl?: string;
+  coverLetter?: string;
+}
+
+export interface SubmitCareerJobApplicationResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    id: string;
+  };
+}
+
+export const submitCareerJobApplication = async (
+  jobId: string,
+  payload: SubmitCareerJobApplicationPayload,
+): Promise<SubmitCareerJobApplicationResponse> => {
+  try {
+    const response = await axiosInstance.post<SubmitCareerJobApplicationResponse>(
+      `end-user/jobs/${jobId}/applications`,
+      payload,
+    );
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data ?? error;
   }
 };
