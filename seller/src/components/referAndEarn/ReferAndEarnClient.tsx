@@ -11,6 +11,7 @@ import {
   saveReferrerProfile,
 } from "@/lib/referral/storage";
 import type { PropertyTypeOption } from "@/lib/referral/types";
+import { submitReferralEnquiryApiHandler } from "@/services/contactService";
 import { userProfileApiHandler, UserProfileResponse } from "@/services/userService";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
@@ -149,6 +150,16 @@ export default function ReferAndEarnClient() {
 
     setIsSubmitting(true);
     try {
+      await submitReferralEnquiryApiHandler({
+        referrerName: rName,
+        referrerPhone: rPhone,
+        clientName: cName,
+        clientMobile: cMobile,
+        propertyType: formValue.propertyType,
+        location: formValue.location.trim() || undefined,
+        channelPartnerId: cpId || undefined,
+      });
+
       saveReferrerProfile({ name: rName, phone: rPhone });
       const uniqueId = getOrCreateUniqueUserId(rName);
       const viaPartner = Boolean(cpId);
@@ -165,6 +176,12 @@ export default function ReferAndEarnClient() {
       toast.success("Referral submitted successfully");
       setSubmittedUniqueId(uniqueId);
       router.push(`/refer-and-earn/my-referrals?submittedId=${encodeURIComponent(uniqueId)}`);
+    } catch (error: any) {
+      const message =
+        error?.message ||
+        error?.error ||
+        "We couldn't submit referral right now. Please try again.";
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }

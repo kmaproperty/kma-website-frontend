@@ -84,3 +84,33 @@ export const contactUsHomeOtpApiHandler = async (
     throw error.response?.data ?? error;
   }
 };
+
+export interface SubmitReferralEnquiryPayload {
+  referrerName: string;
+  referrerPhone: string;
+  clientName: string;
+  clientMobile: string;
+  propertyType: "Buy" | "Sell" | "Rent";
+  location?: string;
+  channelPartnerId?: string;
+}
+
+export interface SubmitReferralEnquiryResponse {
+  success: boolean;
+  message: string;
+}
+
+export const submitReferralEnquiryApiHandler = async (
+  payload: SubmitReferralEnquiryPayload
+): Promise<SubmitReferralEnquiryResponse> => {
+  try {
+    const response = await axiosInstance.post<SubmitReferralEnquiryResponse>(
+      "contact-us/referral-enquiry",
+      payload
+    );
+
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data ?? error;
+  }
+};
