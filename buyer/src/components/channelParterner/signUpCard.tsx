@@ -80,9 +80,8 @@ export default function SignUpCard() {
     if (!formState.fullName.trim()) {
       errors.fullName = "Full name is required";
     }
-    if (!formState.email.trim()) {
-      errors.email = "Email is required";
-    } else if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(formState.email)) {
+    // Email is optional. Only validate format if the user typed something.
+    if (formState.email.trim() && !/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(formState.email)) {
       errors.email = "Invalid email format";
     }
     setFormError(errors);
@@ -100,7 +99,7 @@ export default function SignUpCard() {
     }
     handleSendOtp({
       name: formState.fullName.trim(),
-      email: formState.email.trim(),
+      ...(formState.email.trim() ? { email: formState.email.trim() } : {}),
       phone: mobileInput.value,
     });
   };
@@ -149,7 +148,7 @@ export default function SignUpCard() {
       />
       {formError.fullName && <p className="text-red-500 text-xs mt-1 ml-2">{formError.fullName}</p>}
 
-      <p className="required-label text-sm md:text-base text-text-black font-medium mt-4 mb-2">Email Address</p>
+      <p className="text-sm md:text-base text-text-black font-medium mt-4 mb-2">Email Address <span className="text-text-gray text-xs">(optional)</span></p>
       <InputBase
         placeholder="Enter your email"
         fullWidth

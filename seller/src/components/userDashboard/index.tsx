@@ -330,7 +330,8 @@ export default function UserDashboard() {
             <button onClick={async () => {
               const latest = await refetchAgreementStatus()
               if (!latest?.data?.docusign_agreement_signed) {
-                toast.info('Please sign the channel partner agreement first')
+                const isOwner = userDashboardDetails?.role === USER_TYPE.OWNER
+                toast.info(`Please sign the ${isOwner ? 'owner' : 'channel partner'} agreement first`)
                 router.push('/kyc?tabName=Agreement%20Signature')
                 return
               }
