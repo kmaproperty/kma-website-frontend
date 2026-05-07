@@ -90,9 +90,8 @@ export default function CreateAccount({ step }: { step: number }) {
     
     if (step === 1) {
       if (!formData.fullName.trim()) errors.fullName = "Full name is required";
-      if (!formData.email.trim()) {
-        errors.email = "Email is required";
-      } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      // Email is optional. Only validate format if the user typed something.
+      if (formData.email.trim() && !/\S+@\S+\.\S+/.test(formData.email)) {
         errors.email = "Invalid email format";
       }
       
@@ -321,7 +320,7 @@ export default function CreateAccount({ step }: { step: number }) {
       } else if (validateStep()) {
         let payload: any = {
           name: formData.fullName,
-          email: formData.email,
+          ...(formData.email.trim() ? { email: formData.email.trim() } : {}),
           firmName: formData.firmName,
           businessSince: formData.businessSince,
           cities: Array.isArray(formData.city)
@@ -438,8 +437,8 @@ export default function CreateAccount({ step }: { step: number }) {
                     </p>
                   )}
                 </div>
-                <p className="required-label text-sm 1xl:text-base text-text-black">
-                  Email Address*
+                <p className="text-sm 1xl:text-base text-text-black">
+                  Email Address <span className="text-text-gray text-xs">(optional)</span>
                 </p>
                 <div>
                   <InputBase
