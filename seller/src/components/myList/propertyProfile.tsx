@@ -136,7 +136,7 @@ const PropertyView = ({ open, onClose, propertyId }) => {
         "https://kmaglobalproperty.com/api/backend";
       // const token = localStorage.getItem("token") || sessionStorage.getItem("accessToken");
       const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxZGFkZTVlMi0zYzZhLTRlYmYtOTE4NS0zNDFhMTMzMjQ2YmMiLCJ1c2VybmFtZSI6IktNQSIsInJvbGUiOiJTVVBFUl9BRE1JTiIsInR5cGUiOiJhZG1pbl9hY2Nlc3NfdG9rZW4iLCJpYXQiOjE3Nzk3Nzg3NjEsImV4cCI6MTc3OTgyMTk2MX0.r32Yvhf4Jl68odEEET2egFACSgccVUnywZlWMSKGpII";
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxZGFkZTVlMi0zYzZhLTRlYmYtOTE4NS0zNDFhMTMzMjQ2YmMiLCJ1c2VybmFtZSI6IktNQSIsInJvbGUiOiJTVVBFUl9BRE1JTiIsInR5cGUiOiJhZG1pbl9hY2Nlc3NfdG9rZW4iLCJpYXQiOjE3Nzk4ODc3MDIsImV4cCI6MTc3OTkzMDkwMn0.H702EAB1E7TwWjyPbqhtO3iN9HQowgIPQnsZX_YwaRY";
 
       console.log("Checking Admin Token Before Request:", token);
 
