@@ -30,7 +30,7 @@ export default function ContentLayout({
 
   return (
     <div className="w-full grid grid-cols-1 lg:flex lg:flex-wrap justify-between items-start gap-6 md:gap-8 lg:gap-10">
-      <div className="w-full" style={{ flex: "2.6 1" }}>
+      <div className="w-full order-2 lg:order-none" style={{ flex: "2.6 1" }}>
         <InfoSection
             titlePrefix={isPostPropertyView ? "Create An Account" : isLoginView ? "Welcome Back" : isOtp ? "" : "New To KMA?"}
             title={isPostPropertyView ? postPropertyTitle : isLoginView ? loginTitle : isOtp ? "Join Gurgaon's Smartest Property Network" : "Create An Account"}
@@ -38,7 +38,7 @@ export default function ContentLayout({
             params={params}
           />
       </div>
-      <div style={{ flex: "1.5 1" }} className="w-full mt-4 md:mt-6 lg:mt-[4.5rem]">
+      <div style={{ flex: "1.5 1" }} className="w-full mt-4 md:mt-6 lg:mt-[4.5rem] order-1 lg:order-none">
         {cardContent}
       </div>
     </div>
