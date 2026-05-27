@@ -199,3 +199,31 @@ body {
     mask-image: none;
   }
 }
+
+.swiper-pagination{
+  position: relative !important;
+}
+
+ .property-swiper .swiper-pagination-bullet {
+    background: #D1D5DB;
+    opacity: 1;
+    width: 18px;
+    height:2px;
+    border-radius: 5px;
+  }
+  .property-swiper .swiper-pagination-bullet-active {
+    background: #000066;
+    width: 28px;
+  }
+
+ .partner-swiper .swiper-pagination-bullet {
+    background: #D1D5DB;
+    opacity: 1;
+    width: 18px;
+    height:2px;
+    border-radius: 5px;
+  }
+  .partner-swiper .swiper-pagination-bullet-active {
+    background: #000066;
+    width: 28px;
+  }

@@ -37,7 +37,7 @@ export default function HomeMobileHeader({
 
   return (
     <div
-      className={`fixed top-0 left-0 w-full sm:w-[50%] h-[100dvh] bg-white z-40 transition-transform duration-300 ease-in-out overflow-y-auto 2md:hidden ${
+      className={`fixed top-0 left-0 w-full sm:w-[50%] h-[100dvh] bg-white z-50 transition-transform duration-300 ease-in-out overflow-y-auto 2md:hidden ${
         open ? "translate-x-0" : "-translate-x-full"
       }`}
     >
