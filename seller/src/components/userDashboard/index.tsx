@@ -330,7 +330,8 @@ export default function UserDashboard() {
             <button onClick={async () => {
               const latest = await refetchAgreementStatus()
               if (!latest?.data?.docusign_agreement_signed) {
-                toast.info('Please sign the channel partner agreement first')
+                const isOwner = userDashboardDetails?.role === USER_TYPE.OWNER
+                toast.info(`Please sign the ${isOwner ? 'owner' : 'channel partner'} agreement first`)
                 router.push('/kyc?tabName=Agreement%20Signature')
                 return
               }
@@ -445,17 +446,17 @@ export default function UserDashboard() {
 
         <div className="flex flex-col gap-4 border justify-between border-[#E7E7E7] rounded-[10px] px-4 py-3">
           <p className="font-bold text-lg">Customer Support</p>
-          <div className="flex flex-row justify-between gap-4">
+          <div className="flex flex-col items-center text-center lg:text-left lg:flex-row justify-between gap-4">
             <a href={`tel:${aboutusData?.phoneNumber}`} className="flex flex-col flex-1 cursor-pointer">
-              <Image src={'/assets/mobile-blue.svg'} width={45} height={45} alt="mobile" className="mb-3"/>
+              <Image src={'/assets/mobile-blue.svg'} width={45} height={45} alt="mobile" className="mb-3 text-center mx-auto lg:mx-0"/>
               <p className="font-semibold text-lg">Call Us</p>
-              <p className="text-base text-text-gray">{aboutusData?.phoneNumber}</p>
+              <p className="text-xs lg:text-base text-text-gray">{aboutusData?.phoneNumber}</p>
             </a>
             <div className="h-[1px] 2md:h-auto 2md:mx-5 my-4 2md:my-0 2md:py-8 border  border-[#E7E7E7]"></div>
             <a href={`mailto:${aboutusData?.email}`} className="flex flex-col flex-1 cursor-pointer">
-              <Image src={'/assets/email-blue.svg'} width={45} height={45} alt="mobile" className="mb-3"/>
+              <Image src={'/assets/email-blue.svg'} width={45} height={45} alt="mobile" className="mb-3 text-center mx-auto lg:mx-0"/>
               <p className="font-semibold text-lg">Email Us</p>
-              <p className="text-base text-text-gray">{aboutusData?.email}</p>
+              <p className="text-xs lg:text-base text-text-gray">{aboutusData?.email}</p>
             </a>
           </div>
           
