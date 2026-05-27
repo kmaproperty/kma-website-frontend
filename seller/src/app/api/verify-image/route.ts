@@ -2,28 +2,35 @@ import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 import { v2 as cloudinary } from "cloudinary";
 
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || "",
-  api_key: process.env.CLOUDINARY_API_KEY || "",
-  api_secret: process.env.CLOUDINARY_API_SECRET || "",
-});
+// Safe Config initialization
+const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+const apiKey = process.env.CLOUDINARY_API_KEY;
+const apiSecret = process.env.CLOUDINARY_API_SECRET;
+const geminiKey = process.env.GEMINI_API_KEY;
+
+if (cloudName && apiKey && apiSecret) {
+  cloudinary.config({
+    cloud_name: cloudName,
+    api_key: apiKey,
+    api_secret: apiSecret,
+  });
+}
 
 const ai = new GoogleGenAI({ 
-  apiKey: process.env.GEMINI_API_KEY || "" 
+  apiKey: geminiKey || "" 
 });
 
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: "50mb",
-    },
-  },
-};
+// ⚠️ FIXED: Removed 'export const config' because it is completely unsupported in Next.js App Router
 
 export async function POST(req: NextRequest) {
   try {
+    // Check if configuration is missing on runtime
+    if (!cloudName || !geminiKey) {
+      console.error("🚨 [Config Error] Missing environment keys on AWS production container.");
+      return NextResponse.json({ success: false, message: "Server misconfiguration. Environment missing." }, { status: 500 });
+    }
+
     const body = await req.json();
-    // ⚡ INJECTING DYNAMIC PROMPT RECEIVED FROM FRONTEND
     const { propertyId, stepId, imageBase64, prompt } = body;
 
     if (!imageBase64 || !stepId) {
@@ -35,22 +42,27 @@ export async function POST(req: NextRequest) {
     // ==========================================
     // 🤖 STAGE 1: DYNAMIC GEMINI VISION API CALL
     // ==========================================
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: [
-        prompt, // Using the dynamic configured prompt structure
-        {
-          inlineData: {
-            mimeType: "image/png",
-            data: base64Data
+    let aiTextResponse = "{}";
+    try {
+      const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: [
+          prompt || "Verify this image and return JSON validation object with isValid property.",
+          {
+            inlineData: {
+              mimeType: "image/png",
+              data: base64Data
+            }
           }
-        }
-      ]
-    });
-
-    const aiTextResponse = response.text || "{}";
+        ]
+      });
+      aiTextResponse = response.text || "{}";
+    } catch (geminiError) {
+      console.error("🚨 Gemini Core Generation Crash:", geminiError);
+      return NextResponse.json({ success: false, message: "AI Analysis Engine connection timed out." }, { status: 500 });
+    }
     
-    // Cleaning codeblock markdown wrappers if returned by AI
+    // Cleaning codeblock markdown wrappers safely
     const cleanJsonString = aiTextResponse
       .replace(/```json/g, "")
       .replace(/```/g, "")
@@ -61,10 +73,10 @@ export async function POST(req: NextRequest) {
       parsedAI = JSON.parse(cleanJsonString);
     } catch (e) {
       console.error("JSON parsing error from Gemini raw content:", aiTextResponse);
-      parsedAI = { isValid: false, reason: "AI response processing structural failure. Please recapturing clear angle." };
+      parsedAI = { isValid: false, reason: "AI response processing structural failure. Please recapture clear angle." };
     }
 
-    // 🚨 IF VERIFICATION FAILS: Return exact validation failure reason to frontend
+    // 🚨 IF VERIFICATION FAILS
     if (!parsedAI.isValid) {
       return NextResponse.json({
         success: true,
@@ -76,11 +88,17 @@ export async function POST(req: NextRequest) {
     // ==========================================
     // ☁️ STAGE 2: CLOUDINARY SECURE UPLOAD
     // ==========================================
-    const uploadResponse = await cloudinary.uploader.upload(imageBase64, {
-      folder: `kma-properties/${propertyId}`, 
-      public_id: `verified-${stepId}-${Date.now()}`,
-      resource_type: "image"
-    });
+    let uploadResponse;
+    try {
+      uploadResponse = await cloudinary.uploader.upload(imageBase64, {
+        folder: `kma-properties/${propertyId || 'unassigned'}`, 
+        public_id: `verified-${stepId}-${Date.now()}`,
+        resource_type: "image"
+      });
+    } catch (cloudinaryError) {
+      console.error("🚨 Cloudinary Upload Service Crash:", cloudinaryError);
+      return NextResponse.json({ success: false, message: "Cloud Storage connection drop failure." }, { status: 500 });
+    }
 
     const cloudinaryPublicUrl = uploadResponse.secure_url;
 
@@ -94,8 +112,12 @@ export async function POST(req: NextRequest) {
       message: "Image verified by AI and saved successfully!"
     });
 
-  } catch (error) {
-    console.error("Next.js Cloudinary pipeline error:", error);
-    return NextResponse.json({ success: false, message: "Internal server execution failure." }, { status: 500 });
+  } catch (error: any) {
+    console.error("🚨 Global Next.js Cloudinary pipeline error:", error);
+    return NextResponse.json({ 
+      success: false, 
+      message: "Internal server execution failure.",
+      errorDetails: error?.message || "" 
+    }, { status: 500 });
   }
 }
