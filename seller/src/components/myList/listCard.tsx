@@ -89,17 +89,24 @@ export default function ListCard({data, handleManage}: {data: ListingItem, handl
     >
       <div className="relative w-[260px] lg:h-full rounded-[5px] overflow-hidden property-slider">
         <Slider {...settings}>
-          {data?.photos?.map((img, index) => (
-            <div key={index} className="relative h-full w-full">
-              <Image
-                src={imgBaseUrl + img.fileKey}
-                alt="property image"
-                width={600}
-                height={400}
-                className="object-cover h-full"
-              />
-            </div>
-          ))}
+          {data?.photos?.map((img, index) => {
+            // ⚡ CLOUDINARY ABSOLUTE URL CHECK WITH SSR SAFETY
+            const isAbsoluteUrl = img.fileKey?.startsWith("http://") || img.fileKey?.startsWith("https://");
+            const finalImgSrc = isAbsoluteUrl ? img.fileKey : `${imgBaseUrl}${img.fileKey}`;
+
+            return (
+              <div key={index} className="relative h-full w-full">
+                <Image
+                  src={finalImgSrc}
+                  alt="property image"
+                  width={600}
+                  height={400}
+                  className="object-cover h-full"
+                  unoptimized={isAbsoluteUrl} // Cloudinary images are loaded directly without breaking bounds
+                />
+              </div>
+            );
+          })}
         </Slider>
         <div className="absolute top-[5px] right-[5px] px-3 py-1 text-xs font-bold text-white rounded-[5px]" style={{background: getStatusColor(data.status)?.color}}>
             <p>{getStatusColor(data.status)?.name}</p>
@@ -119,7 +126,8 @@ export default function ListCard({data, handleManage}: {data: ListingItem, handl
         <hr className="border-border"></hr>
         <div className="flex justify-start gap-3 items-center">
           <p className="font-semibold text-blue text-lg lg:text-base">
-           &#8377; {data.price} / month
+           {/* &#8377; {data.price} / month */}
+          {data.listingType.name === "Sale" ? `₹ ${data.price}` : `₹ ${data.price} / month`}
             <span className="text-text-gray font-normal"> ({data.area} {AREA_UNIT_LIST.find(item => item.value == data.areaUnit)?.label}) </span>
           </p>
           <button className="bg-light-purple text-sm px-4 py-1 rounded-[5px] text-black">
