@@ -128,7 +128,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
   };
 
   return (
-    <footer className="w-full bg-text-black">
+    <footer className="w-full bg-text-black pb-15 lg:pb-0">
       {/* Tabs */}
       <div ref={ref} className="w-full bg-[#121D2B] flex justify-center border-t border-white/5">
         <div className="w-[90%] md:w-[75%] flex items-stretch">

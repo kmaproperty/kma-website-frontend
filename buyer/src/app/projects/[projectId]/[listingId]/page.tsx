@@ -920,10 +920,10 @@ export default function ListingDetailsPage() {
               <div className="mt-4 rounded-sm md:border-b border-border md:bg-background-gray md:p-5">
                 <nav
                   ref={tabsNavRef}
-                  className="sticky top-0 z-20 -mx-1 overflow-x-auto rounded-md bg-white px-1 text-sm [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                  className="sticky top-16 md:top-25 z-20 -mx-1 overflow-x-auto rounded-md bg-white px-1 text-sm [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                   aria-label="Property sections"
                 >
-                  <div className="flex w-max min-w-full items-stretch">
+                  <div className="flex w-max min-w-full items-center pl-1">
                     {availableSectionTabs.map((tab) => (
                       <button
                         key={tab.id}
@@ -1186,7 +1186,7 @@ export default function ListingDetailsPage() {
                       <section
                         id="amenities"
                         ref={setSectionRef("amenities")}
-                        className="scroll-mt-32 rounded-xl"
+                        className="scroll-mt-32 rounded-none md:rounded-xl w-[90%] md:w-[100%] mx-auto"
                       >
                         <button
                           type="button"
