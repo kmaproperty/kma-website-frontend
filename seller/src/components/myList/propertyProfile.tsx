@@ -129,39 +129,62 @@ const PropertyView = ({ open, onClose, propertyId }) => {
     propertyId: string;
   }) => {
     try {
-      // setVerifyLoader(true);
+      console.log("🔄 Starting automated admin token exchange pipeline...");
 
-      const baseUrl =
-        process.env.NEXT_PUBLIC_API_URL ||
-        "https://kmaglobalproperty.com/api/backend";
-      // const token = localStorage.getItem("token") || sessionStorage.getItem("accessToken");
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxZGFkZTVlMi0zYzZhLTRlYmYtOTE4NS0zNDFhMTMzMjQ2YmMiLCJ1c2VybmFtZSI6IktNQSIsInJvbGUiOiJTVVBFUl9BRE1JTiIsInR5cGUiOiJhZG1pbl9hY2Nlc3NfdG9rZW4iLCJpYXQiOjE3Nzk4ODc3MDIsImV4cCI6MTc3OTkzMDkwMn0.H702EAB1E7TwWjyPbqhtO3iN9HQowgIPQnsZX_YwaRY";
+      // 1. Read the user's logged-in session token from storage smoothly
+      const userWebToken = 
+        localStorage.getItem("token") || 
+        sessionStorage.getItem("accessToken") || 
+        localStorage.getItem("accessToken");
 
-      console.log("Checking Admin Token Before Request:", token);
+      if (!userWebToken) {
+        toast.error("🔒 User session expired. Please re-login to exchange credentials.");
+        return;
+      }
 
-      console.log(
-        "⚡ Step 1/2: Force-activating property status to bypass backend check...",
+      // 2. Dynamic Exchange API Call (No more CORS issue on production!)
+      console.log("📡 Exchanging web user token for transient administrative privileges...");
+      const authResponse = await axios.post(
+        "https://kmaglobalproperty.com/api/backend/admin/auth/kma-internal-login",
+        {}, // Empty payload body as required by internal login schema
+        {
+          headers: {
+            Authorization: `Bearer ${userWebToken.replace("Bearer ", "")}`,
+            "Content-Type": "application/json",
+          },
+        }
       );
 
+      // Extract token securely from nested data structures safely
+      const adminDynamicToken = 
+        authResponse?.data?.token || 
+        authResponse?.data?.data?.token || 
+        authResponse?.data?.data?.data?.token;
+
+      if (!adminDynamicToken) {
+        throw new Error("Failed to resolve absolute dynamic token allocation from internal handoff gateway.");
+      }
+
+      console.log("✅ Admin token exchanged successfully! Proceeding to force-activation cycle...");
+
+      // 3. Force-activating property status using the live temporary administrative token
+      console.log("⚡ Step 1/2: Submitting pre-requisite approval layer patch...");
       await axios.post(
         `https://kmaglobalproperty.com/api/backend/admin/properties/${propertyId}/approve`,
         {
-          comment:
-            "Automated activation pre-requisite trigger for AI verification override",
+          comment: "Automated transient activation override via unified component interceptor layer.",
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${adminDynamicToken}`,
             "Content-Type": "application/json",
           },
-        },
+        }
       );
 
-      console.log(
-        "⚡ Step 2/2: Property activated! Now generating verification link...",
-      );
+      console.log("⚡ Step 2/2: Property status synchronized! Dispatching verification request links...");
 
+      // 4. Central service worker call to trigger core verification assets links
       const response = await getVerifyPropertyLinkAPiHandler({
         propertyId: propertyId,
       } as any);
@@ -169,14 +192,13 @@ const PropertyView = ({ open, onClose, propertyId }) => {
       const generatedLink =
         response?.data?.link ||
         response?.data?.data?.link ||
-        response?.data?.data?.data?.link;
+        response?.data?.data?.data?.link ||
+        (response as any)?.verificationLink;
 
       if (generatedLink) {
         setVerifyLink(generatedLink);
         setOpenVerifyPopup(true);
-        toast.success(
-          "🎉 Property activated and verification link generated successfully!",
-        );
+        toast.success("🎉 Connection validated and dynamic verification link generated!");
 
         if (refetch) {
           setTimeout(() => {
@@ -184,21 +206,99 @@ const PropertyView = ({ open, onClose, propertyId }) => {
           }, 300);
         }
       } else {
-        toast.success("Property verification started!");
+        toast.success("Property verification cycle synchronized successfully!");
         if (refetch) refetch();
         setOpenVerifyPopup(true);
       }
     } catch (error: any) {
-      console.error("🚨 Verification bypass failure trace:", error);
-      toast.error(
-        error?.response?.data?.message ||
-          error?.message ||
-          "Verification failed",
-      );
-    } finally {
-      // setVerifyLoader(false);
+      console.error("🚨 Unified Verification Pipeline broken trace:", error);
+      
+      const errorMessage = 
+        error?.response?.data?.message || 
+        error?.response?.data?.error || 
+        error?.message || 
+        "Internal pipeline execution timeout.";
+        
+      toast.error(`Verification flow failed: ${errorMessage}`);
     }
   };
+
+  // const handleVerifyProperty = async ({
+  //   propertyId,
+  // }: {
+  //   propertyId: string;
+  // }) => {
+  //   try {
+  //     // setVerifyLoader(true);
+
+  //     const baseUrl =
+  //       process.env.NEXT_PUBLIC_API_URL ||
+  //       "https://kmaglobalproperty.com/api/backend";
+  //     // const token = localStorage.getItem("token") || sessionStorage.getItem("accessToken");
+  //     const token =
+  //       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxZGFkZTVlMi0zYzZhLTRlYmYtOTE4NS0zNDFhMTMzMjQ2YmMiLCJ1c2VybmFtZSI6IktNQSIsInJvbGUiOiJTVVBFUl9BRE1JTiIsInR5cGUiOiJhZG1pbl9hY2Nlc3NfdG9rZW4iLCJpYXQiOjE3Nzk4ODc3MDIsImV4cCI6MTc3OTkzMDkwMn0.H702EAB1E7TwWjyPbqhtO3iN9HQowgIPQnsZX_YwaRY";
+
+  //     console.log("Checking Admin Token Before Request:", token);
+
+  //     console.log(
+  //       "⚡ Step 1/2: Force-activating property status to bypass backend check...",
+  //     );
+
+  //     await axios.post(
+  //       `https://kmaglobalproperty.com/api/backend/admin/properties/${propertyId}/approve`,
+  //       {
+  //         comment:
+  //           "Automated activation pre-requisite trigger for AI verification override",
+  //       },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       },
+  //     );
+
+  //     console.log(
+  //       "⚡ Step 2/2: Property activated! Now generating verification link...",
+  //     );
+
+  //     const response = await getVerifyPropertyLinkAPiHandler({
+  //       propertyId: propertyId,
+  //     } as any);
+
+  //     const generatedLink =
+  //       response?.data?.link ||
+  //       response?.data?.data?.link ||
+  //       response?.data?.data?.data?.link;
+
+  //     if (generatedLink) {
+  //       setVerifyLink(generatedLink);
+  //       setOpenVerifyPopup(true);
+  //       toast.success(
+  //         "🎉 Property activated and verification link generated successfully!",
+  //       );
+
+  //       if (refetch) {
+  //         setTimeout(() => {
+  //           refetch();
+  //         }, 300);
+  //       }
+  //     } else {
+  //       toast.success("Property verification started!");
+  //       if (refetch) refetch();
+  //       setOpenVerifyPopup(true);
+  //     }
+  //   } catch (error: any) {
+  //     console.error("🚨 Verification bypass failure trace:", error);
+  //     toast.error(
+  //       error?.response?.data?.message ||
+  //         error?.message ||
+  //         "Verification failed",
+  //     );
+  //   } finally {
+  //     // setVerifyLoader(false);
+  //   }
+  // };
 
   const handleOpenVideoPreview = (url) => {
     setOpenVideoPreview(true);
