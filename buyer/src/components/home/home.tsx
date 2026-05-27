@@ -24,8 +24,8 @@ export default function MainHome({ topProperties }: MainHomeProps) {
       <div>
         <Social/>
       </div>
-      <div className="flex flex-col items-center pt-[85px]">
-        <div className="w-[75%] mt-[45px] flex justify-between gap-5 overflow-x-auto no-scrollbar">
+      <div className="flex flex-col items-center pt-[85px] text-center md:text-left">
+        <div className="w-[90%] md:w-[75%] mt-[45px] flex flex-col md:flex-row md:justify-between gap-5 overflow-x-auto no-scrollbar">
           <div className="w-[100%] lg:w-[50%]">
             <BannerText />
           </div>
@@ -35,7 +35,7 @@ export default function MainHome({ topProperties }: MainHomeProps) {
         </div>
       </div>
       <div className="flex justify-center mt-10">
-        <div className="w-[75%] lg:w-[55%]">
+        <div className="w-[85%] lg:w-[55%]">
           <Filter />
         </div>
       </div>

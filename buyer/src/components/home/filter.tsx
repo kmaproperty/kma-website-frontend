@@ -267,23 +267,25 @@ export default function Filter() {
   
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex justify-center font-medium text-blue overflow-auto no-scrollbar">
-        {
-          filterTypeList.map((item, index) => {
-            return(
-              <button key={item.value} onClick={() => handleFilterType(item.value)} className={`w-fit 2md:w-[110px] ${index == 0 ? '' : 'ml-2'} flex-shrink-0 ${filterType == item.value ? 'animated-button' : 'animated-button-white'} px-5 2md:px-8 py-1 2md:py-2 border border-transparent text-center cursor-pointer`}>
-          <span className="gap-3 relative flex justify-center">
-            <p className={`text-nowrap text-xs 2md:text-sm 1xl:text-base`}>
-              {item.label}
-            </p>
-          </span>
-        </button>
-            )
-          })
-        }
-        
-        
-      </div>
+      <div className="relative group">
+  <div className="md:hidden absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-blue/20 pointer-events-none z-10" />
+
+  <div className="flex justify-start md:justify-center items-center font-medium text-blue overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth px-5 md:px-0">
+    {filterTypeList.map((item, index) => (
+      <button 
+        key={item.value} 
+        onClick={() => handleFilterType(item.value)} 
+        className={`snap-center w-fit flex-shrink-0 ${index === 0 ? '' : 'ml-2'} ${filterType == item.value ? 'animated-button' : 'animated-button-white'} px-6 py-1.5 border border-transparent text-center cursor-pointer transition-transform active:scale-95`}
+      >
+        <span className="relative flex justify-center">
+          <p className="text-nowrap text-xs md:text-sm">
+            {item.label}
+          </p>
+        </span>
+      </button>
+    ))}
+  </div>
+</div>
       <div className="flex flex-col rounded-[10px] bg-white mt-1 p-4">
         <div className="hidden 2md:flex h-[35px] 2md:h-[40px]">
           <div className="flex-1">
@@ -597,10 +599,10 @@ export default function Filter() {
             </button>
           </div>
         </div>
-        <div className="flex justify-center gap-3 pt-2 2md:pt-3">
+        <div className="flex justify-center flex-wrap gap-2 md:gap-3 pt-2 2md:pt-3">
           {['commercial'].includes(filterType) && <div
             onClick={(event) => handlePopperOpen(event, 'transactiontype')}
-            className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
+            className="text-xs md:text-sm rounded-full cursor-pointer px-3 md:px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-1 md:gap-2 leading-[110%] whitespace-nowrap"
           >
             {transactionBy ? transactionBy?.name : 'Transaction Type'}
             <Image
@@ -613,7 +615,7 @@ export default function Filter() {
           </div>}
           {['rent', 'sale', 'projects','commercial', 'plot_land'].includes(filterType) && <div
             onClick={(event) => handlePopperOpen(event, 'budget')}
-            className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
+            className="text-xs md:text-sm rounded-full cursor-pointer px-3 md:px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-1 md:gap-2 leading-[110%] whitespace-nowrap"
           >
             {(!selectedMinBudget && !selectedMaxBudget) ? 'Budget' : (selectedMinBudget && !selectedMaxBudget) ? 'Above' + selectedMinBudget?.label : selectedMinBudget?.label + ' - ' + selectedMaxBudget?.label }
             <Image
@@ -626,7 +628,7 @@ export default function Filter() {
           </div>}
           {['projects'].includes(filterType) && <div
             onClick={(event) => handlePopperOpen(event, 'projectstatus')}
-            className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
+            className="text-xs md:text-sm rounded-full cursor-pointer px-3 md:px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-1 md:gap-2 leading-[110%] whitespace-nowrap"
           >
             {selectedProjectStatus.length > 0 ? selectedProjectStatus[0].name + (selectedProjectStatus.length > 1 ? ' +1': '') : 'Project Status'}
             <Image
@@ -639,7 +641,7 @@ export default function Filter() {
           </div>}
           {['rent', 'sale', 'projects', 'commercial'].includes(filterType) && <div
             onClick={(event) => handlePopperOpen(event, 'propertytype')}
-            className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
+            className="text-xs md:text-sm rounded-full cursor-pointer px-3 md:px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-1 md:gap-2 leading-[110%] whitespace-nowrap"
           >
            {selectedPropertyType.length > 0 ? selectedPropertyType[0].name + (selectedPropertyType.length > 1 ? " +1" : '')  : ' Property Type'}
             <Image
@@ -652,7 +654,7 @@ export default function Filter() {
           </div>}
           {['sale'].includes(filterType) && <div
             onClick={(event) => handlePopperOpen(event, 'possessionstatus')}
-            className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
+            className="text-xs md:text-sm rounded-full cursor-pointer px-3 md:px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-1 md:gap-2 leading-[110%] whitespace-nowrap"
           >
             {selectedPossessionStatus.length > 0 ? selectedPossessionStatus[0].name + (selectedPossessionStatus.length > 1 ? ' +1': '') : 'Possession Status'}
             <Image
@@ -665,7 +667,7 @@ export default function Filter() {
           </div>}
           {['rent'].includes(filterType) && <div
             onClick={(event) => handlePopperOpen(event, 'furnishType')}
-            className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
+            className="text-xs md:text-sm rounded-full cursor-pointer px-3 md:px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-1 md:gap-2 leading-[110%] whitespace-nowrap"
           >
             {selectedFurnishType.length > 0 ? selectedFurnishType[0].name + (selectedFurnishType.length > 1 ? ' +1': '') : 'Furnishing Status'}
             <Image
@@ -678,7 +680,7 @@ export default function Filter() {
           </div>}
           {['plot_land'].includes(filterType) && <div
             onClick={(event) => handlePopperOpen(event, 'postedby')}
-            className="text-sm rounded-full cursor-pointer px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-2"
+            className="text-xs md:text-sm rounded-full cursor-pointer px-3 md:px-4 bg-[#E4E4E4] text-text-black h-[33px] flex justify-center items-center gap-1 md:gap-2 leading-[110%] whitespace-nowrap"
           >
             {selectedPostedBy.length > 0 ? selectedPostedBy[0].name + (selectedPostedBy.length > 1 ? ' +1': '') : 'Posted By'}
             <Image
