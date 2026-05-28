@@ -314,7 +314,7 @@ export default function FiltersSidebar({
               onChange={(e) => setSize("minSizeSqYd", e.target.value)}
             >
               <option value="">Min</option>
-              {[50, 100, 119, 150, 200].map((v) => (
+              {[50, 100, 200, 300, 500, 750, 1000, 1500, 2000, 2500, 3000, 4000, 5000].map((v) => (
                 <option key={v} value={v}>
                   {v} Sq.Yd.
                 </option>
@@ -325,7 +325,7 @@ export default function FiltersSidebar({
               onChange={(e) => setSize("maxSizeSqYd", e.target.value)}
             >
               <option value="">Max</option>
-              {[119, 150, 200, 300].map((v) => (
+              {[100, 200, 300, 500, 750, 1000, 1500, 2000, 2500, 3000, 4000, 5000].map((v) => (
                 <option key={v} value={v}>
                   {v} Sq.Yd.
                 </option>

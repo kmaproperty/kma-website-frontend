@@ -211,9 +211,8 @@ export default function ProfileUpdate({ open, onClose }) {
     const errors: FormErrors = {};
 
     if (!formData.fullName.trim()) errors.fullName = "Full name is required";
-    if (!formData.email.trim()) {
-      errors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    // Email is optional. Only validate format if the user typed something.
+    if (formData.email.trim() && !/\S+@\S+\.\S+/.test(formData.email)) {
       errors.email = "Invalid email format";
     }
 
@@ -261,7 +260,7 @@ export default function ProfileUpdate({ open, onClose }) {
 
         let payload: any = {
           name: formData.fullName,
-          email: formData.email,
+          ...(formData.email?.trim() ? { email: formData.email.trim() } : {}),
           city: formData.city?.label ?? "",
         };
 
@@ -311,7 +310,7 @@ export default function ProfileUpdate({ open, onClose }) {
             }
             let payload: any = {
                 name: formData.fullName,
-                email: formData.email,
+                ...(formData.email?.trim() ? { email: formData.email.trim() } : {}),
                 channelPartnerCode: formData.partnerCode,
                 firmName: formData.firmName,
                 businessSince: formData.businessSince,

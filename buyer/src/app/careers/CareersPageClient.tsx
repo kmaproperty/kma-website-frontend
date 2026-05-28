@@ -4,8 +4,15 @@ import HomdeHeader from "@/components/header/homeHeader";
 import HomeFooter from "@/components/footer/homeFooter";
 import AboutusDataSync from "@/components/footer/AboutusDataSync";
 import PageTitle from "@/components/common/PageTitle";
+import Link from "next/link";
+import {
+  CareerJob,
+  JobCategory,
+  fetchCareerJobCategories,
+  fetchCareerJobs,
+} from "@/services/jobsService";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   House,
   Search,
@@ -30,38 +37,13 @@ const POPULAR_TAGS = [
   "Product Manager",
 ];
 
-/** Figma job categories — icon PNGs in /public/assets/careers/category-*.png */
-const CATEGORIES = [
-  {
-    name: "Design",
-    jobsLine: "241+ Jobs",
-    iconSrc: "/assets/careers/category-design.png",
-  },
-  {
-    name: "Development",
-    jobsLine: "1K+ Jobs",
-    iconSrc: "/assets/careers/category-development.png",
-  },
-  {
-    name: "Marketing",
-    jobsLine: "124+ Jobs",
-    iconSrc: "/assets/careers/category-marketing.png",
-  },
-  {
-    name: "Editing",
-    jobsLine: "24+ Jobs",
-    iconSrc: "/assets/careers/category-editing.png",
-  },
-  {
-    name: "Business",
-    jobsLine: "1.2K+ Jobs",
-    iconSrc: "/assets/careers/category-business.png",
-  },
-  {
-    name: "IT",
-    jobsLine: "1.3K+ Jobs",
-    iconSrc: "/assets/careers/category-it.png",
-  },
+const CATEGORY_ICONS = [
+  "/assets/careers/category-design.png",
+  "/assets/careers/category-development.png",
+  "/assets/careers/category-marketing.png",
+  "/assets/careers/category-editing.png",
+  "/assets/careers/category-business.png",
+  "/assets/careers/category-it.png",
 ];
 
 const DREAM_CHECKS = [
@@ -69,8 +51,6 @@ const DREAM_CHECKS = [
   "Transparent listings with clear salary and location details.",
   "One profile to track applications and saved opportunities.",
 ];
-
-type FeaturedTab = "All" | "Industrial" | "Food" | "Health" | "Public Village";
 
 /** Gallery row: first slot uses logo-mark-4 hero asset; then collage → ratings → celebration */
 const HERO_CARDS = [
@@ -93,66 +73,6 @@ const HERO_CARDS = [
 ];
 const SCROLL_HERO_CARDS = [...HERO_CARDS, ...HERO_CARDS];
 
-const JOBS = [
-  {
-    company: "Wilson Engineering Solutions",
-    title: "Nuclear Outage Worker",
-    logoIcon: Flower2,
-    logoIconColor: "text-[#ff7a45]",
-    address: "120 Center st #300",
-    date: "2025-09-26",
-    salary: "$3k - $3,8k a month",
-  },
-  {
-    company: "Solit It Solutions",
-    title: "Nuclear Outage Worker",
-    logoIcon: Zap,
-    logoIconColor: "text-[#10b981]",
-    address: "120 Center st #300",
-    date: "2025-09-26",
-    salary: "$3k - $3,8k a month",
-  },
-  {
-    company: "Wilson Engineering Solutions",
-    title: "Nuclear Outage Worker",
-    logoIcon: Flower2,
-    logoIconColor: "text-[#ff7a45]",
-    address: "120 Center st #300",
-    date: "2025-09-26",
-    salary: "$3k - $3,8k a month",
-  },
-  {
-    company: "Templates.Gallery",
-    title: "Nuclear Outage Worker",
-    logoIcon: Send,
-    logoIconColor: "text-[#f59e0b]",
-    address: "120 Center st #300",
-    date: "2025-09-26",
-    salary: "$3k - $3,8k a month",
-  },
-  {
-    company: "Wilson Engineering Solutions",
-    title: "Nuclear Outage Worker",
-    logoIcon: Flower2,
-    logoIconColor: "text-[#ff7a45]",
-    address: "120 Center st #300",
-    date: "2025-09-26",
-    salary: "$3k - $3,8k a month",
-  },
-];
-
-const TABS: FeaturedTab[] = [
-  "All",
-  "Industrial",
-  "Food",
-  "Health",
-  "Public Village",
-];
-
-const JOB_CATEGORY_OPTIONS = ["Full Time", "Part Time", "Contract", "Internship"];
-const LOCATION_OPTIONS = ["Gurugram", "Delhi NCR", "Remote", "Mumbai"];
-const KEYWORD_OPTIONS = ["Designer", "Developer", "Marketing", "Support"];
-
 const careersBreadcrumps = [
   {
     name: "Home",
@@ -165,10 +85,13 @@ const careersBreadcrumps = [
 ];
 
 export default function CareersPageClient() {
-  const [activeTab, setActiveTab] = useState<FeaturedTab>("All");
+  const [activeTab, setActiveTab] = useState("All");
   const [jobCategory, setJobCategory] = useState("");
   const [location, setLocation] = useState("");
   const [mobileKeyword, setMobileKeyword] = useState("");
+  const [categories, setCategories] = useState<JobCategory[]>([]);
+  const [jobs, setJobs] = useState<CareerJob[]>([]);
+  const [jobsLoading, setJobsLoading] = useState(false);
   const [mobileOpenDropdown, setMobileOpenDropdown] = useState<
     "" | "jobCategory" | "location" | "keyword"
   >("");
@@ -176,8 +99,55 @@ export default function CareersPageClient() {
     "" | "jobCategory" | "location" | "keyword"
   >("");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
-  /** Flat mock list; tab filter can slice/replace when per-tab data exists */
-  const jobs = JOBS;
+  const tabs = useMemo(() => ["All", ...categories.map((c) => c.name)], [categories]);
+
+  const locationOptions = useMemo(() => {
+    return Array.from(new Set(jobs.map((j) => j.location || j.city).filter(Boolean))) as string[];
+  }, [jobs]);
+
+  const keywordOptions = useMemo(() => {
+    return Array.from(new Set(jobs.map((j) => j.title).filter(Boolean))) as string[];
+  }, [jobs]);
+
+  const loadJobs = async () => {
+    setJobsLoading(true);
+    try {
+      const categoryId = categories.find((c) => c.name === jobCategory)?.id;
+      const response = await fetchCareerJobs({
+        page: 1,
+        limit: 20,
+        search: mobileKeyword || undefined,
+        location: location || undefined,
+        categoryId,
+      });
+      setJobs(response.jobs);
+    } catch {
+      setJobs([]);
+    } finally {
+      setJobsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const bootstrap = async () => {
+      try {
+        const categoryList = await fetchCareerJobCategories();
+        setCategories(categoryList);
+      } catch {
+        setCategories([]);
+      }
+    };
+    bootstrap();
+  }, []);
+
+  useEffect(() => {
+    loadJobs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [jobCategory, location, mobileKeyword, categories.length]);
+
+  useEffect(() => {
+    setActiveTab(jobCategory || "All");
+  }, [jobCategory]);
 
   return (
     <div className="min-w-0 ">
@@ -273,17 +243,17 @@ export default function CareersPageClient() {
                     />
                     {desktopOpenDropdown === "jobCategory" && (
                       <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-20 overflow-hidden rounded-2xl border border-[#D9D9D9] bg-white shadow-lg">
-                        {JOB_CATEGORY_OPTIONS.map((option) => (
+                        {categories.map((option) => (
                           <button
-                            key={option}
+                            key={option.id}
                             type="button"
                             onClick={() => {
-                              setJobCategory(option);
+                              setJobCategory(option.name);
                               setDesktopOpenDropdown("");
                             }}
                             className="block w-full px-4 py-2.5 text-left text-sm text-[#0c1328] hover:bg-gray-50"
                           >
-                            {option}
+                            {option.name}
                           </button>
                         ))}
                       </div>
@@ -313,7 +283,7 @@ export default function CareersPageClient() {
                     />
                     {desktopOpenDropdown === "location" && (
                       <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-20 overflow-hidden rounded-2xl border border-[#D9D9D9] bg-white shadow-lg">
-                        {LOCATION_OPTIONS.map((option) => (
+                        {locationOptions.map((option) => (
                           <button
                             key={option}
                             type="button"
@@ -353,7 +323,7 @@ export default function CareersPageClient() {
                     />
                     {desktopOpenDropdown === "keyword" && (
                       <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-20 overflow-hidden rounded-2xl border border-[#D9D9D9] bg-white shadow-lg">
-                        {KEYWORD_OPTIONS.map((option) => (
+                        {keywordOptions.map((option) => (
                           <button
                             key={option}
                             type="button"
@@ -374,7 +344,10 @@ export default function CareersPageClient() {
               <div className="flex shrink-0 justify-center lg:justify-end lg:items-end">
                 <button
                   type="button"
-                  onClick={() => setDesktopOpenDropdown("")}
+                  onClick={() => {
+                    setDesktopOpenDropdown("");
+                    loadJobs();
+                  }}
                   className="inline-flex h-[50px] w-[190px] min-w-[190px] shrink-0 items-center justify-center gap-2 self-start rounded-full border border-solid border-[#010048] bg-[#010048] px-4 text-[16px] font-medium leading-none text-white transition hover:opacity-90 sm:self-auto"
                 >
                   <Search
@@ -482,9 +455,9 @@ export default function CareersPageClient() {
                 "repeat(auto-fit, minmax(min(100%, 10.5rem), 1fr))",
             }}
           >
-            {CATEGORIES.map((c) => (
+            {categories.map((c, idx) => (
               <div
-                key={c.name}
+                key={c.id}
                 className="mx-auto flex aspect-[224/234] w-full max-w-[14rem] flex-col items-center justify-center bg-white px-3 py-5 text-center sm:px-4"
                 style={{
                   borderRadius: "0.625rem",
@@ -499,7 +472,7 @@ export default function CareersPageClient() {
                   }}
                 >
                   <Image
-                    src={c.iconSrc}
+                    src={CATEGORY_ICONS[idx % CATEGORY_ICONS.length]}
                     alt=""
                     width={56}
                     height={56}
@@ -526,7 +499,7 @@ export default function CareersPageClient() {
                     lineHeight: "1.98",
                   }}
                 >
-                  {c.jobsLine}
+                  Open roles
                 </p>
               </div>
             ))}
@@ -575,17 +548,17 @@ export default function CareersPageClient() {
                   />
                   {mobileOpenDropdown === "jobCategory" && (
                     <div className="absolute left-0 right-0 top-[calc(100%+4px)] z-20 overflow-hidden rounded-md border border-[#D9D9D9] bg-white shadow-lg">
-                      {JOB_CATEGORY_OPTIONS.map((option) => (
+                      {categories.map((option) => (
                         <button
-                          key={option}
+                          key={option.id}
                           type="button"
                           onClick={() => {
-                            setJobCategory(option);
+                            setJobCategory(option.name);
                             setMobileOpenDropdown("");
                           }}
                           className="block w-full px-4 py-2.5 text-left text-sm text-[#0c1328] hover:bg-gray-50 md:text-xs"
                         >
-                          {option}
+                          {option.name}
                         </button>
                       ))}
                     </div>
@@ -614,7 +587,7 @@ export default function CareersPageClient() {
                   />
                   {mobileOpenDropdown === "location" && (
                     <div className="absolute left-0 right-0 top-[calc(100%+4px)] z-20 overflow-hidden rounded-md border border-[#D9D9D9] bg-white shadow-lg">
-                      {LOCATION_OPTIONS.map((option) => (
+                      {locationOptions.map((option) => (
                         <button
                           key={option}
                           type="button"
@@ -653,7 +626,7 @@ export default function CareersPageClient() {
                   />
                   {mobileOpenDropdown === "keyword" && (
                     <div className="absolute left-0 right-0 top-[calc(100%+4px)] z-20 overflow-hidden rounded-md border border-[#D9D9D9] bg-white shadow-lg">
-                      {KEYWORD_OPTIONS.map((option) => (
+                      {keywordOptions.map((option) => (
                         <button
                           key={option}
                           type="button"
@@ -677,6 +650,7 @@ export default function CareersPageClient() {
               onClick={() => {
                 setIsMobileFilterOpen(false);
                 setMobileOpenDropdown("");
+                loadJobs();
               }}
               className="mt-5 inline-flex h-12 w-full items-center justify-center rounded-md border border-solid border-[#010048] bg-[#010048] px-4 text-base font-medium leading-none text-white transition hover:opacity-90 md:mt-4 md:h-10 md:text-sm"
             >
@@ -805,11 +779,14 @@ export default function CareersPageClient() {
               className="flex flex-wrap justify-center gap-3 mb-10"
               data-testid="featured-tabs"
             >
-              {TABS.map((t) => (
+              {tabs.map((t) => (
                 <button
                   key={t}
                   type="button"
-                  onClick={() => setActiveTab(t)}
+                  onClick={() => {
+                    setActiveTab(t);
+                    setJobCategory(t === "All" ? "" : t);
+                  }}
                   className={`text-sm px-6 py-2.5 rounded-md border transition ${
                     activeTab === t
                       ? "bg-[#1e1b7a] text-white border-[#1e1b7a] shadow-sm"
@@ -824,8 +801,16 @@ export default function CareersPageClient() {
 
             {/* Job cards */}
             <div className="space-y-4">
+              {jobsLoading && (
+                <div className="rounded-2xl bg-white px-5 py-8 text-center text-sm text-slate-500">
+                  Loading jobs...
+                </div>
+              )}
               {jobs.map((j, i) => {
-              const Icon = j.logoIcon;
+              const Icon = i % 2 === 0 ? Flower2 : Zap;
+              const formattedSalary = j.salaryVisibility !== false
+                ? `${j.salaryMin ? `$${j.salaryMin}` : "Salary"}${j.salaryMax ? ` - $${j.salaryMax}` : ""}`
+                : "Salary hidden";
               return (
                 <div
                   key={i}
@@ -849,7 +834,7 @@ export default function CareersPageClient() {
                     {/* Company + Title */}
                     <div className="lg:w-60 shrink-0">
                       <div className="text-xs md:text-sm text-slate-400 font-medium">
-                        {j.company}
+                        {j.companyName || "KMA Hiring Partner"}
                       </div>
                       <div className="font-display font-bold text-lg text-slate-900 leading-snug mt-1">
                         {j.title}
@@ -863,10 +848,10 @@ export default function CareersPageClient() {
                           Featured
                         </span>
                         <span className="text-xs font-medium px-3 py-1 rounded-md border border-[#c9f0d6] text-[#10a36e] bg-[#e9faf0]">
-                          Full-Time
+                          {j.jobType || "Full-Time"}
                         </span>
                         <span className="text-xs font-medium px-3 py-1 rounded-md border border-[#c9ddf5] text-[#2c7bd4] bg-[#eaf2fc]">
-                          Outage Worker
+                          {j.workMode || "WORK_FROM_OFFICE"}
                         </span>
                         <span className="text-xs font-medium px-3 py-1 rounded-md border border-[#f5c9c9] text-[#e05252] bg-[#fcecec]">
                           3 Applicants
@@ -874,31 +859,37 @@ export default function CareersPageClient() {
                       </div>
                       <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-500">
                         <span className="flex items-center gap-1.5">
-                          <MapPin size={15} /> {j.address}
+                          <MapPin size={15} /> {j.location || j.city || "Location not specified"}
                         </span>
                         <span className="flex items-center gap-1.5">
-                          <Calendar size={15} /> {j.date}
+                          <Calendar size={15} /> {j.applicationDeadline ? new Date(j.applicationDeadline).toLocaleDateString() : "Open"}
                         </span>
                         <span className="flex items-center gap-1.5">
-                          <Wallet size={15} /> {j.salary}
+                          <Wallet size={15} /> {formattedSalary}
                         </span>
                       </div>
                     </div>
 
                     {/* Apply button */}
                     <div className="lg:shrink-0">
-                      <button
-                        className="w-full lg:w-auto bg-[#1e1b7a] hover:bg-[#29259c] text-white font-semibold rounded-full px-8 py-3 text-sm transition"
+                      <Link
+                        href={`/careers/${j.id}`}
+                        className="inline-flex w-full lg:w-auto justify-center bg-[#1e1b7a] hover:bg-[#29259c] text-white font-semibold rounded-full px-8 py-3 text-sm transition"
                         data-testid={`apply-job-${i}`}
                       >
                         Apply Now
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 </div>
               );
             })}
             </div>
+            {!jobsLoading && jobs.length === 0 && (
+              <div className="rounded-2xl bg-white px-5 py-8 text-center text-sm text-slate-500">
+                No jobs found for selected filters.
+              </div>
+            )}
 
             {/* Bottom CTA pill */}
             <div
