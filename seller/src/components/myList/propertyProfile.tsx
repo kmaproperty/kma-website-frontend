@@ -123,70 +123,44 @@ const PropertyView = ({ open, onClose, propertyId }) => {
   //   },
   // });
 
-  const handleVerifyProperty = async ({
+const handleVerifyProperty = async ({
     propertyId,
   }: {
     propertyId: string;
   }) => {
     try {
       console.log("=========================================");
-      console.log("🔄 [PRODUCTION] Dynamic Verification Flow Triggered");
-      console.log("📍 Target Property ID:", propertyId);
+      console.log("[SECURE PROXY] Triggering Server-Side Admin Bypass Flow");
+      
+      //  STEP 1: Hit our own secure internal Next.js API route
+      console.log("Dispatching request to secure internal proxy...");
+      const response = await axios.post("/api/admin-approve", {
+        propertyId: propertyId
+      });
 
-      console.log("📡 Dispatching transient login handoff to proxy route...");
-      const authResponse = await axios.post(
-        "/api/backend/admin/auth/kma-internal-login",
-        {}, 
-        {
-          withCredentials: true, // Auto-forwards HttpOnly session cookies smoothly
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      // Token extract karo return payload se safely
-      const adminDynamicToken = 
-        authResponse?.data?.token || 
-        authResponse?.data?.data?.token;
-
-      if (!adminDynamicToken) {
-        throw new Error("Transitional token generation failed. Gateway did not return token payload.");
+      if (!response.data.success) {
+        throw new Error(response.data.message || "Server proxy rejected the approval sequence.");
       }
 
-      console.log("✅ Dynamic Admin session acquired. Initiating property activation step...");
+      console.log("✅ Property approved securely via background server worker!");
 
-      // 2. Force-activating property status using fresh admin token (Relative Route)
-      await axios.post(
-        `/api/backend/admin/properties/${propertyId}/approve`,
-        { comment: "Automated transient activation override via unified component interceptor layer." },
-        {
-          headers: {
-            Authorization: `Bearer ${adminDynamicToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      console.log("⚡ Property status synchronized! Fetching verification secure URL assets...");
-
-      // 3. Central service worker call to trigger core verification assets links
-      const response = await getVerifyPropertyLinkAPiHandler({
+      // STEP 2: Central service worker call to trigger core verification assets links
+      const linkResponse = await getVerifyPropertyLinkAPiHandler({
         propertyId: propertyId,
       } as any);
 
       const generatedLink = 
-        response?.data?.link || 
-        response?.data?.data?.link || 
-        (response as any)?.verificationLink;
+        linkResponse?.data?.link || 
+        linkResponse?.data?.data?.link || 
+        (linkResponse as any)?.verificationLink;
 
       if (generatedLink) {
         setVerifyLink(generatedLink);
         setOpenVerifyPopup(true);
-        toast.success("🎉 Dynamic verification link generated successfully!");
+        toast.success("Property activated successfully!");
         if (refetch) setTimeout(() => refetch(), 300);
       } else {
-        toast.success("Property verification cycle synchronized successfully!");
+        toast.success("Property verification synchronized smoothly!");
         if (refetch) refetch();
         setOpenVerifyPopup(true);
       }
@@ -194,12 +168,7 @@ const PropertyView = ({ open, onClose, propertyId }) => {
       console.log("=========================================");
     } catch (error: any) {
       console.error("🚨 Unified Verification Pipeline broken trace:", error);
-      
-      const errorMessage = 
-        error?.response?.data?.message || 
-        error?.message || 
-        "Internal verification handoff exception.";
-        
+      const errorMessage = error?.response?.data?.message || error?.message || "Internal verification proxy failure.";
       toast.error(`Verification flow failed: ${errorMessage}`);
     }
   };
