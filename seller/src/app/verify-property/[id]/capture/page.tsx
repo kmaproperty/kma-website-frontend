@@ -265,13 +265,35 @@ You must respond strictly in JSON format matching this pattern:
     }
   };
 
- const handleFinalSubmit = async () => {
+const handleFinalSubmit = async () => {
     try {
       setIsUploading(true);
 
-      const activeToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3YjU0MTgyOC1mZjM0LTQzMzItODBiNy0yMTM1ZTk5YWRmMWIiLCJwaG9uZSI6IjkzNTQwNDA1MjciLCJyb2xlIjoiQ0hBTk5FTF9QQVJUTkVSIiwidHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc3OTcwNjM4NiwiZXhwIjoxNzc5NzkyNzg2fQ.tl90zmOzMmmRNdA4ZEursLkH92xiWiEIXW4Qgz3mN00";
+      // 🎯 DYNAMIC SELLER TOKEN RETRIEVAL
+      console.log("Resolving active user session tokens from utility router...");
+      let sellerToken = "";
+      try {
+        const tokenExtractResponse = await axios.get("/api/get-token");
+        sellerToken = 
+          tokenExtractResponse?.data?.accessToken || 
+          tokenExtractResponse?.data?.token || 
+          tokenExtractResponse?.data?.data?.accessToken || "";
+      } catch (tokenErr) {
+        console.warn("Extraction utility bypass, falling back to local storage registry:", tokenErr);
+      }
 
-      // 1. NestJS clean string enums mapping helper
+      if (!sellerToken && typeof window !== "undefined") {
+        sellerToken = 
+          localStorage.getItem("token") || 
+          localStorage.getItem("accessToken") || 
+          sessionStorage.getItem("accessToken") || "";
+      }
+
+      if (!sellerToken) {
+        throw new Error("User authentication context expired. Please re-login.");
+      }
+
+      // Clean string enums mapping helper for NestJS
       const mapLabelToBackendEnum = (label: string) => {
         const lower = label.toLowerCase();
         if (lower.includes("living") || lower.includes("hall")) return "Living Room";
@@ -285,7 +307,7 @@ You must respond strictly in JSON format matching this pattern:
         return "Other";
       };
 
-      // 2. Photos array array structure structure matching dynamic step definitions
+      // Photos array compilation mapping
       const formattedPhotosArray = VERIFICATION_STEPS.map((step, idx) => {
         const urlLink = verifiedImages[step.id];
         return {
@@ -295,61 +317,36 @@ You must respond strictly in JSON format matching this pattern:
         };
       });
 
-      // 🎯 PIPELINE STEP A: Pehle Standard Step-4 call se sari photos register/save karwao
-      const step4Url = `https://kmaglobalproperty.com/api/backend/property/step-4`;
-
-      const saveResponse = await fetch(step4Url, {
-        method: "POST", // Strict POST required for registration
-        headers: { 
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${activeToken}` 
-        },
-        body: JSON.stringify({
-          propertyId: propertyId, // Request body dynamic DTO wrap encapsulation
-          photos: formattedPhotosArray
-        }),
-      });
-
-      if (!saveResponse.ok) {
-        const errorText = await saveResponse.text();
-        throw new Error(`Step-4 Data Save Failed: ${errorText}`);
-      }
-
-      // 🎯 PIPELINE STEP B: Swagger bulk-approve endpoint se ek hi baar me sari photos status Approved mark karvao!
-      // Saari verified photos ke Cloudinary/S3 URLs ka array ready kar rahe hain pure arrays lookup ke liye
+      // Filter verified file keys array for bulk approval
       const allVerifiedFileKeys = VERIFICATION_STEPS
         .filter(step => verifiedImages[step.id])
         .map(step => verifiedImages[step.id]);
 
-      if (allVerifiedFileKeys.length > 0) {
-        const bulkApproveUrl = `https://kmaglobalproperty.com/api/backend/admin/properties/${propertyId}/media/bulk-approve`;
+      // 🎯 SINGLE CALL TO SECURE SERVER PROXY (Bypasses ECONNREFUSED and hides credentials)
+      console.log("📡 Dispatching combined assets to secure backend proxy layer...");
+      const serverResponse = await axios.post("/api/admin-bulk-approve", {
+        propertyId: propertyId,
+        photos: formattedPhotosArray,
+        fileKeys: allVerifiedFileKeys,
+        sellerToken: sellerToken
+      });
 
-        const approveResponse = await fetch(bulkApproveUrl, {
-          method: "POST", //
-          headers: { 
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${activeToken}` 
-          },
-          body: JSON.stringify({
-            fileKeys: allVerifiedFileKeys // 👈 Passing string arrays matching Swagger array contract specification schema
-          }),
-        });
-
-        if (!approveResponse.ok) {
-          const approveErrorText = await approveResponse.text();
-          console.warn("Bulk approval background warning trace:", approveErrorText);
-        }
+      if (!serverResponse.data.success) {
+        throw new Error(serverResponse.data.message || "Unified proxy engine rejected the submission.");
       }
 
-      // Safe clean up parameters state logs
+      console.log("🎉 Combined pipeline executed flawlessly via server proxy!");
+
+      // Clean up dynamic local states
       localStorage.removeItem(`captured_${propertyId}`);
       localStorage.removeItem(`verified_${propertyId}`);
       
-      alert("🎉 Property verified and photos successfully pushed to bulk approval pipeline!");
+      toast.success("🎉 Property verified and photos successfully pushed to bulk approval pipeline!");
       router.push(`/verify-property/${propertyId}/thank-you`);
 
     } catch (error: any) {
-      alert(`🚨 Submission Failure:\n${error?.message || "Format Payload Discrepancy"}`);
+      console.error("🚨 Final submit pipeline crashed:", error);
+      toast.error(`Submission Failure:\n${error?.response?.data?.message || error?.message || "Format Payload Discrepancy"}`);
     } finally {
       setIsUploading(false);
     }
