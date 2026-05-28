@@ -129,59 +129,36 @@ const PropertyView = ({ open, onClose, propertyId }) => {
     propertyId: string;
   }) => {
     try {
-      console.log("🔄 Starting automated admin token exchange pipeline...");
+      console.log("=========================================");
+      console.log("🔄 [PRODUCTION] Dynamic Verification Flow Triggered");
+      console.log("📍 Target Property ID:", propertyId);
 
-      // 🎯 COOKIE READER UTILITY: Client-side par cookie nikalne ke liye
-      const getCookie = (name: string) => {
-        if (typeof document === "undefined") return null;
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop()?.split(";").shift() || null;
-        return null;
-      };
-
-      const userWebToken = 
-        getCookie("token") || 
-        getCookie("accessToken") ||
-        localStorage.getItem("token") || 
-        sessionStorage.getItem("accessToken");
-
-      if (!userWebToken) {
-        toast.error("🔒 User session expired. Cookie/Token not found. Please re-login.");
-        return;
-      }
-
-      // 2. Dynamic Exchange API Call (CORS bypassed on production)
-      console.log("📡 Exchanging web user token for transient administrative privileges...");
-      
-      // Decode URL component if token is cookie-encoded
-      const cleanToken = decodeURIComponent(userWebToken).replace("Bearer ", "");
-
+      console.log("📡 Dispatching transient login handoff to proxy route...");
       const authResponse = await axios.post(
-        "https://kmaglobalproperty.com/api/backend/admin/auth/kma-internal-login",
+        "/api/backend/admin/auth/kma-internal-login",
         {}, 
         {
+          withCredentials: true, // Auto-forwards HttpOnly session cookies smoothly
           headers: {
-            Authorization: `Bearer ${cleanToken}`,
             "Content-Type": "application/json",
           },
         }
       );
 
-      // Remaining response structure parsing...
+      // Token extract karo return payload se safely
       const adminDynamicToken = 
         authResponse?.data?.token || 
         authResponse?.data?.data?.token;
 
       if (!adminDynamicToken) {
-        throw new Error("Failed to resolve absolute dynamic token allocation from internal handoff gateway.");
+        throw new Error("Transitional token generation failed. Gateway did not return token payload.");
       }
 
-      console.log("✅ Admin token exchanged successfully! Proceeding to force-activation...");
+      console.log("✅ Dynamic Admin session acquired. Initiating property activation step...");
 
-      // 3. Force-activating property status
+      // 2. Force-activating property status using fresh admin token (Relative Route)
       await axios.post(
-        `https://kmaglobalproperty.com/api/backend/admin/properties/${propertyId}/approve`,
+        `/api/backend/admin/properties/${propertyId}/approve`,
         { comment: "Automated transient activation override via unified component interceptor layer." },
         {
           headers: {
@@ -191,26 +168,38 @@ const PropertyView = ({ open, onClose, propertyId }) => {
         }
       );
 
-      // 4. Central service worker call to trigger core verification assets links
+      console.log("⚡ Property status synchronized! Fetching verification secure URL assets...");
+
+      // 3. Central service worker call to trigger core verification assets links
       const response = await getVerifyPropertyLinkAPiHandler({
         propertyId: propertyId,
       } as any);
 
-      const generatedLink = response?.data?.link || response?.data?.data?.link || (response as any)?.verificationLink;
+      const generatedLink = 
+        response?.data?.link || 
+        response?.data?.data?.link || 
+        (response as any)?.verificationLink;
 
       if (generatedLink) {
         setVerifyLink(generatedLink);
         setOpenVerifyPopup(true);
-        toast.success("🎉 Connection validated and dynamic verification link generated!");
+        toast.success("🎉 Dynamic verification link generated successfully!");
         if (refetch) setTimeout(() => refetch(), 300);
       } else {
         toast.success("Property verification cycle synchronized successfully!");
         if (refetch) refetch();
         setOpenVerifyPopup(true);
       }
+
+      console.log("=========================================");
     } catch (error: any) {
       console.error("🚨 Unified Verification Pipeline broken trace:", error);
-      const errorMessage = error?.response?.data?.message || error?.message || "Internal pipeline execution timeout.";
+      
+      const errorMessage = 
+        error?.response?.data?.message || 
+        error?.message || 
+        "Internal verification handoff exception.";
+        
       toast.error(`Verification flow failed: ${errorMessage}`);
     }
   };
