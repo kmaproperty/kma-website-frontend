@@ -15,8 +15,8 @@ export default function MainLayout({
           <div className="sticky top-0 z-50 w-full flex justify-center">
             <UserHeader />
           </div>
-          <div className="flex justify-center pt-[8rem] pb-[2rem] relative z-1 w-full">
-            <div className="w-[80%] xl:w-[85%] flex">
+          <div className="flex justify-center pt-[2rem] lg:pt-[8rem] pb-[2rem] relative z-1 w-full">
+            <div className="w-[90%] xl:w-[85%] flex">
               {children}
             </div>
           </div>

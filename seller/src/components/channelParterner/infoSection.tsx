@@ -113,11 +113,11 @@ export default function InfoSection({ titlePrefix, title, subHeading, params }: 
 
   return (
     <div className="flex justify-center items-start flex-col mt-0 md:mt-2 lg:mt-4">
-      <p className="text-white font-normal text-[clamp(0.9rem,1.1vw,1.15rem)] mb-2">{titlePrefix}</p>
-      <h2 className="text-white font-semibold text-[clamp(2rem,3.2vw,3rem)] leading-[1.2] mb-2 max-w-[22ch]">
+      <p className="text-blue lg:text-white font-normal text-[clamp(0.9rem,1.1vw,1.15rem)] mb-2">{titlePrefix}</p>
+      <h2 className="text-blue lg:text-white font-semibold text-[clamp(2rem,3.2vw,3rem)] leading-[1.2] mb-2 max-w-[22ch]">
         {title}
       </h2>
-      <p className="text-white font-normal text-[clamp(0.95rem,1.2vw,1.25rem)] mb-5 md:mb-7 max-w-[62ch]">
+      <p className="text-blue lg:text-white font-normal text-[clamp(0.95rem,1.2vw,1.25rem)] mb-5 md:mb-7 max-w-[62ch]">
         {subHeading}
       </p>
       <div className="mt-1 grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] gap-3 sm:gap-4 w-full">

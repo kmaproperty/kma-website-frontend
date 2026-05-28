@@ -10,6 +10,11 @@ import {
 } from "@/services/homeService";
 import Link from "next/link";
 
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+
 function Star({
   fill = 100,
   className = "h-4 w-4",
@@ -122,14 +127,14 @@ export default function HomeSuccessStories() {
   return (
     <>
       <div ref={ref} className="my-16 w-[90%] 2md:w-[75%] z-10">
-        <div className="grid grid-cols-1 2md:grid-cols-[1.2fr_1fr_1fr]">
+        <div className="grid grid-cols-1 2md:grid-cols-[1.5fr_1fr_1fr]">
           <motion.div
-            className="col-span-1 flex gap-4 flex-col"
+            className="flex gap-4 flex-col"
             initial="hidden"
             variants={leftVariant}
             animate={isInView ? "visible" : "hidden"}
           >
-            <div className=" w-[80%]">
+            <div className="w-[100%]">
               <SectionHeader
                 isInView={isInView}
                 hideButton={true}
@@ -138,22 +143,23 @@ export default function HomeSuccessStories() {
 Hear directly from our clients how KMA helped them buy, sell, or rent properties with complete transparency and zero hassle."
               />
             </div>
-            <Link href="/success-stories" className="w-fit text-sm 1xl:text-base animated-button px-8 py-2 border border-blue text-center cursor-pointer">
+            <Link
+              href="/success-stories"
+              className="w-fit text-sm 1xl:text-base animated-button px-8 py-2 border border-blue text-center cursor-pointer mx-auto lg:mx-0 hidden lg:flex"
+            >
               <span className="gap-3 relative flex justify-center">
                 <p className={`text-nowrap`}>View More</p>
               </span>
             </Link>
-            <div className="flex gap-3">
+            <div className="flex gap-3 mx-auto lg:mx-0 mb-2">
               <div className="flex flex-col gap-1">
                 <p className="text-text-black text-base font-medium">
                   {trustedByText}
                 </p>
 
-                <div className="flex gap-1 items-center">
+                <div className="flex gap-1 items-center justify-center lg:justify-start mb-2">
                   <RatingStars rating={averageRating} total={5} />
-                  <p className="text-text-black text-xs">
-                    {averageRating}/5.0
-                  </p>
+                  <p className="text-text-black text-xs">{averageRating}/5.0</p>
                   <p className="border-l border-border h-full border-1"></p>
                   <p className="text-text-gray text-xs">
                     {totalReviews} Reviews
@@ -166,78 +172,85 @@ Hear directly from our clients how KMA helped them buy, sell, or rent properties
                   width={100}
                   height={100}
                   alt="arrow"
-                  className="transform scale-y-[-1] 2md:scale-y-[1]"
+                  className="transform scale-y-[-1] 2md:scale-y-[1] hidden lg:block"
                 />
               </div>
             </div>
           </motion.div>
-          <div className="flex gap-4 col-span-2">
-            <div className="flex flex-1 flex-col gap-4">
-              {reviewData?.reviews?.slice(0, 2).map((item) => {
-                return (
-                  <motion.div
-                    className="bg-white rounded-[8px] p-4 flex flex-col items-start gap-2"
-                    variants={topVariant}
-                    animate={isInView ? "visible" : "hidden"}
-                  >
-                    <Image
-                      src={"/assets/stories/quote.svg"}
-                      width={20}
-                      height={20}
-                      alt="quote"
-                    />
-                    <RatingStars rating={Number(item.rating)} total={5} />
-                    <p className="text-sm text-text-gray line-clamp-2">
-                      {item.review}
-                    </p>
-                    <div className="flex justify-start items-center gap-2">
-                      {getProfileImageSrc(
-                        item.endUser?.profileImage || item.profileImage
-                      ) ? (
-                        <Image
-                          src={
-                            getProfileImageSrc(
-                              item.endUser?.profileImage || item.profileImage
-                            ) as string
-                          }
-                          width={28}
-                          height={28}
-                          alt="profile"
-                          className="rounded-full object-cover"
-                        />
-                      ) : (
-                        <div
-                          className="
-                          h-[35px] w-[35px]
-                          rounded-full
-                          bg-gray-300
-                          flex items-center justify-center
-                          text-sm font-semibold text-gray-700
-                          uppercase
-                          "
-                        >
-                          {item.name?.charAt(0)}
-                        </div>
-                      )}
-                      <p className="text-text-black font-medium text-sm">
-                        {item.name}
-                      </p>
+          <div className="col-span-2">
+            <div className="lg:hidden w-full property-swiper mb-5">
+              <Swiper
+                modules={[Pagination, Autoplay]}
+                spaceBetween={16}
+                slidesPerView={1}
+                centeredSlides={true}
+                pagination={{ clickable: true }}
+                autoplay={{
+                  delay: 2000,
+                  disableOnInteraction: true,
+                }}
+                loop={true}
+                className="pb-12"
+              >
+                {reviewData?.reviews?.slice(0, 4).map((item) => (
+                  <SwiperSlide key={item.id}>
+                    <motion.div
+                      className="bg-white rounded-[8px] p-4 flex flex-col items-start gap-2 h-full shadow-sm"
+                      variants={topVariant}
+                      animate={isInView ? "visible" : "hidden"}
+                    >
                       <Image
-                        src={"/assets/stories/dot.svg"}
-                        width={5}
-                        height={5}
-                        alt="dot"
+                        src={"/assets/stories/quote.svg"}
+                        width={20}
+                        height={20}
+                        alt="quote"
                       />
-                      <p className="text-text-gray text-sm">India</p>
-                    </div>
-                  </motion.div>
-                );
-              })}
+                      <RatingStars rating={Number(item.rating)} total={5} />
+                      <p className="text-sm text-text-gray line-clamp-3 italic">
+                        "{item.review}"
+                      </p>
+                      <div className="flex justify-start items-center gap-2 mt-auto pt-2">
+                        {getProfileImageSrc(
+                          item.endUser?.profileImage || item.profileImage,
+                        ) ? (
+                          <Image
+                            src={
+                              getProfileImageSrc(
+                                item.endUser?.profileImage || item.profileImage,
+                              ) as string
+                            }
+                            width={28}
+                            height={28}
+                            alt="profile"
+                            className="rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="h-[35px] w-[35px] rounded-full bg-gray-300 flex items-center justify-center text-sm font-semibold text-gray-700 uppercase">
+                            {item.name?.charAt(0)}
+                          </div>
+                        )}
+                        <p className="text-text-black font-medium text-sm">
+                          {item.name}
+                        </p>
+                        <Image
+                          src={"/assets/stories/dot.svg"}
+                          width={5}
+                          height={5}
+                          alt="dot"
+                        />
+                        <p className="text-text-gray text-sm">India</p>
+                      </div>
+                    </motion.div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
             </div>
-            <div className="flex flex-1 flex-col gap-4 mt-4">
-              {reviewData?.reviews?.slice(2, 4).map((item) => {
-                return (
+
+            <div className="hidden lg:flex gap-4 w-full">
+              <div className="flex flex-1 flex-col gap-4">
+                {reviewData?.reviews?.slice(0, 2).map((item) => (
                   <motion.div
+                    key={item.id}
                     className="bg-white rounded-[8px] p-4 flex flex-col items-start gap-2"
                     variants={topVariant}
                     animate={isInView ? "visible" : "hidden"}
@@ -248,23 +261,18 @@ Hear directly from our clients how KMA helped them buy, sell, or rent properties
                       height={20}
                       alt="quote"
                     />
-                    {/* <div className="flex">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} />
-                  ))}
-                </div> */}
                     <RatingStars rating={Number(item.rating)} total={5} />
                     <p className="text-sm text-text-gray line-clamp-2">
                       {item.review}
                     </p>
                     <div className="flex justify-start items-center gap-2">
                       {getProfileImageSrc(
-                        item.endUser?.profileImage || item.profileImage
+                        item.endUser?.profileImage || item.profileImage,
                       ) ? (
                         <Image
                           src={
                             getProfileImageSrc(
-                              item.endUser?.profileImage || item.profileImage
+                              item.endUser?.profileImage || item.profileImage,
                             ) as string
                           }
                           width={28}
@@ -273,16 +281,7 @@ Hear directly from our clients how KMA helped them buy, sell, or rent properties
                           className="rounded-full object-cover"
                         />
                       ) : (
-                        <div
-                          className="
-                          h-[35px] w-[35px]
-                          rounded-full
-                          bg-gray-300
-                          flex items-center justify-center
-                          text-sm font-semibold text-gray-700
-                          uppercase
-                          "
-                        >
+                        <div className="h-[35px] w-[35px] rounded-full bg-gray-300 flex items-center justify-center text-sm font-semibold text-gray-700 uppercase">
                           {item.name?.charAt(0)}
                         </div>
                       )}
@@ -298,11 +297,72 @@ Hear directly from our clients how KMA helped them buy, sell, or rent properties
                       <p className="text-text-gray text-sm">India</p>
                     </div>
                   </motion.div>
-                );
-              })}
+                ))}
+              </div>
+
+              <div className="flex flex-1 flex-col gap-4 mt-8">
+                {reviewData?.reviews?.slice(2, 4).map((item) => (
+                  <motion.div
+                    key={item.id}
+                    className="bg-white rounded-[8px] p-4 flex flex-col items-start gap-2"
+                    variants={topVariant}
+                    animate={isInView ? "visible" : "hidden"}
+                  >
+                    <Image
+                      src={"/assets/stories/quote.svg"}
+                      width={20}
+                      height={20}
+                      alt="quote"
+                    />
+                    <RatingStars rating={Number(item.rating)} total={5} />
+                    <p className="text-sm text-text-gray line-clamp-2">
+                      {item.review}
+                    </p>
+                    <div className="flex justify-start items-center gap-2">
+                      {getProfileImageSrc(
+                        item.endUser?.profileImage || item.profileImage,
+                      ) ? (
+                        <Image
+                          src={
+                            getProfileImageSrc(
+                              item.endUser?.profileImage || item.profileImage,
+                            ) as string
+                          }
+                          width={28}
+                          height={28}
+                          alt="profile"
+                          className="rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="h-[35px] w-[35px] rounded-full bg-gray-300 flex items-center justify-center text-sm font-semibold text-gray-700 uppercase">
+                          {item.name?.charAt(0)}
+                        </div>
+                      )}
+                      <p className="text-text-black font-medium text-sm">
+                        {item.name}
+                      </p>
+                      <Image
+                        src={"/assets/stories/dot.svg"}
+                        width={5}
+                        height={5}
+                        alt="dot"
+                      />
+                      <p className="text-text-gray text-sm">India</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
+        <Link
+          href="/success-stories"
+          className="w-full text-sm 1xl:text-base animated-button px-8 py-2 border border-blue text-center cursor-pointer block lg:hidden"
+        >
+          <span className="gap-3 relative flex justify-center">
+            <p className={`text-nowrap`}>View More</p>
+          </span>
+        </Link>
       </div>
       <motion.div
         className="absolute bottom-0 left-0"
@@ -342,4 +402,20 @@ Hear directly from our clients how KMA helped them buy, sell, or rent properties
       </motion.div>
     </>
   );
+}
+
+{
+  /* <style jsx global>{`
+  .property-swiper .swiper-pagination-bullet {
+    background: #D1D5DB;
+    opacity: 1;
+    width: 18px;
+    height: 21px;
+    border-radius: 5px;
+  }
+  .property-swiper .swiper-pagination-bullet-active {
+    background: #000066;
+    width: 28px;
+  }
+`}</style> */
 }

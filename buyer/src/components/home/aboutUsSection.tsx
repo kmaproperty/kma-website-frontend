@@ -78,24 +78,24 @@ export default function AboutUsSection() {
         >
           <motion.div
             variants={leftVariant}
-            className="flex flex-col gap-3 2md:pr-6"
+            className="flex flex-col gap-3 2md:pr-6 items-center md:items-start"
             animate={isInView ? "visible" : "hidden"}
           >
-            <p className="w-fit text-white text-xs">
+            <p className="w-fit text-[#010048] text-xs bg-white rounded-[5px] py-1 px-2">
               About Us
             </p>
             <div>
-              <p className="text-xl text-white text-wrap font-semibold">
+              <p className="text-xl text-white text-wrap font-semibold text-center md:text-left">
                 {aboutus?.aboutUs?.heading}
               </p>
-              <p className="mt-1 leading-4 text-xs text-white text-wrap font-regular">
+              <p className="mt-1 leading-4 text-xs md:text-sm text-white text-wrap font-regular text-center md:text-left">
                 {aboutus?.aboutUs?.description}
               </p>
             </div>
             <div className="flex gap-4 mt-2">
               <button onClick={() => router.push("/about-us")} className="w-auto text-sm 1xl:text-base text-white! hover:text-text-black! animated-button-white px-8 py-2 border border-white bg-transparent! text-center cursor-pointer">
                 <span className="gap-3 relative flex justify-center">
-                  <p className={`text-nowrap`}> About Us</p>
+                  <p className={`text-nowrap`}>Know More</p>
                 </span>
               </button>
             </div>
@@ -113,7 +113,7 @@ export default function AboutUsSection() {
           </motion.div>
         </motion.div>
         <motion.div
-          className="grid grid-cols-1 2md:grid-cols-4 gap-3 mt-15 justify-items-center "
+          className="grid grid-cols-2 2md:grid-cols-4 gap-3 mt-15 justify-items-center "
           variants={staggerContainer}
           animate={isInView ? "visible" : "hidden"}
         >

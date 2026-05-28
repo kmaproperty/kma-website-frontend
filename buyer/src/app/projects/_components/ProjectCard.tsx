@@ -418,22 +418,22 @@ export default function ProjectCard({
         <div className="min-w-0 px-3.5 pb-3 pt-3.5 lg:pr-4 xl:px-5 xl:pb-3 xl:pt-4">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <h3 className="line-clamp-1 text-lg font-medium leading-tight text-[#0D1520] xl:font-semibold">
+              <h3 className="line-clamp-1 text-xl font-semibold leading-tight text-[#0D1520] xl:font-semibold">
                 {project.title}
               </h3>
-              <p className="mt-1 line-clamp-1 text-[15px] text-text-gray xl:mt-0.5 xl:text-sm">
+              <p className="line-clamp-1 text-[15px] text-text-gray xl:mt-0.5 xl:text-sm">
                 {project.address}
               </p>
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-lg leading-tight text-[#010048]">
+            <div className="text-xl leading-tight text-[#010048] font-medium">
               <span>{pricePrimary}</span>
               {priceSuffix ? <span className="ml-1 text-[#888888]">{priceSuffix}</span> : null}
             </div>
           </div>
 
-          <div className="mt-3.5 space-y-1.5 xl:mt-4 xl:space-y-0 xl:flex xl:flex-wrap xl:items-center xl:gap-x-2 xl:gap-y-2">
+          <div className="mt-3 space-y-1.5 xl:mt-4 xl:space-y-0 xl:flex xl:flex-wrap xl:items-center xl:gap-x-2 xl:gap-y-2">
             <div className="space-y-1.5 xl:hidden">
               {featureRows.map((row, rowIdx) => (
                 <div key={`row-${rowIdx}`} className="flex items-center">

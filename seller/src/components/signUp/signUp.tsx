@@ -42,11 +42,11 @@ interface MobileInput {
 const partnerType: OptionType[] = [
   {
     value: USER_TYPE.OWNER,
-    label: "I'm an Owner",
+    label: "Owner",
   },
   {
     value: USER_TYPE.CHANNEL_PARTNER,
-    label: "I'm a Channel Partner",
+    label: "Channel Partner",
   },
 ];
 
@@ -161,7 +161,7 @@ export default function SignUp() {
 
   return (
     <>
-      <div className="relative text-blue md:text-white rounded-full w-[90%] font-medium text-base -top-[40px]">
+      <div className="relative text-white rounded-full w-[90%] font-medium text-base -top-[40px]">
         Who are you?
       </div>
       <div
@@ -170,7 +170,7 @@ export default function SignUp() {
       >
         <div className="absolute rounded-full w-[90%] -top-[32px] rounded-[100px] bg-white h-[60px]" />
         <div>
-          <div className="relative flex flex-wrap w-[90%] -top-[32px] text-sm gap-4 bg-white p-2 rounded-full">
+          <div className="relative flex w-[90%] -top-[32px] text-sm gap-4 bg-white p-2 rounded-full">
             {partnerType.map((item) => (
               <RadioSwitch
                 key={item.value}

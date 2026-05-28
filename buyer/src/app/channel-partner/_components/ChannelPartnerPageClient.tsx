@@ -171,7 +171,7 @@ function ChannelPartnerCard({
             ))}
           </div>
         )}
-        <p className="mt-3 text-sm text-text-gray">
+        <p className="mt-3 text-sm text-text-gray flex">
           {partner.experience_years ?? 0} Years Experience
           <span className="mx-2 text-[#D9D9D9]">|</span>
           {partner.property_count ?? 0} Properties
@@ -262,11 +262,11 @@ export default function ChannelPartnerPageClient() {
   }, []);
 
   return (
-    <div className="w-full flex flex-col mt-[150px]">
+    <div className="w-full flex flex-col">
       {/* Hero */}
-      <div className="relative mt-[120px] sm:-mt-[100px]  mb-8 md:mb-10">
+      <div className="relative mb-8 md:mb-10">
         <div className="absolute inset-0 bg-blue rounded-b-[25px] sm:rounded-b-[60px] lg:rounded-b-[80px] xl:rounded-b-[100px]" />
-        <div className="relative pt-6 pb-10 px-4 md:px-6 flex flex-col items-center">
+        <div className="relative pb-10 px-4 md:px-6 flex flex-col items-center">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white text-center mb-2">
             Find Trusted Property Experts
           </h1>
@@ -274,11 +274,12 @@ export default function ChannelPartnerPageClient() {
             Connect with verified KMA channel partners to assist you
             professionally.
           </p>
-          <div className="w-full max-w-3xl flex flex-col sm:flex-row gap-3 bg-white rounded-xl shadow-lg p-2 sm:p-1">
+          <div className="w-full max-w-3xl flex flex-col lg:flex-row gap-3 bg-white rounded-xl shadow-lg p-2 sm:p-1">
+            <div className="flex flex-row w-full">
             <button
               type="button"
               onClick={() => setFilterOpen((o) => !o)}
-              className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-[#D9D9D9] text-text-black font-medium text-sm shrink-0"
+              className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-[#D9D9D9] text-text-black font-medium text-sm shrink-0 cursor-pointer"
             >
               <Image
                 src="/assets/fitler-line.svg"
@@ -305,6 +306,7 @@ export default function ChannelPartnerPageClient() {
                 className="flex-1 min-w-0 bg-transparent text-text-black placeholder:text-text-gray text-sm outline-none"
               />
             </div>
+            </div>
             <button
               type="button"
               onClick={handleSearch}
@@ -326,9 +328,9 @@ export default function ChannelPartnerPageClient() {
 
 
       {/* Grid */}
-     <div className="w-full py-[180px]">
+     <div className="w-full py-[40px] lg:py-[80px]">
      {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
           {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
@@ -351,7 +353,7 @@ export default function ChannelPartnerPageClient() {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 md:gap-6 px-3">
           {list.map((partner, index) => (
             <ChannelPartnerCard
               key={partner.id ?? `${partner.name}-${index}`}

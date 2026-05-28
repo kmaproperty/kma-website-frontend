@@ -167,25 +167,25 @@ export default function ExploreSection({ explorePropertyList = [] }: ExploreSect
   return (
     <div className="w-full flex flex-col 2md:flex-row gap-6 items-center">
       <motion.div
-        className="flex flex-col 2md:w-[30%] justify-center items-start gap-3"
+        className="flex flex-col 2md:w-[30%] justify-center items-center lg:items-start gap-3"
         ref={ref}
         variants={leftVariant}
         animate={isInView ? "visible" : "hidden"}
       >
         <h2 className="text-xl font-semibold text-black leading-tight">
-          Explore by <br /> Property Type
+          Explore by Property Type
         </h2>
 
         <div className="bg-gray-400 h-[2px] w-8 mb-2">
           <div className="w-1/2 h-[2px] bg-gray-900" />
         </div>
 
-        <p className="text-text-gray text-xs leading-relaxed ">
+        <p className="text-text-gray text-xs leading-relaxed text-center lg:text-left">
         Looking for a cozy apartment, a luxurious villa, a smart investment, or a premium office space? We’ve got you covered.
 
         </p>
 
-        <div className="flex gap-3">
+        <div className="hidden lg:flex gap-3">
           <button
             type="button"
             onClick={() => sliderRef.current?.slickPrev()}
@@ -215,48 +215,84 @@ export default function ExploreSection({ explorePropertyList = [] }: ExploreSect
       </motion.div>
 
       <motion.div
-        className="flex-1 w-full 2md:min-w-0"
-        variants={rightVariant}
-      >
-        <Slider ref={sliderRef} {...settings}>
-          {list.map((item, index) => {
-            const bgColor = CARD_BG_COLORS[index % CARD_BG_COLORS.length];
-            return (
-              <motion.div
-                key={item.id}
-                variants={index === 0 || index === 1 ? topVariant : bottomVariant}
-                className="px-2"
-                animate={isInView ? "visible" : "hidden"}
-              >
-                <Link
-                  href={`/projects?propertyTypeId=${encodeURIComponent(item.id)}`}
-                  className="block group"
-                >
-                  <div
-                    className={`h-[180px] rounded-xl ${bgColor} flex flex-col items-center justify-center overflow-hidden relative`}
-                  >
-                    <div className="relative w-20 h-20 mb-3 flex-shrink-0">
-                      <Image
-                        src={getExploreIcon(item)}
-                        alt={item.name}
-                        fill
-                        className="object-contain"
-                        sizes="80px"
-                      />
-                    </div>
-                    <h3 className="text-lg font-semibold text-black text-center px-1">
-                      {item.name}
-                    </h3>
-                    <p className="text-xs text-text-gray">
-                      {item.propertyCount} {item.propertyCount === 1 ? "Property" : "Properties"}
-                    </p>
-                  </div>
-                </Link>
-              </motion.div>
-            );
-          })}
-        </Slider>
-      </motion.div>
+  className="flex-1 w-full 2md:min-w-0"
+  variants={rightVariant}
+>
+  <div className="grid grid-cols-2 gap-3 md:gap-4 lg:hidden">
+    {list.map((item, index) => {
+      const bgColor = CARD_BG_COLORS[index % CARD_BG_COLORS.length];
+      return (
+        <motion.div
+          key={item.id}
+          variants={index === 0 || index === 1 ? topVariant : bottomVariant}
+          animate={isInView ? "visible" : "hidden"}
+        >
+          <Link
+            href={`/projects?propertyTypeId=${encodeURIComponent(item.id)}`}
+            className="block group"
+          >
+            <div className={`h-[160px] md:h-[180px] rounded-xl ${bgColor} flex flex-col items-center justify-center overflow-hidden relative shadow-sm`}>
+              <div className="relative w-16 h-16 md:w-20 md:h-20 mb-2 md:mb-3 flex-shrink-0">
+                <Image
+                  src={getExploreIcon(item)}
+                  alt={item.name}
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 768px) 64px, 80px"
+                />
+              </div>
+              <h3 className="text-sm md:text-lg font-semibold text-black text-center px-1">
+                {item.name}
+              </h3>
+              <p className="text-[10px] md:text-xs text-text-gray">
+                {item.propertyCount} {item.propertyCount === 1 ? "Property" : "Properties"}
+              </p>
+            </div>
+          </Link>
+        </motion.div>
+      );
+    })}
+  </div>
+
+  <div className="hidden lg:block">
+    <Slider ref={sliderRef} {...settings}>
+      {list.map((item, index) => {
+        const bgColor = CARD_BG_COLORS[index % CARD_BG_COLORS.length];
+        return (
+          <motion.div
+            key={item.id}
+            variants={index === 0 || index === 1 ? topVariant : bottomVariant}
+            className="px-2"
+            animate={isInView ? "visible" : "hidden"}
+          >
+            <Link
+              href={`/projects?propertyTypeId=${encodeURIComponent(item.id)}`}
+              className="block group"
+            >
+              <div className={`h-[180px] rounded-xl ${bgColor} flex flex-col items-center justify-center overflow-hidden relative`}>
+                <div className="relative w-20 h-20 mb-3 flex-shrink-0">
+                  <Image
+                    src={getExploreIcon(item)}
+                    alt={item.name}
+                    fill
+                    className="object-contain"
+                    sizes="80px"
+                  />
+                </div>
+                <h3 className="text-lg font-semibold text-black text-center px-1">
+                  {item.name}
+                </h3>
+                <p className="text-xs text-text-gray">
+                  {item.propertyCount} {item.propertyCount === 1 ? "Property" : "Properties"}
+                </p>
+              </div>
+            </Link>
+          </motion.div>
+        );
+      })}
+    </Slider>
+  </div>
+</motion.div>
     </div>
   );
 }

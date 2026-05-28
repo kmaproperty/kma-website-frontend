@@ -82,7 +82,7 @@ export default function AboutUsComponent({
       <div className="relative overflow-hidden rounded-b-[20px] sm:rounded-br-[30px] non_home_page_slider min-h-[330px] sm:min-h-[380px] md:min-h-[430px]">
         <BannerSlider bannerHeight={'h-full'} backgroundImages={sliderImage} overlayClass='about-us-gradient-overlay' />
         <div className="absolute inset-0 z-10 flex flex-col items-center top-0 w-[100%] ">
-          <div className="2xl:py-[160px] 1xl:py-[145px] xl:py-[130px] lg:py-[115px] 2md:py-[95px] md:py-[75px] sm:py-[60px] py-[50px]">
+          <div className="2xl:py-[160px] 1xl:py-[145px] xl:py-[130px] lg:py-[115px] 2md:py-[95px] md:py-[75px] sm:py-[75px] py-[75px]">
             <PageTitle
               title="About Us"
               description="Discover who we are, what we stand for, and why thousands of brokers and buyers across Gurgaon trust KMA Global Properties every single day."
@@ -235,49 +235,49 @@ export default function AboutUsComponent({
       </div>
       <div className=" w-full px-4 py-10 md:block md:py-12 lg:py-16 xl:py-20 2xl:py-[100px]">
         <div className="max-w-[1440px] mx-auto">
-          <h2 className={`text-[28px] leading-11 font-semibold text-[#010048] text-left sm:text-center`}>A Service You Can Trust and Feel Confident In</h2>
-          <div className="grid xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-[18px] sm:gap-5 md:mt-10 mt-[22px] items-center">
-            <div className="bg-[#F2F2F2] px-[30px] py-[18px] sm:px-8 sm:py-5 rounded-lg flex flex-col gap-1 h-full justify-center">
+          <h2 className={`text-[28px] leading-8 font-semibold text-[#010048] text-left sm:text-center`}>A Service You Can Trust and Feel Confident In</h2>
+          <div className="grid xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 grid-cols-2 gap-[18px] sm:gap-5 md:mt-10 mt-[22px] items-center">
+            <div className="bg-[#F2F2F2] px-[16px] md:px-[30px] py-[10px] md:py-[18px] sm:px-8 sm:py-5 rounded-lg flex flex-col gap-1 h-[200px] justify-center">
               <div className="bg-white w-[57px] h-[57px] sm:w-[60px] sm:h-[60px] flex items-center justify-center rounded-lg mb-2">
                 <BadgePercent className="w-8 h-8 text-[#010048]" />
               </div>
               <h3 className="text-[#010048] text-[22px] leading-6 font-medium mb-0">
                 Transparent Pricing
               </h3>
-              <p className="text-[#5C727D] text-md leading-7">
+              <p className="text-[#5C727D] text-md leading-5">
                 No hidden charges, ever
               </p>
             </div>
-            <div className="bg-[#F2F2F2] px-[30px] py-[18px] sm:px-8 sm:py-5 rounded-lg flex flex-col gap-1 h-full justify-center">
+            <div className="bg-[#F2F2F2] px-[16px] md:px-[30px] py-[10px] md:py-[18px] sm:px-8 sm:py-5 rounded-lg flex flex-col gap-1 h-[200px] justify-center">
               <div className="bg-white w-[57px] h-[57px] sm:w-[60px] sm:h-[60px] flex items-center justify-center rounded-lg mb-2">
                 <ListCheck className="w-8 h-8 text-[#010048]" />
               </div>
               <h3 className="text-[#010048] text-[22px] leading-6 font-medium mb-0">
                 Verified Listings Only
               </h3>
-              <p className="text-[#5C727D] text-md leading-7">
+              <p className="text-[#5C727D] text-md leading-5">
                 100% authenticated premium properties
               </p>
             </div>
-            <div className="bg-[#F2F2F2] px-[30px] py-[18px] sm:px-8 sm:py-5 rounded-lg flex flex-col gap-1 h-full justify-center">
+            <div className="bg-[#F2F2F2] px-[16px] md:px-[30px] py-[10px] md:py-[18px] sm:px-8 sm:py-5 rounded-lg flex flex-col gap-1 h-[200px] justify-center">
               <div className="bg-white w-[57px] h-[57px] sm:w-[60px] sm:h-[60px] flex items-center justify-center rounded-lg mb-2">
                 <Lightbulb className="w-8 h-8 text-[#010048]" />
               </div>
               <h3 className="text-[#010048] text-[22px] leading-6 font-medium mb-0">
                 Tailored Property Advice
               </h3>
-              <p className="text-[#5C727D] text-md leading-7">
+              <p className="text-[#5C727D] text-md leading-5">
                 From first-timers to investors
               </p>
             </div>
-            <div className="bg-[#F2F2F2] px-[30px] py-[18px] sm:px-8 sm:py-5 rounded-lg flex flex-col gap-1 h-full justify-center">
+            <div className="bg-[#F2F2F2] px-[16px] md:px-[30px] py-[10px] md:py-[18px] sm:px-8 sm:py-5 rounded-lg flex flex-col gap-1 h-[200px] justify-center">
               <div className="bg-white w-[57px] h-[57px] sm:w-[60px] sm:h-[60px] flex items-center justify-center rounded-lg mb-2">
                 <ListChecks className="w-8 h-8 text-[#010048]" />
               </div>
               <h3 className="text-[#010048] text-[22px] leading-6 font-medium mb-0">
                 End-to-End Management
               </h3>
-              <p className="text-[#5C727D] text-md leading-7">
+              <p className="text-[#5C727D] text-md leading-5">
                 Including legal & documentation
               </p>
             </div>

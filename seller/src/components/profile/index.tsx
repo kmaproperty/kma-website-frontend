@@ -82,8 +82,8 @@ export default function UserProfile() {
       {userProfile && (
         <div className="w-full bg-white rounded-xl flex flex-col justify-start items-start p-5 gap-3">
           <div className="flex w-full justify-between items-start gap-4">
-            <div className="flex-3 flex justify-between  gap-4">
-              <div className="flex  gap-4">
+            <div className="flex-3 flex justify-between  gap-2 lg:gap-4">
+              <div className="flex  gap-2 lg:gap-4">
                 <div className="w-fit rounded-full overflow-hidden">
                   <Image
                     src={userProfile.profileImage ? baseUrl + userProfile.profileImage : "/assets/profile.png"}
@@ -97,10 +97,10 @@ export default function UserProfile() {
                   <p className="text-text-black text-base font-semibold">
                     {userProfile.name}
                   </p>
-                  <p className="text-text-gray text-base">
+                  <p className="text-text-gray text-xs lg:text-base">
                     {userProfile.phone?.startsWith('+') ? userProfile.phone : `+91 ${userProfile.phone}`}
                   </p>
-                  <p className="text-text-gray text-base">
+                  <p className="text-text-gray text-xs lg:text-base">
                     {userProfile.email}
                   </p>
                 </div>
@@ -140,7 +140,7 @@ export default function UserProfile() {
               </div>
             </div>
 
-            <div className="flex-1">
+            <div className="hidden lg:flex flex-1">
               {kycDetails &&
                 userProfile?.role == USER_TYPE.CHANNEL_PARTNER &&
                 kycDetails?.kyc_status != "approved" &&
@@ -172,6 +172,37 @@ export default function UserProfile() {
                 )}
             </div>
           </div>
+          <div className="flex justify-center w-full lg:hidden">
+              {kycDetails &&
+                userProfile?.role == USER_TYPE.CHANNEL_PARTNER &&
+                kycDetails?.kyc_status != "approved" &&
+                kycDetails?.kyc_status !=
+                  "in_review" && (
+                  <div className="bg-light-purple w-[200px] h-auto p-3 flex flex-col justify-center items-center gap-1 border border-[#757BEE] rounded-xl">
+                    <Image
+                      src="/assets/kyc-info.svg"
+                      width={35}
+                      height={35}
+                      alt="kyc-info"
+                    />
+                    <p className="font-medium text-text-black text-sm">
+                      {renderTitle(kycDetails?.kyc_status)}
+                    </p>
+                    {!kycDetails?.kyc_completed && (
+                      <button
+                        onClick={() => {
+                          router.push("/kyc");
+                        }}
+                        className="w-full md:w-auto text-xs 1xl:text-sm animated-button px-6 py-2 border border-blue text-center cursor-pointer"
+                      >
+                        <span className="gap-3 relative">
+                          <p className="text-nowrap">Complete kyc</p>
+                        </span>
+                      </button>
+                    )}
+                  </div>
+                )}
+            </div>
           {userProfile.role == USER_TYPE.CHANNEL_PARTNER && (
             <>
               <hr className="border-border w-full " />

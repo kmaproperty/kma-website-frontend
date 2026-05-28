@@ -17,12 +17,7 @@ import {
 import { joinUrl } from "@/lib/helper";
 import ContactUsPopup from "@/components/contactUsPopup";
 import type { ChannelPartnerActiveProperty } from "@/services/homeService";
-import {
-  ChevronLeft,
-  ChevronRight,
-  CheckCircle2,
-  MapPin,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, CheckCircle2, MapPin } from "lucide-react";
 
 const PROFILE_BASE = process.env.NEXT_PUBLIC_AWS_URL;
 
@@ -82,7 +77,10 @@ function formatCountPlus(count?: number | null, plusThreshold?: number) {
 function stripHtml(input?: string | null) {
   if (!input) return "";
   // Quick and safe enough for short descriptions in UI.
-  return input.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+  return input
+    .replace(/<[^>]*>/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function parseBedrooms(bhkType?: string | null): string | null {
@@ -107,11 +105,7 @@ function parseSqFt(size?: string | null): string | null {
 
 function formatPossessionStatus(status?: string | null): string | null {
   if (!status) return null;
-  const s = status
-    .toString()
-    .replace(/_/g, " ")
-    .toLowerCase()
-    .trim();
+  const s = status.toString().replace(/_/g, " ").toLowerCase().trim();
   if (!s) return null;
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
@@ -155,7 +149,7 @@ function PropertyCard({
   const beds = parseBedrooms(property.bhkType);
   const sqft = parseSqFt(property.units?.[0]?.size);
   const possessionStatus = formatPossessionStatus(
-    property.constructionStatus ?? null
+    property.constructionStatus ?? null,
   );
 
   return (
@@ -293,9 +287,7 @@ function PropertyCard({
                     height={16}
                     alt="Bed"
                   />
-                  <span className="whitespace-nowrap">
-                    {beds} Bed
-                  </span>
+                  <span className="whitespace-nowrap">{beds} Bed</span>
                 </div>
               ) : null}
 
@@ -326,13 +318,13 @@ export default function ChannelPartnerDetailsClient({
 }) {
   const router = useRouter();
   const [contactPopupOpen, setContactPopupOpen] = useState(false);
-  const [propertyTab, setPropertyTab] = useState<
-    "sale" | "rent" | "rating"
-  >("sale");
+  const [propertyTab, setPropertyTab] = useState<"sale" | "rent" | "rating">(
+    "sale",
+  );
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
-  const [reviewModalMode, setReviewModalMode] = useState<
-    "form" | "success"
-  >("form");
+  const [reviewModalMode, setReviewModalMode] = useState<"form" | "success">(
+    "form",
+  );
   const [submittedAsUpdate, setSubmittedAsUpdate] = useState(false);
   const [reviewName, setReviewName] = useState("");
   const [reviewRole, setReviewRole] = useState("");
@@ -355,7 +347,12 @@ export default function ChannelPartnerDetailsClient({
 
   const { data: reviewsData } = useQuery<GetCPReviewsResponse>({
     queryKey: ["channel-partner-reviews", partnerId],
-    queryFn: () => getChannelPartnerReviews(partnerId, { page: 1, limit: 50, sortBy: "newest" }),
+    queryFn: () =>
+      getChannelPartnerReviews(partnerId, {
+        page: 1,
+        limit: 50,
+        sortBy: "newest",
+      }),
     enabled: Boolean(partnerId),
   });
 
@@ -371,12 +368,13 @@ export default function ChannelPartnerDetailsClient({
     }));
   }, [reviewsData]);
 
-  const { data: myReviewData, refetch: refetchMyReview } = useQuery<GetMyCPReviewResponse>({
-    queryKey: ["my-channel-partner-review", partnerId],
-    queryFn: () => getMyChannelPartnerReview(partnerId),
-    enabled: Boolean(partnerId),
-    retry: false,
-  });
+  const { data: myReviewData, refetch: refetchMyReview } =
+    useQuery<GetMyCPReviewResponse>({
+      queryKey: ["my-channel-partner-review", partnerId],
+      queryFn: () => getMyChannelPartnerReview(partnerId),
+      enabled: Boolean(partnerId),
+      retry: false,
+    });
 
   const myReview = myReviewData?.review ?? null;
   const isUpdate = Boolean(myReview);
@@ -465,23 +463,27 @@ export default function ChannelPartnerDetailsClient({
     setReviewText("");
   };
 
-  const { mutate: submitReviewMutation, isPending: isSubmittingReview } = useMutation({
-    mutationFn: (payload: { rating: number; review: string }) =>
-      submitChannelPartnerReview(partnerId, payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["channel-partner-reviews", partnerId] });
-      refetchMyReview();
-      setReviewModalMode("success");
-      setLikedOptions([]);
-      setReviewName("");
-      setReviewRole("");
-      setReviewPage(1);
-    },
-    onError: (error: any) => {
-      const message = error?.message || "Failed to submit review. Please try again.";
-      toast.error(Array.isArray(message) ? message.join(", ") : message);
-    },
-  });
+  const { mutate: submitReviewMutation, isPending: isSubmittingReview } =
+    useMutation({
+      mutationFn: (payload: { rating: number; review: string }) =>
+        submitChannelPartnerReview(partnerId, payload),
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["channel-partner-reviews", partnerId],
+        });
+        refetchMyReview();
+        setReviewModalMode("success");
+        setLikedOptions([]);
+        setReviewName("");
+        setReviewRole("");
+        setReviewPage(1);
+      },
+      onError: (error: any) => {
+        const message =
+          error?.message || "Failed to submit review. Please try again.";
+        toast.error(Array.isArray(message) ? message.join(", ") : message);
+      },
+    });
 
   const submitReview = async () => {
     const text = reviewText.trim();
@@ -525,7 +527,8 @@ export default function ChannelPartnerDetailsClient({
   const ratingCount = reviewsData?.totalReviews ?? 0;
 
   const rating = useMemo(() => {
-    if (apiAverageRating != null && Number.isFinite(apiAverageRating)) return apiAverageRating;
+    if (apiAverageRating != null && Number.isFinite(apiAverageRating))
+      return apiAverageRating;
     const v = Number(partner?.rating ?? 0);
     return Number.isFinite(v) ? v : 0;
   }, [partner, apiAverageRating]);
@@ -537,8 +540,9 @@ export default function ChannelPartnerDetailsClient({
   const areasOfOperation = useMemo(() => {
     const list = partner?.areas_of_operation_list ?? null;
     const normalizedList =
-      list?.map((x) => (typeof x === "string" ? x.trim() : "")).filter(Boolean) ??
-      [];
+      list
+        ?.map((x) => (typeof x === "string" ? x.trim() : ""))
+        .filter(Boolean) ?? [];
 
     if (normalizedList.length > 0) return normalizedList;
     return safeSplitCities(partner?.cities);
@@ -591,7 +595,8 @@ export default function ChannelPartnerDetailsClient({
     );
   }
 
-  const expYears = partner.experience_years ?? partner.statistics?.years_of_experience ?? 0;
+  const expYears =
+    partner.experience_years ?? partner.statistics?.years_of_experience ?? 0;
   const propCount =
     partner.property_count ?? partner.statistics?.property_holdings ?? 0;
 
@@ -602,18 +607,22 @@ export default function ChannelPartnerDetailsClient({
   void commercialProperties;
 
   const activeProperties =
-    propertyTab === "sale" ? saleProperties : propertyTab === "rent" ? rentProperties : [];
+    propertyTab === "sale"
+      ? saleProperties
+      : propertyTab === "rent"
+        ? rentProperties
+        : [];
   const totalPropertyPages = Math.max(
     1,
-    Math.ceil(activeProperties.length / PROPERTIES_PER_PAGE)
+    Math.ceil(activeProperties.length / PROPERTIES_PER_PAGE),
   );
   const pagedProperties = activeProperties.slice(
     (propertyPage - 1) * PROPERTIES_PER_PAGE,
-    propertyPage * PROPERTIES_PER_PAGE
+    propertyPage * PROPERTIES_PER_PAGE,
   );
   const propertyPaginationNumbers = Array.from(
     { length: totalPropertyPages },
-    (_, index) => index + 1
+    (_, index) => index + 1,
   );
 
   return (
@@ -621,7 +630,7 @@ export default function ChannelPartnerDetailsClient({
       {/* Hero */}
       <div className="">
         <div className=" flex flex-col items-center">
-            <div className="w-full rounded-2xl">
+          <div className="w-full rounded-2xl">
             <div className="flex flex-col items-center text-center gap-4">
               <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-[#F2F2F2] overflow-hidden">
                 {profileSrc ? (
@@ -655,9 +664,7 @@ export default function ChannelPartnerDetailsClient({
                     fill={Math.min(100, (rating / 5) * 100)}
                     className="h-4 w-4 text-[#F7BB06]"
                   />
-                  <span className="font-semibold text-white">
-                    {ratingText}
-                  </span>
+                  <span className="font-semibold text-white">{ratingText}</span>
                   <span className="text-white">{ratingCount} Ratings</span>
                 </div>
               </div>
@@ -665,7 +672,7 @@ export default function ChannelPartnerDetailsClient({
               <button
                 type="button"
                 onClick={() => setContactPopupOpen(true)}
-                className="w-full sm:w-auto px-5 py-2.5 rounded-full border border-white text-white font-semibold text-sm hover:bg-black transition-opacity flex items-center justify-center gap-2"
+                className="w-fit sm:w-fit lg:w-auto mx-3 px-5 py-2.5 rounded-full border border-white text-white font-semibold text-sm hover:bg-black transition-opacity flex items-center justify-center gap-2"
               >
                 <Image
                   src="/assets/call-ring-white.svg"
@@ -678,7 +685,7 @@ export default function ChannelPartnerDetailsClient({
             </div>
 
             {/* Stats Row */}
-            <div className="mt-5 grid grid-cols-2  rounded-xl  sm:grid-cols-3 lg:grid-cols-5 gap-3 bg-white">
+            <div className="mx-3 mt-5 grid grid-cols-2  rounded-xl  sm:grid-cols-3 lg:grid-cols-5 gap-3 bg-white">
               <div className="rounded-xl  p-3">
                 <p className="text-xs text-text-gray">Years Experience</p>
                 <p className="mt-1 text-lg font-bold text-text-black">
@@ -690,7 +697,7 @@ export default function ChannelPartnerDetailsClient({
                 <p className="mt-1 text-lg font-bold text-text-black">
                   {formatCountPlus(
                     partner.active_properties?.buy?.length ?? 0,
-                    99
+                    99,
                   )}
                 </p>
               </div>
@@ -699,7 +706,7 @@ export default function ChannelPartnerDetailsClient({
                 <p className="mt-1 text-lg font-bold text-text-black">
                   {formatCountPlus(
                     partner.active_properties?.rent?.length ?? 0,
-                    99
+                    99,
                   )}
                 </p>
               </div>
@@ -716,20 +723,19 @@ export default function ChannelPartnerDetailsClient({
                     partner.statistics?.areas_of_operation ??
                       areasOfOperation.length ??
                       0,
-                    19
+                    19,
                   )}
                 </p>
               </div>
             </div>
-
           </div>
         </div>
       </div>
 
-      <div className="">
+      <div className="mx-4 my-10">
         <div className="w-full">
           {/* About */}
-          <section className="  sm:p-7">
+          <section className=" sm:p-7">
             <div className="flex flex-col lg:flex-row gap-5 lg:gap-10">
               <div className="lg:flex-1 min-w-0">
                 <div className="flex items-start gap-4">
@@ -783,7 +789,9 @@ export default function ChannelPartnerDetailsClient({
                     <div className="mt-3 flex items-start gap-2 text-xs text-text-gray">
                       <CheckCircle2 className="h-4 w-4 text-[#7C3AED] mt-0.5" />
                       <span className="text-text-black font-medium">
-                        Trusted Since {formatISODate(partner.trusted_since) ?? partner.trusted_since}
+                        Trusted Since{" "}
+                        {formatISODate(partner.trusted_since) ??
+                          partner.trusted_since}
                       </span>
                     </div>
                   ) : null}
@@ -799,7 +807,9 @@ export default function ChannelPartnerDetailsClient({
                   <span className="text-sm font-bold text-text-black">
                     {ratingText}
                   </span>
-                  <span className="text-xs text-text-gray">{ratingCount} Ratings</span>
+                  <span className="text-xs text-text-gray">
+                    {ratingCount} Ratings
+                  </span>
                 </div>
                 <h3 className="text-sm font-semibold text-text-black mb-3">
                   Areas of Operation
@@ -816,23 +826,21 @@ export default function ChannelPartnerDetailsClient({
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-text-gray">
-                    No areas available.
-                  </p>
+                  <p className="text-sm text-text-gray">No areas available.</p>
                 )}
               </div>
             </div>
           </section>
 
           {/* Properties */}
-          <section className="mt-6">
+          <section className="mt-6 mx-4">
             {/* Tabs */}
             <div className="border-b border-slate-200">
-              <div className="flex gap-8 sm:gap-12">
+              <div className="flex gap-4 md:gap-8">
                 <button
                   type="button"
                   onClick={() => setPropertyTab("sale")}
-                  className={`pb-4 text-sm font-semibold whitespace-nowrap border-b-2 ${
+                  className={`pb-4 text-sm font-semibold leading-4 border-b-2 ${
                     propertyTab === "sale"
                       ? "text-text-black border-blue"
                       : "text-text-gray border-transparent hover:text-text-black"
@@ -843,7 +851,7 @@ export default function ChannelPartnerDetailsClient({
                 <button
                   type="button"
                   onClick={() => setPropertyTab("rent")}
-                  className={`pb-4 text-sm font-semibold whitespace-nowrap border-b-2 ${
+                  className={`pb-4 text-sm font-semibold leading-4 border-b-2 ${
                     propertyTab === "rent"
                       ? "text-text-black border-blue"
                       : "text-text-gray border-transparent hover:text-text-black"
@@ -854,7 +862,7 @@ export default function ChannelPartnerDetailsClient({
                 <button
                   type="button"
                   onClick={() => setPropertyTab("rating")}
-                  className={`pb-4 text-sm font-semibold whitespace-nowrap border-b-2 ${
+                  className={`pb-4 text-sm font-semibold leading-4 border-b-2 ${
                     propertyTab === "rating"
                       ? "text-text-black border-blue"
                       : "text-text-gray border-transparent hover:text-text-black"
@@ -939,7 +947,7 @@ export default function ChannelPartnerDetailsClient({
                         type="button"
                         onClick={() =>
                           setPropertyPage((page) =>
-                            Math.min(totalPropertyPages, page + 1)
+                            Math.min(totalPropertyPages, page + 1),
                           )
                         }
                         disabled={propertyPage >= totalPropertyPages}
@@ -950,7 +958,6 @@ export default function ChannelPartnerDetailsClient({
                     </div>
                   </div>
                 ) : null}
-
               </>
             ) : (
               <div className="mt-5 bg-white rounded-2xl border border-[#EEF0F4] shadow-[0_6px_24px_rgba(0,0,0,0.06)] p-5 sm:p-7">
@@ -961,7 +968,12 @@ export default function ChannelPartnerDetailsClient({
                     </div>
                     <div className="mt-2 flex items-center gap-0.5">
                       {Array.from({ length: 5 }).map((_, i) => {
-                        const starFill = rating >= i + 1 ? 100 : rating > i ? Math.round((rating - i) * 100) : 0;
+                        const starFill =
+                          rating >= i + 1
+                            ? 100
+                            : rating > i
+                              ? Math.round((rating - i) * 100)
+                              : 0;
                         return (
                           <Star
                             key={i}
@@ -988,10 +1000,16 @@ export default function ChannelPartnerDetailsClient({
                         const dist = reviewsData?.starDistribution ?? {};
                         const count = Number(dist[String(row.stars)] ?? 0);
                         const maxCount = Math.max(1, ratingCount);
-                        const pct = Math.min(100, Math.round((count / maxCount) * 100));
+                        const pct = Math.min(
+                          100,
+                          Math.round((count / maxCount) * 100),
+                        );
 
                         return (
-                          <div key={row.stars} className="flex items-center gap-3">
+                          <div
+                            key={row.stars}
+                            className="flex items-center gap-3"
+                          >
                             <div className="w-[34px] text-xs text-text-gray text-right">
                               {row.label}
                             </div>
@@ -1135,7 +1153,9 @@ export default function ChannelPartnerDetailsClient({
                                   <Star
                                     fill={active ? 100 : 0}
                                     className={`h-5 w-5 ${
-                                      active ? "text-[#F7BB06]" : "text-[#D9D9D9]"
+                                      active
+                                        ? "text-[#F7BB06]"
+                                        : "text-[#D9D9D9]"
                                     }`}
                                   />
                                 </button>
@@ -1149,7 +1169,7 @@ export default function ChannelPartnerDetailsClient({
                             </p>
                             <div className="mt-2 grid grid-cols-2 gap-x-6">
                               <div className="space-y-2">
-                              {likedOptionsForRating.left.map((opt) => {
+                                {likedOptionsForRating.left.map((opt) => {
                                   const checked = likedOptions.includes(opt);
                                   return (
                                     <label
@@ -1159,9 +1179,7 @@ export default function ChannelPartnerDetailsClient({
                                       <input
                                         type="checkbox"
                                         checked={checked}
-                                        onChange={() =>
-                                          toggleLikedOption(opt)
-                                        }
+                                        onChange={() => toggleLikedOption(opt)}
                                         className="h-4 w-4 rounded border-[#D9D9D9] text-blue focus:ring-blue"
                                       />
                                       <span>{opt}</span>
@@ -1171,7 +1189,7 @@ export default function ChannelPartnerDetailsClient({
                               </div>
 
                               <div className="space-y-2">
-                              {likedOptionsForRating.right.map((opt) => {
+                                {likedOptionsForRating.right.map((opt) => {
                                   const checked = likedOptions.includes(opt);
                                   return (
                                     <label
@@ -1181,9 +1199,7 @@ export default function ChannelPartnerDetailsClient({
                                       <input
                                         type="checkbox"
                                         checked={checked}
-                                        onChange={() =>
-                                          toggleLikedOption(opt)
-                                        }
+                                        onChange={() => toggleLikedOption(opt)}
                                         className="h-4 w-4 rounded border-[#D9D9D9] text-blue focus:ring-blue"
                                       />
                                       <span>{opt}</span>
@@ -1208,9 +1224,17 @@ export default function ChannelPartnerDetailsClient({
                               type="button"
                               onClick={submitReview}
                               className="px-6 py-2 rounded-full bg-[#0B1B54] text-white font-semibold text-sm hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
-                              disabled={!reviewText.trim() || isSubmittingReview}
+                              disabled={
+                                !reviewText.trim() || isSubmittingReview
+                              }
                             >
-                              {isSubmittingReview ? (isUpdate ? "Updating..." : "Submitting...") : (isUpdate ? "Update" : "Submit")}
+                              {isSubmittingReview
+                                ? isUpdate
+                                  ? "Updating..."
+                                  : "Submitting..."
+                                : isUpdate
+                                  ? "Update"
+                                  : "Submit"}
                             </button>
                           </div>
                         </div>
@@ -1223,7 +1247,9 @@ export default function ChannelPartnerDetailsClient({
                             />
                           </div>
                           <p className="mt-4 text-sm font-semibold text-text-black">
-                            {submittedAsUpdate ? "Review updated successfully!" : "Thank you for your review!"}
+                            {submittedAsUpdate
+                              ? "Review updated successfully!"
+                              : "Thank you for your review!"}
                           </p>
                           <button
                             type="button"
@@ -1250,4 +1276,3 @@ export default function ChannelPartnerDetailsClient({
     </div>
   );
 }
-

@@ -535,7 +535,7 @@ export default function RecentlyViewedPageClient() {
           </div>
         </div>
 
-        <div className="relative z-20 -mt-14 w-full rounded-xl border border-[#EAECF0] bg-white p-4 shadow-sm sm:-mt-16 sm:p-5 md:-mt-[4.25rem]">
+        <div className="relative z-20 -mt-14 w-[90%] lg:w-full rounded-xl border border-[#EAECF0] bg-white p-4 shadow-sm sm:-mt-16 sm:p-5 md:-mt-[4.25rem] mx-auto">
           <h3 className="text-[22px] font-semibold text-[#1E2236]">Filter</h3>
 
           <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-3">
@@ -603,7 +603,7 @@ export default function RecentlyViewedPageClient() {
         </div>
       </section>
 
-      <section className="mt-6 rounded-xl sm:mt-8 md:mt-10">
+      <section className="mt-6 rounded-xl sm:mt-8 md:mt-10 w-[90%] lg:w-full mx-auto">
         <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between sm:gap-3">
           <div className="min-w-0">
             <h2 className="text-lg font-semibold text-[#1E2236] sm:text-xl md:text-2xl">

@@ -85,6 +85,9 @@ export default function HomeHeader({ showColor = false, show2color = false }: Ho
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isBlueTheme = showColor || show2color || isScrolled;
 
+  const isHomePage = pathname === "/";
+  const isAboutPage = pathname === "/about-us"
+  const isJoinUs = pathname === "/join-us"
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
     setActiveSubMenu(null);
@@ -93,7 +96,6 @@ export default function HomeHeader({ showColor = false, show2color = false }: Ho
   const openSubMenu = (label) => setActiveSubMenu(label);
   const closeSubMenu = () => setActiveSubMenu(null);
 
-  // Reset all menu state on route change
   const resetMenuState = useCallback(() => {
     setanchorEl(null);
     setCityMenu(false);
@@ -123,12 +125,10 @@ export default function HomeHeader({ showColor = false, show2color = false }: Ho
     }, 200);
   }, [cancelCloseTimer, resetMenuState]);
 
-  // Clean up timer on unmount
   useEffect(() => {
     return () => cancelCloseTimer();
   }, [cancelCloseTimer]);
 
-  // Click outside detection (replaces ClickAwayListener)
   useEffect(() => {
     if (!openType) return;
     const handleClickOutside = (e: MouseEvent) => {
@@ -139,6 +139,7 @@ export default function HomeHeader({ showColor = false, show2color = false }: Ho
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [openType, resetMenuState]);
+
   const handleOpenMenu = (event, menuType) => {
     cancelCloseTimer();
     switch (menuType) {
@@ -193,7 +194,6 @@ export default function HomeHeader({ showColor = false, show2color = false }: Ho
     setHoveredMenu(null);
   };
 
-  // Make header clearly visible on scroll by switching to a solid theme color background.
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 20);
     onScroll();
@@ -212,15 +212,9 @@ export default function HomeHeader({ showColor = false, show2color = false }: Ho
   };
 }, [openType]);
 
-
-
-
 const sellerUrl = process.env.NEXT_PUBLIC_SELLER_URL || "http://localhost:3002";
 
 const navigatePostProperty = () => {
-  // All buyer users are END_USER by default. The handoff page upgrades the
-  // row to OWNER on the backend (or no-ops for existing Owner/CP) and then
-  // sends them to the seller's post-property screen with a fresh session.
   router.push("/post-property-handoff");
 }
 
@@ -254,7 +248,7 @@ const handleHeaderSubMenuClick = (label: string) => {
 
   return (
     <>
-    <div className="sticky top-0 z-50 w-full flex justify-center">
+    <div className={`sticky top-0 ${isHomePage || isAboutPage || isJoinUs ? "mt-5" : "mt-10"} md:mt-10 z-50 w-full flex justify-center`}>
     <div className="w-[90%] mx-auto max-w-[1440px]">
       <div
         ref={headerBarRef}
@@ -265,20 +259,30 @@ const handleHeaderSubMenuClick = (label: string) => {
             : "bg-white/10 bg-clip-padding backdrop-filter backdrop-blur-[20px] border-[#FFFFFF33]",
         ].join(" ")}
       >
-        <div
-          onClick={() => router.push("/")}
-          className="flex items-center px-1.5 shrink-0 cursor-pointer"
-        >
-          <Image
-            src="/assets/kma-logo-white.svg"
-            width={100}
-            height={35}
-            alt="logo"
-            className="w-[80px] h-[33px] 2md:w-[100px] 2md:h-[38px]"
+        <div className="flex items-center gap-2">
+          <Image 
+            onClick={toggleDrawer}
+            src={'/assets/bar.svg'}
+            width={24}
+            height={20}
+            alt="menubar"
+            className="2md:hidden text-white cursor-pointer"
           />
+          <div
+            onClick={() => router.push("/")}
+            className="flex items-center px-1.5 pr-6 shrink-0 cursor-pointer"
+          >
+            <Image
+              src="/assets/kma-logo-white.svg"
+              width={100}
+              height={35}
+              alt="logo"
+              className="w-[80px] h-[33px] 2md:w-[100px] 2md:h-[38px]"
+            />
+          </div>
         </div>
 
-        <div className="flex flex-row justify-between items-center gap-1 w-full px-4 text-center">
+        <div className="flex flex-row justify-between items-center gap-5 w-full px-4 text-center">
           <div
             onMouseEnter={(event) => {
               cancelCloseTimer();
@@ -313,62 +317,48 @@ const handleHeaderSubMenuClick = (label: string) => {
               style={{ width: "12px", height: "10px", marginLeft: "15px" }}
             />
           </div>
-          <div className="hidden 2md:block border border-[0.2px] border-[#FFFFFF] h-[30px] ml-2" />
+          <div className="hidden 2md:block border border-[0.2px] border-[#FFFFFF] h-[30px]" />
 
           {headerMenuList.map((item) => {
             const hasDropdown = item.value !== "refer_and_earn";
             const isActive = hoveredMenu === item.value;
             const isReferAndEarn = item.value === "refer_and_earn";
             return (
-              <p
-                onMouseEnter={(event) => {
-                  cancelCloseTimer();
-                  setHoveredMenu(item.value);
-                  if (hasDropdown) {
-                    handleOpenMenu(event, item.value);
-                  } else {
-                    setanchorEl(null);
-                    setCityMenu(false);
-                    setType(null);
-                    setProfileMenu(null);
-                  }
-                }}
-                onMouseLeave={() => {
-                  if (!hasDropdown) {
-                    setHoveredMenu(null);
-                  } else {
-                    scheduleClose();
-                  }
-                }}
-                onClick={(event) => {
-                  if (hasDropdown) {
-                    handleOpenMenu(event, item.value);
-                  } else {
-                    resetMenuState();
-                    router.push("/refer-and-earn");
-                  }
-                }}
-                key={item.value}
-                className={`hidden 2md:block mt-2 break-word text-xs xl:text-sm nowrap w-max border-b-2 transition-colors duration-200 cursor-pointer px-1.5 pb-1 hover:border-blue ${
-                  isReferAndEarn ? "text-[#FDE68A] animate-pulse font-semibold" : "text-gray-100"
-                } ${
-                  isActive ? "border-blue" : "border-transparent"
-                }`}
-              >
-                {item.label}
-                {isReferAndEarn && (
-                  <span className="ml-1 inline-flex items-center rounded-full bg-[#FDE68A] text-[#1E3A8A] px-1.5 py-0.5 text-[9px] font-bold align-middle">
-                    NEW
-                  </span>
-                )}
-              </p>
+              <div key={item.value}>
+                <p
+                  onMouseEnter={(event) => {
+                    cancelCloseTimer();
+                    setHoveredMenu(item.value);
+                    if (hasDropdown) handleOpenMenu(event, item.value);
+                  }}
+                  onMouseLeave={() => hasDropdown ? scheduleClose() : setHoveredMenu(null)}
+                  onClick={(event) => {
+                    if (hasDropdown) handleOpenMenu(event, item.value);
+                    else { resetMenuState(); router.push("/refer-and-earn"); }
+                  }}
+                  className={`hidden 2md:block mt-2 break-word text-xs xl:text-sm nowrap w-max border-b-2 transition-colors duration-200 cursor-pointer px-1.5 pb-1 hover:border-blue ${
+                    isReferAndEarn ? "text-[#FDE68A] animate-pulse font-semibold" : "text-gray-100"
+                  } ${isActive ? "border-blue" : "border-transparent"}`}
+                >
+                  {item.label}
+                  {isReferAndEarn && (
+                    <span className="ml-1 inline-flex items-center rounded-full bg-[#FDE68A] text-[#1E3A8A] px-1.5 py-0.5 text-[9px] font-bold align-middle">
+                      NEW
+                    </span>
+                  )}
+                </p>
+              </div>
             );
           })}
+        </div>
+
+        {/* Right Side: Profile & CTA */}
+        <div className="flex items-center justify-start gap-[7px] shrink-0">
           <div
             onMouseEnter={(event) => { cancelCloseTimer(); setHoveredMenu("more"); handleOpenMenu(event, "more"); }}
             onMouseLeave={() => scheduleClose()}
             onClick={(event) => handleOpenMenu(event, "more")}
-            className="flex justify-center items-center h-[30px] pt-1 mr-10"
+            className="flex justify-center items-center h-[30px] pt-1 mr-2 2md:mr-10"
           >
             <Image
               src="/assets/more-white.svg"
@@ -378,23 +368,17 @@ const handleHeaderSubMenuClick = (label: string) => {
               className="hidden 2md:block cursor-pointer"
             />
           </div>
-        </div>
-        <div className="flex items-center justify-start gap-[7px] shrink-0">
-          {!isSeller && <button onClick={navigatePostProperty} className={`${isBlueTheme ? "bg-transparent border border-white" : "animated-button"} px-[10px] sm:px-[20px] py-[6px] sm:py-[9px] rounded-[50px] cursor-pointer transition-colors duration-300`}>
-            <span className="flex items-center justify-between gap-[6px] relative z-10 text-white">
-              <Image
-                src="/assets/home-white.svg"
-                width={14}
-                height={14}
-                alt="home"
-                className="w-3.5 h-3.5"
-              />
-              <p className="whitespace-nowrap text-[10px] sm:text-xs xl:text-sm text-white">
-                Post Property
-              </p>
-            </span>
-          </button>}
-          {isSeller && <button onClick={navigateDashboard} className={`${isBlueTheme ? "bg-transparent border border-white" : "animated-button"} px-[10px] sm:px-[20px] py-[6px] sm:py-[9px] rounded-[50px] cursor-pointer transition-colors duration-300`}>
+
+          {!isSeller && (
+            <button onClick={navigatePostProperty} className={`${isBlueTheme ? "bg-transparent border border-white" : "animated-button"} px-[10px] sm:px-[20px] py-[6px] sm:py-[9px] rounded-[50px] cursor-pointer transition-colors duration-300`}>
+              <span className="flex items-center justify-between gap-[6px] relative z-10 text-white">
+                <Image src="/assets/home-white.svg" width={14} height={14} alt="home" className="w-3.5 h-3.5" />
+                <p className="whitespace-nowrap text-[10px] sm:text-xs xl:text-sm text-white">Post Property</p>
+              </span>
+            </button>
+          )}
+
+           {isSeller && <button onClick={navigateDashboard} className={`${isBlueTheme ? "bg-transparent border border-white" : "animated-button"} px-[10px] sm:px-[20px] py-[6px] sm:py-[9px] rounded-[50px] cursor-pointer transition-colors duration-300`}>
             <span className="flex items-center justify-between gap-[6px] relative z-10 text-white">
               <Image
                 src="/assets/home-white.svg"
@@ -408,13 +392,13 @@ const handleHeaderSubMenuClick = (label: string) => {
               </p>
             </span>
           </button>}
+
+
           <div
             onMouseEnter={(event) => {
               cancelCloseTimer();
               setProfileMenu("profile");
               setanchorEl(event.currentTarget);
-              setCityMenu(false);
-              setType(null);
               setHoveredMenu("profile");
             }}
             onMouseLeave={() => scheduleClose()}
@@ -434,81 +418,34 @@ const handleHeaderSubMenuClick = (label: string) => {
               alt="profile"
             />
             <Image
-              onClick={(event) => {
-                setProfileMenu("profile");
-                setanchorEl(event.currentTarget);
-                setCityMenu(false);
-                setType(null);
-              }}
               src="/assets/down-arrow-white.svg"
               width={12}
               height={5}
               alt="Down Arrow"
-              className="w-[10px] h-full"
+              className="w-[10px] h-full block"
             />
-            <Image 
-              onClick={toggleDrawer}
-              src={'/assets/bar.svg'}
-              width={24}
-              height={20}
-              alt="menubar"
-              className="2md:hidden text-white ml-2"
-              />
           </div>
         </div>
 
+        {/* Popper stays as it is */}
         <Popper
           open={openType}
           anchorEl={anchorEl}
           placement="bottom-start"
           sx={{ zIndex: 9999 }}
-          modifiers={[
-            {
-              name: "offset",
-              options: {
-                offset: cityMenu ? [-50, 26] : type ? [-250, 20] : profileMenu === "profile" ? [-270, 20] : [0, 20],
-              },
-            },
-            {
-              name: "preventOverflow",
-              options: {
-                padding: 8,
-              },
-            },
-            {
-              name: "flip",
-              options: {
-                padding: 8,
-              },
-            },
-          ]}
+          modifiers={[{ name: "offset", options: { offset: cityMenu ? [-50, 26] : type ? [-250, 20] : profileMenu === "profile" ? [-270, 20] : [0, 20] } }]}
         >
-            <div
-              ref={dropdownRef}
-              onMouseEnter={cancelCloseTimer}
-              onMouseLeave={scheduleClose}
-            >
-              {!cityMenu &&
-                (!type ? (
-                  <Paper
-                    className={`rounded-2xl! shadow-xl border border-gray-200 bg-white relative z-[9999] ${
-                      profileMenu === "profile" ? "w-[320px] sm:w-[340px]! p-0!" : "w-auto min-w-[180px]! px-2 py-2"
-                    }`}
-                  >
-                    {profileMenu != 'profile' ? <ListView menuList={menuList} onItemClick={handleHeaderSubMenuClick} />
-                     : <ProfileView userRole={userRole}/>}
-                  </Paper>
-                ) : (
-                  <Paper className="rounded-2xl! shadow-xl border border-gray-200 bg-white relative z-[9999] overflow-hidden">
-                    <RentSellHeaderView type={type} onClose={resetMenuState} />
-                  </Paper>
-                ))}
-              {cityMenu && (
-                <Paper className="w-auto min-w-[180px]! rounded-2xl! px-2 py-2 shadow-xl border border-gray-200 bg-white relative z-[9999]">
-                    <CityView handleScroll={handleScroll}/>
-                </Paper>
-              )}
-            </div>
+          <div ref={dropdownRef} onMouseEnter={cancelCloseTimer} onMouseLeave={scheduleClose}>
+            {!cityMenu ? (!type ? (
+              <Paper className={`rounded-2xl! shadow-xl border border-gray-200 bg-white relative z-[9999] ${profileMenu === "profile" ? "w-[320px] sm:w-[340px]! p-0!" : "w-auto min-w-[180px]! px-2 py-2"}`}>
+                {profileMenu != 'profile' ? <ListView menuList={menuList} onItemClick={handleHeaderSubMenuClick} /> : <ProfileView userRole={userRole}/>}
+              </Paper>
+            ) : (
+              <Paper className="rounded-2xl! shadow-xl border border-gray-200 bg-white relative z-[9999] overflow-hidden"><RentSellHeaderView type={type} onClose={resetMenuState} /></Paper>
+            )) : (
+              <Paper className="w-auto min-w-[180px]! rounded-2xl! px-2 py-2 shadow-xl border border-gray-200 bg-white relative z-[9999]"><CityView handleScroll={handleScroll}/></Paper>
+            )}
+          </div>
         </Popper>
       </div>
     </div>
@@ -517,5 +454,3 @@ const handleHeaderSubMenuClick = (label: string) => {
     </>
   );
 }
-
-

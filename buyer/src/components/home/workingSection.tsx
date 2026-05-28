@@ -81,7 +81,7 @@ export default function WorkingSection(){
                         </div>
                     </motion.div>
                         <motion.div
-                           className="flex flex-col gap-4 pl-6"
+                           className="flex flex-col gap-4 pl-0 md:pl-6"
                             ref={ref}
                             variants={bottomVariant}
                             animate={isInView ? "visible" : "hidden"}
