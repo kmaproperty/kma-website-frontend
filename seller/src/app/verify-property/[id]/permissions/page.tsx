@@ -132,10 +132,7 @@ export default function PropertyRadiusVerificationPage() {
                 }, 1500);
               } else {
                 // Strict enforcement: Out of range results in failure view state
-                setVerificationResult("success");
-                setTimeout(() => {
-                  router.push(`/verify-property/${propertyId}/capture`);
-                }, 1500);
+                setVerificationResult("failed");
                 setErrorMessage(
                   `Location mismatch detected. You are physically present far from the site boundary.`
                 );
