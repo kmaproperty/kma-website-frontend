@@ -125,7 +125,8 @@ export default function AboutUsSection() {
             },
             {
               img: "/assets/aboutUs/about_us_2.svg",
-              value: aboutus?.statistics?.totalChannelPartners,
+              // value: aboutus?.statistics?.totalChannelPartners,
+              value: 550,
               label: "Total Channel Partner",
             },
             {
