@@ -30,10 +30,19 @@ const foundersDetails = [
     position: 'Founder',
   },
   {
-    name: `Anipal Yadav, Paramjeet Dahiya`,
+    name: `Anipal Singh, Parmjeet Dahiya`,
     image: "/assets/team/Co founder's.jpg",
-    position: 'Co-Founder',
-    members: [],
+    position: 'Co-Founders',
+    members: [
+      {
+        name: 'Anipal Singh',
+        designation: 'Indian Navy (Retd.)'
+      },
+      {
+        name: 'Parmjeet Dahiya',
+        designation: 'Indian Army (Retd.)'
+      }
+    ],
   },
 ];
 
@@ -186,17 +195,21 @@ const MeetTheTeamPage = ({ propertyMasterData, propertyCitiesData }) => {
             <div key={index} className='w-full md:w-[50%] max-w-[468px] rounded-lg overflow-hidden flex flex-col'>
               <Image src={founder.image} width={500} height={500} className='w-full aspect-square' />
               <div className='bg-white px-5 py-4 flex items-center justify-center flex-col flex-1 min-h-[170px]'>
-                <h3 className='text-[28px] font-semibold text-text-black mb-1'>{founder.name}</h3>
-                <i className='text-md font-regular text-[#888]'>{founder.position}</i>
-                {founder.members?.length ? (
-                  <div className='mt-2 text-center'>
-                    {founder.members.map((memberName) => (
-                      <p key={memberName} className='text-base text-text-black'>
-                        {memberName}
-                      </p>
-                    ))}
-                  </div>
-                ) : null}
+                {/* <h3 className='text-[28px] font-semibold text-text-black mb-1'>{founder.name}</h3> */}
+                {founder.members && founder.members.length > 0 ? (
+                  <div className="space-x-2 grid grid-cols-2 gap-5">
+        {founder.members.map((member, idx) => (
+          <div key={idx} className="">
+            <p className="font-semibold text-[16px] md:text-[20px]">{member.name}</p>
+            <p className="text-sm text-gray-500 font-medium">{member.designation}</p>
+          </div>
+        ))}
+      </div>
+    ) : (
+      /* Normal Single Founder ke liye (Karmjeet Dahiya) */
+      <p className="font-semibold text-[28px]">{founder.name}</p>
+    )}
+    <i className='text-md font-regular text-[#888] pt-3'>{founder.position}</i>
               </div>
             </div>
           ))}

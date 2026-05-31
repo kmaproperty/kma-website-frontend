@@ -21,15 +21,15 @@ const ContactUs = async () => {
             title: 'Phone',
             subTitle: 'Need help or have questions? Call us.',
             icon: <PhoneCall className='w-8 h-8 text-[#010048]' />,
-            description: '+91-9056580022',
-            link: 'tel:+919056580022'
+            description: '+91-8047136232',
+            link: 'tel:+918047136232'
         },
         {
             title: 'Send us an email',
             subTitle: 'Got questions? Drop us a message.',
             icon: <MailOpen className='w-8 h-8 text-[#010048]' />,
-            description: 'info.gurufram@gmail.com',
-            link: 'mailto:info.gurufram@gmail.com'
+            description: 'info@kmaglobalproperty.com',
+            link: 'mailto:info@kmaglobalproperty.com'
         },
         {
             title: 'Visit our office',

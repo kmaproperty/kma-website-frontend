@@ -148,7 +148,7 @@ export default function SignUpCard() {
       />
       {formError.fullName && <p className="text-red-500 text-xs mt-1 ml-2">{formError.fullName}</p>}
 
-      <p className="text-sm md:text-base text-text-black font-medium mt-4 mb-2">Email Address <span className="text-text-gray text-xs">(optional)</span></p>
+      <p className="required-label text-sm md:text-base text-text-black font-medium mt-4 mb-2">Email Address <span className="text-text-gray text-xs"></span></p>
       <InputBase
         placeholder="Enter your email"
         fullWidth

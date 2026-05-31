@@ -160,8 +160,8 @@ export default function PrivacyPolicyPage() {
               <p>Plot No. 3A, Sector 106</p>
               <p>Dwarka Expressway, Gurugram, Haryana</p>
               <p>India</p>
-              <p>Email: md.karmjeet@kmaglobalproperty.com</p>
-              <p>Phone: +91-9056580022</p>
+              <p>Email: info@kmaglobalproperty.com</p>
+              <p>Phone: +91-8047136232</p>
               <p>Website: www.kmaglobalproperty.com</p>
             </div>
           </section>
