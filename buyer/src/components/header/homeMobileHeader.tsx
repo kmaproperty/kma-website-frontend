@@ -167,7 +167,8 @@ export default function HomeMobileHeader({
                           "Sales Enquiry": "/sales-enquiry",
                           "Meet The Team": "/meet-the-team",
                           "Help Center": "/contact-us",
-                          "Find an agent": "/channel-partner",
+                          // "Find an agent": "/channel-partner",
+                          "Find an agent": "",
                         };
                         const route = routes[item.label];
                         if (route) {

@@ -241,7 +241,8 @@ const handleHeaderSubMenuClick = (label: string) => {
       router.push("/help-center");
       break;
     case "Find an agent":
-      router.push("/channel-partner");
+      // router.push("/channel-partner");
+      router.push("");
       break;
   }
 }

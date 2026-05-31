@@ -73,11 +73,12 @@ const SalesEnquiry = () => {
                     </div>
                     <div className='flex items-center gap-3 mt-3'>
                         <Phone className='w-5 h-5 text-[#7575BC]' />
-                        <a href='tel:+919056580022' className='text-md font-normal text-[#0D1520] mb-0'>+91 9056580022</a>
+                        <a href='tel:+919056580022' className='text-md font-normal text-[#0D1520] mb-0'>+91 8047136232</a>
                     </div>
                     <div className='flex items-center gap-3 mt-3'>
                         <Mail className='w-5 h-5 text-[#7575BC]' />
-                        <a href='mailto:md.karmjeet@kmaglobalproperty.com' className='text-md font-normal text-[#0D1520] mb-0'>md.karmjeet@kmaglobalproperty.com</a>
+                        <a href='mailto:info@kmaglobalproperty.com' className='text-md font-normal text-[#0D1520] mb-0'>info@kmaglobalproperty.com</a>
+                        {/* <a href='mailto:md.karmjeet@kmaglobalproperty.com' className='text-md font-normal text-[#0D1520] mb-0'>md.karmjeet@kmaglobalproperty.com</a> */}
                     </div>
                 </div>
             </div>
