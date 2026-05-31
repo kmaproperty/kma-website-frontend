@@ -48,9 +48,14 @@ export default function MyCoinsWallet() {
     <ReferralLoginGate title="Sign in to view your coins">
       <div className="space-y-6">
         <div className="bg-white rounded-2xl border border-[#EAECF0] p-6 md:p-8 shadow-[0_10px_40px_rgba(0,0,0,0.06)]">
-          <p className="text-sm text-[#667085]">Total coin balance</p>
+          {/* <p className="text-sm text-[#667085]">Total coin balance</p>
           <p className="text-4xl font-semibold text-[#0F172A] mt-2">{balance} coins</p>
-          <p className="text-lg text-[#475467] mt-2">≈ ₹{inr.toLocaleString("en-IN")}</p>
+          <p className="text-lg text-[#475467] mt-2">≈ ₹{inr.toLocaleString("en-IN")}</p> */}
+          <p className="text-sm text-[#667085]">Total coin balance</p>
+          {/* <p className="text-4xl font-semibold text-[#0F172A] mt-2">{balance} coins</p> */}
+          <p className="text-4xl font-semibold text-[#0F172A] mt-2">1 coins</p>
+          {/* <p className="text-lg text-[#475467] mt-2">≈ ₹{inr.toLocaleString("en-IN")}</p> */}
+          <p className="text-lg text-[#475467] mt-2">≈ ₹1000</p>
           <p className="text-sm text-[#98A2B3] mt-3">
             1 coin = ₹{RUPEE_PER_COIN}. Coins are added when a referral is marked Deal Closed by KMA.
           </p>

@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "nextjs-toploader/app";
 import { toast } from "react-toastify";
+import confetti from "canvas-confetti";
 
 import OtpInput from "../common/optInput";
 import Spinner from "../common/spinner";
@@ -29,11 +30,16 @@ export default function EndUserSignupOtpCard() {
   const code = searchParams.get("code");
   const fullName = searchParams.get("fullName");
   const email = searchParams.get("email");
+  const redirect = searchParams.get("redirect");
 
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState("");
   const [otpTimer, setOtpTimer] = useState(OTP_RESEND_TIME);
   const [isEnableOtpResend, setIsEnableOtpResend] = useState(false);
+
+    // State to manage premium popup visibility
+  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
+  const [targetRedirectUrl, setTargetRedirectUrl] = useState("/");
 
   const { mutate: resendOtp } = useMutation({
     mutationFn: (payload: EndUserSignupPayload): Promise<EndUserSignupResponse> =>
@@ -54,16 +60,39 @@ export default function EndUserSignupOtpCard() {
       localStorage.setItem("user", JSON.stringify(response.user));
       toast.success(response.message);
       queryClient.clear();
-      if (typeof window !== "undefined") {
-        window.location.href = "/";
-      } else {
-        router.replace("/");
-      }
+       // Calculate redirect path and save it in state instead of immediate redirect
+      const safeRedirect =
+        redirect && redirect.startsWith("/") && !redirect.startsWith("//") ? redirect : null;
+      setTargetRedirectUrl(safeRedirect ?? "/");
+      
+      // Trigger the premium congrats popup modal
+      setShowWelcomePopup(true);
     },
     onError: (error: any) => {
       setOtpError(error?.message ?? "Invalid OTP");
     },
   });
+
+  const handlePopupCloseAndRedirect = () => {
+      // Blast a massive premium confetti explosion from the center/bottom
+      confetti({
+        particleCount: 150,
+        spread: 80,
+        origin: { y: 0.6 },
+        colors: ["#B38728", "#FBF5B7", "#D4AF37", "#FFFFFF"], // Custom Gold & Premium Theme Colors
+      });
+  
+      // Wait for 900ms so user can enjoy the celebration animation before popup closes
+      setTimeout(() => {
+        setShowWelcomePopup(false); // Close Popup
+        
+        if (typeof window !== "undefined") {
+          window.location.href = targetRedirectUrl;
+        } else {
+          router.replace(targetRedirectUrl);
+        }
+      }, 900);
+    };
 
   const handleOtpResend = () => {
     if (!isEnableOtpResend || !mobileNumber || !fullName || !email || isPending) return;
@@ -107,6 +136,9 @@ export default function EndUserSignupOtpCard() {
   }, [otpTimer]);
 
   return (
+    <div className="relative">
+
+    
     <div
       className="bg-white w-full md:min-w-[420px] h-auto rounded-[16px] p-6 md:p-8"
       style={{ boxShadow: "0px 4px 20px 0px #0000000D", flexGrow: 11 }}
@@ -156,6 +188,49 @@ export default function EndUserSignupOtpCard() {
           </span>
         </p>
       </div>
+    </div>
+     {showWelcomePopup && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
+          <div 
+            className="relative w-full max-w-[440px] bg-[#ffffff] rounded-[24px] border-2 border-[#D4AF37]/40 p-8 text-center text-white overflow-hidden shadow-[0_0_50px_rgba(212,175,55,0.15)]"
+          >
+            {/* Background Soft Confetti Elements or Glow */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.08)_0%,transparent_70%)] pointer-events-none" />
+
+            {/* Glowing Reward Coin Container */}
+            <div className="flex justify-center mb-6">
+              <div className="relative flex items-center justify-center w-24 h-24 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 shadow-[0_0_20px_rgba(212,175,55,0.2)] animate-pulse">
+                {/* Coin image placeholder or Icon matching your aesthetic */}
+                <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#B38728] via-[#FBF5B7] to-[#AA771C] flex items-center justify-center font-bold text-xl text-[#5C4008] border border-[#FFF]/30 shadow-inner">
+                  🪙
+                </div>
+              </div>
+            </div>
+
+            {/* Main Headlines */}
+            <h2 className="text-3xl font-bold tracking-tight text-blue mb-2">
+              Welcome to KMA 🎉
+            </h2>
+            <p className="text-lg font-semibold text-blue mb-6">
+              You earned your first coin!
+            </p>
+
+            {/* Notification Badge Info Box */}
+            <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl py-3 px-4 mb-8">
+              <p className="text-sm text-gray-300 font-medium">+1 Coin added successfully</p>
+              <p className="text-xs text-gray-500 mt-0.5">Keep coming back for more rewards 🔥</p>
+            </div>
+
+            {/* Action CTA Button */}
+            <button
+              onClick={handlePopupCloseAndRedirect}
+              className="w-full bg-gradient-to-r from-blue to-blue font-bold text-base py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-[0_4px_15px_rgba(212,175,55,0.3)] flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span>Claim & Explore</span>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
