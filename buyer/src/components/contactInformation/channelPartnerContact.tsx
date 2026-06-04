@@ -65,7 +65,7 @@ export default function ChannelPartnerContact({
                   height={18}
                   alt=""
                 />
-                Call KMA — +91 90561 70022
+                Call KMA — +91 80471 36232
               </a>
               <a
                 href="https://wa.me/919289977646"
