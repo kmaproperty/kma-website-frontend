@@ -243,7 +243,7 @@ export default function FiltersSidebar({
       </div>
 
       <div className="divide-y divide-[#00000012]">
-        <Section
+        {/* <Section
           title="Budget"
           hint={isRent ? "₹ / month" : "₹ Crore"}
           compact={compact}
@@ -299,6 +299,85 @@ export default function FiltersSidebar({
                     { value: 200_000_000, label: "₹ 20 Cr" },
                   ]
               ).map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </SelectField>
+          </div>
+        </Section> */}
+
+        <Section
+          title="Budget"
+          hint={isRent ? "₹ / month" : "₹ Crore"}
+          compact={compact}
+        >
+          <div className="grid grid-cols-2 gap-3.5">
+            {/* Min Budget Dropdown */}
+            <SelectField
+              value={filters.minBudget ?? ""}
+              onChange={(e) => {
+                const newMin = e.target.value ? Number(e.target.value) : null;
+                // Pehle min value set karo standard method se
+                setBudget("minBudget", e.target.value);
+                
+                // 🎯 SAFE ROLLBACK: Agar naya min select karne par purana max chhota ya barabar ho jata hai, toh max ko reset kar do
+                if (filters.maxBudget && newMin && newMin >= filters.maxBudget) {
+                  setBudget("maxBudget", "");
+                }
+              }}
+            >
+              <option value="">Min</option>
+              {(isRent
+                ? [
+                    { value: 5_000, label: "₹ 5K" },
+                    { value: 10_000, label: "₹ 10K" },
+                    { value: 15_000, label: "₹ 15K" },
+                    { value: 25_000, label: "₹ 25K" },
+                    { value: 50_000, label: "₹ 50K" },
+                    { value: 100_000, label: "₹ 1L" },
+                  ]
+                : [
+                    { value: 5_000_000, label: "₹ 0.5 Cr" },
+                    { value: 10_000_000, label: "₹ 1 Cr" },
+                    { value: 14_000_000, label: "₹ 1.4 Cr" },
+                    { value: 20_000_000, label: "₹ 2 Cr" },
+                    { value: 50_000_000, label: "₹ 5 Cr" },
+                    { value: 100_000_000, label: "₹ 10 Cr" },
+                  ]
+              ).map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </SelectField>
+
+            {/* Max Budget Dropdown */}
+            <SelectField
+              value={filters.maxBudget ?? ""}
+              onChange={(e) => setBudget("maxBudget", e.target.value)}
+            >
+              <option value="">Max</option>
+              {(isRent
+                ? [
+                    { value: 10_000, label: "₹ 10K" },
+                    { value: 25_000, label: "₹ 25K" },
+                    { value: 50_000, label: "₹ 50K" },
+                    { value: 100_000, label: "₹ 1L" },
+                    { value: 200_000, label: "₹ 2L" },
+                    { value: 500_000, label: "₹ 5L" },
+                  ]
+                : [
+                    { value: 10_000_000, label: "₹ 1 Cr" },
+                    { value: 20_000_000, label: "₹ 2 Cr" },
+                    { value: 50_000_000, label: "₹ 5 Cr" },
+                    { value: 100_000_000, label: "₹ 10 Cr" },
+                    { value: 200_000_000, label: "₹ 20 Cr" },
+                  ]
+              )
+              // 🎯 FIXED: Max dropdown mein sirf minBudget se badi values hi filter hokar visible hongi
+              .filter((o) => !filters.minBudget || o.value > filters.minBudget)
+              .map((o) => (
                 <option key={o.value} value={o.value}>
                   {o.label}
                 </option>
