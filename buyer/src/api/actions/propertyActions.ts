@@ -1021,7 +1021,6 @@ export const submitEndUserPropertyContactAction = async ({
 
     const localData = response.data;
 
-    // 2️⃣ Step 2: Local lead capture hone ke baad, Zoho payload ke liye property ki exact details fetch karo
     try {
       const propertyDetails = await getEndUserPropertyDetailsAction({
         id: propertyId,
@@ -1030,11 +1029,19 @@ export const submitEndUserPropertyContactAction = async ({
 
       const prop = propertyDetails?.property || propertyDetails?.data;
       const loc = propertyDetails?.location;
-
-      // 🎯 LeadSummaryListClient.tsx reference ke mutabik real Channel Partner/User object nikalna
       const cpUser = prop?.user || propertyDetails?.ownerDetails || {};
 
+      const rawCpPhone = cpUser?.phone || cpUser?.mobile;
+      const formattedCpMobile = rawCpPhone 
+        ? `${rawCpPhone.startsWith('+') ? '' : '+91'}${rawCpPhone}`.replace(/^\+91\+91/, "+91")
+        : "NA";
+
       const zohoPayload = {
+        channel_partner: {
+          name: cpUser?.name || "NA",
+          mobile_no: formattedCpMobile,
+          role: cpUser?.role || prop?.owner?.role || "CHANNEL_PARTNER",
+        },
         customer: {
           name: name || "NA",
           email: email || "no-email@example.com",
@@ -1061,12 +1068,6 @@ export const submitEndUserPropertyContactAction = async ({
           security: Number(prop?.securityDeposit || 0),
           amount: Number(prop?.price || prop?.monthlyRent || 0),
           brokerage: 0,
-          
-          // 🎯 NO FALLBACK: Strictly mapping dynamic values from the API response
-          owner_name: cpUser?.name || "NA",
-          owner_mobile_no: cpUser?.phone || cpUser?.mobile || "NA",
-          owner_role: cpUser?.role || prop?.owner?.role || "CHANNEL_PARTNER",
-          
           no_of_bedroom: Number(prop?.bedrooms || 0),
           no_of_washroom: Number(prop?.bathrooms || 0),
           no_of_kitchen: 0,
