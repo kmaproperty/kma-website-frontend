@@ -957,6 +957,40 @@ export const sendEndUserPropertyContactOtpAction = async ({
   }
 };
 
+// export const submitEndUserPropertyContactAction = async ({
+//   propertyId,
+//   name,
+//   email,
+//   phone,
+//   countryCode,
+//   otp,
+//   sessionId,
+//   correlationId,
+// }: SubmitPropertyContactPayload): Promise<SubmitPropertyContactResponse> => {
+//   try {
+//     const response = await axiosInstance.post<SubmitPropertyContactResponse>(
+//       `end-user/properties/${propertyId}/contact`,
+//       {
+//         name,
+//         phone,
+//         ...(email ? { email } : {}),
+//         ...(countryCode ? { countryCode } : {}),
+//         ...(otp ? { otp } : {}),
+//       },
+//       {
+//         headers: {
+//           "x-correlation-id": correlationId ?? getCorrelationId(),
+//           ...(sessionId ? { "X-Session-Id": sessionId } : {}),
+//         },
+//       }
+//     );
+
+//     return response.data;
+//   } catch (error: unknown) {
+//     throw getErrorPayload(error);
+//   }
+// };
+
 export const submitEndUserPropertyContactAction = async ({
   propertyId,
   name,
@@ -985,7 +1019,90 @@ export const submitEndUserPropertyContactAction = async ({
       }
     );
 
-    return response.data;
+    const localData = response.data;
+
+    // 2️⃣ Step 2: Local lead capture hone ke baad, Zoho payload ke liye property ki exact details fetch karo
+    try {
+      const propertyDetails = await getEndUserPropertyDetailsAction({
+        id: propertyId,
+        correlationId,
+      });
+
+      const prop = propertyDetails?.property || propertyDetails?.data;
+      const loc = propertyDetails?.location;
+
+      // 🎯 LeadSummaryListClient.tsx reference ke mutabik real Channel Partner/User object nikalna
+      const cpUser = prop?.user || propertyDetails?.ownerDetails || {};
+
+      const zohoPayload = {
+        customer: {
+          name: name || "NA",
+          email: email || "no-email@example.com",
+          phone: phone ? `${countryCode || "+91"}${phone}`.replace(/^\+91\+91/, "+91") : "0000000000",
+          website_user_id: localData?.user?.id || "NA",
+        },
+        property: {
+          available_for: String(prop?.listingType?.code || prop?.listingType || "RESIDENTIAL").toUpperCase(),
+          property_type: prop?.propertyType?.name || prop?.propertyType || "Builder Floor",
+          property_name: prop?.title || prop?.propertyName || "NA",
+          property_sub_type: "NA",
+          zone: "NA",
+          sector: loc?.sector || loc?.locality || (typeof prop?.locality === 'object' ? prop?.locality?.sector : prop?.locality) || "NA",
+          bhk: "NA",
+          bhk_type: "NA",
+          property_area_in: "sq_ft",
+          property_area: Number(prop?.builtUpArea || prop?.plotArea || 1000),
+          carpet_area_in: "sq_ft",
+          carpet_area: Number(prop?.carpetArea || 0),
+          build_up_area_in: "sq_ft",
+          buildup_area: Number(prop?.builtUpArea || 0),
+          availability_by: "NA",
+          maintenance_cost: Number(prop?.maintenanceCost || 0),
+          security: Number(prop?.securityDeposit || 0),
+          amount: Number(prop?.price || prop?.monthlyRent || 0),
+          brokerage: 0,
+          
+          // 🎯 NO FALLBACK: Strictly mapping dynamic values from the API response
+          owner_name: cpUser?.name || "NA",
+          owner_mobile_no: cpUser?.phone || cpUser?.mobile || "NA",
+          owner_role: cpUser?.role || prop?.owner?.role || "CHANNEL_PARTNER",
+          
+          no_of_bedroom: Number(prop?.bedrooms || 0),
+          no_of_washroom: Number(prop?.bathrooms || 0),
+          no_of_kitchen: 0,
+          no_of_drawing_room: 0,
+          no_of_balcony: 0,
+          no_of_utility: 0,
+          no_of_parking: 0,
+          total_floor: 0,
+          floor_no: 0,
+          furnish_status: String(prop?.furnishType || prop?.furnishingType || "NA"),
+          facing: prop?.facing || "NA",
+          quality_rating: "NA",
+          basic_amenities: "NA",
+          featured_amenities: "NA",
+          nearby_location: loc?.locality || (typeof prop?.locality === 'object' ? prop?.locality?.name : prop?.locality) || "NA",
+          website_property_id: propertyId,
+        }
+      };
+
+      const zohoWebhookUrl = "/api/zoho-crm";
+      
+      fetch(zohoWebhookUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(zohoPayload),
+      })
+      .then(res => console.log("🎯 Zoho CRM Lead Pipeline Response Status:", res.status))
+      .catch(err => console.error("❌ Zoho CRM Webhook Engine Error:", err));
+
+    } catch (zohoError) {
+      console.error("❌ Failed to compile or push lead data payload structure to Zoho:", zohoError);
+    }
+
+    return localData;
   } catch (error: unknown) {
     throw getErrorPayload(error);
   }

@@ -15,6 +15,10 @@ const nextConfig: NextConfig = {
         source: "/api/backend/:path*",
         destination: `${API_URL}/:path*`,
       },
+      {
+        source: '/api/zoho-crm',
+        destination: 'https://flow.zoho.in/60051516575/flow/webhook/incoming?zapikey=1001.3a404a1f49ad5e618aecb65e2a4d72b5.22cdb0b213e76eb203287e10287d9d02&isdebug=false',
+      },
     ];
   },
   reactStrictMode: false,
