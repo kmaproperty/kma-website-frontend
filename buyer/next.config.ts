@@ -17,7 +17,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/api/zoho-crm',
-        destination: 'https://flow.zoho.in/60051516575/flow/webhook/incoming?zapikey=1001.3a404a1f49ad5e618aecb65e2a4d72b5.22cdb0b213e76eb203287e10287d9d02&isdebug=false',
+        destination: 'https://flow.zoho.in/60051516575/flow/webhook/incoming?zapikey=1001.44351b4f025b3ec8dc799cf4a8613a9e.57d0e5fba173f65c6e3fcb9c136ce771&isdebug=false',
       },
     ];
   },
