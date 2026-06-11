@@ -54,26 +54,26 @@ const activeStep = useSelector(getActiveStep);
     }
   }, [activeStep, containerRef]);
 
-  useEffect(() => {
-    if(userDashboardDetails && mode != PROPERTY_FORM_MODE.EDIT){
-      if(userDashboardDetails?.role == USER_TYPE.OWNER){
-        // OWNER must sign the DocuSign agreement (their only KYC step) before
-        // posting any property. Without it the user is bounced to /kyc with
-        // the Agreement tab opened so they can complete it in one click.
-        if(!userDashboardDetails?.kycStatus?.kyc_completed){
-          router.replace('/kyc?tabName=Agreement%20Signature')
-          return
-        }
-        if(userDashboardDetails.freeListings.remaining == 0){
-          router.replace('/user-dashboard')
-        }
-      }else if(userDashboardDetails.role == USER_TYPE.CHANNEL_PARTNER){
-        if(!userDashboardDetails?.kycStatus?.kyc_completed){
-          router.replace('/kyc')
-        }
-      }
-    }
-  },[userDashboardDetails])
+  // useEffect(() => {
+  //   if(userDashboardDetails && mode != PROPERTY_FORM_MODE.EDIT){
+  //     if(userDashboardDetails?.role == USER_TYPE.OWNER){
+  //       // OWNER must sign the DocuSign agreement (their only KYC step) before
+  //       // posting any property. Without it the user is bounced to /kyc with
+  //       // the Agreement tab opened so they can complete it in one click.
+  //       if(!userDashboardDetails?.kycStatus?.kyc_completed){
+  //         router.replace('/kyc?tabName=Agreement%20Signature')
+  //         return
+  //       }
+  //       if(userDashboardDetails.freeListings.remaining == 0){
+  //         router.replace('/user-dashboard')
+  //       }
+  //     }else if(userDashboardDetails.role == USER_TYPE.CHANNEL_PARTNER){
+  //       if(!userDashboardDetails?.kycStatus?.kyc_completed){
+  //         router.replace('/kyc')
+  //       }
+  //     }
+  //   }
+  // },[userDashboardDetails])
 
   // Restore step from completionStep on initial page load (only once, persists across step navigation)
   const { data: step1DetailsForRestore } = useQuery({
