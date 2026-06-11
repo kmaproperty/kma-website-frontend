@@ -63,7 +63,8 @@ export default function UserHeader() {
 
   const handleRedirectPostProperty = () => {
     if(userDashboardDetails?.role == USER_TYPE.CHANNEL_PARTNER){
-      if(userDashboardDetails?.kycStatus?.kyc_completed){
+      // if(userDashboardDetails?.kycStatus?.kyc_completed){
+      if(userDashboardDetails?.kycStatus?.step1_live_photo?.live_photo_approved){
         router.push('/post-property')
       }else{
         if(userDashboardDetails?.kycStatus?.kyc_status == 'in_review'){
