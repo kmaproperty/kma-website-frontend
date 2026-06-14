@@ -118,7 +118,7 @@ export default function UploadPhoto() {
     },
     onSuccess: (response: LivePhotoResponse) => {
         toast.success(response.message)
-        router.push('/kyc?tabName=Aadhar Verification')
+        router.push('/kyc?tabName=Agreement Signature')
     },
     onError: (error: any) => {
       if (Array.isArray(error.message)) {
