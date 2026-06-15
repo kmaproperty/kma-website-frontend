@@ -85,6 +85,83 @@ export default function PropertyRadiusVerificationPage() {
   }, [propertyId]);
 
   // Handle GPS location checking loop processes
+  // const runRadiusVerificationCheck = () => {
+  //   if (!navigator.geolocation) {
+  //     setErrorMessage("GPS target parameters not supported by this device.");
+  //     setIsVerifying(false);
+  //     return;
+  //   }
+
+  //   setIsVerifying(true);
+  //   setVerificationResult(null);
+  //   setCountdown(24); // Reset loader countdown on re-scan
+
+  //   navigator.geolocation.getCurrentPosition(
+  //     (position) => {
+  //       if (!targetCoords) {
+  //         setErrorMessage("Target destination markers not initialized yet.");
+  //         setIsVerifying(false);
+  //         return;
+  //       }
+
+  //       const userLat = position.coords.latitude;
+  //       const userLng = position.coords.longitude;
+
+  //       // Run Haversine boundary check verification
+  //       const distanceInMeters = calculateDistanceInMeters(
+  //         userLat,
+  //         userLng,
+  //         targetCoords.lat,
+  //         targetCoords.lng,
+  //       );
+  //       setComputedDistance(distanceInMeters);
+
+  //       // Simulated loader clock countdown speed synchronization
+  //       const timer = setInterval(() => {
+  //         setCountdown((prev) => {
+  //           if (prev <= 1) {
+  //             clearInterval(timer);
+  //             setIsVerifying(false);
+
+  //             // 🚨 500M GEOMETRIC BOUNDARY CONSTRAINT (Bypass Fixed!)
+  //             if (distanceInMeters <= 500) {
+  //               setVerificationResult("success");
+  //               // Successful verification allows forwarding to capture panel
+  //               setTimeout(() => {
+  //                 router.push(`/verify-property/${propertyId}/capture`);
+  //               }, 1500);
+  //             } else {
+  //               // Strict enforcement: Out of range results in failure view state
+  //               setVerificationResult("failed");
+  //               setErrorMessage(
+  //                 `Location mismatch detected. You are physically present far from the site boundary.`
+  //               );
+  //             }
+  //             return 0;
+  //           }
+  //           return prev - 4;
+  //         });
+  //       }, 300);
+  //     },
+  //     (error) => {
+  //       console.error("GPS hardware access tracking error:", error);
+  //       setIsVerifying(false);
+  //       setVerificationResult("failed");
+  //       setErrorMessage(
+  //         "Hardware location lookup failed. Please enable your location from your device settings"
+  //       );
+  //     },
+  //     { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 },
+  //   );
+  // };
+
+  // // Automatically fires geolocation proximity loop once target coordinates resolve
+  // useEffect(() => {
+  //   if (targetCoords) {
+  //     runRadiusVerificationCheck();
+  //   }
+  // }, [targetCoords]);
+
   const runRadiusVerificationCheck = () => {
     if (!navigator.geolocation) {
       setErrorMessage("GPS target parameters not supported by this device.");
@@ -94,9 +171,9 @@ export default function PropertyRadiusVerificationPage() {
 
     setIsVerifying(true);
     setVerificationResult(null);
-    setCountdown(24); // Reset loader countdown on re-scan
+    setCountdown(24);
 
-    navigator.geolocation.getCurrentPosition(
+    const watchId = navigator.geolocation.watchPosition(
       (position) => {
         if (!targetCoords) {
           setErrorMessage("Target destination markers not initialized yet.");
@@ -106,60 +183,77 @@ export default function PropertyRadiusVerificationPage() {
 
         const userLat = position.coords.latitude;
         const userLng = position.coords.longitude;
+        const gpsAccuracy = position.coords.accuracy;
 
-        // Run Haversine boundary check verification
         const distanceInMeters = calculateDistanceInMeters(
           userLat,
           userLng,
           targetCoords.lat,
           targetCoords.lng,
         );
+        
         setComputedDistance(distanceInMeters);
 
-        // Simulated loader clock countdown speed synchronization
-        const timer = setInterval(() => {
-          setCountdown((prev) => {
-            if (prev <= 1) {
-              clearInterval(timer);
-              setIsVerifying(false);
+        const effectiveDistance = distanceInMeters - (gpsAccuracy > 100 ? 50 : gpsAccuracy / 2);
 
-              // 🚨 500M GEOMETRIC BOUNDARY CONSTRAINT (Bypass Fixed!)
-              if (distanceInMeters <= 500) {
-                setVerificationResult("success");
-                // Successful verification allows forwarding to capture panel
-                setTimeout(() => {
-                  router.push(`/verify-property/${propertyId}/capture`);
-                }, 1500);
-              } else {
-                // Strict enforcement: Out of range results in failure view state
-                setVerificationResult("failed");
-                setErrorMessage(
-                  `Location mismatch detected. You are physically present far from the site boundary.`
-                );
-              }
-              return 0;
-            }
-            return prev - 4;
-          });
-        }, 300);
+        // 🚨 STRICT 500M OPERATIONAL CONSTRAINT (With Device Tolerance)
+        if (effectiveDistance <= 500) {
+          navigator.geolocation.clearWatch(watchId);
+          setIsVerifying(false);
+          setVerificationResult("success");
+          
+          setTimeout(() => {
+            router.push(`/verify-property/${propertyId}/capture`);
+          }, 1500);
+        } else {
+          setVerificationResult("failed");
+          setErrorMessage(
+            `Location mismatch detected. You are physically present far from the site boundary.`
+          );
+        }
       },
       (error) => {
         console.error("GPS hardware access tracking error:", error);
         setIsVerifying(false);
         setVerificationResult("failed");
         setErrorMessage(
-          "Hardware location lookup failed. Please enable your location from your device settings"
+          "Hardware location lookup failed. Please enable your location from your device settings."
         );
       },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 },
+      { 
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0
+      },
     );
+
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setIsVerifying(false);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => {
+      navigator.geolocation.clearWatch(watchId);
+      clearInterval(timer);
+    };
   };
 
-  // Automatically fires geolocation proximity loop once target coordinates resolve
   useEffect(() => {
+    let cleanupFn: (() => void) | undefined;
+
     if (targetCoords) {
-      runRadiusVerificationCheck();
+      cleanupFn = runRadiusVerificationCheck();
     }
+
+    return () => {
+      if (cleanupFn) cleanupFn();
+    };
   }, [targetCoords]);
 
   return (
