@@ -1,3 +1,5 @@
+"use client"
+
 import HomdeHeader from "@/components/header/homeHeader";
 import {
   BadgePercent,
@@ -25,25 +27,22 @@ import ContactFormComponent from "@/components/contactUs/contactForm";
 import Link from "next/link";
 import ContactTable from "../../components/contactUs/ContactTable";
 import JoinUsForm from "@/components/joinUs/JoinUsForm";
+import ChannelPartnerHero from "./ChannelPartnerHero";
+import ChannelPartnerFeatures from "./ChannelPartnerFeatures";
+import ChannelPartnerBenefits from "./ChannelPartnerBenefits";
+import ChannelPartnerSupport from "./ChannelPartnerSupport";
+import ChannelPartnerSuccessStories from "./ChannelPartnerSuccessStories";
+import ChannelPartnerEventsTraining from "./ChannelPartnerEventsTraining";
+import { useRouter } from "next/navigation";
+
 
 const JoinUs = () => {
-  const breadcrumps = [
-    {
-      name: "Home",
-      link: "/",
-      icon: <House className="w-5" />,
-    },
-    {
-      name: "Join Us",
-    },
-  ];
-
-  const actionButtons = [
-    {
-      name: "Join Us",
-      link: "#joinus-form",
-    },
-  ];
+  
+  const router = useRouter();
+  
+  const navigatePostProperty = () => {
+    router.push("/post-property-handoff");
+  }
 
   return (
     <div>
@@ -53,7 +52,20 @@ const JoinUs = () => {
         </div>
       </div>
 
-      <div
+      <section className="h-screen">
+        <ChannelPartnerHero navigate={navigatePostProperty}/>
+        <ChannelPartnerFeatures navigate={navigatePostProperty}/>
+        <ChannelPartnerBenefits/>
+        <ChannelPartnerSupport navigate={navigatePostProperty}/>
+        <ChannelPartnerSuccessStories navigate={navigatePostProperty}/>
+        <ChannelPartnerEventsTraining/>
+      <div className="bg-text-black flex justify-center">
+                      <AboutusDataSync />
+                      <HomeFooter tab={1} />
+                  </div>
+      </section>
+
+      {/* <div
         className="relative rounded-bl-[50px] rounded-br-[50px] md:rounded-bl-[100px] md:rounded-br-[100px] pt-[25px] h-auto min-h-[400px] md:h-[100vh] md:max-h-[600px] overflow-hidden"
         style={{
           backgroundImage: "url(assets/join-us-hero.png)",
@@ -126,7 +138,7 @@ const JoinUs = () => {
       <div className="bg-text-black flex flex-col items-center justify-center">
         <AboutusDataSync />
         <HomeFooter tab={1} />
-      </div>
+      </div> */}
     </div>
   );
 };
