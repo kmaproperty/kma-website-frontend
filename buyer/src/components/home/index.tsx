@@ -137,36 +137,98 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
     }
   }, [propertyCitiesData, fetchCities]);
 
+  // const imageSlider = useMemo(
+  //   () => [
+  //     {
+  //       imagePath: "/assets/backgroundSlider/background_slider_1.jpg",
+  //       alt: "Modern luxury home at twilight",
+  //     },
+  //     {
+  //       imagePath: "/assets/backgroundSlider/background_slider_2.png",
+  //       alt: "Premium villa exterior",
+  //     },
+  //     {
+  //       imagePath: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1920&q=80",
+  //       alt: "Contemporary residential architecture",
+  //     },
+  //     {
+  //       imagePath: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=80",
+  //       alt: "Modern villa with pool",
+  //     },
+  //     {
+  //       imagePath: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1920&q=80",
+  //       alt: "Luxury home exterior",
+  //     },
+  //     {
+  //       imagePath: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1920&q=80",
+  //       alt: "Premium property at sunset",
+  //     },
+  //     {
+  //       imagePath: "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=1920&q=80",
+  //       alt: "Modern apartment interior",
+  //     },
+  //   ],
+  //   []
+  // );
+
   const imageSlider = useMemo(
     () => [
       {
-        imagePath: "/assets/backgroundSlider/background_slider_1.jpg",
+        imagePath: "/assets/backgroundSlider/Tonino.webp",
         alt: "Modern luxury home at twilight",
       },
       {
-        imagePath: "/assets/backgroundSlider/background_slider_2.png",
-        alt: "Premium villa exterior",
+        imagePath: "/assets/backgroundSlider/Elan.png",
+        alt: "Modern luxury home at twilight",
       },
       {
-        imagePath: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1920&q=80",
-        alt: "Contemporary residential architecture",
+        imagePath: "/assets/backgroundSlider/Godrej.jpeg",
+        alt: "Modern luxury home at twilight",
       },
       {
-        imagePath: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=80",
-        alt: "Modern villa with pool",
+        imagePath: "/assets/backgroundSlider/image-1@md.webp",
+        alt: "Modern luxury home at twilight",
       },
       {
-        imagePath: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1920&q=80",
-        alt: "Luxury home exterior",
+        imagePath: "/assets/backgroundSlider/slide3-1.jpeg",
+        alt: "Modern luxury home at twilight",
       },
       {
-        imagePath: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1920&q=80",
-        alt: "Premium property at sunset",
+        imagePath: "/assets/backgroundSlider/8.webp",
+        alt: "Modern luxury home at twilight",
       },
       {
-        imagePath: "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=1920&q=80",
-        alt: "Modern apartment interior",
+        imagePath: "/assets/backgroundSlider/4.jpg.webp",
+        alt: "Modern luxury home at twilight",
       },
+      {
+        imagePath: "/assets/backgroundSlider/1.webp",
+        alt: "Modern luxury home at twilight",
+      },
+      // {
+      //   imagePath: "/assets/backgroundSlider/background_slider_2.png",
+      //   alt: "Premium villa exterior",
+      // },
+      // {
+      //   imagePath: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1920&q=80",
+      //   alt: "Contemporary residential architecture",
+      // },
+      // {
+      //   imagePath: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=80",
+      //   alt: "Modern villa with pool",
+      // },
+      // {
+      //   imagePath: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1920&q=80",
+      //   alt: "Luxury home exterior",
+      // },
+      // {
+      //   imagePath: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1920&q=80",
+      //   alt: "Premium property at sunset",
+      // },
+      // {
+      //   imagePath: "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=1920&q=80",
+      //   alt: "Modern apartment interior",
+      // },
     ],
     []
   );
