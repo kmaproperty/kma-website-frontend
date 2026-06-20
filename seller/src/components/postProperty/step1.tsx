@@ -1429,7 +1429,7 @@ export default function Step1({containerRef}) {
           menualAddItem={{ value: "__add_manually__",
           label: `Can't find your Building / Apartment / Society? Add Manually`,}}
         /> */}
-        <DynamicAsyncAutocomplete
+       {/** <DynamicAsyncAutocomplete
           isMulti={false}
           isError={false}
           placeholder={"Enter Building / Apartment / Society Name"}
@@ -1449,7 +1449,111 @@ export default function Step1({containerRef}) {
           enableAddManually={true}
           menualAddItem={{ value: "__add_manually__",
           label: `Can't find your Building / Apartment / Society?`,}}
-        />
+        />*/} 
+
+        <DynamicAsyncAutocomplete
+  isMulti={false}
+  isError={false}
+  placeholder={"Enter Building / Apartment / Society Name"}
+  onChange={(value: any) => {
+    if (!Array.isArray(value) && (value as OptionType)?.value === '__add_manually__') {
+      handleOpenAddCustomLocation('Society');
+      return;
+    }
+
+    const extractedLat = value?.latitude || value?.geometry?.location?.lat || value?.lat || null;
+    const extractedLng = value?.longitude || value?.geometry?.location?.lng || value?.lng || null;
+
+    setBasicStaticDetails((pre) => ({
+      ...pre, 
+      society: value ? {
+        ...value,
+        name: value?.name || value?.label,
+        latitude: extractedLat ? String(extractedLat) : null,
+        longitude: extractedLng ? String(extractedLng) : null,
+      } : null, 
+      locality: !Array.isArray(value) && value && "localityName" in value && value.localityName 
+        ? { value: value?.localityName, label: value?.localityName, name: value?.localityName } 
+        : null
+    }));
+
+    setErrors((pre) => ({
+      ...pre, 
+      society: '', 
+      locality: !Array.isArray(value) && value && "localityName" in value && value.localityName 
+        ? '' 
+        : errors?.localityName ?? ''
+    }));
+
+    setBhkList(generateBHKList(false));
+    setDynamicFieldDetails((pre) => ({ ...pre, bhk: null, otherBhk: null }));
+  }}
+  
+  /* DYNAMIC VALIDATION FILTER LOGIC */
+  // loadOptions={async (inputSearch: string) => {
+  //   const res = await loadBuildings({ 
+  //     query: inputSearch, 
+  //     // cityId: basicStaticDetails.city?.id ?? '', 
+  //     cityId: basicStaticDetails.city?.id || undefined,
+  //     cityName: basicStaticDetails.city?.name 
+  //   });
+
+  //   if (Array.isArray(res)) {
+  //     return res.filter((item: any) => {
+  //       const lat = Number(item.latitude || item.geometry?.location?.lat || item.lat);
+  //       const lng = Number(item.longitude || item.geometry?.location?.lng || item.lng);
+        
+  //       const hasCoordinates = !isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0;
+
+  //       if (!hasCoordinates) return false;
+  //       if (basicStaticDetails.city?.name?.toLowerCase() === 'gurugram' || basicStaticDetails.city?.name?.toLowerCase() === 'gurgaon') {
+  //         const isDummyGlobalCenter = (lat === 28.4594965 && lng === 77.0266383);
+          
+  //         // Gurgaon bounding box verification threshold checks
+  //         const isInGurgaonGrid = lat >= 28.30 && lat <= 28.60 && lng >= 76.70 && lng <= 77.20;
+
+  //         return isInGurgaonGrid && !isDummyGlobalCenter;
+  //       }
+
+  //       return true;
+  //     });
+  //   }
+    
+  //   return res;
+  // }}
+
+loadOptions={async (inputSearch: string) => {
+  const res = await loadBuildings({ 
+    query: inputSearch, 
+    cityId: basicStaticDetails.city?.id ?? '', 
+    cityName: basicStaticDetails.city?.name 
+  });
+
+  if (Array.isArray(res)) {
+    const validResults = res.filter((item: any) => {
+      const lat = Number(item.latitude || item.geometry?.location?.lat || item.lat);
+      const lng = Number(item.longitude || item.geometry?.location?.lng || item.lng);
+      return !isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0;
+    });
+
+    return validResults.sort((a: any, b: any) => {
+      if (a.source === 'google' && b.source !== 'google') return -1;
+      if (a.source !== 'google' && b.source === 'google') return 1;
+      return 0;
+    });
+  }
+  
+  return res;
+}}
+  
+  value={basicStaticDetails.society}
+  minHeight={"40px"}
+  enableAddManually={true}
+  menualAddItem={{ 
+    value: "__add_manually__",
+    label: `Can't find your Building / Apartment / Society?`,
+  }}
+/>
         {renderOptionalField(FIELD_NAME.SOCIETY) && errors?.society && <p className="pt-1 text-red-500 text-xs">{errors.society}</p>}
       </div>
 
