@@ -13,8 +13,8 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const adminUser = process.env.ADMIN_USER;
-    const adminPass = process.env.ADMIN_PASS;
+    const adminUser = process.env.ADMIN_USER?.replace(/['"]/g, '').trim();
+    const adminPass = process.env.ADMIN_PASS?.replace(/['"]/g, '').trim();
 
     const BACKEND_BASE = "https://kmaglobalproperty.com/api/backend";
     const LIVE_ADMIN_BASE = "http://15.207.193.17:3000/admin";
