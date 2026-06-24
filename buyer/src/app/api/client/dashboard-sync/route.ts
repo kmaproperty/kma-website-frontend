@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
       );
       adminDynamicToken = loginResponse?.data?.accessToken || loginResponse?.data?.data?.accessToken;
     } catch (adminAuthErr: any) {
-      console.error("🚨 Admin login gateway rejected:", adminAuthErr.message);
+      console.error("Admin login gateway rejected:", adminAuthErr.message);
       return NextResponse.json({ success: false, message: "Server authentication failure." }, { status: 401 });
     }
 
@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
         (item: any) => String(item.referrerUniqueId).trim() === String(referrerId).trim()
       );
 
-      console.log(`🎉 [Server Filter] Streamed ${userSpecificReferrals.length} personalized entries out of ${allReferrals.length} total rows.`);
+      console.log(`[Server Filter] Streamed ${userSpecificReferrals.length} personalized entries out of ${allReferrals.length} total rows.`);
 
       return NextResponse.json({
         success: true,
