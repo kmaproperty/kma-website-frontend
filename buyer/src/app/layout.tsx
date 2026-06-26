@@ -7,6 +7,7 @@ import ToasterProvider from "@/providers/ToastProvider";
 import { Suspense } from "react";
 import TopLoaderProvider from "@/providers/TopLoaderProvider";
 import CookieSessionGuard from "@/components/common/cookieSessionGuard";
+import WhatsAppSticky from "@/components/whatsappSticky/WhatsAppSticky";
 
 const gtmScript = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -54,6 +55,7 @@ export default function RootLayout({
           {children}
           <ToasterProvider />
           <TopLoaderProvider/>
+          <WhatsAppSticky phoneNumber="919289977646"/>
           </QueryProvider>
         </StoreProvider>
         </Suspense>

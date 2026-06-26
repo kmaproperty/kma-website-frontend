@@ -247,6 +247,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
               <p className="text-[13px] text-white/90 leading-relaxed">
                 {aboutusData?.description ?? ""}
               </p>
+              <p className="text-[13px] text-white/90 leading-relaxed">RERA - RC/HARERA/GGM/3440/3035/2025/317</p>
 
               <ul className="space-y-3 text-[13px] text-white/90">
                 <li className="flex items-start gap-3">
