@@ -158,18 +158,55 @@ export default function MyCoinsWallet() {
   const [referrals, setReferrals] = useState<ApiResponseReferral[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // 🔥 SECURE SERVER BYPASS FETCH WITH USER PARAM FILTER PIPELINE
+  // const refresh = useCallback(async () => {
+  //   setLoading(true);
+  //   try {
+  //     const loggedInUserMobile = localStorage.getItem("userMobile") || "9354040527";
+
+  //     if (!loggedInUserMobile) {
+  //       setLoading(false);
+  //       return;
+  //     }
+
+  //     const res = await fetch(`/api/client/dashboard-sync?referrerId=${loggedInUserMobile}`, {
+  //       method: "GET",
+  //       headers: { "Content-Type": "application/json" }
+  //     });
+      
+  //     const json = await res.json();
+  //     if (json.success && Array.isArray(json.data)) {
+  //       setReferrals(json.data);
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to sync client wallet information stream:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }, []);
+
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      const loggedInUserMobile = localStorage.getItem("userMobile") || "9354040527";
+      const userObjString = localStorage.getItem("user");
+      let loggedInUserMobile = null;
 
-      if (!loggedInUserMobile) {
+      if (userObjString) {
+        try {
+          const userData = JSON.parse(userObjString);
+          loggedInUserMobile = userData?.phone || userData?.phone_number;
+        } catch (parseErr) {
+          console.error("🚨 Error parsing 'user' object inside wallet frame:", parseErr);
+        }
+      }
+
+      if (!loggedInUserMobile || String(loggedInUserMobile).trim() === "") {
+        console.warn("⚠️ Wallet Sync Cancelled: 'phone' property missing in local storage user node.");
+        setReferrals([]); 
         setLoading(false);
         return;
       }
 
-      const res = await fetch(`/api/client/dashboard-sync?referrerId=${loggedInUserMobile}`, {
+      const res = await fetch(`/api/client/dashboard-sync?referrerId=${String(loggedInUserMobile).trim()}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" }
       });
