@@ -215,17 +215,57 @@ export default function MyReferralsDashboard() {
   const [selected, setSelected] = useState<any | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
 
+  // const refresh = useCallback(async () => {
+  //   setLoading(true);
+  //   try {
+  //     const loggedInUserMobile = localStorage.getItem("userMobile") || "9354040527";
+
+  //     if (!loggedInUserMobile) {
+  //       setLoading(false);
+  //       return;
+  //     }
+
+  //     const res = await fetch(`/api/client/dashboard-sync?referrerId=${loggedInUserMobile}`, {
+  //       method: "GET",
+  //       headers: { "Content-Type": "application/json" }
+  //     });
+      
+  //     const json = await res.json();
+  //     if (json.success && Array.isArray(json.data)) {
+  //       setRows(json.data);
+  //     }
+  //   } catch (error) {
+  //     console.error("Sync failure:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }, []);
+
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      const loggedInUserMobile = localStorage.getItem("userMobile") || "9354040527";
+      const userObjString = localStorage.getItem("user");
+      let loggedInUserMobile = null;
 
-      if (!loggedInUserMobile) {
+      if (userObjString) {
+        try {
+          const userData = JSON.parse(userObjString);
+          loggedInUserMobile = userData?.phone || userData?.phone_number;
+        } catch (parseErr) {
+          console.error("Error parsing 'user' object from localStorage:", parseErr);
+        }
+      }
+
+      console.log("Extracted Mobile Number:", loggedInUserMobile);
+
+      if (!loggedInUserMobile || String(loggedInUserMobile).trim() === "") {
+        console.warn("⚠️ Fetch Aborted: Valid mobile number context not found inside 'user' object.");
+        setRows([]);
         setLoading(false);
         return;
       }
 
-      const res = await fetch(`/api/client/dashboard-sync?referrerId=${loggedInUserMobile}`, {
+      const res = await fetch(`/api/client/dashboard-sync?referrerId=${String(loggedInUserMobile).trim()}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" }
       });
@@ -233,14 +273,16 @@ export default function MyReferralsDashboard() {
       const json = await res.json();
       if (json.success && Array.isArray(json.data)) {
         setRows(json.data);
+      } else {
+        console.error("Proxy query evaluation sync failure:", json.message);
       }
     } catch (error) {
-      console.error("Sync failure:", error);
+      console.error("Failed to sync personal referrals data safely:", error);
     } finally {
       setLoading(false);
     }
   }, []);
-
+  
   useEffect(() => {
     refresh();
   }, [refresh]);
