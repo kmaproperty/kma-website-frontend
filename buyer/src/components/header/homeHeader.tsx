@@ -405,7 +405,7 @@ const handleHeaderSubMenuClick = (label: string) => {
             onMouseLeave={() => scheduleClose()}
             className="flex flex-row gap-[6px] items-center cursor-pointer"
           >
-            <Image
+            {/* <Image
               onClick={(event) => {
                 setProfileMenu("profile");
                 setanchorEl(event.currentTarget);
@@ -417,7 +417,7 @@ const handleHeaderSubMenuClick = (label: string) => {
               width={40}
               className="w-[28px] h-[28px] sm:w-[35px] sm:h-[35px] rounded-[50%] object-cover"
               alt="profile"
-            />
+            /> */}
             <Image
               src="/assets/down-arrow-white.svg"
               width={12}
