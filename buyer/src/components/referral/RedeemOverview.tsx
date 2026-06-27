@@ -481,7 +481,8 @@ export default function RedeemOverview() {
       console.log("Real Payload:", payload)
 
       // Direct connection hit to your live NestJS POST API route
-      const res = await fetch("http://15.207.193.17:3000/admin/referrals/redeem-requests", {
+      // const res = await fetch("http://15.207.193.17:3000/admin/referrals/redeem-requests", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/referrals/redeem-requests`, {
       // const res = await fetch("https://kmaglobalproperty.com/admin/referrals/redeem-requests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
