@@ -163,7 +163,7 @@ export default function HomeMobileHeader({
                     <p
                       onClick={() => {
                         const routes: Record<string, string> = {
-                          "Join Us": "/signup",
+                          "Join Us": "/join-us",
                           "Sales Enquiry": "/sales-enquiry",
                           "Meet The Team": "/meet-the-team",
                           "Help Center": "/contact-us",
