@@ -482,14 +482,15 @@ export default function RedeemOverview() {
 
       // Direct connection hit to your live NestJS POST API route
       // const res = await fetch("http://15.207.193.17:3000/admin/referrals/redeem-requests", {
-      const res = await fetch("https://kmaglobalproperty.com/admin/referrals/redeem-requests", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/referrals/redeem-requests`, {
+      // const res = await fetch("https://kmaglobalproperty.com/admin/referrals/redeem-requests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       if (res.status === 201 || res.status === 200) {
-        setCurrentPayoutStep("final"); // Success window redirect open karo
+        setCurrentPayoutStep("final");
       } else {
         alert("Failed to sync your verification log state with admin backend pipeline.");
       }
