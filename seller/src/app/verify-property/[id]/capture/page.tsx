@@ -232,7 +232,7 @@ You must respond strictly in JSON format matching this pattern:
           return updated;
         });
 
-        alert(`✅ Success!\n\n${activeStepObj.label} has been successfully verified by AI and saved.`);
+        alert(`✅ Success!\n\n${activeStepObj.label} has been successfully verified and saved.`);
 
       } else {
         setCapturedImages((prev) => {
@@ -246,7 +246,7 @@ You must respond strictly in JSON format matching this pattern:
         alert(`❌ Verification Failed for ${activeStepObj.label}\n\nReason: ${alertReason}`);
       }
     } catch (error) {
-      console.error("AI verification failed:", error);
+      console.error("Verification failed:", error);
       
       setCapturedImages((prev) => {
         const updated = { ...prev };
@@ -343,7 +343,7 @@ const handleFinalSubmit = async () => {
       localStorage.removeItem(`captured_${propertyId}`);
       localStorage.removeItem(`verified_${propertyId}`);
       
-      toast.success("🎉 Property verified and photos successfully pushed to bulk approval pipeline!");
+      toast.success("Property verified and photos successfully pushed to bulk approval pipeline!");
       router.push(`/verify-property/${propertyId}/thank-you`);
 
     } catch (error: any) {
@@ -442,7 +442,7 @@ const handleFinalSubmit = async () => {
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-gray-900">{step.label}</p>
-                    <p className="text-xs text-gray-500">{isCompleted ? "Verified by AI" : "Verification pending"}</p>
+                    <p className="text-xs text-gray-500">{isCompleted ? "Verified" : "Verification pending"}</p>
                   </div>
                 </div>
                 {isCurrentOpen ? <ChevronDown className="w-5 h-5 text-gray-400" /> : <ChevronRight className="w-5 h-5 text-gray-400" />}
@@ -456,7 +456,7 @@ const handleFinalSubmit = async () => {
                       {isVerifying && (
                         <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-white gap-2">
                           <Loader2 className="w-8 h-8 animate-spin text-white" />
-                          <p className="text-xs font-medium animate-pulse">AI is analyzing</p>
+                          <p className="text-xs font-medium animate-pulse">Analyzing Image..</p>
                         </div>
                       )}
                       {!isVerifying && (
