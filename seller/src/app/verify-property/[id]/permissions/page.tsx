@@ -196,8 +196,7 @@ export default function PropertyRadiusVerificationPage() {
 
         const effectiveDistance = distanceInMeters - (gpsAccuracy > 100 ? 50 : gpsAccuracy / 2);
 
-        // 🚨 STRICT 500M OPERATIONAL CONSTRAINT (With Device Tolerance)
-        if (effectiveDistance <= 500) {
+        if (effectiveDistance <= 1000) {
           navigator.geolocation.clearWatch(watchId);
           setIsVerifying(false);
           setVerificationResult("success");
