@@ -226,7 +226,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, message: "Required attributes missing." }, { status: 400 });
     }
 
-    const BACKEND_BASE = process.env.NEXT_PUBLIC_API_URL;
+    const BACKEND_BASE = process.env.NEST_BACKEND_URL;
     const adminUser = process.env.ADMIN_USER;
     const adminPass = process.env.ADMIN_PASS;
 
