@@ -172,6 +172,9 @@
 //   }
 // }
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 import axios from "axios";
@@ -211,19 +214,12 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { propertyId, stepId, imageBase64, latitude, longitude, floorNumber, bhkTypeId } = body;
 
-    // console.log(`\n=================== 🆕 INCOMING CAPTURE REQUEST ===================`);
-    // console.log(`📸 View/Step: ${stepId}`);
-    // console.log(`🆔 Current Property ID: ${propertyId}`);
-    // console.log(`📍 Live Clicked LL: ${latitude}, ${longitude}`);
-    // console.log(`🏢 Live Input Floor: ${floorNumber} | BHK Type ID: ${bhkTypeId}`);
-    // console.log(`==================================================================\n`);
-
     if (!imageBase64 || !stepId || !propertyId || latitude === undefined || longitude === undefined) {
       console.error("❌ Validation Failed: Missing required attributes in payload.");
       return NextResponse.json({ success: false, message: "Required attributes missing." }, { status: 400 });
     }
 
-    const BACKEND_BASE = process.env.NEXT_PUBLIC_API_URL;
+    const BACKEND_BASE = `https://kmaglobalproperty.com/api/backend`;
     const adminUser = process.env.ADMIN_USER;
     const adminPass = process.env.ADMIN_PASS;
 
@@ -248,7 +244,7 @@ export async function POST(req: NextRequest) {
         const limitPerPage = 100;
 
         while (hasMorePages) {
-          console.log(`📡 [Admin Database Sync] Fetching admin properties page ${currentPage}...`);
+          console.log(`[Admin Database Sync] Fetching admin properties page ${currentPage}...`);
           
           const dbResponse = await axios.get(
             `${BACKEND_BASE}/admin/properties?page=${currentPage}&limit=${limitPerPage}`, 
@@ -300,7 +296,12 @@ export async function POST(req: NextRequest) {
                         return NextResponse.json({
                           success: false,
                           isDuplicate: true,
-                          message: "This property is already listed."
+                          message: "This property is already listed.",
+                          matchedProperty: {
+                          id: prop.id,
+                          floorNumber: prop.floorNumber,
+                          bhkTypeId: prop.bhkTypeId
+                            }
                         }, { status: 409 });
                       } else {
                         console.log(`ℹ️ Bypass Granted: BHK is different. Moving to next photo asset.`);
