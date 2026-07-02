@@ -754,168 +754,168 @@ export default function PropertyCameraCapturePage() {
     });
   };
 
-  // const verifyWithAI = async (imageSrc: string, stepId: string) => {
-  //   const activeStepObj = VERIFICATION_STEPS.find((s) => s.id === stepId);
-  //   if (!activeStepObj) return;
-
-  //   try {
-  //     setIsVerifying(true);
-      
-  //     let coords;
-  //     try {
-  //       coords = await getPreciseCoordinates();
-  //     } catch (gpsErr) {
-  //       toast.error("Location tracking required. Please enable high accuracy GPS tracking settings.");
-  //       return;
-  //     }
-
-  //     const response = await fetch("/api/verify-image", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({
-  //         propertyId,
-  //         stepId,
-  //         imageBase64: imageSrc,
-  //         latitude: coords.lat,
-  //         longitude: coords.lng,
-  //         floorNumber: propertyObj?.floorNumber, 
-  //         bhkTypeId: propertyObj?.bhkType?.id
-  //       }),
-  //     });
-
-  //     const result = await response.json();
-      
-  //     if (response.status === 409 || (result && result.isDuplicate)) {
-  //       setShowDuplicateModal(true);
-  //       return;
-  //     }
-
-  //     if (result?.success && result?.s3Url) {
-  //       setCapturedImages((prev) => {
-  //         const updated = { ...prev, [stepId]: imageSrc };
-  //         localStorage.setItem(`captured_${propertyId}`, JSON.stringify(updated));
-  //         return updated;
-  //       });
-
-  //       setVerifiedImages((prev) => {
-  //         const updated = { ...prev, [stepId]: result.s3Url };
-  //         localStorage.setItem(`verified_${propertyId}`, JSON.stringify(updated));
-  //         return updated;
-  //       });
-
-  //       setPropertyCoordinates((prev) => {
-  //         const updated = { ...prev, [stepId]: coords };
-  //         localStorage.setItem(`coords_${propertyId}`, JSON.stringify(updated));
-  //         return updated;
-  //       });
-
-  //       toast.success(`✅ ${activeStepObj.label} saved successfully!`);
-  //     } else {
-  //       toast.error(result?.message || "Failed to process image upload pipeline.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Verification processing failed:", error);
-  //     toast.error("Verification connection timeout exception.");
-  //   } finally {
-  //     setIsVerifying(false);
-  //   }
-  // };
-
   const verifyWithAI = async (imageSrc: string, stepId: string) => {
-  const activeStepObj = VERIFICATION_STEPS.find((s) => s.id === stepId);
-  if (!activeStepObj) return;
+    const activeStepObj = VERIFICATION_STEPS.find((s) => s.id === stepId);
+    if (!activeStepObj) return;
 
-  try {
-    setIsVerifying(true);
-    
-    let coords;
     try {
-      coords = await getPreciseCoordinates();
-    } catch (gpsErr) {
-      toast.error("Location tracking required. Please enable high accuracy GPS tracking settings.");
-      return;
-    }
-
-    // 📡 1. BROWSER LOG: Click karte hi browser console me kya data bhej rahe ho wo dikhega
-    console.log("%c🚀 [FRONTEND LIVE PAYLOAD DISPATCH]", "background: #222; color: #bada55; font-size: 13px; font-weight: bold; padding: 4px;");
-    console.log("📸 Step/View Targeted:", stepId);
-    console.log("🆔 Active Form Property ID:", propertyId);
-    console.log("📍 Live Generated Coordinates:", coords);
-    console.log("🏢 User Input Floor:", propertyObj?.floorNumber);
-    console.log("📊 User Input BHK ID:", propertyObj?.bhkType?.id);
-
-    const response = await fetch("/api/verify-image", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        propertyId,
-        stepId,
-        imageBase64: imageSrc,
-        latitude: coords.lat,
-        longitude: coords.lng,
-        floorNumber: propertyObj?.floorNumber, 
-        bhkTypeId: propertyObj?.bhkType?.id
-      }),
-    });
-
-    const result = await response.json();
-    
-    // 📡 2. BROWSER LOG: Response status checking
-    console.log("%c📡 [SERVER PROXY RESPONSE RECEIVED]", "background: #111; color: #00bcd4; font-size: 13px; font-weight: bold; padding: 4px;");
-    console.log("STATUS CODE:", response.status);
-    console.log("FULL PARSED RESULT OBJECT:", result);
-
-    // 🚨 3. BROWSER LOG: Agar duplicate trigger hua (Status 409)
-    if (response.status === 409 || (result && result.isDuplicate)) {
-      console.log("%c🛑 [DUPLICATE TRAP HIT - BLOCKING TRIGGERED]", "background: #800; color: #fff; font-size: 14px; font-weight: bold; padding: 6px;");
+      setIsVerifying(true);
       
-      // Agar backend duplicate property ka details bhej raha hai toh use log karo
-      if (result?.matchedProperty) {
-        console.log("🏢 MATCHED WITH DB PROPERTY ID:", result.matchedProperty.id);
-        console.log("🔢 Matched DB Property Floor:", result.matchedProperty.floorNumber);
-        console.log("🔑 Matched DB Property BHK ID:", result.matchedProperty.bhkTypeId);
-      } else {
-        console.warn("⚠️ Warning: Backend didn't attach the matched property details object.");
+      let coords;
+      try {
+        coords = await getPreciseCoordinates();
+      } catch (gpsErr) {
+        toast.error("Location tracking required. Please enable high accuracy GPS tracking settings.");
+        return;
       }
 
-      setShowDuplicateModal(true);
-      return;
-    }
+      const response = await fetch("/api/verify-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          propertyId,
+          stepId,
+          imageBase64: imageSrc,
+          latitude: coords.lat,
+          longitude: coords.lng,
+          floorNumber: propertyObj?.floorNumber, 
+          bhkTypeId: propertyObj?.bhkType?.id
+        }),
+      });
 
-    if (result?.success && result?.s3Url) {
-      console.log("%c✅ [UPLOAD BYPASS GRANTED - PHOTOS SAVED]", "background: #080; color: #fff; font-size: 13px; font-weight: bold; padding: 4px;");
+      const result = await response.json();
       
-      setCapturedImages((prev) => {
-        const updated = { ...prev, [stepId]: imageSrc };
-        localStorage.setItem(`captured_${propertyId}`, JSON.stringify(updated));
-        return updated;
-      });
+      if (response.status === 409 || (result && result.isDuplicate)) {
+        setShowDuplicateModal(true);
+        return;
+      }
 
-      setVerifiedImages((prev) => {
-        const updated = { ...prev, [stepId]: result.s3Url };
-        localStorage.setItem(`verified_${propertyId}`, JSON.stringify(updated));
-        return updated;
-      });
+      if (result?.success && result?.s3Url) {
+        setCapturedImages((prev) => {
+          const updated = { ...prev, [stepId]: imageSrc };
+          localStorage.setItem(`captured_${propertyId}`, JSON.stringify(updated));
+          return updated;
+        });
 
-      setPropertyCoordinates((prev) => {
-        const updated = { ...prev, [stepId]: coords };
-        localStorage.setItem(`coords_${propertyId}`, JSON.stringify(updated));
-        return updated;
-      });
+        setVerifiedImages((prev) => {
+          const updated = { ...prev, [stepId]: result.s3Url };
+          localStorage.setItem(`verified_${propertyId}`, JSON.stringify(updated));
+          return updated;
+        });
 
-      toast.success(`✅ ${activeStepObj.label} saved successfully!`);
-    } else {
-      console.error("❌ API verification returned success false without 409 standard exception.");
-      toast.error(result?.message || "Failed to process image upload pipeline.");
+        setPropertyCoordinates((prev) => {
+          const updated = { ...prev, [stepId]: coords };
+          localStorage.setItem(`coords_${propertyId}`, JSON.stringify(updated));
+          return updated;
+        });
+
+        toast.success(`✅ ${activeStepObj.label} saved successfully!`);
+      } else {
+        toast.error(result?.message || "Failed to process image upload pipeline.");
+      }
+    } catch (error) {
+      console.error("Verification processing failed:", error);
+      toast.error("Verification connection timeout exception.");
+    } finally {
+      setIsVerifying(false);
     }
-  } catch (error: any) {
-    console.log("%c🚨 [ENGINE CRASH EXCEPTION]", "background: #f00; color: #fff; font-size: 14px; font-weight: bold; padding: 6px;");
-    console.error("Frontend try-catch layout intercepted error:", error);
-    toast.error("Verification connection timeout exception.");
-  } finally {
-    setIsVerifying(false);
-  }
-};
+  };
+
+//   const verifyWithAI = async (imageSrc: string, stepId: string) => {
+//   const activeStepObj = VERIFICATION_STEPS.find((s) => s.id === stepId);
+//   if (!activeStepObj) return;
+
+//   try {
+//     setIsVerifying(true);
+    
+//     let coords;
+//     try {
+//       coords = await getPreciseCoordinates();
+//     } catch (gpsErr) {
+//       toast.error("Location tracking required. Please enable high accuracy GPS tracking settings.");
+//       return;
+//     }
+
+//     // 📡 1. BROWSER LOG: Click karte hi browser console me kya data bhej rahe ho wo dikhega
+//     console.log("%c🚀 [FRONTEND LIVE PAYLOAD DISPATCH]", "background: #222; color: #bada55; font-size: 13px; font-weight: bold; padding: 4px;");
+//     console.log("📸 Step/View Targeted:", stepId);
+//     console.log("🆔 Active Form Property ID:", propertyId);
+//     console.log("📍 Live Generated Coordinates:", coords);
+//     console.log("🏢 User Input Floor:", propertyObj?.floorNumber);
+//     console.log("📊 User Input BHK ID:", propertyObj?.bhkType?.id);
+
+//     const response = await fetch("/api/verify-image", {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({
+//         propertyId,
+//         stepId,
+//         imageBase64: imageSrc,
+//         latitude: coords.lat,
+//         longitude: coords.lng,
+//         floorNumber: propertyObj?.floorNumber, 
+//         bhkTypeId: propertyObj?.bhkType?.id
+//       }),
+//     });
+
+//     const result = await response.json();
+    
+//     // 📡 2. BROWSER LOG: Response status checking
+//     console.log("%c📡 [SERVER PROXY RESPONSE RECEIVED]", "background: #111; color: #00bcd4; font-size: 13px; font-weight: bold; padding: 4px;");
+//     console.log("STATUS CODE:", response.status);
+//     console.log("FULL PARSED RESULT OBJECT:", result);
+
+//     // 🚨 3. BROWSER LOG: Agar duplicate trigger hua (Status 409)
+//     if (response.status === 409 || (result && result.isDuplicate)) {
+//       console.log("%c🛑 [DUPLICATE TRAP HIT - BLOCKING TRIGGERED]", "background: #800; color: #fff; font-size: 14px; font-weight: bold; padding: 6px;");
+      
+//       // Agar backend duplicate property ka details bhej raha hai toh use log karo
+//       if (result?.matchedProperty) {
+//         console.log("🏢 MATCHED WITH DB PROPERTY ID:", result.matchedProperty.id);
+//         console.log("🔢 Matched DB Property Floor:", result.matchedProperty.floorNumber);
+//         console.log("🔑 Matched DB Property BHK ID:", result.matchedProperty.bhkTypeId);
+//       } else {
+//         console.warn("⚠️ Warning: Backend didn't attach the matched property details object.");
+//       }
+
+//       setShowDuplicateModal(true);
+//       return;
+//     }
+
+//     if (result?.success && result?.s3Url) {
+//       console.log("%c✅ [UPLOAD BYPASS GRANTED - PHOTOS SAVED]", "background: #080; color: #fff; font-size: 13px; font-weight: bold; padding: 4px;");
+      
+//       setCapturedImages((prev) => {
+//         const updated = { ...prev, [stepId]: imageSrc };
+//         localStorage.setItem(`captured_${propertyId}`, JSON.stringify(updated));
+//         return updated;
+//       });
+
+//       setVerifiedImages((prev) => {
+//         const updated = { ...prev, [stepId]: result.s3Url };
+//         localStorage.setItem(`verified_${propertyId}`, JSON.stringify(updated));
+//         return updated;
+//       });
+
+//       setPropertyCoordinates((prev) => {
+//         const updated = { ...prev, [stepId]: coords };
+//         localStorage.setItem(`coords_${propertyId}`, JSON.stringify(updated));
+//         return updated;
+//       });
+
+//       toast.success(`✅ ${activeStepObj.label} saved successfully!`);
+//     } else {
+//       console.error("❌ API verification returned success false without 409 standard exception.");
+//       toast.error(result?.message || "Failed to process image upload pipeline.");
+//     }
+//   } catch (error: any) {
+//     console.log("%c🚨 [ENGINE CRASH EXCEPTION]", "background: #f00; color: #fff; font-size: 14px; font-weight: bold; padding: 6px;");
+//     console.error("Frontend try-catch layout intercepted error:", error);
+//     toast.error("Verification connection timeout exception.");
+//   } finally {
+//     setIsVerifying(false);
+//   }
+// };
 
   const handleNextStep = (index: number) => {
     if (index < VERIFICATION_STEPS.length - 1) {
