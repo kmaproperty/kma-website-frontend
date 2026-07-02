@@ -248,7 +248,7 @@ export async function POST(req: NextRequest) {
         const limitPerPage = 100;
 
         while (hasMorePages) {
-          console.log(`📡 [Admin Database Sync] Fetching admin properties page ${currentPage}...`);
+          console.log(`[Admin Database Sync] Fetching admin properties page ${currentPage}...`);
           
           const dbResponse = await axios.get(
             `${BACKEND_BASE}/admin/properties?page=${currentPage}&limit=${limitPerPage}`, 
@@ -300,7 +300,12 @@ export async function POST(req: NextRequest) {
                         return NextResponse.json({
                           success: false,
                           isDuplicate: true,
-                          message: "This property is already listed."
+                          message: "This property is already listed.",
+                          matchedProperty: {
+                          id: prop.id,
+                          floorNumber: prop.floorNumber,
+                          bhkTypeId: prop.bhkTypeId
+                            }
                         }, { status: 409 });
                       } else {
                         console.log(`ℹ️ Bypass Granted: BHK is different. Moving to next photo asset.`);
