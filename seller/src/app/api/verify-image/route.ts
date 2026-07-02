@@ -172,199 +172,12 @@
 //   }
 // }
 
-// export const dynamic = "force-dynamic";
-// export const revalidate = 0;
-
-// import { NextRequest, NextResponse } from "next/server";
-// import { v2 as cloudinary } from "cloudinary";
-// import axios from "axios";
-
-// cloudinary.config({
-//   cloud_name: process.env.CLOUDINARY_CLOUD_NAME || "",
-//   api_key: process.env.CLOUDINARY_API_KEY || "",
-//   api_secret: process.env.CLOUDINARY_API_SECRET || "",
-// });
-
-// export const config = {
-//   api: {
-//     bodyParser: {
-//       sizeLimit: "50mb",
-//     },
-//   },
-// };
-
-// function getDistanceInMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
-//   const R = 6371000;
-//   const dLat = ((lat2 - lat1) * Math.PI) / 180;
-//   const dLon = ((lon2 - lon1) * Math.PI) / 180;
-
-//   const a =
-//     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-//     Math.cos((lat1 * Math.PI) / 180) *
-//       Math.cos((lat2 * Math.PI) / 180) *
-//       Math.sin(dLon / 2) *
-//       Math.sin(dLon / 2);
-
-//   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-//   return R * c; 
-// }
-
-// export async function POST(req: NextRequest) {
-//   try {
-//     const body = await req.json();
-//     const { propertyId, stepId, imageBase64, latitude, longitude, floorNumber, bhkTypeId } = body;
-
-//     // console.log(`\n=================== 🆕 INCOMING CAPTURE REQUEST ===================`);
-//     // console.log(`📸 View/Step: ${stepId}`);
-//     // console.log(`🆔 Current Property ID: ${propertyId}`);
-//     // console.log(`📍 Live Clicked LL: ${latitude}, ${longitude}`);
-//     // console.log(`🏢 Live Input Floor: ${floorNumber} | BHK Type ID: ${bhkTypeId}`);
-//     // console.log(`==================================================================\n`);
-
-//     if (!imageBase64 || !stepId || !propertyId || latitude === undefined || longitude === undefined) {
-//       console.error("❌ Validation Failed: Missing required attributes in payload.");
-//       return NextResponse.json({ success: false, message: "Required attributes missing." }, { status: 400 });
-//     }
-
-//     const BACKEND_BASE = process.env.NEST_BACKEND_URL;
-//     const adminUser = process.env.ADMIN_USER;
-//     const adminPass = process.env.ADMIN_PASS;
-
-//     let adminDynamicToken = "";
-//     try {
-//       const loginResponse = await axios.post(
-//         `${BACKEND_BASE}/admin/login`,
-//         { username: adminUser, password: adminPass },
-//         { headers: { "Content-Type": "application/json" } }
-//       );
-//       adminDynamicToken = loginResponse?.data?.accessToken || loginResponse?.data?.data?.accessToken;
-//     } catch (adminAuthErr: any) {
-//       console.error("🚨 Admin login failed inside verify-image proxy:", adminAuthErr?.message || adminAuthErr);
-//     }
-
-//     if (adminDynamicToken) {
-//       try {
-//         const cleanAdminToken = adminDynamicToken.replace("Bearer ", "").trim();
-        
-//         let currentPage = 1;
-//         let hasMorePages = true;
-//         const limitPerPage = 100;
-
-//         while (hasMorePages) {
-//           console.log(`[Admin Database Sync] Fetching admin properties page ${currentPage}...`);
-          
-//           const dbResponse = await axios.get(
-//             `${BACKEND_BASE}/admin/properties?page=${currentPage}&limit=${limitPerPage}`, 
-//             {
-//               headers: {
-//                 Authorization: `Bearer ${cleanAdminToken}`,
-//                 "Content-Type": "application/json",
-//               }
-//             }
-//           );
-
-//           const existingProperties = dbResponse.data?.data?.items || dbResponse.data?.data || [];
-
-//           if (existingProperties.length === 0) {
-//             hasMorePages = false;
-//             break;
-//           }
-
-//           for (const prop of existingProperties) {
-//             if (String(prop.id) === String(propertyId)) continue;
-
-//             if (prop.photos && Array.isArray(prop.photos)) {
-//               for (const photo of prop.photos) {
-//                 const propLat = photo.latitude ? Number(photo.latitude) : null;
-//                 const propLng = photo.longitude ? Number(photo.longitude) : null;
-
-//                 if (propLat && propLng && !isNaN(propLat) && !isNaN(propLng) && propLat !== 0 && propLng !== 0) {
-//                   const distance = getDistanceInMeters(latitude, longitude, propLat, propLng);
-
-//                   if (distance <= 50) {
-//                     console.log(`\n🚨 [STAGE 1 MATCH]: Proximity inside 50m! -> Distance: ${distance.toFixed(2)}m with Prop ID: ${prop.id}`);
-                    
-//                     const dbFloorStr = prop.floorNumber !== null && prop.floorNumber !== undefined ? String(prop.floorNumber).trim() : null;
-//                     const incomingFloorStr = floorNumber !== null && floorNumber !== undefined ? String(floorNumber).trim() : null;
-
-//                     console.log(`🔍 [STAGE 2 EVALUATION]: Comparing Floors -> DB Floor: [${dbFloorStr}] vs Live Input Floor: [${incomingFloorStr}]`);
-
-//                     if (dbFloorStr !== null && incomingFloorStr !== null && dbFloorStr === incomingFloorStr) {
-//                       console.log(`✅ Floor Matched! Moving to final step check.`);
-
-//                       const dbBhkStr = prop.bhkTypeId !== null && prop.bhkTypeId !== undefined ? String(prop.bhkTypeId).trim() : null;
-//                       const incomingBhkStr = bhkTypeId !== null && bhkTypeId !== undefined ? String(bhkTypeId).trim() : null;
-
-//                       console.log(`🔍 [STAGE 3 EVALUATION]: Comparing BHKs -> DB BHK ID: [${dbBhkStr}] vs Live Input BHK ID: [${incomingBhkStr}]`);
-
-//                       if (dbBhkStr !== null && incomingBhkStr !== null && dbBhkStr === incomingBhkStr) {
-//                         console.warn(`🛑 [CRITICAL TRAP HIT]: Exact Duplicate Found! Blocking upload for Prop ID: ${prop.id}`);
-                        
-//                         return NextResponse.json({
-//                           success: false,
-//                           isDuplicate: true,
-//                           message: "This property is already listed.",
-//                           matchedProperty: {
-//                           id: prop.id,
-//                           floorNumber: prop.floorNumber,
-//                           bhkTypeId: prop.bhkTypeId
-//                             }
-//                         }, { status: 409 });
-//                       } else {
-//                         console.log(`ℹ️ Bypass Granted: BHK is different. Moving to next photo asset.`);
-//                       }
-//                     } else {
-//                       console.log(`ℹ️ Bypass Granted: Floor is different. Moving to next photo asset.`);
-//                     }
-//                   }
-//                 }
-//               }
-//             }
-//           }
-
-//           if (existingProperties.length < limitPerPage) {
-//             hasMorePages = false;
-//           } else {
-//             currentPage++;
-//           }
-//         }
-        
-//         console.log("✅ [Geo-Audit] Full Admin Database proximity scan completed safely with 0 configuration matches.");
-//       } catch (dbErr: any) {
-//         console.error("⚠️ Proximity audit bypass due to admin database fetch error:", dbErr?.response?.data || dbErr.message);
-//       }
-//     }
-
-//     // ☁️ STEP 3: CLOUDINARY MEDIA STREAM UPLOAD
-//     console.log(`☁️ [Cloudinary] Uploading assets for verified node: ${stepId}...`);
-//     const uploadResponse = await cloudinary.uploader.upload(imageBase64, {
-//       folder: `kma-properties/${propertyId}`,
-//       public_id: `geo-verified-${stepId}-${Date.now()}`,
-//       resource_type: "image",
-//     });
-
-//     console.log(`✅ [Cloudinary Success] Hosted URL generated: ${uploadResponse.secure_url}\n`);
-
-//     return NextResponse.json({
-//       success: true,
-//       isDuplicate: false,
-//       s3Url: uploadResponse.secure_url,
-//       message: "Proximity checks passed and hosted successfully!"
-//     });
-
-//   } catch (error: any) {
-//     console.error("🚨 Next.js Geolocation proxy upload engine crashed:", error.message);
-//     return NextResponse.json({ success: false, message: "Internal proxy verification engine exception." }, { status: 500 });
-//   }
-// }
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 import axios from "axios";
-
-// 🚨 NEXT.JS PRODUCTION CACHE KILL SWITCH SECTIONS
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME || "",
@@ -380,9 +193,8 @@ export const config = {
   },
 };
 
-// 🧮 HAVERSINE GEOLOCATION FORMULA MATRICES
 function getDistanceInMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const R = 6371000; // Earth's radius in meters
+  const R = 6371000;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
   const dLon = ((lon2 - lon1) * Math.PI) / 180;
 
@@ -394,31 +206,23 @@ function getDistanceInMeters(lat1: number, lon1: number, lat2: number, lon2: num
       Math.sin(dLon / 2);
 
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
+  return R * c; 
 }
 
 export async function POST(req: NextRequest) {
-  const debugLogs: string[] = [];
-  debugLogs.push("🏁 [PROXY ENGINE] Runtime initialized on production server container.");
-
   try {
     const body = await req.json();
     const { propertyId, stepId, imageBase64, latitude, longitude, floorNumber, bhkTypeId } = body;
+
+    if (!imageBase64 || !stepId || !propertyId || latitude === undefined || longitude === undefined) {
+      console.error("❌ Validation Failed: Missing required attributes in payload.");
+      return NextResponse.json({ success: false, message: "Required attributes missing." }, { status: 400 });
+    }
 
     const BACKEND_BASE = `https://kmaglobalproperty.com/api/backend`;
     const adminUser = process.env.ADMIN_USER;
     const adminPass = process.env.ADMIN_PASS;
 
-    debugLogs.push(`📍 Target Live Coordinates: Lat ${latitude}, Lng ${longitude}`);
-    debugLogs.push(`🏢 Target Parameters: Floor [${floorNumber}] | BHK [${bhkTypeId}]`);
-    debugLogs.push(`📡 Remote Target API URL: ${BACKEND_BASE}`);
-
-    if (!imageBase64 || !stepId || !propertyId || latitude === undefined || longitude === undefined) {
-      debugLogs.push("❌ Context Validation Intercept: Missing parameters.");
-      return NextResponse.json({ success: false, message: "Required coordinates elements dropped.", backendDebugLogs: debugLogs }, { status: 400 });
-    }
-
-    // 🤖 STEP 1: Secure Privileged Token Exchange Routine
     let adminDynamicToken = "";
     try {
       const loginResponse = await axios.post(
@@ -427,123 +231,122 @@ export async function POST(req: NextRequest) {
         { headers: { "Content-Type": "application/json" } }
       );
       adminDynamicToken = loginResponse?.data?.accessToken || loginResponse?.data?.data?.accessToken;
-      debugLogs.push(`🔑 Session Authorization Verified: ${adminDynamicToken ? "YES" : "NO"}`);
-    } catch (authError: any) {
-      debugLogs.push(`❌ Session Authorization Failed: ${authError.message}`);
+    } catch (adminAuthErr: any) {
+      console.error("🚨 Admin login failed inside verify-image proxy:", adminAuthErr?.message || adminAuthErr);
     }
 
-    // 🔍 STEP 2: Strict Geofencing Loop Scanning
     if (adminDynamicToken) {
-      const cleanAdminToken = adminDynamicToken.replace("Bearer ", "").trim();
-      let currentPage = 1;
-      let hasMorePages = true;
-      const limitPerPage = 10; // Aligned with database configurations pagination matrix
-
-      let totalScannedUnits = 0;
-      let targetValidGpsPhotos = 0;
-
-      while (hasMorePages) {
-        debugLogs.push(`🔄 Scanning index registry framework stack frame page: ${currentPage}`);
+      try {
+        const cleanAdminToken = adminDynamicToken.replace("Bearer ", "").trim();
         
-        const dbResponse = await axios.get(
-          `${BACKEND_BASE}/admin/properties?page=${currentPage}&limit=${limitPerPage}`, 
-          {
-            headers: {
-              Authorization: `Bearer ${cleanAdminToken}`,
-              "Content-Type": "application/json",
+        let currentPage = 1;
+        let hasMorePages = true;
+        const limitPerPage = 100;
+
+        while (hasMorePages) {
+          console.log(`[Admin Database Sync] Fetching admin properties page ${currentPage}...`);
+          
+          const dbResponse = await axios.get(
+            `${BACKEND_BASE}/admin/properties?page=${currentPage}&limit=${limitPerPage}`, 
+            {
+              headers: {
+                Authorization: `Bearer ${cleanAdminToken}`,
+                "Content-Type": "application/json",
+              }
             }
+          );
+
+          const existingProperties = dbResponse.data?.data?.items || dbResponse.data?.data || [];
+
+          if (existingProperties.length === 0) {
+            hasMorePages = false;
+            break;
           }
-        );
 
-        const existingProperties = dbResponse.data?.data?.items || dbResponse.data?.data || [];
-        debugLogs.push(`📄 Page ${currentPage} returned [${existingProperties.length}] dataset elements.`);
+          for (const prop of existingProperties) {
+            if (String(prop.id) === String(propertyId)) continue;
 
-        if (existingProperties.length === 0) {
-          hasMorePages = false;
-          break;
-        }
+            if (prop.photos && Array.isArray(prop.photos)) {
+              for (const photo of prop.photos) {
+                const propLat = photo.latitude ? Number(photo.latitude) : null;
+                const propLng = photo.longitude ? Number(photo.longitude) : null;
 
-        for (const prop of existingProperties) {
-          // Self loop skip filter constraint
-          if (String(prop.id) === String(propertyId)) continue;
-          totalScannedUnits++;
+                if (propLat && propLng && !isNaN(propLat) && !isNaN(propLng) && propLat !== 0 && propLng !== 0) {
+                  const distance = getDistanceInMeters(latitude, longitude, propLat, propLng);
 
-          if (prop.photos && Array.isArray(prop.photos)) {
-            for (const photo of prop.photos) {
-              const propLat = photo.latitude ? Number(photo.latitude) : null;
-              const propLng = photo.longitude ? Number(photo.longitude) : null;
+                  if (distance <= 50) {
+                    console.log(`\n🚨 [STAGE 1 MATCH]: Proximity inside 50m! -> Distance: ${distance.toFixed(2)}m with Prop ID: ${prop.id}`);
+                    
+                    const dbFloorStr = prop.floorNumber !== null && prop.floorNumber !== undefined ? String(prop.floorNumber).trim() : null;
+                    const incomingFloorStr = floorNumber !== null && floorNumber !== undefined ? String(floorNumber).trim() : null;
 
-              if (propLat && propLng && !isNaN(propLat) && !isNaN(propLng) && propLat !== 0 && propLng !== 0) {
-                targetValidGpsPhotos++;
-                const distance = getDistanceInMeters(latitude, longitude, propLat, propLng);
+                    console.log(`🔍 [STAGE 2 EVALUATION]: Comparing Floors -> DB Floor: [${dbFloorStr}] vs Live Input Floor: [${incomingFloorStr}]`);
 
-                // 🛑 LADDER CONDITION A: 100 meters range intercept
-                if (distance <= 100) {
-                  debugLogs.push(`🚨 [Hit Radius Match]: Range distance is ${distance.toFixed(2)}m inside Prop ID: ${prop.id}`);
-                  
-                  const dbFloorStr = prop.floorNumber !== null && prop.floorNumber !== undefined ? String(prop.floorNumber).trim() : null;
-                  const incomingFloorStr = floorNumber !== null && floorNumber !== undefined ? String(floorNumber).trim() : null;
+                    if (dbFloorStr !== null && incomingFloorStr !== null && dbFloorStr === incomingFloorStr) {
+                      console.log(`✅ Floor Matched! Moving to final step check.`);
 
-                  // 🛑 LADDER CONDITION B: Floor structural match
-                  if (dbFloorStr !== null && incomingFloorStr !== null && dbFloorStr === incomingFloorStr) {
-                    debugLogs.push(`🏢 [Hit Floor Match]: Active alignment match detected on floor level: [${dbFloorStr}]`);
+                      const dbBhkStr = prop.bhkTypeId !== null && prop.bhkTypeId !== undefined ? String(prop.bhkTypeId).trim() : null;
+                      const incomingBhkStr = bhkTypeId !== null && bhkTypeId !== undefined ? String(bhkTypeId).trim() : null;
 
-                    const dbBhkStr = prop.bhkTypeId !== null && prop.bhkTypeId !== undefined ? String(prop.bhkTypeId).trim() : null;
-                    const incomingBhkStr = bhkTypeId !== null && bhkTypeId !== undefined ? String(bhkTypeId).trim() : null;
+                      console.log(`🔍 [STAGE 3 EVALUATION]: Comparing BHKs -> DB BHK ID: [${dbBhkStr}] vs Live Input BHK ID: [${incomingBhkStr}]`);
 
-                    // 🛑 LADDER CONDITION C: BHK configuration specification lockout match
-                    if (dbBhkStr !== null && incomingBhkStr !== null && dbBhkStr === incomingBhkStr) {
-                      debugLogs.push("🛑 [CRITICAL BLOCK TRIGGERED]: Matching configuration constraints locked!");
-                      
-                      return NextResponse.json({
-                        success: false,
-                        isDuplicate: true,
-                        message: "This property is already listed.",
-                        matchedProperty: {
+                      if (dbBhkStr !== null && incomingBhkStr !== null && dbBhkStr === incomingBhkStr) {
+                        console.warn(`🛑 [CRITICAL TRAP HIT]: Exact Duplicate Found! Blocking upload for Prop ID: ${prop.id}`);
+                        
+                        return NextResponse.json({
+                          success: false,
+                          isDuplicate: true,
+                          message: "This property is already listed.",
+                          matchedProperty: {
                           id: prop.id,
                           floorNumber: prop.floorNumber,
                           bhkTypeId: prop.bhkTypeId
-                        },
-                        backendDebugLogs: debugLogs
-                      }, { status: 409 });
+                            }
+                        }, { status: 409 });
+                      } else {
+                        console.log(`ℹ️ Bypass Granted: BHK is different. Moving to next photo asset.`);
+                      }
+                    } else {
+                      console.log(`ℹ️ Bypass Granted: Floor is different. Moving to next photo asset.`);
                     }
                   }
                 }
               }
             }
           }
-        }
 
-        if (existingProperties.length < limitPerPage) {
-          hasMorePages = false;
-        } else {
-          currentPage++;
+          if (existingProperties.length < limitPerPage) {
+            hasMorePages = false;
+          } else {
+            currentPage++;
+          }
         }
+        
+        console.log("✅ [Geo-Audit] Full Admin Database proximity scan completed safely with 0 configuration matches.");
+      } catch (dbErr: any) {
+        console.error("⚠️ Proximity audit bypass due to admin database fetch error:", dbErr?.response?.data || dbErr.message);
       }
-
-      debugLogs.push(`🏁 Registry indexing sequence closed. Total Properties Evaluated: ${totalScannedUnits}, Total Active Coordinates Checked: ${targetValidGpsPhotos}`);
     }
 
-    // ☁️ STEP 3: Safe Streaming Asset Cloudinary Push Routine
-    debugLogs.push("☁️ Initializing stream pipe connection tunnel to Cloudinary cloud grid storage...");
+    // ☁️ STEP 3: CLOUDINARY MEDIA STREAM UPLOAD
+    console.log(`☁️ [Cloudinary] Uploading assets for verified node: ${stepId}...`);
     const uploadResponse = await cloudinary.uploader.upload(imageBase64, {
       folder: `kma-properties/${propertyId}`,
       public_id: `geo-verified-${stepId}-${Date.now()}`,
       resource_type: "image",
     });
 
-    debugLogs.push("✅ Hosted resource stream successfully registered.");
+    console.log(`✅ [Cloudinary Success] Hosted URL generated: ${uploadResponse.secure_url}\n`);
 
     return NextResponse.json({
       success: true,
       isDuplicate: false,
       s3Url: uploadResponse.secure_url,
-      message: "Proximity checks passed and hosted successfully!",
-      backendDebugLogs: debugLogs
+      message: "Proximity checks passed and hosted successfully!"
     });
 
   } catch (error: any) {
-    debugLogs.push(`🚨 Core Processing Exception Abort: ${error.message}`);
-    return NextResponse.json({ success: false, message: "Proxy runtime pipeline error.", backendDebugLogs: debugLogs }, { status: 500 });
+    console.error("🚨 Next.js Geolocation proxy upload engine crashed:", error.message);
+    return NextResponse.json({ success: false, message: "Internal proxy verification engine exception." }, { status: 500 });
   }
 }
