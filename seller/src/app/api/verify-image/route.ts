@@ -405,7 +405,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { propertyId, stepId, imageBase64, latitude, longitude, floorNumber, bhkTypeId } = body;
 
-    const BACKEND_BASE = process.env.NEST_BACKEND_URL;
+    const BACKEND_BASE = `https://kmaglobalproperty.com/api/backend`;
     const adminUser = process.env.ADMIN_USER;
     const adminPass = process.env.ADMIN_PASS;
 
