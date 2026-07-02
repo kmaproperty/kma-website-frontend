@@ -205,14 +205,10 @@ export default function PropertyRadiusVerificationPage() {
             router.push(`/verify-property/${propertyId}/capture`);
           }, 1500);
         } else {
-          // setVerificationResult("failed");
-          // setErrorMessage(
-          //   `Location mismatch detected. You are physically present far from the site boundary.`
-          // );
-          setVerificationResult("success");
-          setTimeout(() => {
-            router.push(`/verify-property/${propertyId}/capture`);
-          }, 1500);
+          setVerificationResult("failed");
+          setErrorMessage(
+            `Location mismatch detected. You are physically present far from the site boundary.`
+          );
         }
       },
       (error) => {
@@ -350,7 +346,7 @@ export default function PropertyRadiusVerificationPage() {
               </p>
               <p className="text-[11px] text-gray-400 font-semibold px-4 pt-1 leading-normal">
                 On-site validation requires your device to be within the
-                mandatory **500m** operational boundary.
+                mandatory **1KM** operational boundary.
               </p>
             </div>
 
