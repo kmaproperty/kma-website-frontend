@@ -389,7 +389,10 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
   }, [currentPage, totalPages]);
 
   const initialProjects = useMemo<Project[]>(() => {
-    return apiProperties.map((item) => {
+    const onlyVerifiedProperties = apiProperties.filter(
+    (item) => item.isVerified === "verified"
+  );
+    return onlyVerifiedProperties.map((item) => {
       const listingIntent = normalizeListingIntent(resolveListingType(item));
       const salePrice = Number(item.price ?? 0);
       const monthlyRent = Number(item.monthlyRent ?? 0);
