@@ -1,3 +1,55 @@
+// import React from 'react'
+
+// const PageTitle = ({
+//     title,
+//     description,
+//     breadcrumps,
+//     actions,
+//     innerClassName = 'max-w-[610px]',
+// }: {
+//     title: string
+//     description?: string
+//     breadcrumps?: Array<{ name: string; link?: string; icon?: React.ReactNode }>
+//     actions?: unknown
+//     innerClassName?: string
+// }) => {
+//     return (
+//         <div className={`flex flex-col items-center px-4 ${innerClassName}`}>
+//             <h1 className="text-[28px] sm:text-[30px] md:text-[32px] 2md:text-[34px] lg:text-[36px] xl:text-[38px] 1xl:text-[39px] 2xl:text-[40px] text-center font-semibold text-white">{title}</h1>
+//             {description && <p className="text-white text-center text-md mt-4 font-light">{description}</p>}
+//             {/* {actions && (
+//                 <div className="flex items-center mt-6 mb-3">
+//                     {actions.map((item, index) => (
+//                         <a key={index} href={item.link}>
+//                             <button className="w-auto text-sm 1xl:text-base text-black! hover:text-text-black! animated-button-white px-8 py-2 border border-white bg-white! text-center cursor-pointer">
+//                                 <span className="gap-3 relative flex justify-center">
+//                                     <p className={`text-nowrap`}>{item.name}</p>
+//                                 </span>
+//                             </button>
+//                         </a>
+//                     ))}
+//                 </div>
+//             )} */}
+//             {breadcrumps && (
+
+//                 <div className="flex items-center mt-4">
+//                     {breadcrumps.map((item, index) => (
+//                         <div key={index} className="flex items-center">
+//                             <a href={item.link} className="text-white hover:text-gray-300 flex items-center" style={!item.link ? { textDecoration: 'underline' } : {}}>
+//                                 {item.icon && <span className="text-sm text-white mr-2">{item.icon}</span>}
+//                                 {item.name}
+//                             </a>
+//                             {index < breadcrumps.length - 1 && <span className="text-sm text-white mx-2">/</span>}
+//                         </div>
+//                     ))}
+//                 </div>
+//             )}
+//         </div>
+//     )
+// }
+
+// export default PageTitle
+
 import React from 'react'
 
 const PageTitle = ({
@@ -15,8 +67,8 @@ const PageTitle = ({
 }) => {
     return (
         <div className={`flex flex-col items-center px-4 ${innerClassName}`}>
-            <h1 className="text-[28px] sm:text-[30px] md:text-[32px] 2md:text-[34px] lg:text-[36px] xl:text-[38px] 1xl:text-[39px] 2xl:text-[40px] text-center font-semibold text-white">{title}</h1>
-            {description && <p className="text-white text-center text-md mt-4 font-light">{description}</p>}
+            <h1 className="text-[28px] sm:text-[30px] md:text-[32px] 2md:text-[34px] lg:text-[36px] xl:text-[38px] 1xl:text-[39px] 2xl:text-[40px] text-center font-semibold text-white leading-tight">{title}</h1>
+            {description && <p className="text-white text-center text-md mt-4 font-light leading-tight">{description}</p>}
             {/* {actions && (
                 <div className="flex items-center mt-6 mb-3">
                     {actions.map((item, index) => (
