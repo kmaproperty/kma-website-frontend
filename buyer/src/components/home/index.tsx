@@ -25,6 +25,7 @@ import HeaderDataSync from "../header/HeaderDataSync";
 import { useHeaderStore } from "@/store/useHeaderStore";
 import SuccessStoriesSection from "./successStoriesSection";
 import AppDownloadSection from "./appDownloadSection";
+import AboutCompany from "../AboutCompany";
 
 const LazyNeedSection = dynamic(() => import("./needSection"), { loading: () => <div className="min-h-[200px]" /> });
 const LazyRealEstateSection = dynamic(() => import("./realEstetSection"), { loading: () => <div className="min-h-[200px]" /> });
@@ -292,6 +293,7 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
       </div> */}
       <div className="">
         <AppDownloadSection/>
+        <AboutCompany/>
         <LazyHomeFooter />
       </div>
     </div>
