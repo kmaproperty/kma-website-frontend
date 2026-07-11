@@ -524,19 +524,19 @@ export default function AboutUsComponent({
   const [companyStats, setCompanyStats] = useState([
     {
       title: "Channel Partners",
-      value: "0",
+      value: "450+",
     },
     {
       title: "Happy Customers",
-      value: "0",
+      value: "3500+",
     },
     {
       title: "Societies Covered",
-      value: "0",
+      value: "350+",
     },
     {
       title: " Active Listing",
-      value: "0",
+      value: "580+",
     },
   ])
 

@@ -16,13 +16,13 @@ export default function AboutCompany() {
     <section className="w-full bg-white py-12 md:py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         {/* Main Hero Header */}
-        <div className="text-center mb-10 md:mb-14">
+        {/* <div className="text-center mb-10 md:mb-14">
           <h1 className="text-3xl md:text-3xl lg:text-4xl font-extrabold text-blue tracking-tight leading-tight max-w-3xl mx-auto">
             Explore 3000+ verified listings <br className="hidden sm:inline" />{" "}
             across premium locations.
           </h1>
           <div className="w-24 h-1 bg-[#010048] mx-auto mt-6 rounded-full" />
-        </div>
+        </div> */}
 
         <div className="text-gray-600 text-sm md:text-base leading-relaxed space-y-6">
           <div className="space-y-5">
