@@ -148,11 +148,11 @@ export default function HomeHeader({ showColor = false, show2color = false }: Ho
         setType(null);
         setanchorEl(event.currentTarget);
         break;
-      case "channel_partner":
-        setMenuList(channelPartnerMenuList);
-        setType(null);
-        setanchorEl(event.currentTarget);
-        break;
+      // case "channel_partner":
+      //   setMenuList(channelPartnerMenuList);
+      //   setType(null);
+      //   setanchorEl(event.currentTarget);
+      //   break;
       case "help":
         setMenuList(helpMenuList);
         setType(null);
@@ -172,6 +172,11 @@ export default function HomeHeader({ showColor = false, show2color = false }: Ho
         setType(menuType);
         setMenuList([]);
         setanchorEl(event.currentTarget);
+        break;
+      case "channel_partner":
+        setMenuList([]);
+        setType(null);
+        setanchorEl(null);
         break;
       case "refer_and_earn":
         setMenuList([]);
@@ -320,7 +325,7 @@ const handleHeaderSubMenuClick = (label: string) => {
           </div>
           <div className="hidden 2md:block border border-[0.2px] border-[#FFFFFF] h-[30px]" />
 
-          {headerMenuList.map((item) => {
+          {/* {headerMenuList.map((item) => {
             const hasDropdown = item.value !== "refer_and_earn";
             const isActive = hoveredMenu === item.value;
             const isReferAndEarn = item.value === "refer_and_earn";
@@ -350,7 +355,56 @@ const handleHeaderSubMenuClick = (label: string) => {
                 </p>
               </div>
             );
-          })}
+          })} */}
+
+          {headerMenuList.map((item) => {
+  const hasDropdown = item.value !== "refer_and_earn" && item.value !== "channel_partner";
+  
+  const isActive = hoveredMenu === item.value;
+  const isReferAndEarn = item.value === "refer_and_earn";
+  
+  const isChannelPartner = item.value === "channel_partner";
+
+  return (
+    <div key={item.value}>
+      <p
+        onMouseEnter={(event) => {
+          cancelCloseTimer();
+          setHoveredMenu(item.value);
+          if (hasDropdown) handleOpenMenu(event, item.value);
+        }}
+        onMouseLeave={() => hasDropdown ? scheduleClose() : setHoveredMenu(null)}
+        onClick={(event) => {
+          if (hasDropdown) {
+            handleOpenMenu(event, item.value);
+          } else { 
+            resetMenuState(); 
+            if (isReferAndEarn) {
+              router.push("/refer-and-earn");
+            } else if (isChannelPartner) {
+              router.push("/join-us"); 
+            }
+          }
+        }}
+        className={`hidden 2md:block mt-2 break-word text-xs xl:text-sm nowrap w-max border-b-2 transition-colors duration-200 cursor-pointer px-1.5 pb-1 hover:border-blue ${
+          isReferAndEarn 
+            ? "text-[#FDE68A] animate-pulse font-semibold" 
+            : isChannelPartner 
+            ? "text-gray-100"
+            : "text-gray-100"
+        } ${isActive ? "border-blue" : "border-transparent"}`}
+      >
+        {item.label}
+        
+        {isReferAndEarn && (
+          <span className="ml-1 inline-flex items-center rounded-full bg-[#FDE68A] text-[#1E3A8A] px-1.5 py-0.5 text-[9px] font-bold align-middle">
+            NEW
+          </span>
+        )}
+      </p>
+    </div>
+  );
+})}
         </div>
 
         {/* Right Side: Profile & CTA */}

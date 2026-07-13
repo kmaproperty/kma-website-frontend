@@ -76,7 +76,7 @@ export default function HomeMobileHeader({
               />
             </div>
 
-            {headerMenuList.map((item) => (
+            {/* {headerMenuList.map((item) => (
               <div
                 key={item.value}
                 onClick={() => {
@@ -104,7 +104,60 @@ export default function HomeMobileHeader({
                   />
                 )}
               </div>
-            ))}
+            ))} */}
+
+                {headerMenuList.map((item) => {
+  const isReferAndEarn = item.value === "refer_and_earn";
+  const isChannelPartner = item.value === "channel_partner";
+
+  return (
+    <div
+      key={item.value}
+      onClick={() => {
+        if (isReferAndEarn) {
+          router.push("/refer-and-earn");
+          onClose();
+        } 
+        else if (isChannelPartner) {
+          router.push("/join-us");
+          onClose();
+        } 
+        else {
+          openSubMenu(item.value);
+        }
+      }}
+      className="flex justify-between items-center"
+    >
+      <p
+        className={`mt-2 break-word text-base nowrap w-max border-b-2 border-transparent hover:border-blue transition-colors duration-200 cursor-pointer px-1.5 pb-1 ${
+          isReferAndEarn 
+            ? "text-amber-500 font-semibold"
+            : isChannelPartner 
+            ? "text-text-black"
+            : "text-text-black"
+        }`}
+      >
+        {item.label}
+        
+        {isReferAndEarn && (
+          <span className="ml-1 inline-flex items-center rounded-full bg-amber-100 text-amber-800 px-1.5 py-0.5 text-[9px] font-bold align-middle">
+            NEW
+          </span>
+        )}
+        
+      </p>
+
+      {!isReferAndEarn && !isChannelPartner && (
+        <Image
+          src="/assets/down-arrow-blue.svg"
+          width={25}
+          height={25}
+          alt="arrow"
+        />
+      )}
+    </div>
+  );
+})}
 
             <div
               onClick={() => {
