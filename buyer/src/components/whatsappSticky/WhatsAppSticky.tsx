@@ -26,7 +26,7 @@ export default function WhatsAppSticky({
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-[9999] animate-fade-in">
+    <div className="fixed bottom-6 left-6 right-auto md:left-auto md:right-6 z-[9999] animate-fade-in">
       <button
         type="button"
         onClick={handleRedirect}

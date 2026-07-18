@@ -6,6 +6,7 @@ import TopProperties from "./topProperties";
 import Filter from "./filter";
 import ContactUs from "./contactus";
 import ContactInformation from "../contactInformation";
+import NewsFlashBanner from "../NewsFlashBanner";
 
 type MainHomeProps = {
   topProperties: unknown[];
@@ -39,6 +40,7 @@ export default function MainHome({ topProperties }: MainHomeProps) {
           <Filter />
         </div>
       </div>
+      <NewsFlashBanner/>
       <div>
         <ContactUs />
       </div>
