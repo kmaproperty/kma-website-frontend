@@ -9,6 +9,7 @@ import TopLoaderProvider from "@/providers/TopLoaderProvider";
 import CookieSessionGuard from "@/components/common/cookieSessionGuard";
 import WhatsAppSticky from "@/components/whatsappSticky/WhatsAppSticky";
 import Script from "next/script";
+import RealEstateChatbot from "@/components/RealEstateChatbot";
 
 const gtmScript = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -80,6 +81,7 @@ export default function RootLayout({
           <ToasterProvider />
           <TopLoaderProvider/>
           <WhatsAppSticky phoneNumber="919289977646"/>
+          <RealEstateChatbot/>
           </QueryProvider>
         </StoreProvider>
         </Suspense>
