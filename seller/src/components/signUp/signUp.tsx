@@ -395,15 +395,15 @@ export default function SignUp() {
   });
 
   const handleContinue = () => {
-    // let msg = mobileNumberValidator(mobileInput.value)
-    // if(msg){
-    //   setMobileInput({...mobileInput, validationMessage: msg})
-    //   return
-    // }
-    // const paylaod = { phone: mobileInput.value, role: selectedPartnerType}
-    // handleSendOtp(paylaod)
+    let msg = mobileNumberValidator(mobileInput.value)
+    if(msg){
+      setMobileInput({...mobileInput, validationMessage: msg})
+      return
+    }
+    const paylaod = { phone: mobileInput.value, role: selectedPartnerType}
+    handleSendOtp(paylaod)
 
-    setIsMaintenanceOpen(true);
+    // setIsMaintenanceOpen(true);
   }
 
   const handleRedirectToLogin = () => {
