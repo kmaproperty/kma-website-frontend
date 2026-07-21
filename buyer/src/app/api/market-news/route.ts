@@ -35,6 +35,66 @@
 //   }
 // }
 
+// import { NextResponse } from "next/server";
+
+// export const dynamic = "force-dynamic";
+
+// export async function GET() {
+//   try {
+//     const API_KEY = process.env.GNEWS_API_KEY; 
+//     if (!API_KEY) {
+//       throw new Error("Missing GNEWS_API_KEY in environment variables.");
+//     }
+
+//     const searchTerms = '"Gurugram real estate" OR "Gurgaon property"';
+    
+//     const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(searchTerms)}&lang=en&sortby=publishedAt&max=9&apikey=${API_KEY}`;
+
+//     const res = await fetch(url, { 
+//       cache: 'no-store',
+//       headers: {
+//         'Pragma': 'no-cache',
+//         'Cache-Control': 'no-cache'
+//       }
+//     });
+    
+//     const data = await res.json();
+
+//     if (!res.ok || data.errors) {
+//       throw new Error(data.errors ? data.errors[0] : "Failed to fetch from GNews");
+//     }
+
+//     const articles = data.articles || [];
+
+//     const marketUpdates = articles.map((item: any) => {
+//       const fallbackSummary = item.description || item.content || "Click to read full real estate updates.";
+      
+//       return {
+//         id: item.url || Math.random().toString(),
+//         title: item.title || "Gurgaon Property Update",
+//         summary: fallbackSummary.length > 140 ? fallbackSummary.substring(0, 140) + "..." : fallbackSummary,
+//         source: item.source?.name || "Market Bureau",
+//         url: item.url || "#",
+//         imageUrl: item.image || null, 
+//         time: item.publishedAt ? new Date(item.publishedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Just now"
+//       };
+//     });
+
+//     return NextResponse.json({ success: true, data: marketUpdates }, {
+//       status: 200,
+//       headers: { 
+//         "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+//         "Pragma": "no-cache",
+//         "Expires": "0"
+//       }
+//     });
+
+//   } catch (error: any) {
+//     console.error("GNews Fetch Failure:", error.message);
+//     return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+//   }
+// }
+
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -46,7 +106,7 @@ export async function GET() {
       throw new Error("Missing GNEWS_API_KEY in environment variables.");
     }
 
-    const searchTerms = '"Gurugram real estate" OR "Gurgaon property"';
+    const searchTerms = '"Gurugram real estate" OR "Gurgaon property" OR "Delhi NCR real estate"';
     
     const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(searchTerms)}&lang=en&sortby=publishedAt&max=9&apikey=${API_KEY}`;
 
@@ -76,7 +136,9 @@ export async function GET() {
         source: item.source?.name || "Market Bureau",
         url: item.url || "#",
         imageUrl: item.image || null, 
-        time: item.publishedAt ? new Date(item.publishedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Just now"
+        time: item.publishedAt 
+          ? new Date(item.publishedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+          : "Just now"
       };
     });
 

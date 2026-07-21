@@ -316,7 +316,7 @@ const HelpCenter = () => {
                     <HomdeHeader />
                 </div>
             </div>
-            <div className="relative min-h-[385px] max-h-[500px] md:max-h-[385px] pt-[10px] md:pt-[25px] rounded-br-[40px] rounded-bl-[40px] sm:min-h-[min(100dvh,600px)] sm:max-h-[600px] sm:rounded-br-[72px] sm:rounded-bl-[72px] lg:rounded-br-[100px] lg:rounded-bl-[100px]" style={{ backgroundImage: 'url(assets/app/help-center-herobg.jpg)', backgroundSize: 'cover', backgroundPosition: 'bottom' }}>
+            <div className="relative min-h-[385px] max-h-[500px] md:max-h-[385px] pt-[10px] md:pt-[25px] rounded-br-[40px] rounded-bl-[40px] sm:min-h-[min(100dvh,600px)] sm:max-h-[600px] sm:rounded-br-[72px] sm:rounded-bl-[72px] lg:rounded-br-[100px] lg:rounded-bl-[100px] bg-blue" style={{ backgroundSize: 'cover', backgroundPosition: 'bottom' }}>
         <div className="mx-auto mt-[120px] w-full max-w-[600px] px-4 sm:mt-28 sm:w-[85%] sm:px-0 md:mt-32 md:w-[75%] xl:mt-[150px] ">
                     <PageTitle
                         title="KMA Global Property Help Center"
