@@ -309,6 +309,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
                   { label: "Careers", href: "/careers" },
                   // { label: "Services", href: "/about-us" },
                   { label: "Contact Us", href: "/contact-us" },
+                  { label: "Blogs", href: "/blogs" },
                   { label: "Terms & Conditions", href: "/terms-and-conditions" },
                   { label: "Privacy Policy", href: "/privacy-policy" },
                 ].map((item) => (
