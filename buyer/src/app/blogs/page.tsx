@@ -7,6 +7,9 @@ import AboutusDataSync from "@/components/footer/AboutusDataSync";
 import HomeFooter from "@/components/footer/homeFooter";
 import NewsletterBanner from "@/components/NewsLetterBanner";
 
+export const dynamic = "force-dynamic"; 
+export const revalidate = 0;
+
 export const metadata = {
   title: "Blogs & Real Estate Insights | KMA Global Property",
   description: "Stay updated with market trends, property guides, and news from KMA Global Property.",
