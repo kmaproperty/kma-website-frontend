@@ -316,7 +316,7 @@ const HelpCenter = () => {
                     <HomdeHeader />
                 </div>
             </div>
-            <div className="relative min-h-[385px] max-h-[500px] md:max-h-[385px] pt-[10px] md:pt-[25px] rounded-br-[40px] rounded-bl-[40px] sm:min-h-[min(100dvh,600px)] sm:max-h-[600px] sm:rounded-br-[72px] sm:rounded-bl-[72px] lg:rounded-br-[100px] lg:rounded-bl-[100px] bg-blue" style={{ backgroundSize: 'cover', backgroundPosition: 'bottom' }}>
+            {/* <div className="relative min-h-[385px] max-h-[500px] md:max-h-[385px] pt-[10px] md:pt-[25px] rounded-br-[40px] rounded-bl-[40px] sm:min-h-[min(100dvh,600px)] sm:max-h-[600px] sm:rounded-br-[72px] sm:rounded-bl-[72px] lg:rounded-br-[100px] lg:rounded-bl-[100px] bg-blue" style={{ backgroundSize: 'cover', backgroundPosition: 'bottom' }}>
         <div className="mx-auto mt-[120px] w-full max-w-[600px] px-4 sm:mt-28 sm:w-[85%] sm:px-0 md:mt-32 md:w-[75%] xl:mt-[150px] ">
                     <PageTitle
                         title="KMA Global Property Help Center"
@@ -325,7 +325,28 @@ const HelpCenter = () => {
                         actions={null}
                     />
                 </div>
-            </div>
+            </div> */}
+
+            <section className="sm:rounded-br-[72px] sm:rounded-bl-[72px] lg:rounded-br-[100px] lg:rounded-bl-[100px] bg-blue text-white py-25 md:py-30 px-4 shadow-md">
+          <div className="max-w-3xl mx-auto text-center space-y-4">
+            <h1 className="text-3xl md:text-6xl font-bold tracking-wide text-white leading-tighter">
+              KMA Global Property{" "}
+              <span className="font-serif italic text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-blue-400 to-white/90">
+                Help Center
+              </span>
+            </h1>
+            <p className="text-slate-300 text-sm md:text-base max-w-2xl mx-auto font-light">
+              Buying, selling, or listing real estate in Gurgaon and Delhi NCR
+              shouldn't feel like a guessing game. This Help Center walks you
+              through everything you need to know about using the KMA platform —
+              from posting your first property to understanding how we verify
+              every listing and protect your data. Whether you're a first-time
+              buyer, a broker managing dozens of listings, or a builder
+              launching a new project, you'll find clear, straight-to-the-point
+              answers below.
+            </p>
+          </div>
+        </section>
             <div className='w-full min-w-0 px-4 py-10 md:py-12 lg:py-16 xl:py-20 2xl:py-[100px]'>
                 <div className='mx-auto max-w-[1440px]'>
                     <div className='flex flex-col gap-8 2md:flex-row 2md:gap-10'>

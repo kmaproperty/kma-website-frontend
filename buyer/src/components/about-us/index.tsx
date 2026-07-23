@@ -572,7 +572,7 @@ export default function AboutUsComponent({
           <HomeHeader />
         </div>
       </div>
-      <div className="relative overflow-hidden rounded-b-[20px] sm:rounded-br-[30px] non_home_page_slider min-h-[330px] sm:min-h-[380px] md:min-h-[430px]">
+      {/* <div className="relative overflow-hidden rounded-b-[20px] sm:rounded-br-[30px] non_home_page_slider min-h-[330px] sm:min-h-[380px] md:min-h-[430px]">
         <BannerSlider bannerHeight={'h-full'} backgroundImages={sliderImage} overlayClass='about-us-gradient-overlay' />
         <div className="absolute inset-0 z-10 flex flex-col items-center top-0 w-[100%] ">
           <div className="2xl:py-[150px] 1xl:py-[145px] xl:py-[130px] lg:py-[115px] 2md:py-[95px] md:py-[75px] sm:py-[75px] py-[75px]">
@@ -585,7 +585,32 @@ export default function AboutUsComponent({
           </div>
         </div>
 
-      </div>
+      </div> */}
+
+      <section className="relative sm:rounded-br-[72px] sm:rounded-bl-[72px] lg:rounded-br-[100px] lg:rounded-bl-[100px] bg-[#02013b] text-white py-25 md:py-30 px-4 shadow-md overflow-hidden flex items-center justify-center">
+  
+  <div className="absolute inset-0 z-0">
+    <img
+  src={sliderImage[0]?.imagePath}
+  alt={sliderImage[0]?.alt || "About Us - KMA Global Properties"}
+  className="w-full h-full object-cover opacity-40 scale-105"
+/>
+    
+    <div className="absolute inset-0 bg-gradient-to-t from-[#02013b] via-[#02013b]/85 to-white/10 mix-blend-multiply" />
+    <div className="absolute inset-0 bg-gradient-to-t from-[#02013b] via-[#02013b]/60 to-transparent" />
+  </div>
+
+  <div className="relative z-10 max-w-3xl mx-auto text-center space-y-4">
+    <h1 className="text-3xl md:text-5xl font-bold tracking-wide text-white leading-tighter drop-shadow-md">
+      About Us — KMA Global Properties | Gurgaon Real Estate Consultancy
+    </h1>
+    <p className="text-slate-200 text-sm md:text-base max-w-2xl mx-auto font-light leading-relaxed drop-shadow">
+      Discover who we are, what we stand for, and why thousands of brokers and buyers across Gurgaon trust KMA Global Properties every single day.
+    </p>
+  </div>
+
+</section>
+
       <div className="w-full px-4 2xl:py-[120px] xl:py-20 lg:py-16 md:py-12 py-10">
         <div className="flex xl:flex-row flex-col-reverse items-center justify-between max-w-[1440px] mx-auto gap-6">
           <div className="xl:w-[50%] w-full">
