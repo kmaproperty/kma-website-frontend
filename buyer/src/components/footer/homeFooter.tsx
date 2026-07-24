@@ -304,6 +304,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
               </h3>
               <ul className="space-y-3 text-[13px] text-white/90">
                 {[
+                  { label: "New Launch Projects", href: "/new-launch" },
                   { label: "About Us", href: "/about-us" },
                   { label: "FAQs", href: "/faqs" },
                   { label: "Careers", href: "/careers" },
