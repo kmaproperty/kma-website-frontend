@@ -458,7 +458,7 @@ export const developers = [
     name: "Puri Constructions",
     projects: "Diplomatic Residences",
   },
-  { abbr: "SBH", name: "Sobha Limited", projects: "Aranya" },
+  // { abbr: "SBH", name: "Sobha Limited", projects: "Aranya" },
 ];
 
 export const buyingGuideChecks = [

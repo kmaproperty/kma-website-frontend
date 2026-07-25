@@ -26,6 +26,11 @@ export const headerMenuList = [
     value: 'refer_and_earn'
   },
   {
+    img: '/assets/channel-partner.svg',
+    label: 'New Launch',
+    value: 'new_launch'
+  },
+  {
     img: '/assets/hand-helping.svg'    ,
     label: 'Help',
     value: 'help'
