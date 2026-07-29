@@ -107,6 +107,169 @@
 //   );
 // }
 
+// import AboutusDataSync from "@/components/footer/AboutusDataSync";
+// import HomeFooter from "@/components/footer/homeFooter";
+// import HomeHeader from "@/components/header/homeHeader";
+// import { Metadata } from "next";
+
+// export const metadata: Metadata = {
+//   title: "Terms & Conditions – KMA Global Properties, Gurugram",
+//   description: "Read the terms governing use of KMA Global Properties' website, your trusted real estate advisory in Gurugram for property listings, sales, and investment guidance.",
+//   alternates: {
+//     canonical: "https://kmaglobalproperty.com/terms-and-conditions", 
+//   },
+// };
+
+// const termsAndConditionsItems = [
+//   {
+//     title: "1. Introduction",
+//     description:
+//       `Welcome to KMA Global Properties Pvt. Ltd., a real estate advisory and property solutions company based in Gurugram, Haryana. We help individuals and businesses navigate residential and commercial property decisions across Gurugram and the wider Delhi NCR region through property listings, expert real estate consultation, and detailed project information.<br>
+// These Terms and Conditions govern your access to and use of our website, including its content, features, and services. By browsing or using this platform, you're agreeing to be bound by what's laid out here. If something here doesn't sit right with you, the simplest option is to stop using the site.
+// `,
+//   },
+//   {
+//     title: "2. Acceptance of Terms",
+//     description:
+//       `Using this website, whether you're browsing listings, reading about a project, or sending an inquiry, means you accept these Terms in full. They form a legally binding agreement between you and KMA Global Properties Pvt. Ltd. (referred to here as "we," "us," or "KMA Global").<br>
+// We may update these Terms from time to time. If you keep using the site after a change, that's taken as acceptance of the updated version.
+// `,
+//   },
+//   {
+//     title: "3. Use of the Website",
+//     description:
+//       `You're granted a limited, non-exclusive license to use this website for personal, non-commercial purposes connected to real estate services and property listings, browsing residential property and commercial property options, exploring real estate consultation resources, or submitting genuine inquiries about a property purchase or sale.<br>
+// What's not okay: anything that overloads our systems, interferes with other users, or involves scraping, data mining, or framing our content without permission.
+// `,
+//   },
+//   {
+//     title: "4. Property Information Disclaimer",
+//     description:
+//       `Descriptions, images, pricing, dimensions, and availability shown for any property listing in Gurugram or elsewhere on this site are for general information only. We make a genuine effort to keep this accurate, but real estate moves fast, layouts get revised, prices change, units sell out, so we can't guarantee the content reflects the current state of a project at every moment.<br>
+// Before making any property investment decision, please verify details independently, through a site visit, legal due diligence, title search, and consultation with qualified professionals. KMA Global isn't responsible for errors, omissions, or outdated listings, and actual properties may differ from what's shown on the site.
+// `,
+//   },
+//   {
+//     title: "5. Intellectual Property Rights",
+//     description:
+//       `Everything on this website, text, graphics, logos, property photos, videos, and underlying code, belongs to KMA Global Properties Pvt. Ltd. or our licensors, and is protected under Indian copyright and trademark law. You can't reproduce, distribute, modify, or publicly display this material without our written consent, and the KMA Global Properties name and logo can't be used without permission.<br>
+// Unauthorized use ends your license to use the site immediately and may lead to further action.
+// `,
+//   },
+//   {
+//     title: "6. User Responsibilities",
+//     description:
+//       `When you use this site, it's on you to: <br>
+//       <ul >
+//       <li>&bull; Give accurate and current information when submitting an inquiry</li>
+//       <li>&bull; Keep any account credentials confidential</li>
+//       <li>&bull; Use the site in line with applicable law and these Terms</li>
+//       <li>&bull; Avoid anything that could harm our reputation or other users' experience</li>
+//       </ul>
+//       One more thing worth noting: any guidance you get through this platform is informational. It doesn't create a formal advisor-client relationship unless that's separately agreed in writing.`,
+//   },
+//   {
+//     title: "7. Third-Party Links",
+//     description:
+//       "We sometimes link out to third-party sites, banks, legal service providers, and government property portals purely for convenience. We don't control or vouch for these external sites, so anything you do there is at your own risk. Worth checking their terms before sharing information.",
+//   },
+//   {
+//     title: "8. Property Listings & Availability",
+//     description:
+//       `Listings on this site are subject to availability and can be withdrawn, sold, or modified without prior notice. Prices, specifications, and features may change based on market conditions or developer updates. <br>
+//       Displaying a listing isn't an offer to sell or buy; every transaction needs a formal agreement, title clearance, and compliance with applicable real estate laws in India. KMA Global Properties acts as an intermediary facilitator for property purchase and sale processes and doesn't guarantee that any transaction will go through.`,
+//   },
+//   {
+//     title: "9. Limitation of Liability",
+//     description:
+//       `To the extent allowed by law, KMA Global Properties Pvt. Ltd., along with its directors, employees, and affiliates, won't be liable for any direct, indirect, or consequential damages arising from your use of this site, reliance on property information, or transactions facilitated through our services, including loss of profits, data, or goodwill.<br>
+// Where any liability does apply, it's capped at the amount you've paid us, if any, in the twelve months before the claim.
+// `,
+//   },
+//   {
+//     title: "10. Privacy & Data Protection",
+//     description:
+//       "How we collect, use, and protect your personal data is covered in our separate Privacy Policy, which is aligned with the Digital Personal Data Protection Act, 2023. Using this website means you're also agreeing to what's described there.",
+//   },
+//   {
+//     title: "11. Prohibited Activities",
+//     description:
+//     `You agree not to: <br>
+//     <ul >
+//       <li>&bull; Upload or transmit viruses, malware, or harmful code</li>
+//       <li>&bull; Engage in unlawful, defamatory, or fraudulent conduct related to real estate investment or listings</li>
+//       <li>&bull; Impersonate any person or entity</li>
+//       <li>&bull; Interfere with the website's security features</li>
+//       <li>&bull; Use the platform for competitive analysis or to build a competing service</li>
+//       <li>&bull; Harass, threaten, or intimidate other users or our team</li>
+//       </ul>
+//       Breaking any of these may lead to your access being terminated and could carry legal consequences.`,
+//   },
+//   {
+//     title: "12. Indemnification",
+//     description:
+//       "You agree to cover KMA Global Properties Pvt. Ltd. and its team for any claims, damages, or expenses (including legal fees) that arise from your breach of these Terms, your misuse of the website, content you submit, or your violation of someone else's rights.",
+//   },
+//   {
+//     title: "13. Modification of Terms",
+//     description:
+//       `We may update these Terms at any time, with changes reflected by the "Last Updated" date at the top of this page. It's a good idea to check back periodically. Continued use after an update means you've accepted the revised Terms.`,
+//   },
+//   {
+//     title: "14. Governing Law & Jurisdiction",
+//     description:
+//       `These Terms are governed by the laws of India. Any disputes connected to these Terms, this website, or our real estate services fall under the exclusive jurisdiction of the courts of Gurugram, Haryana.`,
+//   },
+//   {
+//     title: "Conclusion",
+//     description:
+//       `At KMA Global Properties Pvt. Ltd., transparency and professionalism guide how we work, whether you're exploring residential property in Gurugram, looking at commercial property investment, or just researching the market. These Terms exist to keep that relationship clear and fair for everyone.
+//       <br>
+//       <em>This document is for informational purposes and does not constitute legal advice. For specific matters, please consult independent legal counsel.</em>`,
+//   },
+// ];
+
+// export default function TermsAndConditionsPage() {
+//   return (
+//     <>
+//       <div className="sticky top-0 z-50 w-full flex justify-center pb-2">
+//         <HomeHeader showColor={true} />
+//       </div>
+
+//       <main className="bg-[#f8fafc] py-10 px-4 md:py-14">
+//         <div className="max-w-5xl mx-auto bg-white rounded-xl border border-[#e5e7eb] p-6 md:p-10">
+//           <h1 className="text-[#010048] text-2xl md:text-3xl font-semibold uppercase">
+//             Terms and Conditions | KMA Global Properties – Gurugram Real Estate
+//           </h1>
+
+//           <p className="mt-4 text-[#44525a] text-sm md:text-base leading-relaxed">
+//             Welcome to KMA Global Properties. Please review the terms below carefully before
+//             using our website and services.
+//           </p>
+
+//           <div className="mt-6 space-y-6">
+//             {termsAndConditionsItems.map((item) => (
+//               <section key={item.title}>
+//                 <h2 className="text-[#010048] text-base md:text-lg font-medium">{item.title}</h2>
+//                 {/* <p className="mt-2 text-[#44525a] text-sm md:text-base leading-relaxed">
+//                   {item.description}
+//                 </p> */}
+//                 <div 
+//   className="mt-2 text-[#44525a] text-sm md:text-base leading-relaxed"
+//   dangerouslySetInnerHTML={{ __html: item.description || "" }} 
+// />
+//               </section>
+//             ))}
+//           </div>
+//         </div>
+//       </main>
+
+//       <AboutusDataSync />
+//       <HomeFooter />
+//     </>
+//   );
+// }
+
 import AboutusDataSync from "@/components/footer/AboutusDataSync";
 import HomeFooter from "@/components/footer/homeFooter";
 import HomeHeader from "@/components/header/homeHeader";
@@ -117,6 +280,40 @@ export const metadata: Metadata = {
   description: "Read the terms governing use of KMA Global Properties' website, your trusted real estate advisory in Gurugram for property listings, sales, and investment guidance.",
   alternates: {
     canonical: "https://kmaglobalproperty.com/terms-and-conditions", 
+  },
+
+  openGraph: {
+    type: "website",
+    siteName: "KMA Global Properties",
+    title: "Terms & Conditions | KMA Global Properties",
+    description:
+      "Read the terms and conditions governing the use of KMA Global Properties' website and real estate services.",
+    url: "https://kmaglobalproperty.com/terms-and-conditions",
+    locale: "en_IN",
+    images: [
+      {
+        url: "https://kmaglobalproperty.com/assets/images/og/terms.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Terms and Conditions",
+      },
+    ],
+  },
+
+  // TWITTER CARDS
+  twitter: {
+    card: "summary_large_image",
+    site: "@kmaproperty",
+    creator: "@kmaproperty",
+    title: "Terms & Conditions | KMA Global Properties",
+    description:
+      "Read the terms and conditions governing the use of KMA Global Properties' website and real estate services.",
+    images: [
+      {
+        url: "https://kmaglobalproperty.com/assets/images/og/terms.jpg",
+        alt: "Terms and Conditions",
+      },
+    ],
   },
 };
 
@@ -230,8 +427,217 @@ Where any liability does apply, it's capped at the amount you've paid us, if any
 ];
 
 export default function TermsAndConditionsPage() {
+
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "RealEstateAgent",
+    "@id": "https://kmaglobalproperty.com/#realestateagent",
+    name: "KMA Global Properties Pvt. Ltd.",
+    url: "https://kmaglobalproperty.com/",
+    logo: {
+      "@type": "ImageObject",
+      url: "https://kmaglobalproperty.com/assets/kma-logo-white.svg",
+    },
+    image: {
+      "@type": "ImageObject",
+      url: "https://kmaglobalproperty.com/assets/kma-logo-white.svg",
+    },
+    description:
+      "KMA Global Properties Pvt. Ltd. is a luxury real estate consultancy in Gurugram, offering property buying, selling, renting and investment advisory services across Dwarka Expressway, New Gurgaon, Golf Course Road, SPR and other prime locations.",
+    telephone: "+91-9289977646",
+    email: "info@kmaglobalproperty.com",
+    priceRange: "₹₹₹",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress:
+        "Plot No. 3A, Shastri Nagar Industrial Area, Sector 106, Dwarka Expressway",
+      addressLocality: "Gurugram",
+      addressRegion: "Haryana",
+      postalCode: "122006",
+      addressCountry: "IN",
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 28.495066726388554,
+      longitude: 77.00045681349395,
+    },
+    openingHoursSpecification: [
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday",
+        ],
+        opens: "10:00",
+        closes: "19:00",
+      },
+    ],
+    areaServed: [
+      {
+        "@type": "City",
+        name: "Gurugram",
+      },
+      {
+        "@type": "Place",
+        name: "Dwarka Expressway",
+      },
+      {
+        "@type": "Place",
+        name: "New Gurgaon",
+      },
+      {
+        "@type": "Place",
+        name: "Golf Course Road",
+      },
+      {
+        "@type": "Place",
+        name: "Sohna Road",
+      },
+      {
+        "@type": "Place",
+        name: "Southern Peripheral Road (SPR)",
+      },
+    ],
+    makesOffer: [
+      {
+        "@type": "Service",
+        name: "Property Buying",
+      },
+      {
+        "@type": "Service",
+        name: "Property Selling",
+      },
+      {
+        "@type": "Service",
+        name: "Property Rental",
+      },
+      {
+        "@type": "Service",
+        name: "Property Investment Consultancy",
+      },
+      {
+        "@type": "Service",
+        name: "Luxury Residential Property Services",
+      },
+    ],
+    contactPoint: {
+      "@type": "ContactPoint",
+      telephone: "+91-9289977646",
+      contactType: "Sales",
+      areaServed: "IN",
+      availableLanguage: ["English", "Hindi"],
+    },
+    hasMap:
+      "https://maps.google.com/?q=28.495066726388554,77.00045681349395",
+    sameAs: [
+      "https://www.instagram.com/kmaglobalproperty/",
+      "https://www.facebook.com/people/KMA-Global-Properties-Pvt-Ltd/61586635903995/",
+      "https://www.linkedin.com/company/kma-global-properties-pvt-ltd/",
+      "https://www.youtube.com/@kmaglobalproperties",
+      "https://x.com/kmaproperty",
+    ],
+  };
+
+  // WebSite Schema
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": "https://kmaglobalproperty.com/#website",
+    url: "https://kmaglobalproperty.com/",
+    name: "KMA Global Properties",
+    publisher: {
+      "@id": "https://kmaglobalproperty.com/#realestateagent",
+    },
+    inLanguage: "en-IN",
+  };
+
+  // WebPage Schema
+  const webPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "https://kmaglobalproperty.com/terms-and-conditions#webpage",
+    url: "https://kmaglobalproperty.com/terms-and-conditions",
+    name: "Terms & Conditions | KMA Global Properties",
+    headline:
+      "Terms and Conditions | KMA Global Properties – Gurugram Real Estate",
+    description:
+      "Read the Terms and Conditions governing the use of KMA Global Properties' website, real estate listings, advisory services and property-related information.",
+    inLanguage: "en-IN",
+    isPartOf: {
+      "@id": "https://kmaglobalproperty.com/#website",
+    },
+    about: {
+      "@id": "https://kmaglobalproperty.com/#organization",
+    },
+    publisher: {
+      "@id": "https://kmaglobalproperty.com/#organization",
+    },
+    breadcrumb: {
+      "@id": "https://kmaglobalproperty.com/terms-and-conditions#breadcrumb",
+    },
+    dateModified: "2026-06-13",
+  };
+
+  // BreadcrumbList Schema
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "@id": "https://kmaglobalproperty.com/terms-and-conditions#breadcrumb",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://kmaglobalproperty.com/",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Terms & Conditions",
+        item: "https://kmaglobalproperty.com/terms-and-conditions",
+      },
+    ],
+  };
+
+  // WebPageElement Schema
+  const webPageElementSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPageElement",
+    "@id": "https://kmaglobalproperty.com/terms-and-conditions#content",
+    name: "Terms and Conditions",
+    isPartOf: {
+      "@id": "https://kmaglobalproperty.com/terms-and-conditions#webpage",
+    },
+  };
+
   return (
     <>
+    <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageElementSchema) }}
+      />
+      
       <div className="sticky top-0 z-50 w-full flex justify-center pb-2">
         <HomeHeader showColor={true} />
       </div>
