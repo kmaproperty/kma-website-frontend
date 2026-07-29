@@ -180,21 +180,172 @@
 
 // export default ContactUs;
 
+// import { Metadata } from 'next';
+// import React from 'react'
+// import ContactUs from './ContactClientPage';
+
+// export const metadata: Metadata = {
+//   title: "Contact KMA Global Properties | Gurugram Real Estate Broker",
+//   description: "Contact KMA Global Properties for property buying, investment, site visits, rentals, careers, and real estate guidance in Gurugram.",
+//   alternates: {
+//     canonical: "https://kmaglobalproperty.com/contact-us", 
+//   },
+// };
+
+// const ContactPage = () => {
+//   return (
+//     <ContactUs/>
+//   )
+// }
+
+// export default ContactPage
+
 import { Metadata } from 'next';
 import React from 'react'
 import ContactUs from './ContactClientPage';
 
 export const metadata: Metadata = {
   title: "Contact KMA Global Properties | Gurugram Real Estate Broker",
-  description: "Contact KMA Global Properties for property buying, investment, site visits, rentals, careers, and real estate guidance in Gurugram.",
+  description:
+    "Contact KMA Global Properties for property buying, investment, site visits, rentals, careers, and real estate guidance in Gurugram.",
   alternates: {
-    canonical: "https://kmaglobalproperty.com/contact-us", 
+    canonical: "https://kmaglobalproperty.com/contact-us",
+  },
+  openGraph: {
+    type: "website",
+    siteName: "KMA Global Properties",
+    title: "Contact KMA Global Properties | Gurugram Real Estate Experts",
+    description:
+      "Contact KMA Global Properties for buying, selling, investment, rentals, site visits, and real estate consultation in Gurgaon.",
+    url: "https://kmaglobalproperty.com/contact-us",
+    images: [
+      {
+        url: "https://kmaglobalproperty.com/assets/images/og/contact-us.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Contact KMA Global Properties",
+      },
+    ],
+    locale: "en_IN",
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@kmaproperty",
+    creator: "@kmaproperty",
+    title: "Contact KMA Global Properties | Gurugram Real Estate Experts",
+    description:
+      "Contact KMA Global Properties for property buying, selling, investment, rentals, site visits, and real estate consultation.",
+    images: ["https://kmaglobalproperty.com/assets/contact-hero-bg.png"],
   },
 };
 
 const ContactPage = () => {
+  const contactPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    "@id": "https://kmaglobalproperty.com/contact-us/#contactpage",
+    url: "https://kmaglobalproperty.com/contact-us",
+    name: "Contact KMA Global Properties",
+    headline: "Contact KMA Global Properties | Gurugram Real Estate Experts",
+    description:
+      "Contact KMA Global Properties for property buying, investment, rentals, site visits, career opportunities and real estate guidance in Gurugram and Delhi NCR.",
+    inLanguage: "en-IN",
+    isPartOf: {
+      "@id": "https://kmaglobalproperty.com/#website",
+    },
+    about: {
+      "@id": "https://kmaglobalproperty.com/#realestateagent",
+    },
+    publisher: {
+      "@id": "https://kmaglobalproperty.com/#realestateagent",
+    },
+    breadcrumb: {
+      "@id": "https://kmaglobalproperty.com/contact-us/#breadcrumb",
+    },
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "@id": "https://kmaglobalproperty.com/contact-us/#breadcrumb",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://kmaglobalproperty.com/",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Contact Us",
+        item: "https://kmaglobalproperty.com/contact-us",
+      },
+    ],
+  };
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "How can I contact KMA Global Properties?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "You can call us at +91-9056580022, email us at info@kmaglobalproperty.com, or use the contact form on our website.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Where is KMA Global Properties located?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Our office is located at Plot No. 3A, Sector 106, Dwarka Expressway, Gurugram, Haryana, India – 122006.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What services can I contact you for?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "You can contact us for buying or selling property, investment options, site visits, rental queries, and career opportunities in real estate.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Do you provide real estate consultation?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes, we provide guidance on property selection, pricing, investment opportunities, and location benefits, usually at no cost.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What is your response time?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "We usually respond within working hours on the same day. In case of delays, we ensure every query is answered.",
+        },
+      },
+    ],
+  };
   return (
+    <>
+    <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(contactPageSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
     <ContactUs/>
+    </>
   )
 }
 
