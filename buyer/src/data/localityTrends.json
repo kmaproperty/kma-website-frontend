@@ -1,0 +1,290 @@
+{
+  "golf-course-road": {
+    "localityName": "Golf Course Road",
+    "currentAvgRate": 24500,
+    "trends": [
+      { "year": "2022", "locality": 13500 },
+      { "year": "Q3 2022", "locality": 15000 },
+      { "year": "2023", "locality": 17200 },
+      { "year": "Q3 2023", "locality": 19000 },
+      { "year": "2024", "locality": 21000 },
+      { "year": "Q3 2024", "locality": 22800 },
+      { "year": "2025", "locality": 23600 },
+      { "year": "Q3 2025", "locality": 24100 },
+      { "year": "2026", "locality": 24500 }
+    ],
+    "growth1Yr": "8.4%",
+    "growth3Yr": "42.4%",
+    "growth5Yr": "81.5%"
+  },
+  "golf-course-extension-road": {
+    "localityName": "Golf Course Ext. Road",
+    "currentAvgRate": 18500,
+    "trends": [
+      { "year": "2022", "locality": 9500 },
+      { "year": "Q3 2022", "locality": 11000 },
+      { "year": "2023", "locality": 12800 },
+      { "year": "Q3 2023", "locality": 14500 },
+      { "year": "2024", "locality": 16000 },
+      { "year": "Q3 2024", "locality": 17200 },
+      { "year": "2025", "locality": 17900 },
+      { "year": "Q3 2025", "locality": 18200 },
+      { "year": "2026", "locality": 18500 }
+    ],
+    "growth1Yr": "7.5%",
+    "growth3Yr": "44.5%",
+    "growth5Yr": "94.7%"
+  },
+  "dwarka-expressway": {
+    "localityName": "Dwarka Expressway",
+    "currentAvgRate": 15500,
+    "trends": [
+      { "year": "2022", "locality": 7200 },
+      { "year": "Q3 2022", "locality": 8400 },
+      { "year": "2023", "locality": 9800 },
+      { "year": "Q3 2023", "locality": 11200 },
+      { "year": "2024", "locality": 12800 },
+      { "year": "Q3 2024", "locality": 14000 },
+      { "year": "2025", "locality": 14800 },
+      { "year": "Q3 2025", "locality": 15200 },
+      { "year": "2026", "locality": 15500 }
+    ],
+    "growth1Yr": "10.7%",
+    "growth3Yr": "58.1%",
+    "growth5Yr": "115.2%"
+  },
+  "sector-102-gurgaon": {
+    "localityName": "Sector 102 Gurgaon",
+    "currentAvgRate": 14800,
+    "trends": [
+      { "year": "2022", "locality": 6800 },
+      { "year": "Q3 2022", "locality": 7900 },
+      { "year": "2023", "locality": 9200 },
+      { "year": "Q3 2023", "locality": 10600 },
+      { "year": "2024", "locality": 12000 },
+      { "year": "Q3 2024", "locality": 13200 },
+      { "year": "2025", "locality": 14100 },
+      { "year": "Q3 2025", "locality": 14500 },
+      { "year": "2026", "locality": 14800 }
+    ],
+    "growth1Yr": "12.1%",
+    "growth3Yr": "60.8%",
+    "growth5Yr": "117.6%"
+  },
+  "sector-106-gurgaon": {
+    "localityName": "Sector 106 Gurgaon",
+    "currentAvgRate": 15800,
+    "trends": [
+      { "year": "2022", "locality": 8000 },
+      { "year": "Q3 2022", "locality": 9200 },
+      { "year": "2023", "locality": 10500 },
+      { "year": "Q3 2023", "locality": 11800 },
+      { "year": "2024", "locality": 13000 },
+      { "year": "Q3 2024", "locality": 14200 },
+      { "year": "2025", "locality": 15000 },
+      { "year": "Q3 2025", "locality": 15400 },
+      { "year": "2026", "locality": 15800 }
+    ],
+    "growth1Yr": "11.2%",
+    "growth3Yr": "50.4%",
+    "growth5Yr": "97.5%"
+  },
+  "sector-109-gurgaon": {
+    "localityName": "Sector 109 Gurgaon",
+    "currentAvgRate": 14200,
+    "trends": [
+      { "year": "2022", "locality": 6500 },
+      { "year": "Q3 2022", "locality": 7500 },
+      { "year": "2023", "locality": 8800 },
+      { "year": "Q3 2023", "locality": 10000 },
+      { "year": "2024", "locality": 11400 },
+      { "year": "Q3 2024", "locality": 12600 },
+      { "year": "2025", "locality": 13500 },
+      { "year": "Q3 2025", "locality": 13900 },
+      { "year": "2026", "locality": 14200 }
+    ],
+    "growth1Yr": "12.6%",
+    "growth3Yr": "61.3%",
+    "growth5Yr": "118.4%"
+  },
+  "southern-peripheral-road": {
+    "localityName": "Southern Peripheral Road (SPR)",
+    "currentAvgRate": 16200,
+    "trends": [
+      { "year": "2022", "locality": 7800 },
+      { "year": "Q3 2022", "locality": 8900 },
+      { "year": "2023", "locality": 10200 },
+      { "year": "Q3 2023", "locality": 11600 },
+      { "year": "2024", "locality": 13200 },
+      { "year": "Q3 2024", "locality": 14500 },
+      { "year": "2025", "locality": 15400 },
+      { "year": "Q3 2025", "locality": 15900 },
+      { "year": "2026", "locality": 16200 }
+    ],
+    "growth1Yr": "11.7%",
+    "growth3Yr": "58.8%",
+    "growth5Yr": "107.6%"
+  },
+  "sector-68-gurgaon": {
+    "localityName": "Sector 68 Gurgaon",
+    "currentAvgRate": 13800,
+    "trends": [
+      { "year": "2022", "locality": 6200 },
+      { "year": "Q3 2022", "locality": 7100 },
+      { "year": "2023", "locality": 8300 },
+      { "year": "Q3 2023", "locality": 9600 },
+      { "year": "2024", "locality": 11000 },
+      { "year": "Q3 2024", "locality": 12200 },
+      { "year": "2025", "locality": 13100 },
+      { "year": "Q3 2025", "locality": 13500 },
+      { "year": "2026", "locality": 13800 }
+    ],
+    "growth1Yr": "13.1%",
+    "growth3Yr": "66.2%",
+    "growth5Yr": "122.5%"
+  },
+  "sector-70-gurgaon": {
+    "localityName": "Sector 70 Gurgaon",
+    "currentAvgRate": 14500,
+    "trends": [
+      { "year": "2022", "locality": 6900 },
+      { "year": "Q3 2022", "locality": 7900 },
+      { "year": "2023", "locality": 9100 },
+      { "year": "Q3 2023", "locality": 10400 },
+      { "year": "2024", "locality": 11800 },
+      { "year": "Q3 2024", "locality": 12900 },
+      { "year": "2025", "locality": 13800 },
+      { "year": "Q3 2025", "locality": 14200 },
+      { "year": "2026", "locality": 14500 }
+    ],
+    "growth1Yr": "12.4%",
+    "growth3Yr": "59.3%",
+    "growth5Yr": "110.1%"
+  },
+  "new-gurgaon": {
+    "localityName": "New Gurgaon",
+    "currentAvgRate": 11800,
+    "trends": [
+      { "year": "2022", "locality": 5200 },
+      { "year": "Q3 2022", "locality": 6000 },
+      { "year": "2023", "locality": 7100 },
+      { "year": "Q3 2023", "locality": 8200 },
+      { "year": "2024", "locality": 9400 },
+      { "year": "Q3 2024", "locality": 10400 },
+      { "year": "2025", "locality": 11100 },
+      { "year": "Q3 2025", "locality": 11500 },
+      { "year": "2026", "locality": 11800 }
+    ],
+    "growth1Yr": "13.4%",
+    "growth3Yr": "66.1%",
+    "growth5Yr": "126.9%"
+  },
+  "sector-82-gurgaon": {
+    "localityName": "Sector 82 Gurgaon",
+    "currentAvgRate": 11200,
+    "trends": [
+      { "year": "2022", "locality": 5000 },
+      { "year": "Q3 2022", "locality": 5800 },
+      { "year": "2023", "locality": 6800 },
+      { "year": "Q3 2023", "locality": 7900 },
+      { "year": "2024", "locality": 9000 },
+      { "year": "Q3 2024", "locality": 9900 },
+      { "year": "2025", "locality": 10600 },
+      { "year": "Q3 2025", "locality": 10900 },
+      { "year": "2026", "locality": 11200 }
+    ],
+    "growth1Yr": "13.1%",
+    "growth3Yr": "64.7%",
+    "growth5Yr": "124.0%"
+  },
+  "sector-83-gurgaon": {
+    "localityName": "Sector 83 Gurgaon",
+    "currentAvgRate": 11500,
+    "trends": [
+      { "year": "2022", "locality": 5100 },
+      { "year": "Q3 2022", "locality": 5900 },
+      { "year": "2023", "locality": 6900 },
+      { "year": "Q3 2023", "locality": 8000 },
+      { "year": "2024", "locality": 9200 },
+      { "year": "Q3 2024", "locality": 10100 },
+      { "year": "2025", "locality": 10800 },
+      { "year": "Q3 2025", "locality": 11200 },
+      { "year": "2026", "locality": 11500 }
+    ],
+    "growth1Yr": "13.8%",
+    "growth3Yr": "66.6%",
+    "growth5Yr": "125.4%"
+  },
+  "sector-84-gurgaon": {
+    "localityName": "Sector 84 Gurgaon",
+    "currentAvgRate": 12000,
+    "trends": [
+      { "year": "2022", "locality": 5400 },
+      { "year": "Q3 2022", "locality": 6200 },
+      { "year": "2023", "locality": 7300 },
+      { "year": "Q3 2023", "locality": 8500 },
+      { "year": "2024", "locality": 9700 },
+      { "year": "Q3 2024", "locality": 10600 },
+      { "year": "2025", "locality": 11300 },
+      { "year": "Q3 2025", "locality": 11700 },
+      { "year": "2026", "locality": 12000 }
+    ],
+    "growth1Yr": "13.2%",
+    "growth3Yr": "64.3%",
+    "growth5Yr": "122.2%"
+  },
+  "sector-92-gurgaon": {
+    "localityName": "Sector 92 Gurgaon",
+    "currentAvgRate": 10800,
+    "trends": [
+      { "year": "2022", "locality": 4800 },
+      { "year": "Q3 2022", "locality": 5500 },
+      { "year": "2023", "locality": 6400 },
+      { "year": "Q3 2023", "locality": 7400 },
+      { "year": "2024", "locality": 8500 },
+      { "year": "Q3 2024", "locality": 9500 },
+      { "year": "2025", "locality": 10200 },
+      { "year": "Q3 2025", "locality": 10500 },
+      { "year": "2026", "locality": 10800 }
+    ],
+    "growth1Yr": "13.6%",
+    "growth3Yr": "68.7%",
+    "growth5Yr": "125.0%"
+  },
+  "cyber-city": {
+    "localityName": "Cyber City / DLF Phase 2",
+    "currentAvgRate": 22500,
+    "trends": [
+      { "year": "2022", "locality": 12000 },
+      { "year": "Q3 2022", "locality": 13500 },
+      { "year": "2023", "locality": 15500 },
+      { "year": "Q3 2023", "locality": 17500 },
+      { "year": "2024", "locality": 19500 },
+      { "year": "Q3 2024", "locality": 21000 },
+      { "year": "2025", "locality": 21800 },
+      { "year": "Q3 2025", "locality": 22200 },
+      { "year": "2026", "locality": 22500 }
+    ],
+    "growth1Yr": "7.1%",
+    "growth3Yr": "45.1%",
+    "growth5Yr": "87.5%"
+  },
+  "mg-road": {
+    "localityName": "MG Road Gurgaon",
+    "currentAvgRate": 19800,
+    "trends": [
+      { "year": "2022", "locality": 11000 },
+      { "year": "Q3 2022", "locality": 12200 },
+      { "year": "2023", "locality": 13800 },
+      { "year": "Q3 2023", "locality": 15400 },
+      { "year": "2024", "locality": 17000 },
+      { "year": "Q3 2024", "locality": 18400 },
+      { "year": "2025", "locality": 19100 },
+      { "year": "Q3 2025", "locality": 19500 },
+      { "year": "2026", "locality": 19800 }
+    ],
+    "growth1Yr": "7.6%",
+    "growth3Yr": "43.4%",
+    "growth5Yr": "80.0%"
+  }
+}
