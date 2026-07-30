@@ -33,6 +33,7 @@
     "react-select": "^5.10.2",
     "react-slick": "^0.31.0",
     "react-toastify": "^11.0.5",
+    "recharts": "^3.10.1",
     "rss-parser": "^3.13.0",
     "slick-carousel": "^1.8.1",
     "swiper": "^12.1.4",
