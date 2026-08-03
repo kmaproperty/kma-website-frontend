@@ -600,9 +600,11 @@ export default function ReferAndEarnClient() {
     try {
       await submitReferralEnquiryApiHandler({
         referrerName: rName,
-        referrerPhone: rPhone,
+        // referrerPhone: rPhone,
+        referrerPhone: "+91"+rPhone,
         clientName: cName,
-        clientMobile: cMobile,
+        // clientMobile: cMobile,
+        clientMobile: "+91"+cMobile,
         propertyType: formValue.propertyType,
         location: formValue.location.trim() || undefined,
         channelPartnerId: cpId || undefined,

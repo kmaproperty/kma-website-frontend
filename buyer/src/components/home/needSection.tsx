@@ -72,7 +72,7 @@ export default function NeedSection() {
   };
 
   return (
-    <div className="" >
+    <div className="mt-35 md:mt-0" >
       <SectionHeader
         isInView={isInView}
         heading="All Your Needs. One Trusted Platform."
