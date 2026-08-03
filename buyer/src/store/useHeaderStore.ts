@@ -66,7 +66,8 @@ export function useHeaderStore(syncUserRole = false) {
   const { mutate: fetchCities, isPending: cityLoaderMutation } = useMutation({
     mutationFn: getCityListApiHandler,
     onSuccess: (response: CitiesResponse) => {
-      const findCity = response?.allCities?.find((item) => item.name === "Gurgaon");
+      // const findCity = response?.allCities?.find((item) => item.name === "Gurgaon");
+      const findCity = response?.allCities?.find((item) => item.name === "Gurugram");
       if (findCity) {
         dispatch(setSelectedCity(findCity as RootState["homeHeader"]["selectedCity"]));
       }
