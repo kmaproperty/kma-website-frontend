@@ -136,7 +136,7 @@ export default function AboutUsSection() {
             {
               img: "/assets/aboutUs/about_us_4.svg",
               value: aboutus?.statistics?.totalActiveProperties,
-              label: "Total Active Properties",
+              label: "Total Properties",
             },
             //  {
             //   img: "/assets/aboutUs/about_us_4.svg",
