@@ -1,14 +1,224 @@
+// 'use client'
+// import { motion, useInView } from "framer-motion";
+// import Image from "next/image";
+// import AboutUsImage from "../common/home/aboutUsImage";
+// import { useRef } from "react";
+// import { useQuery } from "@tanstack/react-query";
+// import { getAboutUsSectionDataApiResponse, GetAboutUsSectionResponse } from "@/services/homeService";
+// import CountUp from 'react-countup';
+// import { usePathname } from "next/navigation";
+// import { useRouter } from "nextjs-toploader/app";
+// import { createURLSearchParam } from "@/lib/helper";
+
+// const leftVariant = {
+//   hidden: { x: "-100%", opacity: 0 },
+//   visible: {
+//     x: 0,
+//     opacity: 1,
+//     transition: { duration: 1, ease: "easeOut" as const },
+//   },
+// };
+
+// const rightVariant = {
+//   hidden: { x: "100%", opacity: 0 },
+//   visible: {
+//     x: 0,
+//     opacity: 1,
+//     transition: { duration: 1, ease: "easeOut" as const },
+//   },
+// };
+
+// const bottomVariant = {
+//   hidden: { y: 120, opacity: 0 },
+//   visible: {
+//     y: 0,
+//     opacity: 1,
+//     transition: { duration: 1, ease: "easeOut" as const },
+//   },
+// };
+
+// const staggerContainer = {
+//   hidden: {},
+//   visible: {
+//     transition: {
+//       staggerChildren: 0.15,
+//     },
+//   },
+// };
+
+
+// export default function AboutUsSection() {
+//   const ref = useRef(null);
+//   const isInView = useInView(ref, { once: true });
+//   const pathname = usePathname();
+//   const router = useRouter();
+
+//   const openContactPopup = () => {
+//     const params = createURLSearchParam({ isContactInformation: true });
+//     router.push(`${pathname}${params}`);
+//   };
+
+//   const { data: aboutus } = useQuery({
+//     queryKey: ["about-us"],
+//     queryFn: () => {
+//       return getAboutUsSectionDataApiResponse();
+//     },
+//     select: (response: GetAboutUsSectionResponse) => {
+//       return response;
+//     },
+//   });
+
+//   return (
+//     <>
+//       <div ref={ref} className="my-16 w-[90%] 2md:w-[75%] z-10">
+//         <motion.div
+//           className="grid grid-cols-1 2md:grid-cols-2 gap-6 justify-between items-center"
+          
+//           animate={isInView ? "visible" : "hidden"}
+//         >
+//           <motion.div
+//             variants={leftVariant}
+//             className="flex flex-col gap-3 2md:pr-6 items-center md:items-start"
+//             animate={isInView ? "visible" : "hidden"}
+//           >
+//             <p className="w-fit text-[#010048] text-xs bg-white rounded-[5px] py-1 px-2">
+//               About Us
+//             </p>
+//             <div>
+//               <p className="text-xl text-white text-wrap font-semibold text-center md:text-left">
+//                 {aboutus?.aboutUs?.heading}
+//               </p>
+//               <p className="mt-1 leading-4 text-xs md:text-sm text-white text-wrap font-regular text-center md:text-left">
+//                 {aboutus?.aboutUs?.description}
+//               </p>
+//             </div>
+//             <div className="flex gap-4 mt-2">
+//               <button onClick={() => router.push("/about-us")} className="w-auto text-sm 1xl:text-base text-white! hover:text-text-black! animated-button-white px-8 py-2 border border-white bg-transparent! text-center cursor-pointer">
+//                 <span className="gap-3 relative flex justify-center">
+//                   <p className={`text-nowrap`}>Know More</p>
+//                 </span>
+//               </button>
+//             </div>
+//           </motion.div>
+//           <motion.div
+//             variants={rightVariant}
+//             className="flex justify-center h-full 2md:justify-end"
+//             animate={isInView ? "visible" : "hidden"}
+//           >
+//             <AboutUsImage
+//               width="100%"
+//               height="280px"
+//               imageUrl={"/assets/aboutUs/about_us_img.png"}
+//             />
+//           </motion.div>
+//         </motion.div>
+//         <motion.div
+//           className="grid grid-cols-2 2md:grid-cols-4 gap-3 mt-15 justify-items-center "
+//           variants={staggerContainer}
+//           animate={isInView ? "visible" : "hidden"}
+//         >
+//           {aboutus && [
+//             {
+//               img: "/assets/aboutUs/about_us_1.svg",
+//               value: aboutus?.statistics?.totalOwners,
+//               label: "Total Owners",
+//             },
+//             {
+//               img: "/assets/aboutUs/about_us_2.svg",
+//               value: aboutus?.statistics?.totalChannelPartners,
+//               label: "Total Channel Partner",
+//             },
+//             {
+//               img: "/assets/aboutUs/about_us_3.svg",
+//               value: aboutus?.statistics?.totalUsers,
+//               label: "Total Users / Clients",
+//             },
+//             {
+//               img: "/assets/aboutUs/about_us_4.svg",
+//               value: aboutus?.statistics?.totalActiveProperties,
+//               label: "Total Properties",
+//             },
+//             //  {
+//             //   img: "/assets/aboutUs/about_us_4.svg",
+//             //   value: aboutus?.statistics?.propertiesListedLast24Hours,
+//             //   label: "Properties Listed in Last 24 Hours",
+//             // },
+//           ].map((item, index) => (
+//             <motion.div
+//               key={index}
+//               variants={bottomVariant}
+//               animate={isInView ? "visible" : "hidden"}
+//               className="flex items-center gap-4 bg-[#131D2C] w-full max-w-[343px] h-[117px] px-5 py-4 rounded-[10px] border border-white/5 shadow-[0_8px_24px_rgba(0,0,0,0.25)] hover:border-white/10 transition-colors"
+//             >
+//               <Image src={item.img} width={40} height={40} alt={item.label} />
+//               <div className="number-count">
+//                 {isInView && <CountUp start={0} end={Number(item.value ?? 0)} delay={1} />}
+//                 <p className="text-xs text-white leading-tight">{item.label}</p>
+//               </div>
+//             </motion.div>
+//           ))}
+//         </motion.div>
+//       </div>
+//       <motion.div
+//         className="absolute -left-10 bottom-0 z-0"
+//         variants={leftVariant}
+//         animate={isInView ? "visible" : "hidden"}
+//       >
+//         <Image
+//           src="/assets/aboutUs/about_us_back.svg"
+//           width={400}
+//           height={400}
+//           alt="bg"
+//         />
+//       </motion.div>
+//       <motion.div
+//         className="absolute right-30 bottom-0 z-0"
+//         variants={bottomVariant}
+//         animate={isInView ? "visible" : "hidden"}
+//       >
+//         <Image
+//           src="/assets/aboutUs/box-below.svg"
+//           width={300}
+//           height={300}
+//           alt="bg"
+//         />
+//       </motion.div>
+//       <motion.div
+//         className="absolute right-10 top-0 z-0"
+//         variants={rightVariant}
+//         animate={isInView ? "visible" : "hidden"}
+//       >
+//         <Image
+//           src="/assets/aboutUs/box-up.svg"
+//           width={300}
+//           height={300}
+//           alt="bg"
+//         />
+//       </motion.div>
+//     </>
+//   );
+// }
+
+
 'use client'
 import { motion, useInView } from "framer-motion";
 import Image from "next/image";
 import AboutUsImage from "../common/home/aboutUsImage";
 import { useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getAboutUsSectionDataApiResponse, GetAboutUsSectionResponse } from "@/services/homeService";
+import { 
+  getAboutUsSectionDataApiResponse, 
+  GetAboutUsSectionResponse,
+  getPropertiesCountApiHandler 
+} from "@/services/homeService";
 import CountUp from 'react-countup';
 import { usePathname } from "next/navigation";
 import { useRouter } from "nextjs-toploader/app";
 import { createURLSearchParam } from "@/lib/helper";
+
+const GURUGRAM_CITY_ID = "e8894ea7-b8fc-43da-b983-b1d43c77597e";
+const GURGAON_CITY_ID = "175e1118-cdfe-4cf3-8a11-62ad4fa4cf1c";
+const EXTRA_CITY_ID = "a999b83d-fbd6-4eed-8e18-8a74754748db";
 
 const leftVariant = {
   hidden: { x: "-100%", opacity: 0 },
@@ -46,7 +256,6 @@ const staggerContainer = {
   },
 };
 
-
 export default function AboutUsSection() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
@@ -68,12 +277,37 @@ export default function AboutUsSection() {
     },
   });
 
+  const { data: combinedTotalProperties } = useQuery({
+    queryKey: ["about-us-total-properties-merged"],
+    queryFn: async () => {
+      try {
+        const [resGurugram, resGurgaon, resExtra] = await Promise.all([
+          getPropertiesCountApiHandler({ cityId: GURUGRAM_CITY_ID, page: "1", limit: "1" }),
+          getPropertiesCountApiHandler({ cityId: GURGAON_CITY_ID, page: "1", limit: "1" }),
+          getPropertiesCountApiHandler({ cityId: EXTRA_CITY_ID, page: "1", limit: "1" }),
+        ]);
+
+        const count1 = Number(resGurugram?.count ?? 0);
+        const count2 = Number(resGurgaon?.count ?? 0);
+        const count3 = Number(resExtra?.count ?? 0);
+
+        return count1 + count2 + count3;
+      } catch (err) {
+        console.error("Failed to fetch merged properties count for about section:", err);
+        return null;
+      }
+    },
+    staleTime: 60_000,
+  });
+
+  const totalPropertiesDisplayCount = 
+    combinedTotalProperties ?? Number(aboutus?.statistics?.totalActiveProperties ?? 0);
+
   return (
     <>
       <div ref={ref} className="my-16 w-[90%] 2md:w-[75%] z-10">
         <motion.div
           className="grid grid-cols-1 2md:grid-cols-2 gap-6 justify-between items-center"
-          
           animate={isInView ? "visible" : "hidden"}
         >
           <motion.div
@@ -135,14 +369,9 @@ export default function AboutUsSection() {
             },
             {
               img: "/assets/aboutUs/about_us_4.svg",
-              value: aboutus?.statistics?.totalActiveProperties,
+              value: totalPropertiesDisplayCount, // 🌟 Combined 3-City Properties Count
               label: "Total Properties",
             },
-            //  {
-            //   img: "/assets/aboutUs/about_us_4.svg",
-            //   value: aboutus?.statistics?.propertiesListedLast24Hours,
-            //   label: "Properties Listed in Last 24 Hours",
-            // },
           ].map((item, index) => (
             <motion.div
               key={index}
