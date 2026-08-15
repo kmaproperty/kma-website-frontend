@@ -2302,7 +2302,7 @@ export default function ListingDetailsPage() {
     asString(propertyDetails?.address) ??
     "";
   const propertyDescription =
-    asString(propertyDetails?.description) ?? "";
+    asString(propertyDetails?.propertyDescription) ?? "";
 
   const monthlyRent = asNumber(propertyDetails?.monthlyRent);
   const salePrice = asNumber(propertyDetails?.price);
@@ -2936,9 +2936,11 @@ export default function ListingDetailsPage() {
                 <div className="mt-5 grid min-w-0 grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(260px,310px)]">
                   <main className="min-w-0 space-y-5 [&>section+section]:mt-5 [&>section+section]:border-t [&>section+section]:border-[#D4D5D8] [&>section+section]:pt-5 md:[&>section+section]:mt-0 md:[&>section+section]:border-0 md:[&>section+section]:pt-0">
                     {propertyDescription ? (
-                      <section className="rounded-xl">
+                      <section className="rounded-xl mx-auto w-[90%] md:w-full">
                         <h2 className="text-xl font-semibold text-text-black">Key highlights</h2>
-                        <p className="mt-3 text-sm leading-6 text-text-gray">{propertyDescription}</p>
+                        <p className="mt-3 text-sm leading-6 text-text-gray">
+                          {propertyDescription?.replace(/<[^>]*>/g, "")}
+                        </p>
                       </section>
                     ) : null}
 
