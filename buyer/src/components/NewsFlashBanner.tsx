@@ -416,9 +416,9 @@ export default function NewsFlashBanner() {
               </div>
 
               <div className="flex items-center gap-4">
-                <span className="hidden sm:inline text-[10px] md:text-xs text-slate-400 font-light">
+                {/* <span className="hidden sm:inline text-[10px] md:text-xs text-slate-400 font-light">
                   {newsList[currentIndex]?.time ? `Today, ${newsList[currentIndex]?.time}` : "Just now"}
-                </span>
+                </span> */}
                 
                 <a
                   href={newsList[currentIndex]?.url}

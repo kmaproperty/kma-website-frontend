@@ -2305,7 +2305,8 @@ export default function ListingDetailsPage() {
     asString(propertyDetails?.propertyDescription) ?? "";
 
   const monthlyRent = asNumber(propertyDetails?.monthlyRent);
-  const salePrice = asNumber(propertyDetails?.price);
+  // const salePrice = asNumber(propertyDetails?.price);
+  const salePrice = asNumber(propertyDetails?.price) ?? asNumber(propertyDetails?.plotPrice);
   const currentPriceLabel =
     monthlyRent && monthlyRent > 0
       ? `Rs ${formatInr(monthlyRent)}`
