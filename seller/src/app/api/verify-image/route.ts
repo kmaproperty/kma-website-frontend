@@ -438,7 +438,7 @@ export async function POST(req: NextRequest) {
         
         let currentPage = 1;
         let hasMorePages = true;
-        const limitPerPage = 10;
+        const limitPerPage = 100;
 
         while (hasMorePages) {
           console.log(`📡 [Admin Database Sync] Fetching admin properties page ${currentPage}...`);
