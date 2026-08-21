@@ -1284,6 +1284,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
         (typeof item.propertyName === "string" && item.propertyName.trim()) ||
         (typeof item.title === "string" && item.title.trim()) ||
         (titleParts.length ? titleParts.join(" in ") : "Property");
+        const description = item?.description
 
       const postedByRole =
         getStringProp(item.user, "role") ??

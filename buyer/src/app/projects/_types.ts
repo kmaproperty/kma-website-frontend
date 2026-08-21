@@ -39,6 +39,7 @@ export interface ProjectAgent {
 export interface Project {
   id: string;
   title: string;
+  description: string;
   address: string;
   city: string;
   isFavorite?: boolean;
