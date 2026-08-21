@@ -1153,8 +1153,9 @@ export default function ProjectCard({
           </div>
 
           <p className="mt-3 line-clamp-2 text-[15px] font-normal text-[#888888] xl:text-sm">
-            A spacious builder floor in a prime location presents a fantastic
-            buying opportunity.
+            {/* A spacious builder floor in a prime location presents a fantastic
+            buying opportunity. */}
+            {project.description ? project.description.replace(/<[^>]*>/g, "").trim() : ""}
           </p>
 
           <div className="mt-3" onClick={handleCardClick}>
