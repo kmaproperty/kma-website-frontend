@@ -1304,6 +1304,7 @@ export default function ProjectsPageClient({ cityId }: { cityId?: string }) {
       return {
         id: item.id,
         title,
+        description,
         address,
         city: cityStr,
         isFavorite: Boolean(item.isFavorite),
