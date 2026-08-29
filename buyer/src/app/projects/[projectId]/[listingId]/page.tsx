@@ -2777,14 +2777,14 @@ export default function ListingDetailsPage() {
                 <ChevronLeft className="h-5 w-5" />
               </button>
               <nav className="min-w-0 text-xs font-medium text-text-gray" aria-label="Breadcrumb">
-                <p className="truncate">Home / {propertyTitle}</p>
+                <p className="truncate">Home / {propertyTitle ? propertyTitle.replace(/<[^>]*>/g, "").trim() : ""}</p>
                 <p className="truncate pt-0.5 font-semibold text-[#0A0E67] underline underline-offset-2">
-                  {propertyTitle}
+                  {propertyTitle ? propertyTitle.replace(/<[^>]*>/g, "").trim() : ""}
                 </p>
               </nav>
             </div>
             <nav className="hidden text-xs text-white/90 sm:text-sm md:block" aria-label="Breadcrumb">
-              <span className="line-clamp-2 break-words">Home / {propertyTitle}</span>
+               <span className="line-clamp-2 break-words">Home / {propertyTitle ? propertyTitle.replace(/<[^>]*>/g, "").trim() : ""}</span>
             </nav>
             <h2 className="mb-3 mt-5 text-[20px] font-semibold leading-none text-[#0A0E67] sm:mb-8 sm:text-3xl md:mt-3 md:text-4xl md:text-white">
               Property Details
@@ -2799,7 +2799,7 @@ export default function ListingDetailsPage() {
                 Home / Projects / {params?.projectId ?? "project"} / {listingId || "property"}
               </p> */}
                   <h1 className="mt-1 break-words font-semibold leading-tight text-text-black 2md:text-[24px] md:text-[20px] sm:text-[18px] text-[16px]">
-                    {propertyTitle}
+                    {propertyTitle ? propertyTitle.replace(/<[^>]*>/g, "").trim() : ""}
                   </h1>
                   <p className="mt-2.5 flex min-w-0 items-start gap-1 text-sm text-text-gray">
                     <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
