@@ -1077,6 +1077,13 @@ export default function ProjectCard({
             priority={priority}
           />
 
+          <div className="absolute left-3 top-3 z-10">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1 text-xs font-semibold text-emerald-700 shadow-md backdrop-blur-xs border border-emerald-200">
+                <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" strokeWidth={2.5} />
+                <span>Verified</span>
+              </span>
+            </div>
+
           <button
             type="button"
             onClick={handleFavoriteClick}
@@ -1108,7 +1115,8 @@ export default function ProjectCard({
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
               <h3 className="line-clamp-1 text-xl font-semibold leading-tight text-[#0D1520] xl:font-semibold">
-                {project.title}
+                {/* {project.title} */}
+                {project.title ? project.title.replace(/<[^>]*>/g, "").trim() : ""}
               </h3>
               <p className="line-clamp-1 text-[15px] text-text-gray xl:mt-0.5 xl:text-sm">
                 {project.address}
@@ -1189,7 +1197,8 @@ export default function ProjectCard({
       <div className="flex items-center justify-between gap-3 border-t border-border bg-[#f5f5f5] px-3.5 py-3 xl:px-4">
         <div className="flex items-center gap-3">
           <Image
-            src={project.agent?.avatarUrl ?? "/assets/app/call-person.svg"}
+            // src={project.agent?.avatarUrl ?? "/assets/app/call-person.svg"}
+            src={"/assets/app/call-person.svg"}
             alt={project.agent?.name ?? "Agent"}
             width={36}
             height={36}
@@ -1255,7 +1264,8 @@ export default function ProjectCard({
             <div className="mb-3 flex items-center justify-between gap-3 rounded-lg bg-[#E3E3E3] px-3 py-2">
               <div className="flex items-center gap-3">
                 <Image
-                  src={project.agent?.avatarUrl ?? "/assets/app/call-person.svg"}
+                  // src={project.agent?.avatarUrl ?? "/assets/app/call-person.svg"}
+                  src={"/assets/app/call-person.svg"}
                   alt={project.agent?.name ?? "KMA Expert"}
                   width={40}
                   height={40}

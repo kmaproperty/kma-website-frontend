@@ -276,13 +276,13 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
       <div className="relative bg-text-black flex justify-center overflow-hidden">
         <LazyWorkingSection />
       </div>
-      {Array.isArray(channelPartnerList) && channelPartnerList.length > 0 && (
+      {/* {Array.isArray(channelPartnerList) && channelPartnerList.length > 0 && (
         <div className="bg-[#F2F2F2] flex justify-center overflow-hidden">
           <div className="my-16 w-[90%] 2md:w-[75%]">
             <LazyChannelPartnerSection channelPartnerList={channelPartnerList} />
           </div>
         </div>
-      )}
+      )} */}
       {/* <div className="">
         <LazyAppDownloadSection />
       </div> */}
