@@ -3348,7 +3348,8 @@ export default function ListingDetailsPage() {
                           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                             <div className="flex items-center gap-3">
                               <Image
-                                src={apiChannelPartner?.profileImage || apiOwnerDetails?.profileImage || "/assets/profile.png"}
+                                // src={apiChannelPartner?.profileImage || apiOwnerDetails?.profileImage || "/assets/profile.png"}
+                                src={"/assets/app/call-person.svg"}
                                 alt="Agent avatar"
                                 width={52}
                                 height={52}
@@ -3686,6 +3687,12 @@ export default function ListingDetailsPage() {
                                         className="object-cover"
                                         sizes="(max-width:640px) 85vw, 300px"
                                       />
+                                      <div className="absolute left-3 top-3 z-10">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1 text-xs font-semibold text-emerald-700 shadow-md backdrop-blur-xs border border-emerald-200">
+                <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" strokeWidth={2.5} />
+                <span>Verified</span>
+              </span>
+            </div>
                                       <span className="absolute right-3 top-3 rounded-md bg-[#6950F3] px-3 py-1.5 text-xs font-semibold text-white">
                                         {item.propertyType || "Apartment"}
                                       </span>
@@ -3834,7 +3841,8 @@ export default function ListingDetailsPage() {
                     </p>
                     <div className="mt-4 flex items-center gap-3 rounded-lg py-3">
                       <Image
-                        src={specialistImage}
+                        // src={specialistImage}
+                        src={"/assets/app/call-person.svg"}
                         alt={specialistName}
                         width={44}
                         height={44}
