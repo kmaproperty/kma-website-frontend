@@ -363,7 +363,172 @@
 //   );
 // }
 
-import React from "react";
+// import React from "react";
+// import Link from "next/link";
+// import { fetchWPPosts } from "@/lib/wordpress";
+// import HomdeHeader from "@/components/header/homeHeader";
+// import AboutusDataSync from "@/components/footer/AboutusDataSync";
+// import HomeFooter from "@/components/footer/homeFooter";
+// import NewsletterBanner from "@/components/NewsLetterBanner";
+// import BlogPaginatedList from "@/components/blogs/BlogPaginatedList";
+// import { Metadata } from "next";
+
+// export const dynamic = "force-dynamic"; 
+// export const revalidate = 1800;
+
+// export const metadata: Metadata = {
+//   title: "Gurugram Real Estate Blog | News, Trends & Buying Guides",
+//   description:
+//     "Explore Gurugram real estate news, market trends, new launches, buying guides, RERA updates, locality insights, and investment tips by KMA Global Property.",
+//   alternates: {
+//     canonical: "https://kmaglobalproperty.com/blogs",
+//   },
+//   openGraph: {
+//     type: "website",
+//     siteName: "KMA Global Properties",
+//     title: "Gurgaon Real Estate Blog | News, Trends & Investment Guides",
+//     description:
+//       "Read the latest Gurgaon real estate news, investment guides, property trends, RERA updates, and expert insights from KMA Global Properties.",
+//     url: "https://kmaglobalproperty.com/blogs",
+//     locale: "en_IN",
+//     images: [
+//       {
+//         url: "https://kmaglobalproperty.com/assets/images/og/blog.jpg",
+//         width: 1200,
+//         height: 630,
+//         alt: "KMA Global Properties Blog",
+//       },
+//     ],
+//   },
+//   twitter: {
+//     card: "summary_large_image",
+//     site: "@kmaproperty",
+//     creator: "@kmaproperty",
+//     title: "Gurgaon Real Estate Blog | News, Trends & Buying Guides",
+//     description:
+//       "Read Gurgaon property news, investment guides, market trends, RERA updates, and expert real estate insights.",
+//     images: [
+//       {
+//         url: "https://kmaglobalproperty.com/assets/images/og/blog.jpg",
+//         alt: "KMA Global Properties Blog",
+//       },
+//     ],
+//   },
+// };
+
+// export default async function BlogListingPage() {
+//   const webPageSchema = {
+//     "@context": "https://schema.org",
+//     "@type": "WebPage",
+//     "@id": "https://kmaglobalproperty.com/blogs#webpage",
+//     url: "https://kmaglobalproperty.com/blogs",
+//     name: "Gurugram Real Estate Blog | News, Trends & Buying Guides",
+//     headline:
+//       "Gurugram Real Estate Blog: Property News, Market Trends, Investment Guides & Expert Insights",
+//     description:
+//       "Explore Gurugram real estate news, market trends, new launches, buying guides, RERA updates, locality insights and investment tips by KMA Global Property.",
+//     inLanguage: "en-IN",
+//     isPartOf: {
+//       "@id": "https://kmaglobalproperty.com/#website",
+//     },
+//     about: {
+//       "@id": "https://kmaglobalproperty.com/#realestateagent",
+//     },
+//     publisher: {
+//       "@id": "https://kmaglobalproperty.com/#realestateagent",
+//     },
+//     breadcrumb: {
+//       "@id": "https://kmaglobalproperty.com/blogs#breadcrumb",
+//     },
+//     mainEntity: {
+//       "@id": "https://kmaglobalproperty.com/blogs#blog",
+//     },
+//   };
+
+//   const collectionPageSchema = {
+//     "@context": "https://schema.org",
+//     "@type": "CollectionPage",
+//     "@id": "https://kmaglobalproperty.com/blogs#collectionpage",
+//     url: "https://kmaglobalproperty.com/blogs",
+//     name: "Real Estate Blog Articles",
+//     description:
+//       "Browse property news, investment guides, buying tips, market reports and Gurugram real estate articles.",
+//     mainEntity: {
+//       "@id": "https://kmaglobalproperty.com/blogs#blog",
+//     },
+//   };
+
+//   const breadcrumbSchema = {
+//     "@context": "https://schema.org",
+//     "@type": "BreadcrumbList",
+//     "@id": "https://kmaglobalproperty.com/blogs#breadcrumb",
+//     itemListElement: [
+//       {
+//         "@type": "ListItem",
+//         position: 1,
+//         name: "Home",
+//         item: "https://kmaglobalproperty.com/",
+//       },
+//       {
+//         "@type": "ListItem",
+//         position: 2,
+//         name: "Blogs",
+//         item: "https://kmaglobalproperty.com/blogs",
+//       },
+//     ],
+//   };
+
+//   const posts = await fetchWPPosts();
+
+//   return (
+//     <>
+//       <script
+//         type="application/ld+json"
+//         dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
+//       />
+//       <script
+//         type="application/ld+json"
+//         dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionPageSchema) }}
+//       />
+//       <script
+//         type="application/ld+json"
+//         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+//       />
+
+//       <div className="min-h-screen bg-slate-50/50 text-slate-800 pb-20">
+//         <div className="fixed left-0 right-0 z-[60] flex justify-center pointer-events-none">
+//           <div className="pointer-events-auto w-full flex justify-center">
+//             <HomdeHeader />
+//           </div>
+//         </div>
+
+//         <section className="sm:rounded-br-[72px] sm:rounded-bl-[72px] lg:rounded-br-[100px] lg:rounded-bl-[100px] bg-blue text-white py-25 md:py-35 px-4 shadow-md">
+//           <div className="max-w-3xl mx-auto text-center space-y-4">
+//             <h1 className="text-3xl md:text-6xl font-bold tracking-wide text-white leading-tighter">
+//               Real Estate <span className="font-serif italic text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-blue-400 to-white/90">Intelligence</span> for Gurgaon
+//             </h1>
+//             <p className="text-slate-300 text-sm md:text-base max-w-2xl mx-auto font-light">
+//               Market trends, RERA guides, locality comparisons, NRI advisory and investment analysis — researched and written by the KMA Global Property advisory desk to help you buy with confidence.
+//             </p>
+//           </div>
+//         </section>
+
+//         <main className="max-w-6xl mx-auto px-4 -mt-8 mb-20">
+//           <BlogPaginatedList posts={posts} itemsPerPage={6} />
+//         </main>
+
+//         <NewsletterBanner />
+
+//         <div className="bg-text-black flex justify-center">
+//           <AboutusDataSync />
+//           <HomeFooter tab={1} />
+//         </div>
+//       </div>
+//     </>
+//   );
+// }
+
+import React, { Suspense } from "react";
 import Link from "next/link";
 import { fetchWPPosts } from "@/lib/wordpress";
 import HomdeHeader from "@/components/header/homeHeader";
@@ -373,8 +538,7 @@ import NewsletterBanner from "@/components/NewsLetterBanner";
 import BlogPaginatedList from "@/components/blogs/BlogPaginatedList";
 import { Metadata } from "next";
 
-export const dynamic = "force-dynamic"; 
-export const revalidate = 1800;
+export const revalidate = 900;
 
 export const metadata: Metadata = {
   title: "Gurugram Real Estate Blog | News, Trends & Buying Guides",
@@ -478,7 +642,7 @@ export default async function BlogListingPage() {
     ],
   };
 
-  const posts = await fetchWPPosts();
+  const posts = (await fetchWPPosts()) || [];
 
   return (
     <>
