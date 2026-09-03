@@ -26,6 +26,7 @@ import { useHeaderStore } from "@/store/useHeaderStore";
 import SuccessStoriesSection from "./successStoriesSection";
 import AppDownloadSection from "./appDownloadSection";
 import AboutCompany from "../AboutCompany";
+import PosterBannerSlider from "../PosterBannerSlider";
 
 const LazyNeedSection = dynamic(() => import("./needSection"), { loading: () => <div className="min-h-[200px]" /> });
 const LazyRealEstateSection = dynamic(() => import("./realEstetSection"), { loading: () => <div className="min-h-[200px]" /> });
@@ -267,6 +268,8 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
           <LazyFeaturedProperties topProperties={featuredData?.properties ?? []} />
         </div>
       </div>}
+
+      <PosterBannerSlider/>
 
       <div className="relative bg-[#F2F2F2] flex justify-center overflow-hidden">
             {/* <LazySuccessStoriesSection /> */}
