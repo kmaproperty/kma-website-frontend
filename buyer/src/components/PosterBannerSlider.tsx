@@ -20,15 +20,15 @@ const BANNER_SLIDES: BannerSlide[] = [
   {
     id: 1,
     title: "Channel Partner",
-    image: "/assets/CP_Poster.webp",
-    href: "/refer-and-earn",
+    image: "/assets/CP.jpg",
+    href: "/join-us",
     alt: "CPPoster",
   },
   {
     id: 2,
     title: "Refer and Earn",
-    image: "/assets/Referral_Poster.webp",
-    href: "/join-us",
+    image: "/assets/REF.jpg",
+    href: "/refer-and-earn",
     alt: "ReferralPoster",
   },
 ];
@@ -45,8 +45,7 @@ export default function PosterBannerSlider({
       <Swiper
         modules={[Autoplay]}
         slidesPerView={1}
-        loop={false}
-        rewind={true}
+        loop={true}
         speed={800}
         autoplay={{
           delay: autoSlideInterval,
