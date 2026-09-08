@@ -1374,18 +1374,6 @@ export default function Step1({containerRef}) {
 
       <div id='city' data-field={FIELD_NAME.CITY} data-has-value={!!basicStaticDetails.city}>
         <FieldLabel label="City" customClass="pb-2" required={true}/>
-        {/* <DynamicAsyncSelect
-          isMulti={false}
-          isError={false}
-          placeholder={<CityPlaceholder />}
-          onChange={(value) => {
-            setBasicStaticDetails((pre) => ({...pre, city: value, locality: null, society: null}))
-            setErrors((pre) => ({...pre, city: ''}))
-          }}
-          loadOptions={loadCities}
-          value={basicStaticDetails.city}
-          minHeight={"40px"}
-        /> */}
         <DynamicAsyncAutocomplete
           isMulti={false}
           isError={false}
@@ -1394,7 +1382,27 @@ export default function Step1({containerRef}) {
             setBasicStaticDetails((pre) => ({...pre, city: value, locality: null, society: null}))
             setErrors((pre) => ({...pre, city: ''}))
           }}
-          loadOptions={loadCities}
+          loadOptions={async (inputSearch: string) => {
+            const res = await loadCities(inputSearch);
+
+            if (!Array.isArray(res)) return res;
+
+            const gurgaonRegex = /gurg(ao|oa)n/i;
+
+            const filtered = res.filter((item: any) => {
+              const name = (item?.name || "").toLowerCase();
+              const label = (item?.label || "").toLowerCase();
+              const code = (item?.code || "").toLowerCase();
+
+              return !gurgaonRegex.test(name) && !gurgaonRegex.test(label) && !gurgaonRegex.test(code);
+            });
+
+            return filtered.map((item: any) => ({
+              ...item,
+              label: item.label || item.name,
+              value: item.value || item.id || item.name,
+            }));
+          }}
           value={basicStaticDetails.city}
           minHeight={"40px"}
         />
