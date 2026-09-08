@@ -28,6 +28,9 @@ export const metadata: Metadata = {
   title: "KMA Global Property | Buy, Sell & Rent Property in NCR",
   description:
     "Find verified properties in Gurugram, Delhi, Noida, Faridabad, and Gaziabad. Connect with trusted real estate professionals through KMA Global Property.",
+  verification: {
+    google: "Tm5mijF_xS4fi4B6pWhYWGjvMPKJAlYTrMGFX97_yIQ",
+  },
   alternates: {
     canonical: "https://kmaglobalproperty.com/",
   },
