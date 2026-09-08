@@ -364,6 +364,299 @@
 //   );
 // }
 
+// "use client";
+
+// import { useRef, useState } from "react";
+// import { Swiper, SwiperSlide } from "swiper/react";
+// import { Navigation } from "swiper/modules";
+// import type { Swiper as SwiperType } from "swiper";
+// import "swiper/css";
+// import "swiper/css/navigation";
+
+// import { motion, useInView } from "framer-motion";
+// import SectionHeader from "../common/home/secionHeader";
+// import Image from "next/image";
+// import { useRouter } from "nextjs-toploader/app";
+// import { addEndUserFavoriteAction, removeEndUserFavoriteAction } from "@/api/actions/propertyActions";
+
+// const bottomVariant = {
+//   hidden: { y: "100%", opacity: 0 },
+//   visible: {
+//     y: 0,
+//     opacity: 1,
+//     transition: { duration: 1, ease: "easeOut" as const },
+//   },
+// };
+
+// const topVariant = {
+//   hidden: { y: "-100%", opacity: 0 },
+//   visible: {
+//     y: 0,
+//     opacity: 1,
+//     transition: { duration: 1, ease: "easeOut" as const },
+//   },
+// };
+
+// export default function FeaturedProperties({ topProperties }: { topProperties: any[] }) {
+//   const router = useRouter();
+//   const swiperRef = useRef<SwiperType | null>(null);
+//   const ref = useRef(null);
+//   const isInView = useInView(ref, { once: true });
+//   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
+//   const [listingFilter, setListingFilter] = useState<"Sale" | "Rent">("Sale");
+
+//   const filteredProperties = (topProperties ?? []).filter(
+//     (p) => (p?.listingType ?? "").toLowerCase() === listingFilter.toLowerCase()
+//   );
+
+//   const toggleFavorite = async (e: React.MouseEvent, propertyId: string) => {
+//     e.stopPropagation();
+//     if (!propertyId) return;
+//     const isFav = favoriteIds.has(propertyId);
+//     try {
+//       if (isFav) {
+//         await removeEndUserFavoriteAction({ propertyId });
+//         setFavoriteIds((prev) => {
+//           const next = new Set(prev);
+//           next.delete(propertyId);
+//           return next;
+//         });
+//       } else {
+//         await addEndUserFavoriteAction({ propertyId });
+//         setFavoriteIds((prev) => new Set(prev).add(propertyId));
+//       }
+//     } catch {
+//       // 401 will auto-redirect to signup via axios interceptor
+//     }
+//   };
+
+//   return (
+//     <div ref={ref} className="flex flex-col w-full">
+//       <SectionHeader
+//         isInView={isInView}
+//         hideButton={true}
+//         sectionName="featureProperties"
+//         heading="Featured Properties"
+//         subHeading="Discover exclusive listings of premium properties available for purchase."
+//         listingFilter={listingFilter}
+//         onListingFilterChange={setListingFilter}
+//       />
+
+//       <div className="flex-1 w-full 2md:min-w-0 mt-8">
+//         {filteredProperties.length === 0 ? (
+//           <div className="flex h-[300px] items-center justify-center rounded-[10px] border border-dashed border-slate-200 bg-white">
+//             <p className="text-text-gray text-sm">
+//               No {listingFilter === "Sale" ? "sale" : "rental"} properties available right now.
+//             </p>
+//           </div>
+//         ) : (
+//           <Swiper
+//             onBeforeInit={(swiper) => {
+//               swiperRef.current = swiper;
+//             }}
+//             modules={[Navigation]}
+//             spaceBetween={16}
+//             slidesPerView={1}
+//             breakpoints={{
+//               640: {
+//                 slidesPerView: 2,
+//                 spaceBetween: 16,
+//               },
+//               1024: {
+//                 slidesPerView: 3,
+//                 spaceBetween: 20,
+//               },
+//               1280: {
+//                 slidesPerView: 4,
+//                 spaceBetween: 20,
+//               },
+//             }}
+//             className="w-full !pb-4"
+//           >
+//             {filteredProperties.map((item, index) => {
+//               const img =
+//                 item?.imageUrl || (item?.images?.length > 0 ? item.images[0]?.url : null);
+//               const priceValue =
+//                 item?.listingType === "Sale" ? item?.price : item?.monthlyRent;
+//               const formattedPrice =
+//                 typeof priceValue === "number"
+//                   ? new Intl.NumberFormat("en-IN").format(priceValue)
+//                   : priceValue ?? "-";
+
+//               return (
+//                 <SwiperSlide key={item?.id ?? index} className="!h-auto flex">
+//                   <motion.div
+//                     className="w-full h-[520px]"
+//                     variants={index % 2 === 0 ? topVariant : bottomVariant}
+//                     animate={isInView ? "visible" : "hidden"}
+//                   >
+//                     <div
+//                       onClick={() =>
+//                         item?.cityId && item?.id
+//                           ? router.push(`/projects/${item.cityId}/${item.id}`)
+//                           : null
+//                       }
+//                       className="h-full w-full rounded-[14px] border border-slate-200 bg-white shadow-xs transition-all duration-300 hover:shadow-md hover:-translate-y-1 overflow-hidden cursor-pointer flex flex-col"
+//                     >
+//                       {/* IMAGE */}
+//                       <div className="relative h-[210px] w-full shrink-0">
+//                         {img ? (
+//                           <Image
+//                             src={img}
+//                             fill
+//                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+//                             alt={item?.propertyName ?? "Property"}
+//                             className="object-cover"
+//                           />
+//                         ) : (
+//                           <div className="w-full h-full bg-gradient-to-br from-slate-100 via-slate-50 to-white flex items-center justify-center">
+//                             <span className="text-slate-400 text-xs font-medium">No Image</span>
+//                           </div>
+//                         )}
+
+//                         {/* Tag pill */}
+//                         {item?.propertyType && (
+//                           <span className="absolute top-3 right-3 rounded-md px-2.5 py-1 text-[11px] font-semibold text-white bg-indigo-600/90 shadow-sm backdrop-blur-xs">
+//                             {item.propertyType}
+//                           </span>
+//                         )}
+
+//                         {/* Avatar */}
+//                         <div className="absolute -bottom-4 left-4 rounded-full bg-white p-0.5 shadow-sm ring-1 ring-slate-200">
+//                           <Image
+//                             src={item?.owner?.profileImage || "/assets/property/profile.png"}
+//                             width={34}
+//                             height={34}
+//                             alt={item?.owner?.name ?? "Agent"}
+//                             className="rounded-full h-[34px] w-[34px] object-cover"
+//                             onError={(e) => {
+//                               (e.target as HTMLImageElement).src = "/assets/property/profile.png";
+//                             }}
+//                           />
+//                         </div>
+//                       </div>
+
+//                       {/* CONTENT */}
+//                       <div className="flex flex-1 flex-col px-4 pb-4 pt-6 justify-between">
+//                         <div>
+//                           {/* Title + Address */}
+//                           <div className="min-h-[52px]">
+//                             <p className="text-base font-semibold text-text-black line-clamp-1">
+//                               {item?.propertyName ? item.propertyName.replace(/<[^>]*>/g, "").trim() : "Property"}
+//                             </p>
+//                             <div className="mt-1 flex items-start gap-1.5 text-xs text-text-gray">
+//                               <Image
+//                                 src="/assets/location-blue.svg"
+//                                 width={13}
+//                                 height={13}
+//                                 alt="location"
+//                                 className="mt-0.5 shrink-0"
+//                               />
+//                               <span className="line-clamp-1">{item?.address || "Gurgaon"}</span>
+//                             </div>
+//                           </div>
+
+//                           {/* Price */}
+//                           <div className="mt-3 text-lg font-bold text-blue">
+//                             <span>₹ {formattedPrice}</span>
+//                             <span className="text-xs font-normal text-text-gray">
+//                               {item?.listingType === "Sale" ? "" : " / Month"}
+//                             </span>
+//                           </div>
+
+//                           {/* Meta Details */}
+//                           <div className="mt-3 border-t border-slate-100 pt-2.5 text-[11px] space-y-1">
+//                             {item?.createdAt && (
+//                               <div className="flex items-center justify-between">
+//                                 <span className="text-text-gray">Listed on:</span>
+//                                 <span className="font-medium text-text-black">
+//                                   {new Date(item.createdAt).toLocaleDateString("en-IN", {
+//                                     day: "numeric",
+//                                     month: "short",
+//                                     year: "numeric",
+//                                   })}
+//                                 </span>
+//                               </div>
+//                             )}
+//                             {item?.constructionStatus && (
+//                               <div className="flex items-center justify-between">
+//                                 <span className="text-text-gray">Possession:</span>
+//                                 <span className="font-medium text-text-black">
+//                                   {item.constructionStatus}
+//                                 </span>
+//                               </div>
+//                             )}
+//                           </div>
+//                         </div>
+
+//                         {/* Amenities / BHK / Furnish */}
+//                         <div className="border-t border-slate-100 pt-3">
+//                           <div className="flex flex-wrap gap-1.5">
+//                             {item?.bhkType && (
+//                               <div className="flex items-center gap-1.5 rounded-md bg-slate-50 px-2 py-1 text-[11px] font-medium text-text-black border border-slate-200/80">
+//                                 <Image
+//                                   src="/assets/property/bad.svg"
+//                                   width={14}
+//                                   height={14}
+//                                   alt="bhk"
+//                                 />
+//                                 <span>{item.bhkType}</span>
+//                               </div>
+//                             )}
+//                             {item?.furnishType && (
+//                               <div className="flex items-center rounded-md bg-slate-50 px-2 py-1 text-[11px] font-medium text-text-black border border-slate-200/80">
+//                                 <span>{item.furnishType}</span>
+//                               </div>
+//                             )}
+//                           </div>
+//                         </div>
+//                       </div>
+//                     </div>
+//                   </motion.div>
+//                 </SwiperSlide>
+//               );
+//             })}
+//           </Swiper>
+//         )}
+//       </div>
+
+//       {/* ---------- CONTROLS ---------- */}
+//       <motion.div
+//         className="mt-6 flex items-center justify-end gap-3"
+//         variants={bottomVariant}
+//         animate={isInView ? "visible" : "hidden"}
+//       >
+//         <button
+//           type="button"
+//           onClick={() => swiperRef.current?.slidePrev()}
+//           className="bg-blue hover:bg-blue/90 text-white cursor-pointer w-9 h-9 rounded-full flex items-center justify-center shadow-xs transition"
+//           aria-label="Previous Slide"
+//         >
+//           <Image src="/assets/explore/left-arrow.svg" alt="prev" width={14} height={14} />
+//         </button>
+
+//         <button
+//           type="button"
+//           onClick={() => swiperRef.current?.slideNext()}
+//           className="bg-blue hover:bg-blue/90 text-white cursor-pointer w-9 h-9 rounded-full flex items-center justify-center shadow-xs transition"
+//           aria-label="Next Slide"
+//         >
+//           <Image src="/assets/explore/right-arrow.svg" alt="next" width={14} height={14} />
+//         </button>
+
+//         {filteredProperties.length > 4 && (
+//           <button
+//             onClick={() => router.push("/projects")}
+//             className="ml-2 text-xs 1xl:text-sm font-semibold text-blue px-5 py-2 border border-blue rounded-full hover:bg-blue hover:text-white transition cursor-pointer"
+//           >
+//             View All
+//           </button>
+//         )}
+//       </motion.div>
+//     </div>
+//   );
+// }
+
 "use client";
 
 import { useRef, useState } from "react";
@@ -478,10 +771,40 @@ export default function FeaturedProperties({ topProperties }: { topProperties: a
                 item?.imageUrl || (item?.images?.length > 0 ? item.images[0]?.url : null);
               const priceValue =
                 item?.listingType === "Sale" ? item?.price : item?.monthlyRent;
+              // const formattedPrice =
+              //   typeof priceValue === "number"
+              //     ? new Intl.NumberFormat("en-IN").format(priceValue)
+              //     : priceValue ?? "-";
+              const formatIndianPrice = (
+                value: number | null | undefined,
+              ): string => {
+                if (value == null || !Number.isFinite(value) || value <= 0) {
+                  return "-";
+                }
+
+                if (value >= 10000000) {
+                  const cr = value / 10000000;
+                  return `${cr % 1 === 0 ? cr.toFixed(0) : cr.toFixed(2).replace(/\.?0+$/, "")} Cr`;
+                }
+
+                if (value >= 100000) {
+                  const lac = value / 100000;
+                  return ` ${lac % 1 === 0 ? lac.toFixed(0) : lac.toFixed(2).replace(/\.?0+$/, "")} Lac`;
+                }
+
+                if (value >= 1000) {
+                  const k = value / 1000;
+                  return `${k % 1 === 0 ? k.toFixed(0) : k.toFixed(1).replace(/\.?0+$/, "")} K`;
+                }
+
+                return `${value}`;
+              };
+              const numericPrice = typeof priceValue === "number" ? priceValue : Number(priceValue);
+
               const formattedPrice =
-                typeof priceValue === "number"
-                  ? new Intl.NumberFormat("en-IN").format(priceValue)
-                  : priceValue ?? "-";
+              Number.isFinite(numericPrice) && numericPrice > 0
+                ? formatIndianPrice(numericPrice)
+                : (priceValue ?? "-");
 
               return (
                 <SwiperSlide key={item?.id ?? index} className="!h-auto flex">
@@ -520,6 +843,10 @@ export default function FeaturedProperties({ topProperties }: { topProperties: a
                             {item.propertyType}
                           </span>
                         )}
+
+                        <span className="absolute top-3 left-3 rounded-md px-2.5 py-1 text-[11px] font-semibold text-white bg-green-600 shadow-sm backdrop-blur-xs">
+                            Verified
+                          </span>
 
                         {/* Avatar */}
                         <div className="absolute -bottom-4 left-4 rounded-full bg-white p-0.5 shadow-sm ring-1 ring-slate-200">
