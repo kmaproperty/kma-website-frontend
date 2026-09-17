@@ -1833,6 +1833,31 @@ export const projects: NewLaunchProject[] = [
     ],
     rera: "New Launch",
   },
+  {
+    id: "yugen-infra",
+    developer: "Yugen Infra",
+    name: "Yugen Golf City",
+    location: "North of Goa • Near Mopa International Airport",
+    webUrl: "https://kmaglobalproperty.in/yugen-golf-city-goa/",
+    image:
+      "/assets/backgroundSlider/yugen-goa-banner.avif",
+    alt: "Yugen Golf City",
+    price: "₹71 Lakhs",
+    zone: "spr",
+    budget: "1-3cr",
+    badges: [
+      { label: "New Launch", variant: "new" },
+    ],
+    meta: [
+      { val: "Studio | 1-2 BHK", key: "Config" },
+      { val: "Luxury", key: "View" },
+      { val: "Mopa International Airport", key: "Airport" },
+    ],
+    amenities: [
+      "⁠500+ Acres Proposed Township",
+    ],
+    rera: "New Launch",
+  },
   // {
   //   id: "m3m-elie-saab",
   //   developer: "M3M India × Elie Saab (France)",
