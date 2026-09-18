@@ -177,6 +177,10 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
   const imageSlider = useMemo(
     () => [
       {
+        imagePath: "/assets/backgroundSlider/yugen-new-banner.jpg",
+        alt: "Yugen Goa",
+      },
+      {
         imagePath: "/assets/backgroundSlider/Tonino.webp",
         alt: "Modern luxury home at twilight",
       },
@@ -208,10 +212,10 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
         imagePath: "/assets/backgroundSlider/1.webp",
         alt: "Modern luxury home at twilight",
       },
-      {
-        imagePath: "/assets/backgroundSlider/yugen-goa-banner.avif",
-        alt: "Yugen Goa",
-      },
+      // {
+      //   imagePath: "/assets/backgroundSlider/yugen-goa-banner.avif",
+      //   alt: "Yugen Goa",
+      // },
       // {
       //   imagePath: "/assets/backgroundSlider/background_slider_2.png",
       //   alt: "Premium villa exterior",
