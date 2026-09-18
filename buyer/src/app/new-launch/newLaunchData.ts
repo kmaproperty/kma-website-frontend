@@ -1537,14 +1537,24 @@ export interface NewLaunchProject {
   featured?: boolean;
 }
 
+// export const heroFeatured = {
+//   developer: "Godrej Properties",
+//   name: "Godrej Sora",
+//   location: "Sector 53, Golf Course Road, Gurgaon",
+//   image: "/new-launch/Godrej-sora.png",
+//   pills: ["3 & 4 BHK", "3050+ sq.ft", "₹9.76 Cr+", "Possession 2032"],
+//   webUrl: "https://kmaglobalproperty.in/godrejsora/"
+// };
+
 export const heroFeatured = {
-  developer: "Godrej Properties",
-  name: "Godrej Sora",
-  location: "Sector 53, Golf Course Road, Gurgaon",
-  image: "/new-launch/Godrej-sora.png",
-  pills: ["3 & 4 BHK", "3050+ sq.ft", "₹9.76 Cr+", "Possession 2032"],
-  webUrl: "https://kmaglobalproperty.in/godrejsora/"
+  developer: "Yugen Infra",
+  name: "Yugen Golf City",
+  location: "North of Goa - Near Mopa International Airport",
+  image: "/assets/yugen-card.avif",
+  pills: ["1 & 2 BHK", "Studio", "₹ 71L+"],
+  webUrl: "https://kmaglobalproperty.in/yugen-golf-city-goa/"
 };
+
 
 export const heroMiniCards = [
   {
@@ -1840,7 +1850,7 @@ export const projects: NewLaunchProject[] = [
     location: "North of Goa • Near Mopa International Airport",
     webUrl: "https://kmaglobalproperty.in/yugen-golf-city-goa/",
     image:
-      "/assets/backgroundSlider/yugen-goa-banner.avif",
+      "/assets/yugen-card.avif",
     alt: "Yugen Golf City",
     price: "₹71 Lakhs",
     zone: "spr",

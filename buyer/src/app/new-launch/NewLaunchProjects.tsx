@@ -698,7 +698,7 @@ function ProjectCard({
 
   return (
     <article className="flex flex-col h-full rounded-[22px] overflow-hidden border border-gray-200 bg-white shadow-sm hover:shadow-xl transition-all duration-300">
-      <div className="relative overflow-hidden">
+      <Link href={project?.webUrl || "#"} className="relative overflow-hidden">
         <Image
           src={project.image}
           alt={project.alt}
@@ -725,7 +725,7 @@ function ProjectCard({
             {project.price}
           </span>
         </div>
-      </div>
+      </Link>
          <button
             type="button"
             onClick={() => onOpenEmi(parsePriceToNumber(project.price))}
