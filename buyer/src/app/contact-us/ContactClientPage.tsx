@@ -225,12 +225,12 @@ const ContactUs = () => {
                 {
                     // label: 'Head Office',
                     address: 'Plot No. 3A, Shastri Nagar Industrial Area, Sector 106, Dwarka Expressway, Gurugram, Haryana, India – 122006',
-                    link: 'https://maps.app.goo.gl/RfEn4XmFPCPAfNrT7'
+                    link: '/'
                 },
                 {
                     // label: 'Branch Office',
                     address: 'Ground Floor, Grand IVA, Shop No 4, Signum 103, Sector 103, Daulatabad, Gurugram, Haryana 122006',
-                    link: 'https://www.google.com/maps/search/?api=1&query=Signum+103+Sector+103+Gurugram'
+                    link: '/'
                 }
             ],
             timings: '10:00 AM – 7:00 PM'
