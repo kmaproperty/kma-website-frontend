@@ -3,7 +3,10 @@ import Link from "next/link";
 export default function BannerText(){
     return(
         <div className="flex flex-col">
+            <div className="h-40">
 
+            </div>
+{/* 
             <div className="bg-white/10 rounded-[5px] bg-clip-padding backdrop-filter flex gap-3 items-center backdrop-blur-[20px] px-[8px] py-[4px] w-fit justify-center mx-auto md:mx-0">
                 <button className="rounded-[5px] bg-[#ffbb55] px-[4px] py-[2px] text-xs xl:text-sm text-white">New</button>
                 <p className="text-xs xl:text-sm text-white">No 1 Best Selling Real Estate Website</p>
@@ -14,7 +17,7 @@ export default function BannerText(){
                 <p className="text-2xl sm:text-2xl lg:text-4xl font-bold">across premium locations.</p>
             </div>
 
-            <p className="text-sm xl:text-sm text-white mt-2">Find the right property in minutes</p>
+            <p className="text-sm xl:text-sm text-white mt-2">Find the right property in minutes</p> */}
 
             {/* <Link href="/contact-us" className="border border-1 rounded-full px-7.5 text-xs py-2 w-max cursor-pointer mt-5 text-white">
                 <p className="text-nowrap xl:text-sm">Contact Us</p>

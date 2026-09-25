@@ -2917,7 +2917,7 @@ export default function Filter() {
   );
   
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 pointer-events-none">
       <GoogleVoiceModal
         isOpen={isVoiceModalOpen}
         isListening={isListening}
@@ -2931,12 +2931,12 @@ export default function Filter() {
       <div className="relative group">
         <div className="md:hidden absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-blue/20 pointer-events-none z-10" />
 
-        <div className="flex justify-start md:justify-center items-center font-medium text-blue overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth px-5 md:px-0">
+        <div className="flex justify-start md:justify-center items-center font-medium text-blue overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth px-5 md:px-0 pointer-events-none">
           {filterTypeList.map((item, index) => (
             <button 
               key={item.value} 
               onClick={() => handleFilterType(item.value)} 
-              className={`snap-center w-fit flex-shrink-0 ${index === 0 ? '' : 'ml-2'} ${filterType == item.value ? 'animated-button' : 'animated-button-white'} px-6 py-1.5 border border-transparent text-center cursor-pointer transition-transform active:scale-95`}
+              className={`snap-center w-fit flex-shrink-0 ${index === 0 ? '' : 'ml-2'} ${filterType == item.value ? 'animated-button' : 'animated-button-white'} px-6 py-1.5 border border-transparent text-center cursor-pointer transition-transform active:scale-95 pointer-events-auto`}
             >
               <span className="relative flex justify-center">
                 <p className="text-nowrap text-xs md:text-sm">
@@ -2948,7 +2948,7 @@ export default function Filter() {
         </div>
       </div>
       
-      <div className="flex flex-col rounded-[10px] bg-white mt-1 p-4">
+      <div className="flex flex-col rounded-[10px] bg-white mt-1 p-4 pointer-events-auto">
         {/* Desktop View */}
         <div className="hidden 2md:flex h-[35px] 2md:h-[40px]">
           <div className="flex-1">
@@ -3428,6 +3428,7 @@ export default function Filter() {
         open={openType}
         anchorEl={anchorEl}
         placement="bottom-start"
+        className="z-[9999] pointer-events-auto"
         modifiers={[{ name: "offset", options: { offset: [0, 20] } }]}
       >
         <ClickAwayListener

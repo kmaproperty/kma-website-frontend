@@ -24,7 +24,7 @@ export default function GoogleVoiceModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 backdrop-blur-md transition-all duration-300 animate-in fade-in">
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 backdrop-blur-md transition-all duration-300 animate-in fade-in pointer-events-auto">
       <div className="relative w-[90%] max-w-lg overflow-hidden rounded-3xl bg-[#18181b] border border-white/10 p-8 text-center shadow-2xl">
         
         {/* Close button */}
