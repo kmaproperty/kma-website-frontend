@@ -423,7 +423,7 @@ export interface SeoPageData extends SeoPageSummary {
   search_filters?: Record<string, any>;
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://kmaglobalproperty.com/api/backend";
+const BASE_URL = "https://kmaglobalproperty.com/api/backend";
 
 const GURUGRAM_CITY_ID = "e8894ea7-b8fc-43da-b983-b1d43c77597e";
 const SALE_LISTING_TYPE_ID = "ea43e344-48aa-4b75-bae6-117a070a1ef8";
