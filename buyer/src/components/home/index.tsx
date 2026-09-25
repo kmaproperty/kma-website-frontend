@@ -181,37 +181,61 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
         alt: "Yugen Goa",
       },
       {
-        imagePath: "/assets/backgroundSlider/Tonino.webp",
-        alt: "Modern luxury home at twilight",
+        imagePath: "/assets/backgroundSlider/bannerImage1.avif",
+        alt: "Yugen Goa",
       },
       {
-        imagePath: "/assets/backgroundSlider/Elan.png",
-        alt: "Modern luxury home at twilight",
+        imagePath: "/assets/backgroundSlider/bannerImage2.avif",
+        alt: "Yugen Goa",
       },
       {
-        imagePath: "/assets/backgroundSlider/Godrej.jpeg",
-        alt: "Modern luxury home at twilight",
+        imagePath: "/assets/backgroundSlider/bannerImage3.avif",
+        alt: "Yugen Goa",
       },
       {
-        imagePath: "/assets/backgroundSlider/image-1@md.webp",
-        alt: "Modern luxury home at twilight",
+        imagePath: "/assets/backgroundSlider/bannerImage4.jpg",
+        alt: "Yugen Goa",
       },
       {
-        imagePath: "/assets/backgroundSlider/slide3-1.jpeg",
-        alt: "Modern luxury home at twilight",
+        imagePath: "/assets/backgroundSlider/bannerImage5.avif",
+        alt: "Yugen Goa",
       },
-      {
-        imagePath: "/assets/backgroundSlider/8.webp",
-        alt: "Modern luxury home at twilight",
-      },
-      {
-        imagePath: "/assets/backgroundSlider/4.jpg.webp",
-        alt: "Modern luxury home at twilight",
-      },
-      {
-        imagePath: "/assets/backgroundSlider/1.webp",
-        alt: "Modern luxury home at twilight",
-      },
+      // {
+      //   imagePath: "/assets/backgroundSlider/yugen-new-banner.jpg",
+      //   alt: "Yugen Goa",
+      // },
+      // {
+      //   imagePath: "/assets/backgroundSlider/Tonino.webp",
+      //   alt: "Modern luxury home at twilight",
+      // },
+      // {
+      //   imagePath: "/assets/backgroundSlider/Elan.png",
+      //   alt: "Modern luxury home at twilight",
+      // },
+      // {
+      //   imagePath: "/assets/backgroundSlider/Godrej.jpeg",
+      //   alt: "Modern luxury home at twilight",
+      // },
+      // {
+      //   imagePath: "/assets/backgroundSlider/image-1@md.webp",
+      //   alt: "Modern luxury home at twilight",
+      // },
+      // {
+      //   imagePath: "/assets/backgroundSlider/slide3-1.jpeg",
+      //   alt: "Modern luxury home at twilight",
+      // },
+      // {
+      //   imagePath: "/assets/backgroundSlider/8.webp",
+      //   alt: "Modern luxury home at twilight",
+      // },
+      // {
+      //   imagePath: "/assets/backgroundSlider/4.jpg.webp",
+      //   alt: "Modern luxury home at twilight",
+      // },
+      // {
+      //   imagePath: "/assets/backgroundSlider/1.webp",
+      //   alt: "Modern luxury home at twilight",
+      // },
       // {
       //   imagePath: "/assets/backgroundSlider/yugen-goa-banner.avif",
       //   alt: "Yugen Goa",

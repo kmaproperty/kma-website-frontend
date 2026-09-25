@@ -206,7 +206,7 @@ const ContactUs = () => {
             icon: <PhoneCall className='w-8 h-8 text-[#010048]' />,
             description: '+91-9056560022',
             link: 'tel:9056560022',
-            timings: '10:00 AM – 7:00 PM'
+            // timings: '10:00 AM – 7:00 PM'
         },
         {
             title: 'Email Us',
@@ -214,7 +214,7 @@ const ContactUs = () => {
             icon: <MailOpen className='w-8 h-8 text-[#010048]' />,
             description: 'info@kmaglobalproperty.com',
             link: 'mailto:info@kmaglobalproperty.com',
-            timings: '10:00 AM – 7:00 PM'
+            // timings: '10:00 AM – 7:00 PM'
         },
         {
             title: 'Visit our office',
