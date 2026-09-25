@@ -3,6 +3,8 @@ import type { NextConfig } from "next";
 const API_URL = process.env.BACKEND_URL || "http://localhost:3000";
 
 const nextConfig: NextConfig = {
+  trailingSlash: false,
+  skipTrailingSlashRedirect: true,
   /* config options here */
   logging: {
     fetches: {
