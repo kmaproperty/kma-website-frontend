@@ -60,17 +60,46 @@ export function getCleanLabel(heading: string): string {
   return parts[0].trim();
 }
 
-export async function getSeoPageData(slug: string): Promise<SeoPageData | null> {
+// export async function getSeoPageData(slug: string): Promise<SeoPageData | null> {
+//   try {
+//     const res = await fetch(`${BASE_URL}/end-user/seo-landing-pages/${slug}`, {
+//       next: { revalidate: 3600 },
+//       headers: { "Content-Type": "application/json" },
+//     });
+//     if (!res.ok) return null;
+//     const data = await res.json();
+//     return (data?.data ?? data) as SeoPageData;
+//   } catch (error) {
+//     console.error("[getSeoPageData] Error:", error);
+//     return null;
+//   }
+// }
+
+export async function getSeoPageData(rawSlug: string): Promise<SeoPageData | null> {
   try {
-    const res = await fetch(`${BASE_URL}/end-user/seo-landing-pages/${slug}`, {
-      next: { revalidate: 3600 },
-      headers: { "Content-Type": "application/json" },
+    if (!rawSlug) return null;
+
+    const cleanSlug = decodeURIComponent(rawSlug).replace(/^\/+|\/+$/g, "").trim();
+
+    const targetUrl = `${BASE_URL}/end-user/seo-landing-pages/${cleanSlug}`;
+
+    const res = await fetch(targetUrl, {
+      cache: "no-store",
+      headers: { 
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
     });
-    if (!res.ok) return null;
+
+    if (!res.ok) {
+      console.error(`[getSeoPageData] Failed! Status: ${res.status}, URL: ${targetUrl}`);
+      return null;
+    }
+
     const data = await res.json();
     return (data?.data ?? data) as SeoPageData;
   } catch (error) {
-    console.error("[getSeoPageData] Error:", error);
+    console.error("[getSeoPageData] Network/Fetch Exception:", error);
     return null;
   }
 }
