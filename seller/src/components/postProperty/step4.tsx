@@ -751,29 +751,83 @@ export default function Step4({ containerRef }) {
     }
   };
 
+  // const handleUpload360ToCloudinary = async (files: File[]) => {
+  //   if (panoramaList.length + files.length > 10) {
+  //     toast.error("Max 10 360° panoramas can be uploaded");
+  //     return;
+  //   }
+
+  //   toastRef.current = toast.loading(
+  //     "Uploading 360° Panorama to Cloudinary...",
+  //   );
+
+  //   for (const file of files) {
+  //     try {
+  //       const formData = new FormData();
+  //       formData.append("file", file);
+
+  //       const res = await fetch("/api/upload-360", {
+  //         method: "POST",
+  //         body: formData,
+  //       });
+
+  //       const data = await res.json();
+
+  //       if (data.success && data.secure_url) {
+  //         setPanoramaList((prev) => [
+  //           ...prev,
+  //           {
+  //             fileKey: data.public_id || data.secure_url,
+  //             url: data.secure_url,
+  //             view: "Living Room",
+  //           },
+  //         ]);
+  //       } else {
+  //         toast.error(data.message || `Upload failed for ${file.name}`);
+  //       }
+  //     } catch (err) {
+  //       console.error("Cloudinary upload error:", err);
+  //       toast.error(`Error uploading ${file.name}`);
+  //     }
+  //   }
+
+  //   toast.dismiss(toastRef.current);
+  // };
+
   const handleUpload360ToCloudinary = async (files: File[]) => {
     if (panoramaList.length + files.length > 10) {
       toast.error("Max 10 360° panoramas can be uploaded");
       return;
     }
 
-    toastRef.current = toast.loading(
-      "Uploading 360° Panorama to Cloudinary...",
-    );
+    toastRef.current = toast.loading("Uploading 360° Panorama...");
 
     for (const file of files) {
       try {
+        const signRes = await fetch("/api/upload-360");
+        const signData = await signRes.json();
+
+        if (!signData.success) {
+          throw new Error(signData.message || "Failed to get upload signature");
+        }
+
         const formData = new FormData();
         formData.append("file", file);
+        formData.append("api_key", signData.apiKey);
+        formData.append("timestamp", String(signData.timestamp));
+        formData.append("signature", signData.signature);
+        formData.append("folder", signData.folder);
 
-        const res = await fetch("/api/upload-360", {
+        const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${signData.cloudName}/image/upload`;
+
+        const uploadRes = await fetch(cloudinaryUrl, {
           method: "POST",
           body: formData,
         });
 
-        const data = await res.json();
+        const data = await uploadRes.json();
 
-        if (data.success && data.secure_url) {
+        if (uploadRes.ok && data.secure_url) {
           setPanoramaList((prev) => [
             ...prev,
             {
@@ -783,11 +837,11 @@ export default function Step4({ containerRef }) {
             },
           ]);
         } else {
-          toast.error(data.message || `Upload failed for ${file.name}`);
+          toast.error(data.error?.message || `Upload failed for ${file.name}`);
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error("Cloudinary upload error:", err);
-        toast.error(`Error uploading ${file.name}`);
+        toast.error(err.message || `Error uploading ${file.name}`);
       }
     }
 
