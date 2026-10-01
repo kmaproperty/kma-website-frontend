@@ -807,9 +807,8 @@ export interface SeoPageData extends SeoPageSummary {
   search_filters?: Record<string, any>;
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://kmaglobalproperty.com/api/backend";
+const BASE_URL = "https://kmaglobalproperty.com/api/backend";
 
-// Corridor to Locality & Sector Mappings
 const CORRIDOR_SECTORS: Record<string, string[]> = {
   "dwarka-expressway": [
     "dwarka expressway", "dwarka", "sector 99", "sector 102", "sector 103",
