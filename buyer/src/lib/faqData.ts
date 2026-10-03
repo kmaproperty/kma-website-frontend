@@ -27,13 +27,13 @@ export const faqData: FAQCategory[] = [
         id: "cb-2",
         question: "Where is the KMA Global Property office located?",
         answer:
-          "Our office is at Plot No. 3A, Sector 106, Dwarka Expressway, Gurugram, Haryana, India – 122006 — right in the middle of one of Gurugram's fastest-developing corridors, which also happens to be where a large share of our listed projects are located.",
+          "Our office is at 1. Plot No. 3A, Sector 106, Dwarka Expressway, Gurugram, Haryana, India – 122006 and 2. Ground Floor, Grand IVA, Shop No 4, Signum 103, Sector 103, Daulatabad, Gurugram, Haryana 122006 - right in the middle of one of Gurugram's fastest-developing corridors, which also happens to be where a large share of our listed projects are located.",
       },
       {
         id: "cb-3",
         question: "How can I get in touch with KMA Global Property?",
         answer:
-          "You can call our team directly at +91-9056580022, write to us at info@kmaglobalproperty.com, or fill out the contact form on our website and an advisor will get back to you the same working day.",
+          "You can call our team directly at +91-9056560022, write to us at info@kmaglobalproperty.com, or fill out the contact form on our website and an advisor will get back to you the same working day.",
       },
       {
         id: "cb-4",
