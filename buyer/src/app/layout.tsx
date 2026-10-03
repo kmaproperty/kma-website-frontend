@@ -25,9 +25,9 @@ const ibmPlexSans = IBM_Plex_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "KMA Global Property | Buy, Sell & Rent Property in NCR",
+  title: "KMA Global Properties | Buy & Rent Property in Gurgaon",
   description:
-    "Find verified properties in Gurugram, Delhi, Noida, Faridabad, and Gaziabad. Connect with trusted real estate professionals through KMA Global Property.",
+    "RERA-registered Gurgaon property consultants. Verified flats, builder floors & commercial spaces on Dwarka Expwy & Golf Course Ext Rd. Book a free site visit.",
   verification: {
     google: "Tm5mijF_xS4fi4B6pWhYWGjvMPKJAlYTrMGFX97_yIQ",
   },

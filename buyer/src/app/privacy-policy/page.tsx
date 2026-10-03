@@ -518,6 +518,7 @@ const privacyPolicySections = [
       "As required under the IT Act, 2000, and the DPDP Act, 2023, here's where to direct privacy-related concerns:",
       "KMA Global Properties Pvt. Ltd. — Grievance Officer",
       "Plot No. 3A, Sector 106, Dwarka Expressway, Gurugram, Haryana, India - 122006",
+      "Ground Floor, Grand IVA, Shop No 4, Signum 103, Sector 103, Daulatabad, Gurugram, Haryana 122006",
       " +91-8047136232",
       "info@kmaglobalproperty.com",
       "www.kmaglobalproperty.com",

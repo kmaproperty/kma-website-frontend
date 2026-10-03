@@ -26,10 +26,10 @@ export default function AboutCompany() {
 
         <div className="text-gray-600 text-sm md:text-base leading-relaxed space-y-6">
           <div className="space-y-5">
-            <h2 className="text-xl md:text-2xl font-bold text-[#010048] tracking-tight mt-2">
+            <h1 className="text-xl md:text-2xl font-bold text-[#010048] tracking-tight mt-2">
               Why So Many Property Seekers in Delhi NCR Choose KMA Global
               Property?
-            </h2>
+            </h1>
             <p>
               Finding the right property in Gurugram or Delhi NCR is rarely a
               straightforward experience. Listings go stale. Agents don't call
