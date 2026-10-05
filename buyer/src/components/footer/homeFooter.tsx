@@ -1425,6 +1425,22 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
                 />
               </a>
             )}
+
+            <a
+                href="https://www.linkedin.com/company/kma-global-properties-pvt-ltd/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 hover:border-white/20 transition"
+                aria-label="Instagram"
+              >
+                <Image
+                  src="/assets/footor/linkedin.svg"
+                  width={16}
+                  height={16}
+                  alt="linkedin"
+                  className="brightness-0 invert"
+                />
+              </a>
           </div>
         </div>
       </div>
