@@ -9144,9 +9144,23 @@ declare global {
 const placeholderImage = "/assets/property/img-1.png";
 const awsBaseUrl = process.env.NEXT_PUBLIC_AWS_URL ?? "";
 
+// const toFullAssetUrl = (value?: string | null) => {
+//   if (!value) return "";
+//   if (value.startsWith("http://") || value.startsWith("https://")) return value;
+//   if (!awsBaseUrl) return value;
+//   return `${awsBaseUrl}${value}`;
+// };
+
 const toFullAssetUrl = (value?: string | null) => {
   if (!value) return "";
+
+  if (value.includes(".amazonaws.com/http")) {
+    const splitIndex = value.indexOf(".amazonaws.com/");
+    return value.substring(splitIndex + ".amazonaws.com/".length);
+  }
+
   if (value.startsWith("http://") || value.startsWith("https://")) return value;
+
   if (!awsBaseUrl) return value;
   return `${awsBaseUrl}${value}`;
 };
