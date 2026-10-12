@@ -20,15 +20,29 @@ const BANNER_SLIDES: BannerSlide[] = [
   {
     id: 1,
     title: "Channel Partner",
-    image: "/assets/CP.jpg",
+    image: "/assets/cp_1.webp",
     href: "/join-us",
     alt: "CPPoster",
   },
   {
     id: 2,
     title: "Refer and Earn",
-    image: "/assets/REF.jpg",
+    image: "/assets/cp_2.webp",
     href: "/refer-and-earn",
+    alt: "ReferralPoster",
+  },
+  {
+    id: 3,
+    title: "Channel Partner",
+    image: "/assets/cp_3.webp",
+    href: "/join-us",
+    alt: "ReferralPoster",
+  },
+  {
+    id: 4,
+    title: "Contact us",
+    image: "/assets/cp_4.webp",
+    href: "/contact-us",
     alt: "ReferralPoster",
   },
 ];
