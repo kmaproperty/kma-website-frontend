@@ -678,6 +678,7 @@ import AppDownloadSection from "./appDownloadSection";
 import AboutCompany from "../AboutCompany";
 import PosterBannerSlider from "../PosterBannerSlider";
 import Link from "next/link";
+import DemandHeatMap from "./DemandHeatMap";
 
 const LazyNeedSection = dynamic(() => import("./needSection"), { loading: () => <div className="min-h-[200px]" /> });
 const LazyRealEstateSection = dynamic(() => import("./realEstetSection"), { loading: () => <div className="min-h-[200px]" /> });
@@ -956,6 +957,8 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
 
         <MainHome topProperties={data?.properties ?? []} />
       </div>
+
+      <DemandHeatMap/>
 
       <div className="my-16 flex justify-center overflow-hidden">
         <div className="w-[90%] md:w-[75%]">
