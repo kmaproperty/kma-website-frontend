@@ -939,7 +939,7 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
       <div className="relative">
         <div className="block md:hidden">
           <BannerSlider 
-            bannerHeight={'min-h-[520px] h-[75vh]'} 
+            bannerHeight={'min-h-[520px] h-[100vh]'} 
             backgroundImages={mobileImageSlider} 
             showMobileOverlay={true}
             overlayClass='gradient-overlay'
@@ -948,7 +948,7 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
 
         <div className="hidden md:block">
           <BannerSlider 
-            bannerHeight={'min-h-[700px] 2md:min-h-auto 2md:h-[90vh]'} 
+            bannerHeight={'min-h-[700px] 2md:min-h-auto 2md:h-[90vh] md:h-[80vh]'} 
             backgroundImages={desktopImageSlider} 
             showMobileOverlay={false}
             overlayClass='gradient-overlay'
