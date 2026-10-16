@@ -40,9 +40,9 @@ export const helpMenuList = [
   {
     label: "Help Center",
   },
-  {
-    label: "Sales Enquiry",
-  },
+  // {
+  //   label: "Sales Enquiry",
+  // },
 ];
 
 export const channelPartnerMenuList = [

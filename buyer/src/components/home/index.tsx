@@ -1001,7 +1001,7 @@ export default function Home({ propertyMasterData, propertyCitiesData }) {
       </div>
 
       <div>
-        <AppDownloadSection/>
+        {/* <AppDownloadSection/> */}
         <AboutCompany/>
         <LazyHomeFooter />
       </div>

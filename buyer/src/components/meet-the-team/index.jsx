@@ -29,21 +29,21 @@ const foundersDetails = [
     image: '/assets/team/karmjeet Sir .png',
     position: 'Founder',
   },
-  {
-    name: `Anipal Singh, Parmjeet Dahiya`,
-    image: "/assets/team/Co founder's.jpg",
-    position: 'Co-Founders',
-    members: [
-      {
-        name: 'Anipal Singh',
-        designation: 'Indian Navy (Retd.)'
-      },
-      {
-        name: 'Parmjeet Dahiya',
-        designation: 'Indian Army (Retd.)'
-      }
-    ],
-  },
+  // {
+  //   name: `Anipal Singh, Parmjeet Dahiya`,
+  //   image: "/assets/team/Co founder's.jpg",
+  //   position: 'Co-Founders',
+  //   members: [
+  //     {
+  //       name: 'Anipal Singh',
+  //       designation: 'Indian Navy (Retd.)'
+  //     },
+  //     {
+  //       name: 'Parmjeet Dahiya',
+  //       designation: 'Indian Army (Retd.)'
+  //     }
+  //   ],
+  // },
 ];
 
 const teamDetails = [
