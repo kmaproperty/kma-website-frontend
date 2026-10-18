@@ -269,14 +269,117 @@ export default function RootLayout({
   };
 
   // Reviews Schema
-  const reviewSchema = {
+  // const reviewSchema = {
+  //   "@context": "https://schema.org",
+  //   "@graph": [
+  //     {
+  //       "@type": "Review",
+  //       "@id": "https://kmaglobalproperty.com/#review-yogesh",
+  //       itemReviewed: {
+  //         "@id": "https://kmaglobalproperty.com/#realestateagent",
+  //       },
+  //       author: {
+  //         "@type": "Person",
+  //         name: "Yogesh",
+  //       },
+  //       reviewRating: {
+  //         "@type": "Rating",
+  //         ratingValue: "5",
+  //         bestRating: "5",
+  //         worstRating: "1",
+  //       },
+  //       reviewBody:
+  //         "KMA Global Properties is one of the most trusted real estate consultants in Gurugram.",
+  //     },
+  //     {
+  //       "@type": "Review",
+  //       "@id": "https://kmaglobalproperty.com/#review-aarushi",
+  //       itemReviewed: {
+  //         "@id": "https://kmaglobalproperty.com/#realestateagent",
+  //       },
+  //       author: {
+  //         "@type": "Person",
+  //         name: "Aarushi",
+  //       },
+  //       reviewRating: {
+  //         "@type": "Rating",
+  //         ratingValue: "5",
+  //         bestRating: "5",
+  //         worstRating: "1",
+  //       },
+  //       reviewBody:
+  //         "Professional team with transparent dealings and excellent support throughout the property buying process.",
+  //     },
+  //     {
+  //       "@type": "Review",
+  //       "@id": "https://kmaglobalproperty.com/#review-ananjay-kumar",
+  //       itemReviewed: {
+  //         "@id": "https://kmaglobalproperty.com/#realestateagent",
+  //       },
+  //       author: {
+  //         "@type": "Person",
+  //         name: "Ananjay Kumar",
+  //       },
+  //       reviewRating: {
+  //         "@type": "Rating",
+  //         ratingValue: "5",
+  //         bestRating: "5",
+  //         worstRating: "1",
+  //       },
+  //       reviewBody:
+  //         "KMA Global Properties Pvt. Ltd. is described as a professionally managed real estate consultancy.",
+  //     },
+  //     {
+  //       "@type": "Review",
+  //       "@id": "https://kmaglobalproperty.com/#review-vishal-shekhawat",
+  //       itemReviewed: {
+  //         "@id": "https://kmaglobalproperty.com/#realestateagent",
+  //       },
+  //       author: {
+  //         "@type": "Person",
+  //         name: "Vishal Shekhawat",
+  //       },
+  //       reviewRating: {
+  //         "@type": "Rating",
+  //         ratingValue: "5",
+  //         bestRating: "5",
+  //         worstRating: "1",
+  //       },
+  //       reviewBody:
+  //         "KMA Global Properties completely changed how I look at real estate with their transparent and professional guidance.",
+  //     },
+  //     {
+  //       "@type": "AggregateRating",
+  //       "@id": "https://kmaglobalproperty.com/#aggregate-rating",
+  //       itemReviewed: {
+  //         "@id": "https://kmaglobalproperty.com/#realestateagent",
+  //       },
+  //       ratingValue: "5.0",
+  //       reviewCount: "4",
+  //       bestRating: "5",
+  //       worstRating: "1",
+  //     },
+  //   ],
+  // };
+
+    const reviewSchema = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "Review",
         "@id": "https://kmaglobalproperty.com/#review-yogesh",
         itemReviewed: {
+          "@type": "RealEstateAgent",
           "@id": "https://kmaglobalproperty.com/#realestateagent",
+          name: "KMA Global Properties",
+          url: "https://kmaglobalproperty.com/",
+          telephone: "+919289977646",
+          address: {
+            "@type": "PostalAddress",
+            addressLocality: "Gurugram",
+            addressRegion: "Haryana",
+            addressCountry: "IN",
+          },
         },
         author: {
           "@type": "Person",
@@ -295,7 +398,10 @@ export default function RootLayout({
         "@type": "Review",
         "@id": "https://kmaglobalproperty.com/#review-aarushi",
         itemReviewed: {
+          "@type": "RealEstateAgent",
           "@id": "https://kmaglobalproperty.com/#realestateagent",
+          name: "KMA Global Properties",
+          url: "https://kmaglobalproperty.com/",
         },
         author: {
           "@type": "Person",
@@ -314,7 +420,10 @@ export default function RootLayout({
         "@type": "Review",
         "@id": "https://kmaglobalproperty.com/#review-ananjay-kumar",
         itemReviewed: {
+          "@type": "RealEstateAgent",
           "@id": "https://kmaglobalproperty.com/#realestateagent",
+          name: "KMA Global Properties",
+          url: "https://kmaglobalproperty.com/",
         },
         author: {
           "@type": "Person",
@@ -333,7 +442,10 @@ export default function RootLayout({
         "@type": "Review",
         "@id": "https://kmaglobalproperty.com/#review-vishal-shekhawat",
         itemReviewed: {
+          "@type": "RealEstateAgent",
           "@id": "https://kmaglobalproperty.com/#realestateagent",
+          name: "KMA Global Properties",
+          url: "https://kmaglobalproperty.com/",
         },
         author: {
           "@type": "Person",
@@ -352,7 +464,10 @@ export default function RootLayout({
         "@type": "AggregateRating",
         "@id": "https://kmaglobalproperty.com/#aggregate-rating",
         itemReviewed: {
+          "@type": "RealEstateAgent",
           "@id": "https://kmaglobalproperty.com/#realestateagent",
+          name: "KMA Global Properties",
+          url: "https://kmaglobalproperty.com/",
         },
         ratingValue: "5.0",
         reviewCount: "4",
