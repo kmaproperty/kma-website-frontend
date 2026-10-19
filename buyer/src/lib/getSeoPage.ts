@@ -785,6 +785,379 @@
 //   }
 // }
 
+// export interface SeoPageSummary {
+//   slug: string;
+//   h1_heading: string;
+//   meta_description: string;
+//   city_name: string;
+// }
+
+// export interface SeoPageData extends SeoPageSummary {
+//   id: string;
+//   meta_title: string;
+//   canonical_url: string;
+//   listing_type: string;
+//   article_body: string;
+//   faqs: Array<{ question: string; answer: string }>;
+//   is_active: boolean;
+//   json_ld?: any;
+//   related_links?: Array<{ name: string; url: string }>;
+//   primary_keyword?: string;
+//   lead_image_alt?: string;
+//   search_filters?: Record<string, any>;
+// }
+
+// const BASE_URL = "https://kmaglobalproperty.com/api/backend";
+
+// const CORRIDOR_SECTORS: Record<string, string[]> = {
+//   "dwarka-expressway": [
+//     "dwarka expressway", "dwarka", "sector 99", "sector 102", "sector 103",
+//     "sector 104", "sector 105", "sector 106", "sector 107", "sector 108",
+//     "sector 109", "sector 110", "sector 111", "sector 112", "sector 113",
+//     "sector 37d", "sector 88", "sector 84"
+//   ],
+//   "golf-course-extension": [
+//     "golf course extension", "gcx", "sector 61", "sector 62", "sector 65",
+//     "sector 66", "sector 67", "sector 68"
+//   ],
+//   "golf-course": [
+//     "golf course road", "golf course", "sector 42", "sector 43", "sector 53", "sector 54", "dlf"
+//   ],
+//   "sohna-road": [
+//     "sohna road", "sohna", "sector 47", "sector 48", "sector 49", "sector 50"
+//   ],
+//   "new-gurgaon": [
+//     "new gurgaon", "sector 81", "sector 82", "sector 83", "sector 84",
+//     "sector 85", "sector 86", "sector 90", "sector 91", "sector 92"
+//   ],
+//   "southern-peripheral-road": [
+//     "southern peripheral road", "spr", "sector 69", "sector 70", "sector 71",
+//     "sector 73", "sector 74"
+//   ]
+// };
+
+// export function getCleanLabel(heading: string): string {
+//   if (!heading) return "";
+//   const text = heading.replace(/<[^>]*>/g, "").trim();
+//   const parts = text.split(/[-–—:|]/);
+//   return parts[0].trim();
+// }
+
+// export async function getSeoPageData(rawSlug: string): Promise<SeoPageData | null> {
+//   try {
+//     if (!rawSlug) return null;
+
+//     const cleanSlug = decodeURIComponent(rawSlug).replace(/^\/+|\/+$/g, "").trim();
+//     const targetUrl = `${BASE_URL}/end-user/seo-landing-pages/${cleanSlug}`;
+
+//     const res = await fetch(targetUrl, {
+//       cache: "no-store",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Accept: "application/json",
+//       },
+//     });
+
+//     if (!res.ok) {
+//       console.error(`[getSeoPageData] Failed! Status: ${res.status}, URL: ${targetUrl}`);
+//       return null;
+//     }
+
+//     const data = await res.json();
+//     return (data?.data ?? data) as SeoPageData;
+//   } catch (error) {
+//     console.error("[getSeoPageData] Network/Fetch Exception:", error);
+//     return null;
+//   }
+// }
+
+// export async function getAllSeoPages(): Promise<SeoPageSummary[]> {
+//   try {
+//     const res = await fetch(`${BASE_URL}/end-user/seo-landing-pages`, {
+//       next: { revalidate: 3600 },
+//       headers: { "Content-Type": "application/json" },
+//     });
+//     if (!res.ok) return [];
+//     const data = await res.json();
+//     return (data?.data ?? data) as SeoPageSummary[];
+//   } catch (error) {
+//     console.error("[getAllSeoPages] Error:", error);
+//     return [];
+//   }
+// }
+
+// export async function getRelatedSeoPages(slug: string): Promise<SeoPageSummary[]> {
+//   try {
+//     const res = await fetch(`${BASE_URL}/end-user/seo-landing-pages/related/${slug}`, {
+//       next: { revalidate: 3600 },
+//       headers: { "Content-Type": "application/json" },
+//     });
+//     if (!res.ok) return [];
+//     const data = await res.json();
+//     return (data?.data ?? data) as SeoPageSummary[];
+//   } catch (error) {
+//     console.error("[getRelatedSeoPages] Error:", error);
+//     return [];
+//   }
+// }
+
+// export function parseSlugFilters(slug: string) {
+//   const clean = slug.toLowerCase();
+
+//   let bhk: number | null = null;
+//   const isRk = clean.includes("1-rk") || clean.includes("1rk") || clean.includes("studio");
+//   const bhkMatch = clean.match(/(\d+)\s*-?\s*bhk/);
+//   if (bhkMatch) {
+//     bhk = parseInt(bhkMatch[1], 10);
+//   }
+
+//   const isBudget = clean.includes("cheap") || clean.includes("budget") || clean.includes("affordable");
+//   const isLuxury = clean.includes("luxury") || clean.includes("ultra-luxury") || clean.includes("premium");
+
+//   let propertyCategory: "flat" | "builder_floor" | "villa" | "plot" | "commercial" | "all" = "all";
+//   if (clean.includes("commercial") || clean.includes("office") || clean.includes("shop")) {
+//     propertyCategory = "commercial";
+//   } else if (clean.includes("builder-floor") || clean.includes("builder-floors")) {
+//     propertyCategory = "builder_floor";
+//   } else if (clean.includes("villa") || clean.includes("villas")) {
+//     propertyCategory = "villa";
+//   } else if (clean.includes("plot") || clean.includes("plots")) {
+//     propertyCategory = "plot";
+//   } else if (clean.includes("flat") || clean.includes("flats") || clean.includes("apartment")) {
+//     propertyCategory = "flat";
+//   }
+
+//   let corridorKey: string | null = null;
+//   if (clean.includes("golf-course-extension")) corridorKey = "golf-course-extension";
+//   else if (clean.includes("golf-course")) corridorKey = "golf-course";
+//   else if (clean.includes("dwarka-expressway")) corridorKey = "dwarka-expressway";
+//   else if (clean.includes("sohna-road")) corridorKey = "sohna-road";
+//   else if (clean.includes("new-gurgaon")) corridorKey = "new-gurgaon";
+//   else if (clean.includes("southern-peripheral-road") || clean.includes("spr")) corridorKey = "southern-peripheral-road";
+
+//   return { bhk, isRk, isBudget, isLuxury, propertyCategory, corridorKey };
+// }
+
+// function extractBhkNumber(p: any): number | null {
+//   const rawSources = [
+//     typeof p.bhkType === "object" ? p.bhkType?.name : null,
+//     typeof p.bhkType === "string" ? p.bhkType : null,
+//     p.bhkTypeName,
+//     p.bhk,
+//     typeof p.bhkType === "object" ? p.bhkType?.code : null,
+//   ].filter(Boolean);
+
+//   for (const item of rawSources) {
+//     const str = String(item).toLowerCase();
+//     const match = str.match(/(\d+)/);
+//     if (match) return parseInt(match[1], 10);
+//   }
+
+//   const title = String(p.title || p.propertyName || "").toLowerCase();
+//   const titleMatch = title.match(/(\d+)\s*(?:bhk|bed|bedroom)/);
+//   if (titleMatch) {
+//     return parseInt(titleMatch[1], 10);
+//   }
+
+//   return null;
+// }
+
+// function getNumericPrice(property: any, isRent: boolean): number {
+//   if (isRent) {
+//     return Number(property.monthlyRent) || 0;
+//   }
+//   if (property.price && !isNaN(Number(property.price))) {
+//     return Number(property.price);
+//   }
+//   if (property.units?.[0]?.price) {
+//     const raw = String(property.units[0].price).replace(/[^0-9.]/g, "");
+//     const parsed = parseFloat(raw);
+//     if (!isNaN(parsed)) return parsed;
+//   }
+//   return 0;
+// }
+
+// function isValidUuid(id: unknown): boolean {
+//   if (typeof id !== "string") return false;
+//   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id.trim());
+// }
+
+// export async function getMatchingProperties(
+//   slug: string,
+//   cityName?: string,
+//   listingTypeFromDb?: string,
+//   searchFiltersFromDb?: Record<string, any>
+// ) {
+//   const cleanSlug = slug.toLowerCase();
+//   const { bhk, isRk, isBudget, isLuxury, propertyCategory, corridorKey } = parseSlugFilters(slug);
+
+//   try {
+//     const isCommercial =
+//       listingTypeFromDb?.toLowerCase() === "commercial" ||
+//       propertyCategory === "commercial" ||
+//       cleanSlug.includes("commercial");
+
+//     const isRent =
+//       !isCommercial &&
+//       (listingTypeFromDb?.toLowerCase() === "rent" ||
+//         cleanSlug.includes("-rent") ||
+//         cleanSlug.includes("rental"));
+
+    
+//     const params = new URLSearchParams({
+//       page: "1",
+//       limit: "100",
+//     });
+
+//     const potentialCityId = searchFiltersFromDb?.cityId;
+//     if (potentialCityId && isValidUuid(potentialCityId)) {
+//       params.set("cityId", potentialCityId.trim());
+//     }
+
+//     const potentialListingTypeId = searchFiltersFromDb?.listingTypeIds;
+//     if (potentialListingTypeId && isValidUuid(potentialListingTypeId)) {
+//       params.set("listingTypeIds", potentialListingTypeId.trim());
+//     }
+
+//     let targetUrl = `${BASE_URL}/end-user/properties?${params.toString()}`;
+
+//     let res = await fetch(targetUrl, {
+//       cache: "no-store",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Accept: "application/json",
+//       },
+//     });
+
+//     if (!res.ok) {
+//       console.warn(`[getMatchingProperties] Primary fetch status: ${res.status}. Falling back to default list.`);
+//       targetUrl = `${BASE_URL}/end-user/properties?page=1&limit=100`;
+//       res = await fetch(targetUrl, {
+//         cache: "no-store",
+//         headers: { "Content-Type": "application/json" },
+//       });
+//     }
+
+//     if (!res.ok) {
+//       console.error(`[getMatchingProperties] Properties fetch failed with status: ${res.status}`);
+//       return [];
+//     }
+
+//     const json = await res.json();
+//     const rawList: any[] = json?.properties || json?.data || (Array.isArray(json) ? json : []);
+
+//     if (rawList.length === 0) return [];
+
+//     const activeList = rawList.filter((p: any) => {
+//       const status = String(p.status || "").toLowerCase();
+//       return status !== "inactive" && status !== "rejected";
+//     });
+
+//     let filteredList = activeList.filter((p: any) => {
+//       const hasRentAmount = Boolean(p.monthlyRent && Number(p.monthlyRent) > 0);
+//       const listingTypeStr = String(
+//         (typeof p.listingType === "object" ? p.listingType?.code || p.listingType?.name : p.listingType) ||
+//         p.listingTypeCode || ""
+//       ).toLowerCase();
+
+//       const isActuallyRent = hasRentAmount || listingTypeStr.includes("rent");
+
+//       if (isCommercial) {
+//         const cat = String(
+//           (typeof p.category === "object" ? p.category?.code || p.category?.name : p.category) ||
+//           p.propertyType || ""
+//         ).toLowerCase();
+//         return cat.includes("commercial") || cat.includes("office") || cat.includes("shop");
+//       }
+
+//       if (isRent) {
+//         return isActuallyRent;
+//       }
+
+//       return !isActuallyRent;
+//     });
+
+//     if (isRk) {
+//       const rkOnly = filteredList.filter((p: any) => {
+//         const text = `${p.bhkType?.name || ""} ${p.bhkType || ""} ${p.title || ""}`.toLowerCase();
+//         return text.includes("1 rk") || text.includes("1rk") || text.includes("studio");
+//       });
+//       if (rkOnly.length > 0) filteredList = rkOnly;
+//     } else if (bhk !== null) {
+//       const exactBhk = filteredList.filter((p: any) => {
+//         const propBhk = extractBhkNumber(p);
+//         return propBhk === bhk;
+//       });
+
+//       if (exactBhk.length > 0) {
+//         filteredList = exactBhk;
+//       } else {
+//         return [];
+//       }
+//     }
+
+//     if (corridorKey && CORRIDOR_SECTORS[corridorKey]) {
+//       const terms = CORRIDOR_SECTORS[corridorKey];
+
+//       const isCorridorMatch = (p: any): boolean => {
+//         const propZone = String(p.zone || p.locality?.zone || "").toLowerCase();
+//         if (terms.some((term) => propZone.includes(term))) return true;
+
+//         const addrText = `${p.locality?.name || p.locality || ""} ${p.society?.name || p.society || ""} ${p.address || ""} ${p.title || ""}`.toLowerCase();
+//         return terms.some((term) => addrText.includes(term));
+//       };
+
+//       const zoneMatched = filteredList.filter(isCorridorMatch);
+//       if (zoneMatched.length > 0) {
+//         filteredList = zoneMatched;
+//       }
+//     }
+
+//     if (propertyCategory !== "all" && propertyCategory !== "commercial") {
+//       const catMatched = filteredList.filter((p: any) => {
+//         const pType = String(
+//           (typeof p.propertyType === "object" ? p.propertyType?.name || p.propertyType?.code : p.propertyType) ||
+//           p.title || ""
+//         ).toLowerCase();
+
+//         if (propertyCategory === "flat") return pType.includes("flat") || pType.includes("apartment");
+//         if (propertyCategory === "builder_floor") return pType.includes("floor");
+//         if (propertyCategory === "villa") return pType.includes("villa") || pType.includes("house");
+//         if (propertyCategory === "plot") return pType.includes("plot") || pType.includes("land");
+//         return true;
+//       });
+
+//       if (catMatched.length > 0) {
+//         filteredList = catMatched;
+//       }
+//     }
+
+//     filteredList.sort((a: any, b: any) => {
+//       const priceA = getNumericPrice(a, isRent);
+//       const priceB = getNumericPrice(b, isRent);
+
+//       if (isBudget) {
+//         if (priceA > 0 && priceB > 0) return priceA - priceB;
+//         if (priceA > 0) return -1;
+//         if (priceB > 0) return 1;
+//       } else if (isLuxury) {
+//         if (priceA > 0 && priceB > 0) return priceB - priceA;
+//         if (priceA > 0) return -1;
+//         if (priceB > 0) return 1;
+//       }
+
+//       const aVer = a.isVerified === "verified" || a.isVerified === true ? 1 : 0;
+//       const bVer = b.isVerified === "verified" || b.isVerified === true ? 1 : 0;
+//       return bVer - aVer;
+//     });
+
+//     return filteredList;
+//   } catch (err) {
+//     console.error("[getMatchingProperties] Exception:", err);
+//     return [];
+//   }
+// }
+
 export interface SeoPageSummary {
   slug: string;
   h1_heading: string;
@@ -808,6 +1181,29 @@ export interface SeoPageData extends SeoPageSummary {
 }
 
 const BASE_URL = "https://kmaglobalproperty.com/api/backend";
+
+// Known societies mapping to ensure clean search queries
+const SOCIETY_DICTIONARY: Record<string, string> = {
+  "assotech-blith": "Assotech Blith",
+  "ansal-highland-park": "Ansal Highland Park",
+  "ansal-estella": "Ansal Estella",
+  "landmark-the-residency": "Landmark The Residency",
+  "corona-optus": "Corona Optus",
+  "ninex-rmg": "Ninex RMG Residency",
+  "cosmos-express-99": "Cosmos Express 99",
+  "m3m-woodshire": "M3M Woodshire",
+  "pareena-coban-residences": "Pareena Coban Residences",
+  "pareena-express-heights": "Pareena Express Heights",
+
+  "signature-global": "Signature Global",
+  "m3m": "M3M",
+  "dlf": "DLF",
+  "sobha": "Sobha",
+  "godrej": "Godrej",
+  "tata-primanti": "Tata Primanti",
+  "puri-diplomatic": "Puri Diplomatic",
+  "vatika": "Vatika",
+};
 
 const CORRIDOR_SECTORS: Record<string, string[]> = {
   "dwarka-expressway": [
@@ -904,6 +1300,16 @@ export async function getRelatedSeoPages(slug: string): Promise<SeoPageSummary[]
 export function parseSlugFilters(slug: string) {
   const clean = slug.toLowerCase();
 
+  // 1. Detect Specific Society from Slug
+  let societyName: string | null = null;
+  for (const [key, name] of Object.entries(SOCIETY_DICTIONARY)) {
+    if (clean.includes(key)) {
+      societyName = name;
+      break;
+    }
+  }
+
+  // 2. BHK / Studio check
   let bhk: number | null = null;
   const isRk = clean.includes("1-rk") || clean.includes("1rk") || clean.includes("studio");
   const bhkMatch = clean.match(/(\d+)\s*-?\s*bhk/);
@@ -935,7 +1341,7 @@ export function parseSlugFilters(slug: string) {
   else if (clean.includes("new-gurgaon")) corridorKey = "new-gurgaon";
   else if (clean.includes("southern-peripheral-road") || clean.includes("spr")) corridorKey = "southern-peripheral-road";
 
-  return { bhk, isRk, isBudget, isLuxury, propertyCategory, corridorKey };
+  return { societyName, bhk, isRk, isBudget, isLuxury, propertyCategory, corridorKey };
 }
 
 function extractBhkNumber(p: any): number | null {
@@ -989,7 +1395,7 @@ export async function getMatchingProperties(
   searchFiltersFromDb?: Record<string, any>
 ) {
   const cleanSlug = slug.toLowerCase();
-  const { bhk, isRk, isBudget, isLuxury, propertyCategory, corridorKey } = parseSlugFilters(slug);
+  const { societyName, bhk, isRk, isBudget, isLuxury, propertyCategory, corridorKey } = parseSlugFilters(slug);
 
   try {
     const isCommercial =
@@ -1003,7 +1409,6 @@ export async function getMatchingProperties(
         cleanSlug.includes("-rent") ||
         cleanSlug.includes("rental"));
 
-    
     const params = new URLSearchParams({
       page: "1",
       limit: "100",
@@ -1019,6 +1424,11 @@ export async function getMatchingProperties(
       params.set("listingTypeIds", potentialListingTypeId.trim());
     }
 
+    const targetSearchQuery = searchFiltersFromDb?.search || societyName || "";
+    if (targetSearchQuery) {
+      params.set("search", targetSearchQuery);
+    }
+
     let targetUrl = `${BASE_URL}/end-user/properties?${params.toString()}`;
 
     let res = await fetch(targetUrl, {
@@ -1030,8 +1440,10 @@ export async function getMatchingProperties(
     });
 
     if (!res.ok) {
-      console.warn(`[getMatchingProperties] Primary fetch status: ${res.status}. Falling back to default list.`);
-      targetUrl = `${BASE_URL}/end-user/properties?page=1&limit=100`;
+      console.warn(`[getMatchingProperties] Primary fetch status: ${res.status}. Falling back without search param.`);
+      const fallbackParams = new URLSearchParams({ page: "1", limit: "100" });
+      if (potentialCityId && isValidUuid(potentialCityId)) fallbackParams.set("cityId", potentialCityId.trim());
+      targetUrl = `${BASE_URL}/end-user/properties?${fallbackParams.toString()}`;
       res = await fetch(targetUrl, {
         cache: "no-store",
         headers: { "Content-Type": "application/json" },
@@ -1053,6 +1465,7 @@ export async function getMatchingProperties(
       return status !== "inactive" && status !== "rejected";
     });
 
+    // 1. Rent vs Sale Match
     let filteredList = activeList.filter((p: any) => {
       const hasRentAmount = Boolean(p.monthlyRent && Number(p.monthlyRent) > 0);
       const listingTypeStr = String(
@@ -1077,6 +1490,28 @@ export async function getMatchingProperties(
       return !isActuallyRent;
     });
 
+    const societyFilterTarget = targetSearchQuery.toLowerCase().trim();
+    if (societyFilterTarget) {
+      const societyMatched = filteredList.filter((p: any) => {
+        const societyField = String(
+          typeof p.society === "object" ? p.society?.name : p.society || ""
+        ).toLowerCase();
+        const propNameField = String(p.propertyName || p.title || "").toLowerCase();
+        const addressField = String(p.address || "").toLowerCase();
+
+        return (
+          societyField.includes(societyFilterTarget) ||
+          propNameField.includes(societyFilterTarget) ||
+          addressField.includes(societyFilterTarget)
+        );
+      });
+
+      if (societyMatched.length > 0) {
+        filteredList = societyMatched;
+      }
+    }
+
+    // 3. BHK Matching
     if (isRk) {
       const rkOnly = filteredList.filter((p: any) => {
         const text = `${p.bhkType?.name || ""} ${p.bhkType || ""} ${p.title || ""}`.toLowerCase();
@@ -1091,12 +1526,11 @@ export async function getMatchingProperties(
 
       if (exactBhk.length > 0) {
         filteredList = exactBhk;
-      } else {
-        return [];
       }
     }
 
-    if (corridorKey && CORRIDOR_SECTORS[corridorKey]) {
+    // 4. Corridor / Locality (Agar society page na ho)
+    if (!societyFilterTarget && corridorKey && CORRIDOR_SECTORS[corridorKey]) {
       const terms = CORRIDOR_SECTORS[corridorKey];
 
       const isCorridorMatch = (p: any): boolean => {
@@ -1113,6 +1547,7 @@ export async function getMatchingProperties(
       }
     }
 
+    // 5. Property Category
     if (propertyCategory !== "all" && propertyCategory !== "commercial") {
       const catMatched = filteredList.filter((p: any) => {
         const pType = String(
@@ -1132,6 +1567,7 @@ export async function getMatchingProperties(
       }
     }
 
+    // 6. Verified listings first, sorted by pricing
     filteredList.sort((a: any, b: any) => {
       const priceA = getNumericPrice(a, isRent);
       const priceB = getNumericPrice(b, isRent);
