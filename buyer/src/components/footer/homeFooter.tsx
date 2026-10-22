@@ -1189,7 +1189,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
           </p>
 
           {groupedSeoPages.length > 0 && (
-            <motion.div
+            <div
               key={footerTab}
               variants={topVariant}
               animate={isInView ? "visible" : "hidden"}
@@ -1215,7 +1215,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
                   </ul>
                 </div>
               ))}
-            </motion.div>
+            </div>
           )}
         </div>
       </div>
