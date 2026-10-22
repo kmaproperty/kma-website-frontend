@@ -1189,10 +1189,10 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
           </p>
 
           {groupedSeoPages.length > 0 && (
-            <motion.div
+            <div
               key={footerTab}
-              variants={topVariant}
-              animate={isInView ? "visible" : "hidden"}
+              // variants={topVariant}
+              // animate={isInView ? "visible" : "hidden"}
               className="space-y-6"
             >
               {groupedSeoPages.map((group) => (
@@ -1215,7 +1215,7 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
                   </ul>
                 </div>
               ))}
-            </motion.div>
+            </div>
           )}
         </div>
       </div>
