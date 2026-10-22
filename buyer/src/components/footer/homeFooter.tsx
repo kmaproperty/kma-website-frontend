@@ -1191,8 +1191,8 @@ export default function HomeFooter({ tab }: { tab?: number } = {}) {
           {groupedSeoPages.length > 0 && (
             <div
               key={footerTab}
-              variants={topVariant}
-              animate={isInView ? "visible" : "hidden"}
+              // variants={topVariant}
+              // animate={isInView ? "visible" : "hidden"}
               className="space-y-6"
             >
               {groupedSeoPages.map((group) => (
