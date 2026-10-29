@@ -314,7 +314,7 @@
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Slider from "react-slick";
 import Image from "next/image";
 
@@ -374,6 +374,18 @@ export default function BannerSlider({
   bannerHeight?: string;
   showMobileOverlay?: boolean;
 }) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   const settings = useMemo(() => {
     return {
       dots: false,
@@ -384,19 +396,24 @@ export default function BannerSlider({
       autoplaySpeed: 3000,
       arrows: false,
       pauseOnHover: false,
-      responsive: [
-        {
-          breakpoint: 640,
-          settings: {
-            autoplay: false,
-            infinite: false,
-            swipe: false,
-            draggable: false,
-          },
-        },
-      ],
     };
   }, []);
+
+  if (!backgroundImages || backgroundImages.length === 0) return null;
+
+  if (isMobile) {
+    return (
+      <div className="w-full relative">
+        <RenderSliderBody
+          bannerHeight={bannerHeight}
+          sliderItem={backgroundImages[0]}
+          overlayClass={overlayClass}
+          priority={true}
+          showMobileOverlay={showMobileOverlay}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full relative">
