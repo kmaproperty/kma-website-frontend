@@ -29,6 +29,11 @@ const foundersDetails = [
     image: '/assets/team/karmjeet Sir .png',
     position: 'Founder',
   },
+  {
+    name: 'Parmjeet Dahiya',
+    image: '/assets/team/paramjeet_image.jpeg',
+    position: 'Indian Army (Retd.), Co-founder',
+  },
   // {
   //   name: `Anipal Singh, Parmjeet Dahiya`,
   //   image: "/assets/team/Co founder's.jpg",

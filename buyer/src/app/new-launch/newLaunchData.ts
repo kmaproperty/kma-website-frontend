@@ -2185,7 +2185,7 @@ export const ctaTrustItems = [
 
 export const newLaunchPageData = {
   hero: {
-    badge: "Exclusive New Launches 2025 — Gurgaon",
+    badge: "Exclusive New Launches 2026 — Gurgaon",
     titleLine1: "Gurugram's Premium",
     titleLine2: "NEW LAUNCH",
     titleAccent: "Residences",
@@ -2209,7 +2209,7 @@ export const newLaunchPageData = {
     section: {
       kicker: "Browse Projects",
       title: "New Launch Projects in",
-      titleAccent: "Gurgaon 2025",
+      titleAccent: "Gurgaon 2026",
       description:
         "Hand-picked from Gurgaon's most prestigious corridors — Golf Course Road, Dwarka Expressway, Southern Peripheral Road & more.",
     },
