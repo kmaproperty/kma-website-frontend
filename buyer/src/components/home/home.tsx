@@ -59,6 +59,7 @@ import Filter from "./filter";
 import ContactUs from "./contactus";
 import ContactInformation from "../contactInformation";
 import NewsFlashBanner from "../NewsFlashBanner";
+import DiwaliCarOffer from "../DiwaliCarOffer";
 
 type MainHomeProps = {
   topProperties: unknown[];
@@ -88,6 +89,10 @@ export default function MainHome({ topProperties }: MainHomeProps) {
                 <TopProperties topProperties={topProperties} />
             </div>
               )}
+
+            <div className="pointer-events-auto">
+              <DiwaliCarOffer/>
+              </div>
           </div>
         </div>
 
@@ -97,7 +102,7 @@ export default function MainHome({ topProperties }: MainHomeProps) {
           </div>
         </div>
 
-        <div className="pointer-events-none">
+        <div className="pointer-events-auto">
           <NewsFlashBanner />
         </div>
 
