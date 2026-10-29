@@ -59,7 +59,7 @@ import Filter from "./filter";
 import ContactUs from "./contactus";
 import ContactInformation from "../contactInformation";
 import NewsFlashBanner from "../NewsFlashBanner";
-import DiwaliCarOffer from "../DiwaliCarOffer";
+// import DiwaliCarOffer from "../DiwaliCarOffer";
 
 type MainHomeProps = {
   topProperties: unknown[];
@@ -90,9 +90,9 @@ export default function MainHome({ topProperties }: MainHomeProps) {
             </div>
               )}
 
-            <div className="pointer-events-auto">
+            {/* <div className="pointer-events-auto">
               <DiwaliCarOffer/>
-              </div>
+              </div> */}
           </div>
         </div>
 
