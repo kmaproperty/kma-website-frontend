@@ -27,27 +27,55 @@
 //     )
 // }
 
-import Link from "next/link";
+// import Link from "next/link";
+
+// export default function BannerText(){
+//     return(
+//         <div className="hidden md:flex flex-col">
+
+//             <div className="h-auto">
+
+//             </div>
+
+//             {/* <div className="bg-white/10 rounded-[5px] bg-clip-padding backdrop-filter flex gap-3 items-center backdrop-blur-[20px] px-[8px] py-[4px] w-fit justify-center mx-auto md:mx-0">
+//                 <button className="rounded-[5px] bg-[#ffbb55] px-[4px] py-[2px] text-xs xl:text-sm text-white">New</button>
+//                 <p className="text-xs xl:text-sm text-white">No 1 Best Selling Real Estate Website</p>
+//             </div> */}
+
+//             <div className="text-white mt-5">
+//                 <p className="text-2xl sm:text-2xl lg:text-4xl font-bold">Explore verified properties</p>
+//                 <p className="text-2xl sm:text-2xl lg:text-4xl font-bold">across the city’s most coveted locations. Where Premium Living Begins.</p>
+//             </div>
+
+//             {/* <p className="text-sm xl:text-sm text-white mt-2">Find the right property in minutes</p> */}
+
+//             {/* <Link href="/contact-us" className="border border-1 rounded-full px-7.5 text-xs py-2 w-max cursor-pointer mt-5 text-white">
+//                 <p className="text-nowrap xl:text-sm">Contact Us</p>
+//             </Link> */}
+
+//         </div>
+//     )
+// }
+
 
 export default function BannerText(){
     return(
-        <div className="hidden md:flex flex-col">
+        <div className="flex flex-col">
 
             <div className="h-auto">
-
             </div>
 
-            {/* <div className="bg-white/10 rounded-[5px] bg-clip-padding backdrop-filter flex gap-3 items-center backdrop-blur-[20px] px-[8px] py-[4px] w-fit justify-center mx-auto md:mx-0">
+            <div className="bg-white/10 rounded-[5px] bg-clip-padding backdrop-filter flex gap-3 items-center backdrop-blur-[20px] px-[8px] py-[4px] w-fit justify-center mx-auto md:mx-0">
                 <button className="rounded-[5px] bg-[#ffbb55] px-[4px] py-[2px] text-xs xl:text-sm text-white">New</button>
                 <p className="text-xs xl:text-sm text-white">No 1 Best Selling Real Estate Website</p>
-            </div> */}
+            </div>
 
             <div className="text-white mt-5">
                 <p className="text-2xl sm:text-2xl lg:text-4xl font-bold">Explore verified properties</p>
-                <p className="text-2xl sm:text-2xl lg:text-4xl font-bold">across the city’s most coveted locations. Where Premium Living Begins.</p>
+                <p className="text-2xl sm:text-2xl lg:text-4xl font-bold">across the city’s most coveted locations.</p>
             </div>
 
-            {/* <p className="text-sm xl:text-sm text-white mt-2">Find the right property in minutes</p> */}
+            <p className="text-sm xl:text-sm text-white mt-2">Where Premium Living Begins</p>
 
             {/* <Link href="/contact-us" className="border border-1 rounded-full px-7.5 text-xs py-2 w-max cursor-pointer mt-5 text-white">
                 <p className="text-nowrap xl:text-sm">Contact Us</p>
