@@ -1519,7 +1519,7 @@ export default function FeaturedProperties({ topProperties }: { topProperties: a
 
                         <div className="absolute -bottom-4 left-4 rounded-full bg-white p-0.5 shadow-sm ring-1 ring-slate-200">
                           <Image
-                            src={item?.owner?.profileImage || "/assets/property/profile.png"}
+                            src={"/assets/app/call-person.svg"}
                             width={34}
                             height={34}
                             alt={item?.owner?.name ?? "Agent"}
