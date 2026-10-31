@@ -11595,7 +11595,7 @@ export default function ListingDetailsPage() {
                       </div>
                     </section>
 
-                    <section className="md:p-4 px-4 !border-0">
+                    {/* <section className="md:p-4 px-4 !border-0">
                       <div className="flex items-start gap-2 mb-4">
                         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#EEF2FF] text-[#4F46E5] shadow-xs">
                           <Sparkles className="h-6 w-6 stroke-[2.2]" />
@@ -11815,7 +11815,218 @@ export default function ListingDetailsPage() {
                           </>
                         )}
                       </div>
-                    </section>
+                    </section> */}
+
+                                    {filteredSimilarProperties && filteredSimilarProperties.length > 0 ? (
+  <section className="md:p-4 px-4 !border-0">
+    <div className="flex items-start gap-2 mb-4">
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#EEF2FF] text-[#4F46E5] shadow-xs">
+        <Sparkles className="h-6 w-6 stroke-[2.2]" />
+      </div>
+
+      <div className="min-w-0">
+        <h2 className="text-xl sm:text-2xl font-bold tracking-wide leading-tight text-[#0F172A]">
+          KMA AI Property Match
+        </h2>
+        <p className="text-sm sm:text-base font-normal text-[#64748B]">
+          Properties picked by AI based on your preferences
+        </p>
+
+        <div className="pt-0.5">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F5F3FF] text-xs font-medium text-[#6366F1]">
+            <Brain className="h-3.5 w-3.5" />
+            <span>Smart recommendations just for you</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div className="relative mt-3 min-w-0 px-1 sm:px-0">
+      <div
+        ref={similarCarouselRef}
+        className="flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-1 pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {filteredSimilarProperties.map((item) => {
+          const isFav =
+            favorites[item.id] ?? Boolean(item.isFavorite);
+          const imageSrc =
+            toFullAssetUrl(item.imageUrl) ||
+            "/assets/property/img-4.png";
+          const rating = Number.isFinite(item.averageRating)
+            ? item.averageRating
+            : 5;
+          const priceLabel =
+            item.priceType === "rent"
+              ? `Rs ${formatIndianPrice(item.price)}/mo`
+              : `Rs ${formatIndianPrice(item.price)}`;
+
+          return (
+            <article
+              key={item.id}
+              data-similar-card
+              className="w-[min(18rem,calc(100vw-2.5rem))] shrink-0 snap-start overflow-hidden rounded-2xl border border-[#D4D5D8] bg-white shadow-[0px_2px_8px_rgba(16,24,40,0.06)] sm:w-[300px]"
+            >
+              <Link
+                href={`/projects/${params?.projectId ?? ""}/${item.id}`}
+                className="block"
+              >
+                <div className="relative h-[150px]">
+                  <Image
+                    src={imageSrc}
+                    alt={item.title}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width:640px) 85vw, 300px"
+                  />
+                  <div className="absolute left-3 top-3 z-10">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1 text-xs font-semibold text-emerald-700 shadow-md backdrop-blur-xs border border-emerald-200">
+                      <ShieldCheck
+                        className="h-3.5 w-3.5 text-emerald-600"
+                        strokeWidth={2.5}
+                      />
+                      <span>Verified</span>
+                    </span>
+                  </div>
+                  <span className="absolute right-3 top-3 rounded-md bg-[#6950F3] px-3 py-1.5 text-xs font-semibold text-white">
+                    {item.propertyType || "Apartment"}
+                  </span>
+                  <div className="absolute -bottom-5 left-4 h-10 w-10 overflow-hidden rounded-full border-2 border-white bg-white">
+                    <Image
+                      src={"/assets/app/call-person.svg"}
+                      alt={item.owner?.name ?? "Agent"}
+                      fill
+                      className="object-cover"
+                      sizes="40px"
+                    />
+                  </div>
+                </div>
+              </Link>
+
+              <div className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1 text-[#F4B400]">
+                    {Array.from({ length: 5 }).map((_, idx) => (
+                      <Star
+                        key={`${item.id}-property-star-${idx}`}
+                        className={`h-4 w-4 ${idx < Math.round(rating) ? "fill-[#F4B400] text-[#F4B400]" : "text-[#E5E7EB]"}`}
+                      />
+                    ))}
+                    <span className="ml-1 text-sm text-text-gray">
+                      {rating.toFixed(1)}
+                      {item.totalReviews != null && item.totalReviews > 0 && (
+                        <span className="text-text-gray"> ({item.totalReviews})</span>
+                      )}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    aria-label={isFav ? "Remove from favorites" : "Save"}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (isSimilarFavoriteUpdating) return;
+                      setFavorite(item.id, !isFav);
+                      updateSimilarFavorite({
+                        propertyId: item.id,
+                        nextIsFavorite: !isFav,
+                      });
+                    }}
+                    disabled={isSimilarFavoriteUpdating}
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-full text-text-light-black hover:bg-background-gray disabled:opacity-70 cursor-pointer"
+                  >
+                    <Heart
+                      className={`h-5 w-5 ${isFav ? "fill-red-500 text-red-500" : ""}`}
+                    />
+                  </button>
+                </div>
+
+                <Link
+                  href={`/projects/${params?.projectId ?? ""}/${item.id}`}
+                  className="block"
+                >
+                  <h3 className="mt-2 text-lg font-semibold leading-tight text-text-black">
+                    {item.title}
+                  </h3>
+                  <p className="mt-1 flex items-center gap-1 text-sm text-text-gray">
+                    <MapPin className="h-4 w-4 shrink-0" />
+                    {item.address}
+                  </p>
+                  <p className="mt-2 text-xl font-semibold leading-none text-[#05085E]">
+                    {priceLabel}
+                  </p>
+                </Link>
+
+                <div className="mt-4 hidden border-t border-[#D4D5D8] pt-3 md:block">
+                  <p className="text-xs text-text-gray">
+                    Listed on :{" "}
+                    <span className="font-medium text-text-black">
+                      {item.listedOn ? formatListedOn(item.listedOn) : "—"}
+                    </span>
+                  </p>
+                  <p className="mt-1 text-xs text-text-gray">
+                    Possession status:{" "}
+                    <span className="font-medium text-text-black">
+                      {item.possessionStatus || "—"}
+                    </span>
+                  </p>
+                </div>
+
+                <div className="mt-4 hidden border-t border-[#D4D5D8] pt-4 md:block">
+                  <div className="grid grid-cols-3 gap-2 text-xs text-text-black">
+                    <div className="inline-flex items-center gap-2">
+                      <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#D4D5D8] bg-[#F4F4F5] text-text-gray">
+                        <BedDouble className="h-4 w-4" />
+                      </span>
+                      <span className="text-xs">{item.bedrooms ?? 0} Bed</span>
+                    </div>
+                    <div className="inline-flex items-center gap-2">
+                      <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#D4D5D8] bg-[#F4F4F5] text-text-gray">
+                        <Bath className="h-4 w-4" />
+                      </span>
+                      <span className="text-xs">{item.bathrooms ?? 0} Bath</span>
+                    </div>
+                    <div className="inline-flex items-center gap-2">
+                      <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#D4D5D8] bg-[#F4F4F5] text-text-gray">
+                        <House className="h-4 w-4" />
+                      </span>
+                      <span className="text-xs">
+                        {item.area != null
+                          ? `${item.area} ${item.areaUnit || "Sq Ft"}`
+                          : "—"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+
+      {similarScrollState.canScroll && (
+        <>
+          <button
+            type="button"
+            aria-label="Previous similar property"
+            onClick={() => scrollSimilarProperties("prev")}
+            disabled={!similarScrollState.canPrev}
+            className="absolute left-0 top-1/2 z-10 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-[#D4D5D8] bg-white text-[#05085E] shadow transition hover:bg-[#F8F9FF] disabled:cursor-not-allowed disabled:opacity-40 sm:-left-3 md:-left-4 cursor-pointer"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            aria-label="Next similar property"
+            onClick={() => scrollSimilarProperties("next")}
+            disabled={!similarScrollState.canNext}
+            className="absolute right-0 top-1/2 z-10 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-[#D4D5D8] bg-white text-[#05085E] shadow transition hover:bg-[#F8F9FF] disabled:cursor-not-allowed disabled:opacity-40 sm:-right-3 md:-right-4 cursor-pointer"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        </>
+      )}
+    </div>
+  </section>
+) : null}
                   </main>
 
                   <aside className="hidden h-fit min-w-0 rounded-xl border border-border bg-white p-4 xl:sticky xl:top-4 xl:block">
