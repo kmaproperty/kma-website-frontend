@@ -987,13 +987,13 @@ export default function ProjectCard({
   }, [project.priceLabel, plotPriceLabel]);
 
   const featureItems: Array<{ key: string; icon: React.ReactNode; label: string }> = [];
-  if (typeof project.plotAreaSqYd === "number") {
-    featureItems.push({
-      key: "plot",
-      icon: <Image src="/assets/app/area.svg" width={20} height={20} alt="area" className="h-6 w-6" />,
-      label: `${project.plotAreaSqYd} Sq.Yd. (Plot Area)`,
-    });
-  }
+  // if (typeof project.plotAreaSqYd === "number") {
+  //   featureItems.push({
+  //     key: "plot",
+  //     icon: <Image src="/assets/app/area.svg" width={20} height={20} alt="area" className="h-6 w-6" />,
+  //     label: `${project.plotAreaSqYd} Sq.Yd. (Plot Area)`,
+  //   });
+  // }
   if (typeof project.bedrooms === "number" && project.bedrooms > 0) {
     featureItems.push({
       key: "bed",
